@@ -214,6 +214,7 @@
 #'
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -270,6 +271,7 @@
 #'   beta.1=list(pool="rel", method="random"),
 #'   beta.2=list(pool="rel", method="common"),
 #'   pd="pd.kl")
+#' }
 #' @export
 mb.run <- function(network, parameters.to.save=NULL,
                       fun="linear", user.fun=NULL,
@@ -663,6 +665,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -711,7 +714,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #'   priors=list("rho"="dunif(0,1)"),
 #'   class.effect=list("et50"="random")
 #'   )
-#'
+#' }
 #' @export
 mb.emax.hill <- function(network, fun="emax.hill",
                             emax=list(pool="rel", method="common"),
@@ -774,6 +777,7 @@ mb.emax.hill <- function(network, fun="emax.hill",
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -813,6 +817,7 @@ mb.emax.hill <- function(network, fun="emax.hill",
 #'   et50=list(pool="rel", method="common"),
 #'   rho="estimate", covar="CS"
 #'   )
+#' }
 #' @export
 mb.emax <- function(network,
                        emax=list(pool="rel", method="common"),
@@ -879,6 +884,7 @@ mb.emax <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -917,6 +923,7 @@ mb.emax <- function(network,
 #'   lambda=list(pool="rel", method="random"),
 #'   UME=TRUE
 #'   )
+#' }
 #' @export
 mb.exponential <- function(network, lambda=list(pool="rel", method="common"),
                               alpha="study",
@@ -986,6 +993,7 @@ mb.exponential <- function(network, lambda=list(pool="rel", method="common"),
 #' \insertAllCited{}
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -1027,6 +1035,7 @@ mb.exponential <- function(network, lambda=list(pool="rel", method="common"),
 #'   rho=0.5, covar="AR1",
 #'   UME="slope"
 #'   )
+#' }
 #' @export
 mb.fract.first <- function(network, slope=list(pool="rel", method="common"),
                               power=list(pool="const", method="common"),
@@ -1110,6 +1119,7 @@ mb.fract.first <- function(network, slope=list(pool="rel", method="common"),
 #' @references \insertAllCited{}
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -1155,6 +1165,7 @@ mb.fract.first <- function(network, slope=list(pool="rel", method="common"),
 #'   power.2=list(pool="const", method="common"),
 #'   rho=0.5, covar="AR1"
 #'   )
+#' }
 #' @export
 mb.fract.second <- function(network, slope.1=list(pool="rel", method="common"),
                                slope.2=list(pool="rel", method="common"),
@@ -1224,6 +1235,7 @@ mb.fract.second <- function(network, slope.1=list(pool="rel", method="common"),
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -1262,6 +1274,7 @@ mb.fract.second <- function(network, slope.1=list(pool="rel", method="common"),
 #'   rho=0.5, covar="AR1",
 #'   UME=TRUE
 #'   )
+#' }
 #' @export
 mb.linear <- function(network, slope=list(pool="rel", method="common"),
                          alpha="study",
@@ -1329,6 +1342,7 @@ mb.linear <- function(network, slope=list(pool="rel", method="common"),
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -1369,6 +1383,7 @@ mb.linear <- function(network, slope=list(pool="rel", method="common"),
 #'   beta.2=list(pool="const", method="common"),
 #'   UME="beta.1"
 #'   )
+#' }
 #' @export
 mb.quadratic <- function(network, beta.1=list(pool="rel", method="common"),
                             beta.2=list(pool="rel", method="common"),
@@ -1425,6 +1440,7 @@ mb.quadratic <- function(network, beta.1=list(pool="rel", method="common"),
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -1469,6 +1485,7 @@ mb.quadratic <- function(network, beta.1=list(pool="rel", method="common"),
 #'   rho="estimate", covar="CS",
 #'   UME="slope.1"
 #'   )
+#' }
 #' @export
 mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), slope.2=list(pool="rel", method="common"), knot=list(pool="const", method="common"),
                               alpha="study",
@@ -1563,6 +1580,7 @@ mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), s
 #' @inherit mb.run references
 #'
 #' @examples
+#' \donttest{
 #' # Using the alogliptin dataset
 #' network <- mb.network(alog_pcfb)
 #'
@@ -1580,7 +1598,7 @@ mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), s
 #'   theta.result = emax$BUGSoutput$mean$theta,
 #'   resdev.result = emax$BUGSoutput$mean$resdev
 #'   )
-#'
+#' }
 #' @export
 pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
                    likelihood="normal", type="time") {

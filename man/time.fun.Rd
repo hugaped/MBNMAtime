@@ -5,7 +5,7 @@
 \title{Write time-course function component of JAGS code for MBNMA time-course
 models}
 \usage{
-time.fun(fun = "linear", user.fun = NULL, alpha = "arm",
+\method{time}{fun}(fun = "linear", user.fun = NULL, alpha = "arm",
   beta.1 = "rel.common", beta.2 = NULL, beta.3 = NULL,
   beta.4 = NULL)
 }

@@ -1594,6 +1594,7 @@ write.ref.synth <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="re
 #'   solve issues with initialisation.
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object using an MBNMAtime dataset
 #' network <- mb.network(osteopain)
 #'
@@ -1608,6 +1609,7 @@ write.ref.synth <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="re
 #'
 #' # ...also equivalent to
 #' print(result$model.arg$priors)
+#' }
 #'
 #' @export
 get.prior <- function(model) {

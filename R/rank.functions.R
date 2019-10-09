@@ -62,6 +62,7 @@ rank <- function (x, ...) {
 #'   one parameter may have substantial impact on rankings.
 #'
 #' @examples
+#' \donttest{
 #' # Create an mb.network object from a dataset
 #' network <- mb.network(alog_pcfb)
 #'
@@ -76,6 +77,7 @@ rank <- function (x, ...) {
 #' # Rank treatments by AUC
 #' rank(emax, params="auc", treats=c(1:3), direction=-1,
 #'   int.range=c(0,20))
+#' }
 #'
 #' @export
 rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,

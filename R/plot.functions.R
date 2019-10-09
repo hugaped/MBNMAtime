@@ -252,6 +252,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 #'   set to `TRUE`.
 #'
 #' @examples
+#' \donttest{
 #' # Create an mb.network object from a dataset
 #' network <- mb.network(alog_pcfb)
 #'
@@ -271,6 +272,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 #' # Plot the predicted responses with the median network reference treatment response overlayed
 #' #on the plot
 #' plot(predict, disp.obs=FALSE, overlay.ref=TRUE)
+#' }
 #'
 #' @export
 plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
@@ -574,6 +576,7 @@ alpha.scale <- function(n.cut, col="blue") {
 #' which is an object of class `c("gg", "ggplot")`.
 #'
 #' @examples
+#' \donttest{
 #' # Create an mb.network object from a dataset
 #' network <- mb.network(osteopain)
 #'
@@ -594,6 +597,7 @@ alpha.scale <- function(n.cut, col="blue") {
 #'
 #' # Plot histograms for ranking by d.emax
 #' plot(ranks, param="d.emax")
+#' }
 #'
 #' @export
 plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
@@ -683,6 +687,7 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 #' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for different time-course parameters
 #'
 #' @examples
+#'\donttest{
 #' # Create an mb.network object from a dataset
 #' network <- mb.network(alog_pcfb)
 #'
@@ -696,6 +701,7 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 #'
 #' # Plot results for only one time-course parameter
 #' plot(emax, params="d.emax")
+#' }
 #' @export
 plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 
@@ -976,6 +982,7 @@ timeplot <- function(network, level="treatment", ...) {
 #' models is treated as unknown (if `rho="estimate"`) and deviance contributions will be correlated.
 #'
 #' @examples
+#' \donttest{
 #' # Make network
 #' network <- mb.network(alog_pcfb)
 #'
@@ -988,6 +995,7 @@ timeplot <- function(network, level="treatment", ...) {
 #' # Plot deviance contributions in boxplots at each follow-up measurement
 #' # Monitor for 500 additional iterations
 #' devplot(mbnma, dev.type="dev", plot.type="box", xaxis="fup", n.iter=500)
+#' }
 #' @export
 devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
                     xaxis="time", facet=TRUE,
@@ -1079,6 +1087,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 #' then additional iterations will have to be run to get results for these.
 #'
 #' @examples
+#' \donttest{
 #' # Make network
 #' network <- mb.network(osteopain)
 #'
@@ -1090,6 +1099,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 #' # Plot fitted values from the model with treatment labels
 #' # Monitor fitted values for 500 additional iterations
 #' fitplot(mbnma, treat.labs=network$treatments, n.iter=500)
+#' }
 #'
 #' @export
 fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,

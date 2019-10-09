@@ -622,6 +622,7 @@ print.mb.nodesplit <- function(x, groupby="time.param", ...) {
 #' time.
 #'
 #' @examples
+#' \donttest{
 #' # Define network
 #' network <- mb.network(obesityBW_CFB, reference="plac")
 #'
@@ -638,6 +639,7 @@ print.mb.nodesplit <- function(x, groupby="time.param", ...) {
 #'
 #' # Generate summary of predictions
 #' summary(pred)
+#' }
 #' @export
 summary.mb.predict <- function(object, ...) {
   checkmate::assertClass(object, "mb.predict")

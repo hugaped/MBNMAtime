@@ -76,6 +76,7 @@
 #'   relative effects to calculate specific predictions.
 #'
 #' @examples
+#' \donttest{
 #' # Create an mb.network object from a dataset
 #' network <- mb.network(osteopain)
 #'
@@ -107,6 +108,7 @@
 #'   ref.resp=paindata.ref,
 #'   synth="random")
 #' summary(preds)
+#' }
 #'
 #' @export
 predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=TRUE)),
@@ -608,6 +610,7 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
 #'   network reference treatment response.
 #'
 #' @examples
+#' \donttest{
 #' # Create an mb.network object from a dataset
 #' network <- mb.network(osteopain)
 #'
@@ -625,6 +628,7 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
 #'
 #' # Estimate the network reference treatment effect using random effects meta-analysis
 #' ref.synth(data.ab=paindata.ref, mbnma=emax, synth="random")
+#' }
 #'
 #' @export
 ref.synth <- function(data.ab, mbnma, synth="random",

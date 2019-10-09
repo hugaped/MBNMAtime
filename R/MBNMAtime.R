@@ -31,6 +31,7 @@
 #' \insertAllCited{}
 #'
 #' @examples
+#' \donttest{
 #' # Generate an "mb.network" object that stores data in the correct format
 #' network <- mb.network(osteopain, ref="Pl_0")
 #'
@@ -68,6 +69,7 @@
 #'
 #' # Plot histogram of rankings
 #' plot(ranks)
+#' }
 #'
 #' @keywords internal
 "_PACKAGE"

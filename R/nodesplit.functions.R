@@ -326,6 +326,7 @@ mb.nodesplit.comparisons <- function(network)
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
@@ -350,6 +351,7 @@ mb.nodesplit.comparisons <- function(network)
 #'
 #' # Plot results
 #' plot(result)
+#' }
 #' @export
 mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
                             nodesplit.parameters="all", fun="linear", user.fun=NULL,
