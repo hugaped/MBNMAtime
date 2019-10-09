@@ -1,0 +1,10 @@
+^\.travis\.yml$
+^LICENSE\.md$
+^README\.Rmd$
+^.*\.Rproj$
+^\.Rproj\.user$
+^cran-comments\.md$
+^\.git$
+^\.gitattributes$
+^\.gitignore$
+^CRAN-RELEASE$

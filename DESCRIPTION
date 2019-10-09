@@ -1,0 +1,51 @@
+Package: MBNMAtime
+Type: Package
+Title: Run Time-Course MBNMA Models
+Version: 0.1.2.9002
+Date: 2018-10-04
+Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
+  person("Nicky", "Welton", role = c("ctb", "rev")),
+  person("Sofia", "Dias", role = c("ctb", "rev")),
+  person("Meg", "Bennetts", role = c("ctb", "rev")),
+  person("Martin", "Boucher", role = c("ctb", "rev")))
+Maintainer: Hugo Pedder <hugopedder@gmail.com>
+URL: https://www.ncbi.nlm.nih.gov/pubmed/31013000
+Description: Fits Bayesian time-course models for model-based network meta-analysis (MBNMA) and model-based meta
+  -analysis (MBMA) that account for repeated measures over time within studies by applying different time-course functions,
+  following the method of Pedder et al. (2019) <10.1002/jrsm.1351>. 
+  The method allows synthesis of studies with multiple follow-up measurements that can account for time-course for a single or multiple 
+  treatment comparisons. Several general time-course functions are provided; others may be added 
+  by the user. Various characteristics can be flexibly added to the models, such as correlation between time points and shared 
+  class effects. The consistency of direct and indirect evidence in the network can be assessed using unrelated mean effects 
+  models and/or by node-splitting.
+License: GPL-3
+Depends: R (>= 3.5.0)
+Imports:
+  grDevices,
+  stats,
+  graphics,
+  utils,
+  dplyr (>= 0.7.4),
+  R2jags (>= 0.5-7), 
+  rjags (>= 4-8),
+  reshape2 (>= 1.4.3),
+  magrittr (>= 1.5),
+  checkmate (>= 1.8.5),
+  testthat (>= 1.0.2),
+  Rdpack (>= 0.10-1)
+Suggests:
+  knitr (>= 1.20), 
+  scales (>= 1.0.0),
+  overlapping (>= 1.5.0),
+  ggplot2 (>= 2.2.1), 
+  igraph (>= 1.1.2),
+  rmarkdown (>= 1.6),
+  RColorBrewer (>= 1.1-2),
+  mcmcplots (>= 0.4.3)
+SystemRequirements: JAGS (>= 4.3.0) (http://mcmc-jags.sourceforge.net)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+RdMacros: Rdpack
