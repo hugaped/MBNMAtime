@@ -202,6 +202,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 }
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -247,6 +248,7 @@ mb.fract.second(network, alpha="study",
   power.2=list(pool="const", method="common"),
   rho=0.5, covar="AR1"
   )
+}
 }
 \references{
 \insertAllCited{}

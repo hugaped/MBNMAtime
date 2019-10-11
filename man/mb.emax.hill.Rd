@@ -194,6 +194,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 }
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -242,7 +243,7 @@ mb.emax.hill(network, alpha="study",
   priors=list("rho"="dunif(0,1)"),
   class.effect=list("et50"="random")
   )
-
+}
 }
 \references{
 \insertAllCited

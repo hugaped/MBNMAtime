@@ -38,6 +38,7 @@ At each of these stages there are a number of informative plots that can be gene
 }
 
 \examples{
+\donttest{
 # Generate an "mb.network" object that stores data in the correct format
 network <- mb.network(osteopain, ref="Pl_0")
 
@@ -75,6 +76,7 @@ ranks <- rank(result, param="auc", direction=-1, n.iter=500)
 
 # Plot histogram of rankings
 plot(ranks)
+}
 
 }
 \references{

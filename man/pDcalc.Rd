@@ -62,6 +62,7 @@ Alternative approaches are to use pV (\code{pv}) as an approximation (Plummer RE
 pD calculated by Kullback–Leibler divergence (\code{pd.kl}) or using an optimism adjustment (\code{popt}) (REF).
 }
 \examples{
+\donttest{
 # Using the alogliptin dataset
 network <- mb.network(alog_pcfb)
 
@@ -79,7 +80,7 @@ pDcalc(obs1=jagsdat$y, obs2=jagsdat$se,
   theta.result = emax$BUGSoutput$mean$theta,
   resdev.result = emax$BUGSoutput$mean$resdev
   )
-
+}
 }
 \references{
 TO ADD pV REF

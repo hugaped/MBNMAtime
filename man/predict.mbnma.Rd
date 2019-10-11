@@ -93,6 +93,7 @@ network reference treatment parameters which can then be added to the
 relative effects to calculate specific predictions.
 }
 \examples{
+\donttest{
 # Create an mb.network object from a dataset
 network <- mb.network(osteopain)
 
@@ -124,5 +125,6 @@ preds <- predict(emax, times=c(5:15),
   ref.resp=paindata.ref,
   synth="random")
 summary(preds)
+}
 
 }

@@ -85,6 +85,7 @@ of posterior densities for direct and indirect evidence.
 }}
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -109,6 +110,7 @@ summary(result)
 
 # Plot results
 plot(result)
+}
 }
 \references{
 \insertAllCited

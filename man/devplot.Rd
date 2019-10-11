@@ -48,6 +48,7 @@ those that account for correlation between observations) because the covariance 
 models is treated as unknown (if \code{rho="estimate"}) and deviance contributions will be correlated.
 }
 \examples{
+\donttest{
 # Make network
 network <- mb.network(alog_pcfb)
 
@@ -60,4 +61,5 @@ devplot(mbnma)
 # Plot deviance contributions in boxplots at each follow-up measurement
 # Monitor for 500 additional iterations
 devplot(mbnma, dev.type="dev", plot.type="box", xaxis="fup", n.iter=500)
+}
 }

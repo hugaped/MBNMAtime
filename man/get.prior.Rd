@@ -26,6 +26,7 @@ This allows for priors to be changed even in failing models, which may help
 solve issues with initialisation.
 }
 \examples{
+\donttest{
 # Create mb.network object using an MBNMAtime dataset
 network <- mb.network(osteopain)
 
@@ -40,5 +41,6 @@ get.prior(result$model.arg$jagscode)
 
 # ...also equivalent to
 print(result$model.arg$priors)
+}
 
 }

@@ -186,6 +186,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 }
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -226,6 +227,7 @@ mb.quadratic(network, alpha="study",
   beta.2=list(pool="const", method="common"),
   UME="beta.1"
   )
+}
 }
 \references{
 \insertAllCited

@@ -67,6 +67,7 @@ even small changes in treatment effects and therefore failure to converge in onl
 one parameter may have substantial impact on rankings.
 }
 \examples{
+\donttest{
 # Create an mb.network object from a dataset
 network <- mb.network(alog_pcfb)
 
@@ -81,5 +82,6 @@ rank(emax, params=c("d.emax", "d.et50"), direction=-1)
 # Rank treatments by AUC
 rank(emax, params="auc", treats=c(1:3), direction=-1,
   int.range=c(0,20))
+}
 
 }

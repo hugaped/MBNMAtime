@@ -183,6 +183,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 }
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -221,6 +222,7 @@ mb.linear(network, alpha="study",
   rho=0.5, covar="AR1",
   UME=TRUE
   )
+}
 }
 \references{
 \insertAllCited

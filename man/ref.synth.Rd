@@ -68,6 +68,7 @@ selecting only the studies and arms that specify the network reference
 treatment responses.
 }
 \examples{
+\donttest{
 # Create an mb.network object from a dataset
 network <- mb.network(osteopain)
 
@@ -85,5 +86,6 @@ ref.synth(data.ab=paindata.ref, mbnma=emax, synth="fixed")
 
 # Estimate the network reference treatment effect using random effects meta-analysis
 ref.synth(data.ab=paindata.ref, mbnma=emax, synth="random")
+}
 
 }

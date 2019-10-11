@@ -29,6 +29,7 @@ which is an object of class \code{c("gg", "ggplot")}.
 Plot histograms of rankings from MBNMA models
 }
 \examples{
+\donttest{
 # Create an mb.network object from a dataset
 network <- mb.network(osteopain)
 
@@ -49,5 +50,6 @@ plot(ranks, param="auc")
 
 # Plot histograms for ranking by d.emax
 plot(ranks, param="d.emax")
+}
 
 }

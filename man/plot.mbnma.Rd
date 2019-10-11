@@ -30,6 +30,7 @@ A forest plot of class \code{c("gg", "ggplot")} that has separate panels for dif
 Generates a forest plot for time-course parameters of interest from results from time-course MBNMA models.
 }
 \examples{
+\donttest{
 # Create an mb.network object from a dataset
 network <- mb.network(alog_pcfb)
 
@@ -43,4 +44,5 @@ plot(emax)
 
 # Plot results for only one time-course parameter
 plot(emax, params="d.emax")
+}
 }

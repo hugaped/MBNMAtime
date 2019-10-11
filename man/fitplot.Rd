@@ -43,6 +43,7 @@ If fitted values (\code{theta}) have not been monitored in \code{mbnma$parameter
 then additional iterations will have to be run to get results for these.
 }
 \examples{
+\donttest{
 # Make network
 network <- mb.network(osteopain)
 
@@ -54,5 +55,6 @@ mbnma <- mb.emax(network,
 # Plot fitted values from the model with treatment labels
 # Monitor fitted values for 500 additional iterations
 fitplot(mbnma, treat.labs=network$treatments, n.iter=500)
+}
 
 }

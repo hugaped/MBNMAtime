@@ -22,6 +22,7 @@ Prints a summary table of the mean of MCMC iterations at each time point
 for each treatment
 }
 \examples{
+\donttest{
 # Define network
 network <- mb.network(obesityBW_CFB, reference="plac")
 
@@ -38,4 +39,5 @@ pred <- predict(quad, times=c(0:50), treats=c(1:5),
 
 # Generate summary of predictions
 summary(pred)
+}
 }

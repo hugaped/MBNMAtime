@@ -48,6 +48,7 @@ each panel rather than to the network reference treatment if \code{disp.obs} is
 set to \code{TRUE}.
 }
 \examples{
+\donttest{
 # Create an mb.network object from a dataset
 network <- mb.network(alog_pcfb)
 
@@ -67,5 +68,6 @@ plot(predict, disp.obs=TRUE, overlay.ref=FALSE, col="green")
 # Plot the predicted responses with the median network reference treatment response overlayed
 #on the plot
 plot(predict, disp.obs=FALSE, overlay.ref=TRUE)
+}
 
 }

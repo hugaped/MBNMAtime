@@ -186,6 +186,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 }
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -225,6 +226,7 @@ mb.emax(network, alpha="study",
   et50=list(pool="rel", method="common"),
   rho="estimate", covar="CS"
   )
+}
 }
 \references{
 \insertAllCited

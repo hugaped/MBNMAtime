@@ -249,6 +249,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 }
 
 \examples{
+\donttest{
 # Create mb.network object
 network <- mb.network(osteopain)
 
@@ -305,6 +306,7 @@ mb.run(network, fun="user", user.fun=time.fun,
   beta.1=list(pool="rel", method="random"),
   beta.2=list(pool="rel", method="common"),
   pd="pd.kl")
+}
 }
 \references{
 \insertAllCited
