@@ -1735,6 +1735,7 @@ compound.beta <- function(beta.1) {
 #' @return A data frame containing posterior means for the specified `param` at each observation, arm and study.
 #'
 #' @examples
+#' \donttest{
 #' # Using the alogliptin dataset
 #' network <- mb.network(alog_pcfb)
 #'
@@ -1749,6 +1750,7 @@ compound.beta <- function(beta.1) {
 #'
 #' # Update model for 500 iterations to monitor deviance contributions
 #' mb.update(emax, param="dev", n.iter=500)
+#' }
 #' @export
 mb.update <- function(mbnma, param="theta",
                       n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin) {
