@@ -25,5 +25,5 @@ Adds additional sections of JAGS code for an MBNMA model required for models
 with a piecewise linear time-course
 }
 \details{
-FUNCTION DEPRACATED
+FUNCTION DEPRECATED
 }

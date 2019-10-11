@@ -19,7 +19,7 @@ mb.nodesplit(network, comparisons = mb.nodesplit.comparisons(network),
 The frame has two columns indicating each treatment for each comparison: \code{t1} and \code{t2}.}
 
 \item{nodesplit.parameters}{A character vector of named time-course parameters on which to
-nodesplit (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.}
+node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.}
 
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
@@ -97,7 +97,7 @@ result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="all",
   fun="exponential",
   beta.1=list(pool="rel", method="common"))
 
-# Fit an emax time-course MBNMA with a nodesplit on emax parameters only
+# Fit an emax time-course MBNMA with a node-split on emax parameters only
 result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="beta.1",
   fun="emax",
   beta.1=list(pool="rel", method="random"),

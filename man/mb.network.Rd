@@ -23,7 +23,7 @@ given comparison. Set to \code{0} to make thickness equal for all comparisons.}
 
 \item{label.distance}{A number scaling the distance of labels from the nodes
 to improve readability. The labels will be directly on top of the nodes if
-the defauls of \code{0} is used. Option only applicable if \code{layout_in_circle} is
+the default of \code{0} is used. Option only applicable if \code{layout_in_circle} is
 set to \code{TRUE}.}
 
 \item{level}{A string indicating whether nodes/facets should represent \code{treatment}

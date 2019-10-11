@@ -26,7 +26,7 @@ treatment properly.
 is set to \code{TRUE}. Can be either \code{"blue"}, \code{"green"}, or \code{"red"}}
 
 \item{max.col.scale}{Rarely requires adjustment. The maximum count of
-observations (therefore the darkest shaded color) only used if displ.obs is
+observations (therefore the darkest shaded color) only used if \code{disp.obs} is
 used. This allows consistency of shading between multiple plotted graphs.
 It should always be at least as high as the maximum count of observations
 plotted}

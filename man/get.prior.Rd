@@ -21,7 +21,7 @@ prior values have been used for calculation.
 \details{
 Even if an MBNMA model that has not initialised successfully and
 results have not been calculated, the JAGS model for it is saved in
-MBNMA$model.arg$jagscode" and therefore priors can still be obtained.
+\code{MBNMA$model.arg$jagscode} and therefore priors can still be obtained.
 This allows for priors to be changed even in failing models, which may help
 solve issues with initialisation.
 }

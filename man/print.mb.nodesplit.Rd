@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.sum.functions.R
 \name{print.mb.nodesplit}
 \alias{print.mb.nodesplit}
-\title{Prints basic results from a nodesplit to the console}
+\title{Prints basic results from a node-split to the console}
 \usage{
 \method{print}{mb.nodesplit}(x, groupby = "time.param", ...)
 }
@@ -16,5 +16,5 @@ results grouped by treatment comparison.}
 \item{...}{further arguments passed to or from other methods}
 }
 \description{
-Prints basic results from a nodesplit to the console
+Prints basic results from a node-split to the console
 }

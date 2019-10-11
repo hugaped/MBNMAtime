@@ -1,4 +1,4 @@
-# Functions for nodesplit models
+# Functions for node-split models
 # Author: Hugo Pedder
 # Date created: 2018-09-10
 
@@ -252,7 +252,7 @@ mb.comparisons <- function(data)
 #' Identify comparisons in time-course MBNMA datasets that fulfill criteria for node-splitting
 #'
 #' Identify comparisons informed by both direct and indirect evidence from independent sources in MBNMA
-#' datasets with repeated measurements in each study. Thes comparisons are therefore those which
+#' datasets with repeated measurements in each study. These comparisons are therefore those which
 #' fulfill the criteria for testing for inconsistency via node-splitting, following the method of van
 #' Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 #'
@@ -302,7 +302,7 @@ mb.nodesplit.comparisons <- function(network)
 #' @param comparisons A data frame specifying the comparisons to be split (one row per comparison).
 #' The frame has two columns indicating each treatment for each comparison: `t1` and `t2`.
 #' @param nodesplit.parameters A character vector of named time-course parameters on which to
-#' nodesplit (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.
+#' node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.
 #' @param ... Arguments to be sent to `mb.run()`
 #' @inheritParams mb.emax.hill
 #' @inheritParams mb.run
@@ -338,7 +338,7 @@ mb.nodesplit.comparisons <- function(network)
 #'   fun="exponential",
 #'   beta.1=list(pool="rel", method="common"))
 #'
-#' # Fit an emax time-course MBNMA with a nodesplit on emax parameters only
+#' # Fit an emax time-course MBNMA with a node-split on emax parameters only
 #' result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="beta.1",
 #'   fun="emax",
 #'   beta.1=list(pool="rel", method="random"),
@@ -399,7 +399,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
   # Check nodesplit.parameters has true values
   if (is.null(nodesplit.parameters)) {
-    stop("No parameters have been specified on which to nodesplit")
+    stop("No parameters have been specified on which to node-split")
   }
 
   if (!all(nodesplit.parameters %in% c("all", "beta.1", "beta.2", "beta.3", "beta.4"))) {

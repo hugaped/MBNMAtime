@@ -283,8 +283,8 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
 #'   correlation between time points.
 #'
 #' @details Used to check if the arguments given to mb.write are valid. The
-#'   function will return informative errors if arguments are misspecified and
-#'   will return an object that indicates whether the aguments imply modelling a
+#'   function will return informative errors if arguments are mispecified and
+#'   will return an object that indicates whether the arguments imply modelling a
 #'   correlation between time points if it passes.
 #'
 write.check <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
@@ -699,7 +699,7 @@ cor[i,c,r] <- pow(rho, (abs(time[i,r] - time[i,c])) / timedif.0[i])
 #' @inheritParams write.beta
 #' @inheritParams write.alpha
 #'
-#' @details FUNCTION IS DEPRACATED
+#' @details FUNCTION IS DEPRECATED
 #'
 #' @return A character object of JAGS MBNMA model code that includes fractional
 #'   polynomial components of the model
@@ -789,7 +789,7 @@ write.piece.fract <- function(model, fun, beta.3) {
 #' @inheritParams write.beta
 #' @inheritParams mb.run
 #'
-#' @details FUNCTION DEPRACATED
+#' @details FUNCTION DEPRECATED
 #'
 #' @return A character object of JAGS MBNMA model code that includes piecewise
 #'   linear components of the model
@@ -1589,7 +1589,7 @@ write.ref.synth <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="re
 #'
 #' @details Even if an MBNMA model that has not initialised successfully and
 #'   results have not been calculated, the JAGS model for it is saved in
-#'   MBNMA$model.arg$jagscode" and therefore priors can still be obtained.
+#'   `MBNMA$model.arg$jagscode` and therefore priors can still be obtained.
 #'   This allows for priors to be changed even in failing models, which may help
 #'   solve issues with initialisation.
 #'

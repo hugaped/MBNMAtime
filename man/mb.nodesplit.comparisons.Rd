@@ -17,7 +17,7 @@ to treatment codes.
 }
 \description{
 Identify comparisons informed by both direct and indirect evidence from independent sources in MBNMA
-datasets with repeated measurements in each study. Thes comparisons are therefore those which
+datasets with repeated measurements in each study. These comparisons are therefore those which
 fulfill the criteria for testing for inconsistency via node-splitting, following the method of van
 Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 }

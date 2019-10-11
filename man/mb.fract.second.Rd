@@ -105,7 +105,7 @@ An object of S3 class \code{c("mbnma", "rjags")`` containing parameter results f
 
 Nodes that are automatically monitored (if present in the model) have the
 following interpretation. They will have an additional suffix that relates
-to the name/number of the time-course paramter to which they correspond
+to the name/number of the time-course parameter to which they correspond
 (e.g. \code{d.et50} or \code{d.1}):
 \itemize{
 \item \code{d} The pooled relative effect for a given
@@ -207,7 +207,7 @@ using the \code{priors} argument (see \code{\link{get.prior}})
 network <- mb.network(osteopain)
 
 # Fit 2nd order fractional polynomial time-course with fixed consistency treatment effects on
-#beta.1 and beta.2, absolute time-course paramters estimated by treatment for power.1,
+#beta.1 and beta.2, absolute time-course parameters estimated by treatment for power.1,
 #and an exchangeable parameter for power estimated across the network
 result <- mb.fract.second(network,
   slope.1=list(pool="rel", method="common"),

@@ -81,7 +81,7 @@ Checks validity of arguments for mb.write
 }
 \details{
 Used to check if the arguments given to mb.write are valid. The
-function will return informative errors if arguments are misspecified and
-will return an object that indicates whether the aguments imply modelling a
+function will return informative errors if arguments are mispecified and
+will return an object that indicates whether the arguments imply modelling a
 correlation between time points if it passes.
 }

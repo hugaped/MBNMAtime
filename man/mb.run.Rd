@@ -107,15 +107,14 @@ replacement prior distribution values given as strings
 \item{n.chains}{number of Markov chains (default: 3)}
 
 \item{n.burnin}{length of burn in, i.e. number of iterations to discard at the
-beginning. Default is `n.iter/2``, that is, discarding the first half of the
-simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.}
+beginning. Default is \code{n.iter/2``, that is, discarding the first half of the simulations. If }n.burnin` is 0, jags() will run 100 iterations for adaption.}
 
-\item{n.thin}{thinning rate. Must be a positive integer. Set \code{n.thin > 1`` to save memory and computation time if n.iter is large. Default is }max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
+\item{n.thin}{thinning rate. Must be a positive integer. Set \code{n.thin > 1`` to save memory and computation time if }n.iter\code{is large. Default is}max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
 simulations.}
 
 \item{model.file}{A JAGS model written as a character object that can be used
 to overwrite the JAGS model that is automatically written based on the
-specified options. Useful when ammending priors using replace.prior()}
+specified options. Useful when amending priors using replace.prior()}
 
 \item{arg.params}{Contains a list of arguments sent to \code{mb.run()} by time-course
 specific wrapper functions}
@@ -127,7 +126,7 @@ An object of S3 class \code{c("mbnma", "rjags")`` containing parameter results f
 
 Nodes that are automatically monitored (if present in the model) have the
 following interpretation. They will have an additional suffix that relates
-to the name/number of the time-course paramter to which they correspond
+to the name/number of the time-course parameter to which they correspond
 (e.g. \code{d.et50} or \code{d.1}):
 \itemize{
 \item \code{d} The pooled relative effect for a given

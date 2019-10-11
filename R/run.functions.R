@@ -18,7 +18,7 @@
 #'   one/several of: `alpha`, `beta.1`, `beta.2`, `beta.3`, `beta.4`.
 #' @param model.file A JAGS model written as a character object that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
-#'   specified options. Useful when ammending priors using replace.prior()
+#'   specified options. Useful when amending priors using replace.prior()
 #'
 #' @param alpha Refers to the baseline mean response and is a character object
 #'   that can take either:
@@ -81,13 +81,13 @@
 #'
 #' @param n.iter number of total iterations per chain (including burn in; default: 15000)
 #' @param n.thin thinning rate. Must be a positive integer. Set `n.thin > 1`` to save memory
-#' and computation time if n.iter is large. Default is
+#' and computation time if `n.iter` is large. Default is
 #' `max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
 #' simulations.
 #' @param n.chains number of Markov chains (default: 3)
 #' @param n.burnin length of burn in, i.e. number of iterations to discard at the
 #' beginning. Default is `n.iter/2``, that is, discarding the first half of the
-#' simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.
+#' simulations. If `n.burnin` is 0, jags() will run 100 iterations for adaption.
 #'
 #' @param arg.params Contains a list of arguments sent to `mb.run()` by time-course
 #' specific wrapper functions
@@ -101,7 +101,7 @@
 #'
 #'   Nodes that are automatically monitored (if present in the model) have the
 #'   following interpretation. They will have an additional suffix that relates
-#'   to the name/number of the time-course paramter to which they correspond
+#'   to the name/number of the time-course parameter to which they correspond
 #'   (e.g. `d.et50` or `d.1`):
 #'   * `d` The pooled relative effect for a given
 #'   treatment compared to the network reference treatment for a particular
@@ -1124,7 +1124,7 @@ mb.fract.first <- function(network, slope=list(pool="rel", method="common"),
 #' network <- mb.network(osteopain)
 #'
 #' # Fit 2nd order fractional polynomial time-course with fixed consistency treatment effects on
-#' #beta.1 and beta.2, absolute time-course paramters estimated by treatment for power.1,
+#' #beta.1 and beta.2, absolute time-course parameters estimated by treatment for power.1,
 #' #and an exchangeable parameter for power estimated across the network
 #' result <- mb.fract.second(network,
 #'   slope.1=list(pool="rel", method="common"),
@@ -1536,15 +1536,15 @@ mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), s
 #' with repeated measurements
 #'
 #' Uses results from MBNMA JAGS models to calculate pD via the
-#' plugin method (Speigelhalter REF). Can only be used for models with known
+#' plugin method \insertCite{spiegelhalter2002}{MBNMAtime}. Can only be used for models with known
 #' standard errors or covariance matrices (typically univariate).
 #'
 #' @param obs1 A matrix (study x arm) or array (study x arm x time point) containing
-#'   observed data for `y` (normal likelihood) or `r` (binomial or poisson likelihood)
+#'   observed data for `y` (normal likelihood) or `r` (binomial or Poisson likelihood)
 #'   in each arm of each study. This will be the same array
 #'   used as data for the JAGS model.
 #' @param obs2 A matrix (study x arm) or array (study x arm x time point) containing
-#'   observed data for `se` (normal likelihood), `N` (binomial likelihood) or `E` (poisson likelihood)
+#'   observed data for `se` (normal likelihood), `N` (binomial likelihood) or `E` (Poisson likelihood)
 #'   in each arm of each study. This will be the same array
 #'   used as data for the JAGS model.
 #' @param fups A numeric vector of length equal to the number of studies,
@@ -1567,7 +1567,7 @@ mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), s
 #' @param type The type of MBNMA model fitted. Can be either `"time"` or `"dose"`
 #'
 #' @details Method for calculating pD via the plugin method proposed by
-#'   Spiegelhalter (REF). Standard errors / covariance matrices must be assumed
+#'   \insertCite{spiegelhalter2002}{MBNMAtime}. Standard errors / covariance matrices must be assumed
 #'   to be known. To obtain values for theta.result and resdev.result these
 #'   parameters must be monitored when running the JAGS model.
 #'

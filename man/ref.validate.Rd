@@ -13,7 +13,7 @@ columns:
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
 \item \code{y} Numeric data indicating the mean response for a given observation
-\item \code{se} Numeric data incicating the standard error for a given observation
+\item \code{se} Numeric data indicating the standard error for a given observation
 }}
 }
 \description{

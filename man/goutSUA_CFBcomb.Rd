@@ -9,7 +9,7 @@
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
 \item \code{y} Numeric data indicating the mean response for a given observation
-\item \code{se} Numeric data incicating the standard error for a given observation
+\item \code{se} Numeric data indicating the standard error for a given observation
 \item \code{treatment} Treatment identifiers as factors. Labels are shortened treatment names.
 \item \code{treatname} Character data giving the full names of each treatment in the format agent_dose
 \item \code{class} Shortened agent names stored as factors.

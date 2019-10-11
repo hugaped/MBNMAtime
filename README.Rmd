@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 The goal of `MBNMAtime` is to provide a collection of useful commands that allow users to run time-course Model-Based Network Meta-Analyses (MBNMA) or Model-Based Meta-Analyses (MBMA). This allows meta-analysis of studies with multiple follow-up measurements that can account for time-course for a single or multiple treatment comparisons.
 
-Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments, and it does so in a way that explains time-course, thus explaining heterogeneity and inconsistency that may be present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Baysian framework, following an extension of the standrd NMA methodology presented by Lu and Ades [-@lu2004] and are run in JAGS [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019].
+Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments, and it does so in a way that explains time-course, thus explaining heterogeneity and inconsistency that may be present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by Lu and Ades [-@lu2004] and are run in JAGS [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019].
 
 
 ## Installation

@@ -32,7 +32,7 @@ analyses.}
 
 \item{covstruct}{A character to indicate the covariance structure required for modelling correlation between
 time points (if any), since
-this determines some of the data. Can be either \code{"CS"} (compound symmtery) or \code{"AR1"} (autoregressive AR1).}
+this determines some of the data. Can be either \code{"CS"} (compound symmetry) or \code{"AR1"} (autoregressive AR1).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

@@ -21,5 +21,5 @@ Adds additional sections of JAGS code for an MBNMA model required for models
 with a fractional polynomial time-course
 }
 \details{
-FUNCTION IS DEPRACATED
+FUNCTION IS DEPRECATED
 }

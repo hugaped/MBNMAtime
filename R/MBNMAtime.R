@@ -12,7 +12,7 @@
 #' evidence in a way that maintains connectivity between treatments, and it does so in a way
 #' that explains time-course, thus explaining heterogeneity and inconsistency that may be
 #' present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented
-#' in a Baysian framework, following an extension of the standrd NMA methodology presented by
+#' in a Bayesian framework, following an extension of the standard NMA methodology presented by
 #' \insertCite{lu2004}{MBNMAtime} and are run in JAGS \insertCite{jags}{MBNMAtime}. For full details of time-course MBNMA
 #' methodology see \insertCite{pedder2019;textual}{MBNMAtime}.
 #'

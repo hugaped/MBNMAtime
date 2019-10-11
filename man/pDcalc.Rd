@@ -10,12 +10,12 @@ pDcalc(obs1, obs2, fups = NULL, narm, NS, theta.result, resdev.result,
 }
 \arguments{
 \item{obs1}{A matrix (study x arm) or array (study x arm x time point) containing
-observed data for \code{y} (normal likelihood) or \code{r} (binomial or poisson likelihood)
+observed data for \code{y} (normal likelihood) or \code{r} (binomial or Poisson likelihood)
 in each arm of each study. This will be the same array
 used as data for the JAGS model.}
 
 \item{obs2}{A matrix (study x arm) or array (study x arm x time point) containing
-observed data for \code{se} (normal likelihood), \code{N} (binomial likelihood) or \code{E} (poisson likelihood)
+observed data for \code{se} (normal likelihood), \code{N} (binomial likelihood) or \code{E} (Poisson likelihood)
 in each arm of each study. This will be the same array
 used as data for the JAGS model.}
 
@@ -47,12 +47,12 @@ study. This will be estimated by the JAGS model.}
 }
 \description{
 Uses results from MBNMA JAGS models to calculate pD via the
-plugin method (Speigelhalter REF). Can only be used for models with known
+plugin method \insertCite{spiegelhalter2002}{MBNMAtime}. Can only be used for models with known
 standard errors or covariance matrices (typically univariate).
 }
 \details{
 Method for calculating pD via the plugin method proposed by
-Spiegelhalter (REF). Standard errors / covariance matrices must be assumed
+\insertCite{spiegelhalter2002}{MBNMAtime}. Standard errors / covariance matrices must be assumed
 to be known. To obtain values for theta.result and resdev.result these
 parameters must be monitored when running the JAGS model.
 

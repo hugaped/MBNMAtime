@@ -88,7 +88,7 @@ mb.network <- function(data.ab, reference=1, description="Network") {
 #' * `studyID` Study identifiers
 #' * `time` Numeric data indicating follow-up times
 #' * `y` Numeric data indicating the mean response for a given observation
-#' * `se` Numeric data incicating the standard error for a given observation
+#' * `se` Numeric data indicating the standard error for a given observation
 #' * `treatment` Treatment identifiers (can be numeric, factor or character)
 #' * `class` An optional column indicating a particular class code. Treatments with the same identifier
 #' must also have the same class code.
@@ -279,7 +279,7 @@ add_index <- function(data.ab, reference=1) {
 #'   information on different classes of treatments
 #' @param covstruct A character to indicate the covariance structure required for modelling correlation between
 #' time points (if any), since
-#' this determines some of the data. Can be either `"CS"` (compound symmtery) or `"AR1"` (autoregressive AR1).
+#' this determines some of the data. Can be either `"CS"` (compound symmetry) or `"AR1"` (autoregressive AR1).
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to
 #'   JAGS. List elements are:

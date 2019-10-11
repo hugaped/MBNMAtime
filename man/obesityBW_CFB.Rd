@@ -9,7 +9,7 @@
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
 \item \code{y} Numeric data indicating the mean response for a given observation
-\item \code{se} Numeric data incicating the standard error for a given observation
+\item \code{se} Numeric data indicating the standard error for a given observation
 \item \code{N} Numeric data indicating the number of participants used to calculate means for each observation
 \item \code{treatment} Treatment identifiers as factors. Labels are shortened treatment names.
 \item \code{treatname} Character data giving the full names of each treatment in the format agent_dose
@@ -24,7 +24,7 @@ obesityBW_CFB
 }
 \description{
 A dataset from a systematic review of pharmacological treatments for reducing body weight in patients with
-obesity. The outcome is continuous, and aggregate data reponses are given as mean change from baseline in
+obesity. The outcome is continuous, and aggregate data responses are given as mean change from baseline in
 body weight (KG). Overall there are 35 RCTs investigating
 26 treatments of 16 agents (/combinations of agents) in the network. Standard
 deviations have been imputed for 421 observations.

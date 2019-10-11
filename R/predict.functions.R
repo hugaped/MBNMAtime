@@ -595,7 +595,7 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
 #'   * `studyID` Study identifiers
 #'   * `time` Numeric data indicating follow-up times
 #'   * `y` Numeric data indicating the mean response for a given observation
-#'   * `se` Numeric data incicating the standard error for a given observation
+#'   * `se` Numeric data indicating the standard error for a given observation
 #'
 #' @details `data.ab` can be a collection of studies that closely resemble the
 #'   population of interest intended for the prediction, which could be

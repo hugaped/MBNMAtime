@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.sum.functions.R
 \name{summary.mb.nodesplit}
 \alias{summary.mb.nodesplit}
-\title{Takes nodesplit results and produces summary data frame}
+\title{Takes node-split results and produces summary data frame}
 \usage{
 \method{summary}{mb.nodesplit}(object, ...)
 }
@@ -12,10 +12,10 @@
 \item{...}{further arguments passed to or from other methods}
 }
 \value{
-A data frame of summary nodesplit results with the following variables:
+A data frame of summary node-split results with the following variables:
 \itemize{
-\item \code{Comparison} The treatment comparison on which a nodesplit has been performed
-\item \code{Time.Param} The time-course parameter on which a nodesplit has been performed
+\item \code{Comparison} The treatment comparison on which a node-split has been performed
+\item \code{Time.Param} The time-course parameter on which a node-split has been performed
 \item \code{Evidence} The evidence contribution for the given comparison (either "Direct" or "Indirect")
 \item \code{Median} The posterior median
 \item \code{2.5\%} The lower 95% credible interval limit
@@ -26,5 +26,5 @@ within a particular comparison and time-course parameter)
 }
 }
 \description{
-Takes nodesplit results and produces summary data frame
+Takes node-split results and produces summary data frame
 }
