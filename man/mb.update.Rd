@@ -28,6 +28,7 @@ A data frame containing posterior means for the specified \code{param} at each o
 Update MBNMA to obtain deviance contributions or fitted values
 }
 \examples{
+\donttest{
 # Using the alogliptin dataset
 network <- mb.network(alog_pcfb)
 
@@ -42,4 +43,5 @@ mb.update(emax, param="resdev", n.iter=500)
 
 # Update model for 500 iterations to monitor deviance contributions
 mb.update(emax, param="dev", n.iter=500)
+}
 }
