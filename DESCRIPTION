@@ -13,7 +13,7 @@ Maintainer: Hugo Pedder <hugopedder@gmail.com>
 URL: https://www.ncbi.nlm.nih.gov/pubmed/31013000
 Description: Fits Bayesian time-course models for model-based network meta-analysis (MBNMA) and model-based meta
   -analysis (MBMA) that account for repeated measures over time within studies by applying different time-course functions,
-  following the method of Pedder et al. (2019) <10.1002/jrsm.1351>. 
+  following the method of Pedder et al. (2019) <doi:10.1002/jrsm.1351>. 
   The method allows synthesis of studies with multiple follow-up measurements that can account for time-course for a single or multiple 
   treatment comparisons. Several general time-course functions are provided; others may be added 
   by the user. Various characteristics can be flexibly added to the models, such as correlation between time points and shared 

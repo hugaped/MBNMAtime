@@ -1,4 +1,4 @@
-# MBNMAdose 0.1.2
+# MBNMAtime 0.1.2
 
 ## First release of package
 
