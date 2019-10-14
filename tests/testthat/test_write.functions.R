@@ -1,11 +1,11 @@
 testthat::context("Testing write.functions")
 network <- mb.network(osteopain)
 
-emax1 <- mb.emax(network,
-                    emax=list(pool="rel", method="random"),
-                    et50=list(pool="rel", method="common"),
-                    positive.scale=TRUE,
-                    n.chain=3, n.iter=200, n.burnin=100)
+# emax1 <- mb.emax(network,
+#                     emax=list(pool="rel", method="random"),
+#                     et50=list(pool="rel", method="common"),
+#                     positive.scale=TRUE,
+#                     n.chain=3, n.iter=200, n.burnin=100)
 
 
 ################### Testing time.fun ################
@@ -392,34 +392,34 @@ testthat::test_that("test.mb.write", {
 
 ############### Testing prior writing functions ###############
 
-testthat::test_that("get.prior", {
-  testthat::expect_equal(sort(names(get.prior(emax1$model.arg$jagscode))), sort(c("mu.2", "mu.1", "alpha", "sd.emax", "inv.R")))
-  testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)), "list")
-  testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)[[1]]), "character")
-
-  priors <- get.prior(emax1$model.arg$jagscode)
-  for (i in seq_along(priors)) {
-    expect_equal(grepl("d[a-z]+\\(.+\\)", priors[i]), TRUE)
-  }
-
-  testthat::expect_error(get.prior(5))
-})
-
-
-
-testthat::test_that("replace.prior", {
-  priors <- list("alpha"="dnorm(-1, 0.01)",
-                 "sd.emax"="dnorm(0,0.5) T(0,)",
-                 "mu.1"="dnorm(10,0.1)")
-
-  testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, mbnma=emax1)), TRUE)
-  testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, mbnma=emax1)), TRUE)
-
-  testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
-  testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
-
-  priors <- list("banana"="dnorm(-1,0.01)")
-
-  testthat::expect_error(replace.prior(priors, mbnma=emax1))
-
-})
+# testthat::test_that("get.prior", {
+#   testthat::expect_equal(sort(names(get.prior(emax1$model.arg$jagscode))), sort(c("mu.2", "mu.1", "alpha", "sd.emax", "inv.R")))
+#   testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)), "list")
+#   testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)[[1]]), "character")
+#
+#   priors <- get.prior(emax1$model.arg$jagscode)
+#   for (i in seq_along(priors)) {
+#     expect_equal(grepl("d[a-z]+\\(.+\\)", priors[i]), TRUE)
+#   }
+#
+#   testthat::expect_error(get.prior(5))
+# })
+#
+#
+#
+# testthat::test_that("replace.prior", {
+#   priors <- list("alpha"="dnorm(-1, 0.01)",
+#                  "sd.emax"="dnorm(0,0.5) T(0,)",
+#                  "mu.1"="dnorm(10,0.1)")
+#
+#   testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, mbnma=emax1)), TRUE)
+#   testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, mbnma=emax1)), TRUE)
+#
+#   testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
+#   testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
+#
+#   priors <- list("banana"="dnorm(-1,0.01)")
+#
+#   testthat::expect_error(replace.prior(priors, mbnma=emax1))
+#
+# })
