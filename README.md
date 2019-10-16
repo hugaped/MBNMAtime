@@ -14,8 +14,8 @@ of all the available evidence in a way that maintains connectivity
 between treatments, and it does so in a way that explains time-course,
 thus explaining heterogeneity and inconsistency that may be present in a
 standard Network Meta-Analysis (NMA). All models and analyses are
-implemented in a Baysian framework, following an extension of the
-standrd NMA methodology presented by Lu and Ades (2004) and are run in
+implemented in a Bayesian framework, following an extension of the
+standard NMA methodology presented by Lu and Ades (2004) and are run in
 JAGS (JAGS Computer Program 2017). For full details of time-course MBNMA
 methodology see Pedder et al. (2019).
 
@@ -29,7 +29,7 @@ Currently the package can be installed directly from GitHub using the
 install.packages("devtools")
 
 # Then install MBNMAtime directly from GitHub
-devtools::install_github("hugopedder/MBNMAtime")
+devtools::install_github("hugaped/MBNMAtime")
 ```
 
 Once it is released on CRAN (i.e. **not yet\!**), you will (hopefully)

@@ -29,7 +29,7 @@ Currently the package can be installed directly from GitHub using the `devtools`
 install.packages("devtools")
 
 # Then install MBNMAtime directly from GitHub
-devtools::install_github("hugopedder/MBNMAtime")
+devtools::install_github("hugaped/MBNMAtime")
 ```
 
 Once it is released on CRAN (i.e. **not yet!**), you will (hopefully) be able to install the released version of `MBNMAtime` from [CRAN](https://CRAN.R-project.org) with:
