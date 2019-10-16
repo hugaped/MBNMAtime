@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.width = 7,
-  fig.height = 5
+  fig.height = 5,
+  warning = FALSE
 )
 
 library(MBNMAtime)
@@ -138,22 +139,33 @@ plot(network.alog)
 
 Within these network plots, treatments are automatically aligned in a circle (as the default) and can be tidied by shifting the label distance away from the nodes.
 
-```{r gout.network, error = TRUE, purl = FALSE, warning=FALSE}
+```{r, error = TRUE, purl = FALSE, warning=FALSE, eval=FALSE}
 # Draw network plot using the gout dataset
 network.gout <- mb.network(goutSUA_CFB, reference = "Plac")
 plot(network.gout, layout_in_circle = TRUE, label.distance = 5)
 ```
+```{r, error = TRUE, purl = FALSE, warning=FALSE, echo=FALSE}
+# Draw network plot using the gout dataset
+network.gout <- mb.network(goutSUA_CFB, reference = "Plac")
+suppressWarnings(plot(network.gout, layout_in_circle = TRUE, label.distance = 5))
+```
 
 This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail further on in the vignette, but one approach is to assume some sort of common effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.
 
-```{r gout.class.network}
+```{r, eval=FALSE}
 plot(network.gout, level = "class", remove.loops = TRUE, label.distance = 5)
+```
+```{r, echo=FALSE}
+suppressWarnings(plot(network.gout, level = "class", remove.loops = TRUE, label.distance = 5))
 ```
 
 It is also possible to plot a network at the treatment level but to colour the treatments by the class that they belong to.
 
-```{r, warning=FALSE}
+```{r, eval=FALSE}
 plot(network.gout, level = "treatment", v.color = "class", label.distance = 5)
+```
+```{r, echo=FALSE}
+suppressWarnings(plot(network.gout, level = "treatment", v.color = "class", label.distance = 5))
 ```
 
 For other analyses on the Gout dataset in this vignette we have taken the approach of combining several very similar doses to generate a network that is more completely connected:
@@ -355,7 +367,7 @@ Class effects can only be applied to time-course parameters which vary by treatm
 
 In `mb.run()` class effects are supplied as a list, in which each element is named following the name of the corresponding time-course parameter as defined in the function. The names will therefore differ when using wrapper functions for `mb.run()`. The class effect for each time-course parameter can be either `"common"`, in which the effects for each treatment within the same class are constrained to a common class effect, or `"random"`, in which the effects for each treatment within the same class are assumed to be randomly distributed around a shared class mean.
 
-```{r, results="hide", warning=FALSE}
+```{r, results="hide", eval=FALSE}
 # Run an emax time-course MBNMA with a random class effects on beta.1 (Emax parameters)
 # Additional iterations run to ensure MCMC chain convergence
 mbnma <- mb.run(network.gout, fun="emax", 
@@ -363,6 +375,15 @@ mbnma <- mb.run(network.gout, fun="emax",
                    beta.2=list(pool="const", method="common"), 
                    intercept=FALSE, n.iter=20000,
                    class.effect=list(beta.1="random"))
+```
+```{r, results="hide", echo=FALSE}
+# Run an emax time-course MBNMA with a random class effects on beta.1 (Emax parameters)
+# Additional iterations run to ensure MCMC chain convergence
+mbnma <- suppressWarnings(mb.run(network.gout, fun="emax", 
+                   beta.1=list(pool="rel", method="random"), 
+                   beta.2=list(pool="const", method="common"), 
+                   intercept=FALSE, n.iter=20000,
+                   class.effect=list(beta.1="random")))
 ```
 ```{r}
 summary(mbnma)
@@ -397,7 +418,9 @@ The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
 * Any mathematical/logical operators that can be implemented in JAGS can be added to the function
 
 An example user-specified time-course function could be the following:
-`"alpha + (beta.1*time) * ((time/24)^beta.2)"`
+```{r, eval=FALSE}
+"alpha + (beta.1*time) * ((time/24)^beta.2)"
+```
 
 
 
@@ -433,12 +456,21 @@ To change priors within a model, a list of replacements can be provided to `prio
 
 For example, previously in the vignette we were showing how correlation between time points could be modelled using a multivariate likelihood. However, if we use an autoregressive AR1 covariance structure with the default prior for `rho` this can result in a covariance matrix that is non-positive semidefinite, causing an error:
 
-```{r, results="hide", error=TRUE}
+```{r, eval=FALSE}
 # Run an MBNMA that accounts for correlation between time points using AR1 covariance structure
 mbnma <- mb.emax(network.pain, 
                     emax=list(pool="rel", method="common"), 
                     et50=list(pool="const", method="common"), 
                     rho="estimate", covar="AR1")
+
+print(mbnma$model.arg$priors)
+```
+```{r, results="hide", error=TRUE, echo=FALSE}
+# Run an MBNMA that accounts for correlation between time points using AR1 covariance structure
+mbnma <- suppressWarnings(mb.emax(network.pain, 
+                    emax=list(pool="rel", method="common"), 
+                    et50=list(pool="const", method="common"), 
+                    rho="estimate", covar="AR1"))
 
 print(mbnma$model.arg$priors)
 ```
@@ -677,7 +709,7 @@ Consistency is also likely to differ depending on the model used. Failing to app
 
 Consistency testing can only be performed in networks in which closed loops of treatment comparisons exist that are drawn from independent sources of evidence. In networks which do not have any such loops of evidence, consistency cannot be formally tested (though it may still be present). The `mb.nodesplit.comparisons()` function identifies loops of evidence that conform to this property, and identifies a treatment comparison within that loop for which direct and indirect evidence can be compared using node-splitting (see below).
 
-```{r}
+```{r, warning=FALSE}
 # Loops of evidence within the alogliptin dataset
 splits.alog <- mb.nodesplit.comparisons(network.alog)
 print(splits.alog)
@@ -724,7 +756,7 @@ ume.slope.2 <- mb.piecelinear(network.pain,
                          UME="slope.2", pd="pd.kl")
 
 ```
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
 umelist.1 <- list(paste("Deviance for mbnma:", 
                         round(mbnma$BUGSoutput$median$deviance,2), sep=" "),
                 paste("Deviance for ume on slope.1 and slope.2:", 
@@ -762,7 +794,7 @@ ume <- mb.emax(network.gout,
                   intercept=FALSE, UME=TRUE)
 ```
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
 umelist.2 <- list(paste("Deviance for mbnma:", round(mbnma$BUGSoutput$median$deviance,2), sep=" "),
                 paste("Deviance for UME:", round(ume$BUGSoutput$median$deviance,2), sep=" ")
                 )
@@ -810,7 +842,7 @@ nodesplit <- mb.nodesplit(network.pain, fun="emax",
                              nodesplit.parameters="all")
 
 ```
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
 for (i in seq_along(nodesplit)) {
   for (k in seq_along(nodesplit[[i]])) {
     nodesplit[[i]][[k]]$direct <- NULL
@@ -865,7 +897,7 @@ nodesplit <- mb.nodesplit(network.pain, fun="piecelinear",
                              beta.3=list(pool="const", method=0.5),
                              nodesplit.parameters="all")
 ```
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
 for (i in seq_along(nodesplit)) {
   for (k in seq_along(nodesplit[[i]])) {
     nodesplit[[i]][[k]]$direct <- NULL
