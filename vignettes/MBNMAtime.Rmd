@@ -771,7 +771,7 @@ save(umelist.1, file="umelist.1.Rdata")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/umelist.1.RData")
-load(system.file("extdata", "umelist.1.RData", package="MBNMAtime"))
+load(system.file("extdata", "umelist1.RData", package="MBNMAtime", mustWork = TRUE))
 for (i in seq_along(umelist.1)) {
   print(umelist.1[[i]])
 }
@@ -802,7 +802,7 @@ umelist.2 <- list(paste("Deviance for mbnma:", round(mbnma$BUGSoutput$median$dev
                 )
 umelist.sd <- list(paste("SD for mbnma:", round(mbnma$BUGSoutput$median$sd.emax,2), sep=" "),
                    paste("SD for UME:", round(ume$BUGSoutput$median$sd.emax,2), sep=" "))
-save(umelist.2, umelist.sd, file="umelist.2.RData")
+save(umelist.2, umelist.sd, file="umelist2.RData")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/umelist.2.RData")
@@ -864,7 +864,7 @@ save(nodesplit, file="nodesplit.1.RData")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/nodesplit.1.RData")
-load(system.file("extdata", "nodesplit.1.RData", package="MBNMAtime"))
+load(system.file("extdata", "nodesplit1.RData", package="MBNMAtime"))
 ```
 ```{r}
 print(nodesplit)
@@ -920,7 +920,7 @@ save(nodesplit, file="nodesplit.2.RData")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/nodesplit.2.RData")
-load(system.file("extdata", "nodesplit.2.RData", package="MBNMAtime"))
+load(system.file("extdata", "nodesplit2.RData", package="MBNMAtime"))
 ```
 
 ```{r, fig.height=2.5}
