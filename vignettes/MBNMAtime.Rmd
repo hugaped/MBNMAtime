@@ -23,7 +23,7 @@ library(MBNMAtime)
 library(rmarkdown)
 library(knitr)
 library(dplyr)
-load(system.file("R", "sysdata.rda", package="MBNMAtime", mustWork = TRUE))
+load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
 
