@@ -608,7 +608,7 @@ ranks <- rank(mbnma, params=c("auc", "d.slope.2"),
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/ranks.RData")
-load(system.file("extdata", "ranks.RData", package="MBNMAtime"))
+#load(system.file("extdata", "ranks.RData", package="MBNMAtime"))
 ```
 ```{r}
 print(ranks)
@@ -771,7 +771,7 @@ save(umelist.1, file="umelist.1.Rdata")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/umelist.1.RData")
-load(system.file("extdata", "umelist1.RData", package="MBNMAtime", mustWork = TRUE))
+#load(system.file("extdata", "umelist1.RData", package="MBNMAtime", mustWork = TRUE))
 for (i in seq_along(umelist.1)) {
   print(umelist.1[[i]])
 }
@@ -806,7 +806,7 @@ save(umelist.2, umelist.sd, file="umelist2.RData")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/umelist.2.RData")
-load(system.file("extdata", "umelist.2.RData", package="MBNMAtime"))
+#load(system.file("extdata", "umelist2.RData", package="MBNMAtime"))
 for (i in seq_along(umelist.2)) {
   print(umelist.2[[i]])
 }
@@ -864,7 +864,7 @@ save(nodesplit, file="nodesplit.1.RData")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/nodesplit.1.RData")
-load(system.file("extdata", "nodesplit1.RData", package="MBNMAtime"))
+#load(system.file("extdata", "nodesplit1.RData", package="MBNMAtime"))
 ```
 ```{r}
 print(nodesplit)
@@ -889,44 +889,44 @@ plot(nodesplit, plot.type="forest")
 plot(nodesplit, plot.type="density")
 ```
 
-As a further example, if we use a different time-course function (piecewise linear - as in the section on UME models) that is a less good fit for the data, and perform a node-split on both `beta.1` and `beta.2` time-course parameters, we find that there seems to be a strong discrepancy between direct and indirect estimates for `beta.1` and a smaller, yet still important discrepancy for `beta.2`. This is in agreement with the results from the UME models, that were suggestive of inconsistency in this MBNMA model. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain why this might be the case.
+As a further example, if we use a different time-course function (piecewise linear - as in the section on UME models) that is a less good fit for the data, and perform a node-split on both `beta.1` and `beta.2` time-course parameters, we find that there seems to be a strong discrepancy between direct and indirect estimates for `beta.1` and a smaller, yet still potentially important discrepancy for `beta.2`. This is in agreement with the results from the UME models, that were suggestive of inconsistency in this MBNMA model. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain why this might be the case.
 
 This highlights the importance of testing for consistency *after* identifying an appropriate time-course and common/random effects model.
 
 ```{r, eval=FALSE}
 # Nodesplit on beta.1 and beta.2 using a piecewise linear MBNM
-nodesplit <- mb.nodesplit(network.pain, fun="piecelinear", 
+ns.plin <- mb.nodesplit(network.pain, fun="piecelinear", 
                              beta.1=list(pool="rel", method="common"), 
                              beta.2=list(pool="rel", method="common"), 
                              beta.3=list(pool="const", method=0.5),
                              nodesplit.parameters="all")
 ```
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
-for (i in seq_along(nodesplit)) {
-  for (k in seq_along(nodesplit[[i]])) {
-    nodesplit[[i]][[k]]$direct <- NULL
-    nodesplit[[i]][[k]]$indirect <- NULL
+for (i in seq_along(ns.plin)) {
+  for (k in seq_along(ns.plin[[i]])) {
+    ns.plin[[i]][[k]]$direct <- NULL
+    ns.plin[[i]][[k]]$indirect <- NULL
     
-    ggdat <- nodesplit[[i]][[k]]$forest.plot$data
-    nodesplit[[i]][[k]]$forest.plot <- NULL
-    nodesplit[[i]][[k]]$forest.plot <- list(data=ggdat)
+    ggdat <- ns.plin[[i]][[k]]$forest.plot$data
+    ns.plin[[i]][[k]]$forest.plot <- NULL
+    ns.plin[[i]][[k]]$forest.plot <- list(data=ggdat)
     
-    ggdat <- nodesplit[[i]][[k]]$density.plot$data
-    nodesplit[[i]][[k]]$density.plot <- NULL
-    nodesplit[[i]][[k]]$density.plot <- list(data=ggdat)
+    ggdat <- ns.plin[[i]][[k]]$density.plot$data
+    ns.plin[[i]][[k]]$density.plot <- NULL
+    ns.plin[[i]][[k]]$density.plot <- list(data=ggdat)
   }
 }
-save(nodesplit, file="nodesplit.2.RData")
+save(ns.plin, file="nodesplit.2.RData")
 ```
 ```{r, echo=FALSE}
 #load("vignettedata/nodesplit.2.RData")
-load(system.file("extdata", "nodesplit2.RData", package="MBNMAtime"))
+#load(system.file("extdata", "nodesplit2.RData", package="MBNMAtime"))
 ```
 
 ```{r, fig.height=2.5}
-print(nodesplit)
+print(ns.plin)
 
-plot(nodesplit, plot.type="forest")
+plot(ns.plin, plot.type="forest")
 ```
 
 
