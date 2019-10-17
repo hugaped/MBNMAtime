@@ -607,10 +607,6 @@ mbnma <- mb.piecelinear(network.pain,
 ranks <- rank(mbnma, params=c("auc", "d.slope.2"), 
                     int.range=c(0,10),  direction=-1, n.iter=1000)
 ```
-```{r, echo=FALSE}
-#load("vignettedata/ranks.RData")
-#load(system.file("extdata", "ranks.RData", package="MBNMAtime"))
-```
 ```{r}
 print(ranks)
 ```
@@ -771,8 +767,6 @@ umelist.1 <- list(paste("Deviance for mbnma:",
 save(umelist.1, file="umelist.1.Rdata")
 ```
 ```{r, echo=FALSE}
-#load("vignettedata/umelist.1.RData")
-#load(system.file("extdata", "umelist1.RData", package="MBNMAtime", mustWork = TRUE))
 for (i in seq_along(umelist.1)) {
   print(umelist.1[[i]])
 }
@@ -806,8 +800,6 @@ umelist.sd <- list(paste("SD for mbnma:", round(mbnma$BUGSoutput$median$sd.emax,
 save(umelist.2, umelist.sd, file="umelist2.RData")
 ```
 ```{r, echo=FALSE}
-#load("vignettedata/umelist.2.RData")
-#load(system.file("extdata", "umelist2.RData", package="MBNMAtime"))
 for (i in seq_along(umelist.2)) {
   print(umelist.2[[i]])
 }
@@ -863,10 +855,6 @@ for (i in seq_along(nodesplit)) {
 }
 save(nodesplit, file="nodesplit.1.RData")
 ```
-```{r, echo=FALSE}
-#load("vignettedata/nodesplit.1.RData")
-#load(system.file("extdata", "nodesplit1.RData", package="MBNMAtime"))
-```
 ```{r}
 print(nodesplit)
 ```
@@ -918,10 +906,6 @@ for (i in seq_along(ns.plin)) {
   }
 }
 save(ns.plin, file="nodesplit.2.RData")
-```
-```{r, echo=FALSE}
-#load("vignettedata/nodesplit.2.RData")
-#load(system.file("extdata", "nodesplit2.RData", package="MBNMAtime"))
 ```
 
 ```{r, fig.height=2.5}
