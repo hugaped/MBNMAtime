@@ -2,7 +2,7 @@
 
 This is a resubmission. In this version I have:
  
- * Made data used in the vignette available in inst/extdata so that it can be located when needed
+ * Used message() instead of print() to avoid writing information messages to the console that cannot be easily suppressed.
 
 
 ## Test environments
