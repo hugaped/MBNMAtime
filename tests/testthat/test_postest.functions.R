@@ -1,6 +1,6 @@
-testthat::context("Testing predict.functions")
-network <- mb.network(osteopain)
-
+# testthat::context("Testing predict.functions")
+# network <- mb.network(osteopain)
+#
 # exponential <- mb.exponential(network, lambda=list(pool="rel", method="common"),
 #                                  positive.scale=TRUE,
 #                                  n.chain=3, n.iter=1200, n.burnin=800)
@@ -209,9 +209,9 @@ network <- mb.network(osteopain)
 #   quad <- mb.quadratic(alognet)
 #   quad <- mb.quadratic(alognet, beta.2=list("arm", "common"), beta.1=list("rel", "random"), n.iter=8000)
 # })
-
-
-
+#
+#
+#
 # testthat::test_that("ref.synth functions correctly", {
 #   ref.resp <- osteopain[osteopain$treatname=="Placebo_0",]
 #

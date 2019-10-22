@@ -1,6 +1,6 @@
-testthat::context("Testing plot.functions")
-network <- mb.network(osteopain)
-
+# testthat::context("Testing plot.functions")
+# network <- mb.network(osteopain)
+#
 # emax1 <- mb.emax(network,
 #                     emax=list(pool="rel", method="random"),
 #                     et50=list(pool="rel", method="common"),
@@ -18,15 +18,15 @@ network <- mb.network(osteopain)
 #                              et50=list(pool="arm", method="random"),
 #                              hill=list(pool="const", method=-0.5),
 #                              positive.scale=TRUE, n.chain=3, n.iter=1200, n.burnin=800)
-
-
-
-# Class data
-classdata <- osteopain
-classdata$class[classdata$treatment=="Pl_0"] <- 1
-classdata$class[classdata$treatment!="Pl_0"] <- 2
-classnetwork <- mb.network(classdata)
-
+#
+#
+#
+# # Class data
+# classdata <- osteopain
+# classdata$class[classdata$treatment=="Pl_0"] <- 1
+# classdata$class[classdata$treatment!="Pl_0"] <- 2
+# classnetwork <- mb.network(classdata)
+#
 # emax.class.random <- mb.emax(classnetwork,
 #                                 emax=list(pool="rel", method="common"),
 #                                 et50=list(pool="rel", method="common"),
@@ -108,67 +108,67 @@ classnetwork <- mb.network(classdata)
 #                                  max.col.scale = NULL))
 #     }
 # })
-
-
-testthat::test_that("alpha.scale functions correctly", {
-  n.cut <- 10
-  cols <- MBNMAtime:::alpha.scale(n.cut, col="blue")
-  testthat::expect_equal(length(cols), n.cut+1)
-
-  testthat::expect_silent(MBNMAtime:::alpha.scale(n.cut, col="green"))
-  testthat::expect_silent(MBNMAtime:::alpha.scale(n.cut, col="red"))
-  testthat::expect_silent(MBNMAtime:::alpha.scale(n.cut, col=c(10,10,50)))
-
-  testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col="cheesecake"))
-  testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col=c(10,10)))
-  testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col=c(-10,10,50)))
-  testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col=c(10,10,500)))
-
-})
-
-
-
-testthat::test_that("plot(mb.network) functions correctly", {
-  testthat::expect_silent(plot(network, layout_in_circle = TRUE,
-                 edge.scale=1, label.distance=0))
-
-  testthat::expect_silent(plot(network, layout_in_circle = FALSE,
-                               edge.scale=1, label.distance=0))
-
-  testthat::expect_silent(plot(network, layout_in_circle = FALSE,
-                               edge.scale=10, label.distance=0))
-
-  testthat::expect_silent(plot(network, layout_in_circle = FALSE,
-                               edge.scale=0.5, label.distance=10))
-
-  testthat::expect_silent(plot(network, layout_in_circle = TRUE,
-                               edge.scale=0.5, label.distance=-10))
-
-  testthat::expect_error(plot.mb.network(network[["data"]], layout_in_circle = TRUE,
-                               edge.scale=0.5, label.distance=-10))
-
-  # network2 <- network
-  # network2[["data.ab"]] <- network2[["data.ab"]][-c(1:10),]
-  #
-  # testthat::expect_warning(plot(network2, layout_in_circle = FALSE,
-  #                              edge.scale=1, label.distance=0))
-
-  network.gout <- mb.network(goutSUA_CFB)
-  testthat::expect_warning(plot(network.gout, layout_in_circle = FALSE,
-                               edge.scale=1, label.distance=0))
-  testthat::expect_silent(plot(network.gout, layout_in_circle = TRUE,
-                               level="class", remove.loops=TRUE))
-  testthat::expect_warning(plot(network.gout, layout_in_circle = TRUE,
-                              level="treatment"))
-  testthat::expect_error(plot(network.gout, layout_in_circle = TRUE,
-                               level="apple"))
-
-
-})
-
-
-
-
+#
+#
+# testthat::test_that("alpha.scale functions correctly", {
+#   n.cut <- 10
+#   cols <- MBNMAtime:::alpha.scale(n.cut, col="blue")
+#   testthat::expect_equal(length(cols), n.cut+1)
+#
+#   testthat::expect_silent(MBNMAtime:::alpha.scale(n.cut, col="green"))
+#   testthat::expect_silent(MBNMAtime:::alpha.scale(n.cut, col="red"))
+#   testthat::expect_silent(MBNMAtime:::alpha.scale(n.cut, col=c(10,10,50)))
+#
+#   testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col="cheesecake"))
+#   testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col=c(10,10)))
+#   testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col=c(-10,10,50)))
+#   testthat::expect_error(MBNMAtime:::alpha.scale(n.cut, col=c(10,10,500)))
+#
+# })
+#
+#
+#
+# testthat::test_that("plot(mb.network) functions correctly", {
+#   testthat::expect_silent(plot(network, layout_in_circle = TRUE,
+#                  edge.scale=1, label.distance=0))
+#
+#   testthat::expect_silent(plot(network, layout_in_circle = FALSE,
+#                                edge.scale=1, label.distance=0))
+#
+#   testthat::expect_silent(plot(network, layout_in_circle = FALSE,
+#                                edge.scale=10, label.distance=0))
+#
+#   testthat::expect_silent(plot(network, layout_in_circle = FALSE,
+#                                edge.scale=0.5, label.distance=10))
+#
+#   testthat::expect_silent(plot(network, layout_in_circle = TRUE,
+#                                edge.scale=0.5, label.distance=-10))
+#
+#   testthat::expect_error(plot.mb.network(network[["data"]], layout_in_circle = TRUE,
+#                                edge.scale=0.5, label.distance=-10))
+#
+#   # network2 <- network
+#   # network2[["data.ab"]] <- network2[["data.ab"]][-c(1:10),]
+#   #
+#   # testthat::expect_warning(plot(network2, layout_in_circle = FALSE,
+#   #                              edge.scale=1, label.distance=0))
+#
+#   network.gout <- mb.network(goutSUA_CFB)
+#   testthat::expect_warning(plot(network.gout, layout_in_circle = FALSE,
+#                                edge.scale=1, label.distance=0))
+#   testthat::expect_silent(plot(network.gout, layout_in_circle = TRUE,
+#                                level="class", remove.loops=TRUE))
+#   testthat::expect_warning(plot(network.gout, layout_in_circle = TRUE,
+#                               level="treatment"))
+#   testthat::expect_error(plot(network.gout, layout_in_circle = TRUE,
+#                                level="apple"))
+#
+#
+# })
+#
+#
+#
+#
 # testthat::test_that("plot(mbnma) functions correctly", {
 #   testthat::expect_silent(plot(emax1, params=NULL))
 #   testthat::expect_silent(plot(emax2, params=NULL))
@@ -192,10 +192,10 @@ testthat::test_that("plot(mb.network) functions correctly", {
 #   testthat::expect_error(plot(emax2, params=1))
 #   testthat::expect_error(plot(network, params=NULL), NA)
 # })
-
-
-
-
+#
+#
+#
+#
 # test_that("devplot functions correctly", {
 #   g <- devplot(emax1, dev.type="resdev", n.iter=100)
 #   expect_identical(class(g$graph), c("gg", "ggplot"))
@@ -225,11 +225,11 @@ testthat::test_that("plot(mb.network) functions correctly", {
 #   expect_error(fitplot(emax.hill, disp.obs=FALSE, treat.labs=c(1:10), n.iter=100), "treat.labs must be the same length")
 #
 # })
-
-
-
-
-
+#
+#
+#
+#
+#
 # test_that("plot.mb.rank functions correctly", {
 #
 #   ranks <- rank(emax1, params=c("auc", "d.emax"), direction=-1, n.iter=10)

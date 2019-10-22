@@ -12,9 +12,9 @@ testthat::test_that("add_index functions correctly", {
   testthat::expect_error(mb.network(data, ref=40))
 
   testthat::expect_silent(mb.network(data, ref="Pl_0"))
-  testthat::expect_output(mb.network(data, ref=1))
+  testthat::expect_message(mb.network(data, ref=1))
 
-  testthat::expect_output(mb.network(data, ref=NULL))
+  testthat::expect_message(mb.network(data, ref=NULL))
 
   network <- mb.network(data, ref=3)
   network <- mb.network(data, ref="Ce_200")
@@ -104,14 +104,14 @@ test_that("mb.validate.data functions correctly", {
 
 
 test_that("mb.network functions correctly", {
-  expect_output(mb.network(osteopain), "Reference treatment")
+  expect_message(mb.network(osteopain), "Reference treatment")
   expect_silent(mb.network(osteopain, reference = "Pl_0"))
 
   expect_error(mb.network(osteopain, reference = "NOTATREAT"), "Reference treatment specified is not")
 
   expect_silent(mb.network(goutSUA_CFBcomb, reference="RDEA_100", description="TEST"))
 
-  expect_output(mb.network(alog_pcfb), "Reference treatment")
+  expect_message(mb.network(alog_pcfb), "Reference treatment")
 
   expect_silent(mb.network(obesityBW_CFB, reference = "orli"))
 })
@@ -121,14 +121,14 @@ test_that("mb.network functions correctly", {
 
 test_that("jagstonetwork functions correctly", {
   network <- mb.network(osteopain)
-  emax <- mb.emax(network)
+  emax <- mb.emax(network, n.iter=500)
 
   df  <- jagstonetwork(emax)
   expect_identical(sort(names(df)), sort(c("studyID", "treatment", "time", "y", "se", "arm", "fupcount", "fups", "narm")))
   expect_equal(nrow(df)>0, TRUE)
 
   network <- mb.network(goutSUA_CFBcomb)
-  emax <- mb.emax(network, class.effect = list(emax="random"))
+  emax <- mb.emax(network, class.effect = list(emax="random"), n.iter=500)
   df  <- jagstonetwork(emax)
   expect_equal("class" %in% names(df), TRUE)
   expect_equal(nrow(df)>0, TRUE)

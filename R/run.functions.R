@@ -303,6 +303,7 @@ mb.run <- function(network, parameters.to.save=NULL,
   for (i in 1:4) {
     betaname <- paste0("beta.", i)
     if (!is.null(get(betaname))) {
+      assign(betaname, check.beta.arg(get(betaname)))
       assign(paste0(betaname, ".str"), compound.beta(get(betaname)))
     } else if (is.null(get(betaname))) {
       assign(paste0(betaname, ".str"), NULL)
@@ -1717,6 +1718,41 @@ compound.beta <- function(beta.1) {
   return(beta.out)
 }
 
+
+
+
+
+check.beta.arg <- function(beta.1) {
+  # Checks
+  checkmate::assertList(beta.1, len=2, types=c("character", "numeric"),
+                        unique=TRUE)
+
+  if (!is.null(beta.1)) {
+    if (is.null(names(beta.1))) {
+      newbeta <- list()
+      for (i in seq_along(beta.1)) {
+        if (is.character(beta.1[[i]])) {
+          if (beta.1[[i]] %in% c("rel", "arm", "const")) {
+            newbeta$pool <- beta.1[[i]]
+          } else if (beta.1[[i]] %in% c("common", "random")) {
+            newbeta$method <- beta.1[[i]]
+          }
+        } else if (is.numeric(beta.1[[i]])) {
+          newbeta$method <- beta.1[[i]]
+        } else {
+          stop("Time-course parameter arguments incorrectly specified")
+        }
+      }
+      beta.1 <- newbeta
+    }
+
+    if (!all(names(beta.1) %in% c("pool", "method"))) {
+      stop("Time-course parameter arguments incorrectly named")
+    }
+  }
+
+  return(beta.1)
+}
 
 
 

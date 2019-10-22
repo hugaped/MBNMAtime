@@ -757,11 +757,11 @@ ref.validate <- function(data.ab) {
 
   # Ensuring studies are numbered sequentially
   if (!is.numeric(data.ab[["studyID"]])) {
-    message("Studies being recoded to allow sequential numbering")
+    #message("Studies being recoded to allow sequential numbering")
     data.ab <- transform(data.ab,studyID=as.numeric(factor(studyID, levels=as.character(unique(data.ab$studyID)))))
     data.ab <- dplyr::arrange(data.ab, studyID, time)
   } else if (all(abs(diff(data.ab[["studyID"]])) != TRUE)) {
-    message("Studies being recoded to allow sequential numbering")
+    #message("Studies being recoded to allow sequential numbering")
     data.ab <- transform(data.ab,studyID=as.numeric(factor(studyID, levels=as.character(unique(data.ab$studyID)))))
     data.ab <- dplyr::arrange(data.ab, studyID, time)
   }
