@@ -124,10 +124,10 @@ add_index <- function(data.ab, reference=1) {
   if (is.factor(data.ab$treatment)) {
     if (is.null(reference)) {
       reference <- levels(data.ab$treatment)[1]
-      print(paste0("Reference treatment has automatically been set to `", reference, "`"))
+      message(paste0("Reference treatment has automatically been set to `", reference, "`"))
     } else if (is.numeric(reference)) {
       reference <- as.character(data.ab$treatment[as.numeric(data.ab$treatment)==reference])[1]
-      print(paste0("Reference treatment is `", reference, "`"))
+      message(paste0("Reference treatment is `", reference, "`"))
     } else if (is.character(reference)) {
       if (is.na(match(reference, as.character(data.ab$treatment)))) {
         stop("Reference treatment specified is not a treatment given in the data")
@@ -138,7 +138,7 @@ add_index <- function(data.ab, reference=1) {
   if (is.numeric(data.ab$treatment)) {
     if (is.null(reference)) {
       reference <- sort(data.ab$treatment)[1]
-      print(paste0("Reference treatment has automatically been set to `", reference, "`"))
+      message(paste0("Reference treatment has automatically been set to `", reference, "`"))
     } else if (is.character(reference)) {
       stop("Reference treatment must correspond to format of treatments provided: a number corresponding to a treatment code within the data")
     } else if (is.numeric(reference)) {
@@ -150,7 +150,7 @@ add_index <- function(data.ab, reference=1) {
     if (max(data.ab$treatment) != length(unique(data.ab$treatment)) |
         !all.equal(data.ab$treatment, as.integer(data.ab$treatment))
         ) {
-      print("Treatments are being recoded to enforce sequential numbering")
+      message("Treatments are being recoded to enforce sequential numbering")
     }
   }
 
@@ -172,7 +172,7 @@ add_index <- function(data.ab, reference=1) {
   # Character data must be allocated codes automatically (reference is only one that matters)
 
 
-  #print("Treatments are being recoded to enforce sequential numbering")
+  #message("Treatments are being recoded to enforce sequential numbering")
   if (is.numeric(data.ab$treatment)) {
     activelist <- unique(data.ab$treatment)[-match(reference, unique(data.ab$treatment))]
 

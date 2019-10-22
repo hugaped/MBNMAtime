@@ -234,13 +234,13 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
     # If ref.resp specified as values for each time-course parameter (in a list)
     if (any(class(ref.resp)=="list")) {
       msg <- paste0("Priors required for: ", paste(mu.prior, collapse=", "))
-      print(msg)
+      message(msg)
 
       if (identical(sort(mu.prior),sort(names(ref.resp)))==FALSE) {
         msg <- "Named elements of `ref.resp` do not correspond to consistency time-course parameters monitored within the model."
         stop(msg)
       } else {
-        print("Success: Elements in prior match consistency time-course treatment effect parameters")
+        message("Success: Elements in prior match consistency time-course treatment effect parameters")
       }
 
       # Assign ref.resp to mu values in model
@@ -747,7 +747,7 @@ ref.validate <- function(data.ab) {
   #   stop("Data frame for synthesis of reference treatment contains NA values")
   # }
 
-  print("Data frame must contain only data from reference treatment")
+  message("Data frame must contain only data from reference treatment")
 
   #### Prepare data frame ####
   # Add arm index (=1 since only one arm in each study)
@@ -757,11 +757,11 @@ ref.validate <- function(data.ab) {
 
   # Ensuring studies are numbered sequentially
   if (!is.numeric(data.ab[["studyID"]])) {
-    print("Studies being recoded to allow sequential numbering")
+    message("Studies being recoded to allow sequential numbering")
     data.ab <- transform(data.ab,studyID=as.numeric(factor(studyID, levels=as.character(unique(data.ab$studyID)))))
     data.ab <- dplyr::arrange(data.ab, studyID, time)
   } else if (all(abs(diff(data.ab[["studyID"]])) != TRUE)) {
-    print("Studies being recoded to allow sequential numbering")
+    message("Studies being recoded to allow sequential numbering")
     data.ab <- transform(data.ab,studyID=as.numeric(factor(studyID, levels=as.character(unique(data.ab$studyID)))))
     data.ab <- dplyr::arrange(data.ab, studyID, time)
   }
