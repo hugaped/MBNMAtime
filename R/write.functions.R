@@ -179,7 +179,8 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   if (fun=="linear") {
     timecourse <- "alpha + (beta.1 * time)"
   } else if (fun=="exponential") {
-    timecourse <- "alpha + exp(beta.1 * time)"
+    #timecourse <- "alpha + exp(beta.1 * time)"
+    timecourse <- "alpha + (beta.1 * (1 - exp(- abs(time))))"
   } else if (fun=="emax") {
     timecourse <- "alpha + ((beta.1 * time) / (exp(beta.2) + time))"
     message("ET50 parameters (beta.2) are on exponential scale to ensure they take positive values on the natural scale")
