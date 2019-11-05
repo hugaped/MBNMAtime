@@ -1,3 +1,11 @@
+# MBNMAtime 0.1.3
+
+## Bug fixes
+
+### Major
+- Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.
+
+
 # MBNMAtime 0.1.2
 
 ## First release of package
