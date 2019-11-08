@@ -648,7 +648,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
         ggplot2::theme(axis.text = ggplot2::element_text(size=15),
                        axis.title = ggplot2::element_text(size=18),
                        title=ggplot2::element_text(size=18)) +
-        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm"))
+        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+        ggplot2::theme_bw()
 
 
       # Density plots (with shaded area of overlap)
@@ -667,7 +668,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
         #scale_fill_manual(name="Evidence") +
         ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
         ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                       axis.title = ggplot2::element_text(size=14))
+                       axis.title = ggplot2::element_text(size=14)) +
+        ggplot2::theme_bw()
 
 
       # Add plots for overlap and forest in return

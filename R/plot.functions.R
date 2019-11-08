@@ -357,6 +357,8 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
   g <- g + ggplot2::scale_color_manual(name="",
                               values=c("Reference Mean"="red"))
 
+  g <- g + ggplot2::theme_bw()
+
   return(g)
 }
 
@@ -651,7 +653,8 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
-      ggplot2::ggtitle(params[param])
+      ggplot2::ggtitle(params[param]) +
+      ggplot2::theme_bw()
 
     graphics::plot(g)
 
@@ -817,7 +820,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 
   # Axis labels
   g <- g + ggplot2::xlab("Treatment / Class") +
-    ggplot2::ylab("Effect size")
+    ggplot2::ylab("Effect size") +
+    ggplot2::theme_bw()
 
   graphics::plot(g, ...)
   return(invisible(g))
@@ -940,7 +944,8 @@ timeplot <- function(network, level="treatment", ...) {
     g <- g + ggplot2::facet_wrap(~factor(class, labels=network$classes))
   }
 
-  g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response")
+  g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response") +
+    ggplot2::theme_bw()
 
   graphics::plot(g, ...)
   return(invisible(g))
@@ -1060,7 +1065,8 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab("Posterior mean")
+    ggplot2::ylab("Posterior mean") +
+    ggplot2::theme_bw()
 
   graphics::plot(g)
   return(invisible(list("graph"=g, "dev.data"=dev.df)))
@@ -1170,7 +1176,8 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
 
   # Add axis labels
   g <- g + ggplot2::xlab("Time") +
-    ggplot2::ylab("Response")
+    ggplot2::ylab("Response") +
+    ggplot2::theme_bw()
 
   graphics::plot(g)
 
@@ -1350,7 +1357,8 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
                        title=ggplot2::element_text(size=18)) +
         ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
         ggplot2::facet_wrap(~factor(plotdata$comp)) +
-        ggplot2::ggtitle(paste0("Forest plot of node-split for ", params[k]))
+        ggplot2::ggtitle(paste0("Forest plot of node-split for ", params[k])) +
+        ggplot2::theme_bw()
 
       graphics::plot(forest, ...)
       plotlist[[length(plotlist)+1]] <- forest
@@ -1369,7 +1377,8 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
         ggplot2::facet_wrap(~factor(plotdata$comp)) +
         ggplot2::ggtitle(paste0("Posterior densities of node-split for ", params[k])) +
         ggplot2::guides(fill=ggplot2::guide_legend((title="Evidence Source")),
-                        linetype=ggplot2::guide_legend((title="Evidence Source")))
+                        linetype=ggplot2::guide_legend((title="Evidence Source"))) +
+        ggplot2::theme_bw()
 
       graphics::plot(density, ...)
       plotlist[[length(plotlist)+1]] <- density
