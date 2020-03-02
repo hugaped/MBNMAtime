@@ -331,7 +331,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   # Required for overlaying ref treatment effect
   if (overlay.ref==TRUE) {
-    ref.treat <- x$mbnma$treatments[1]
+    ref.treat <- x$network$treatments[1]
 
     if (!(ref.treat %in% names(pred))) {
       stop(paste0("Reference treatment (", ref.treat, ") must be included in `x` in order for it to be plotted"))
@@ -400,7 +400,7 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
   checkmate::reportAssertions(argcheck)
 
   #treats <- as.numeric(names(predict[["summary"]]))
-  #treats <- which(predict$mbnma$treatments %in% names(predict$summary))
+  #treats <- which(predict$mbnma$network$treatments %in% names(predict$summary))
   treats <- names(predict[["summary"]])
   data.ab <- jagstonetwork(predict$mbnma)
 
@@ -414,7 +414,7 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
     temp <- predict[["summary"]][[i]]
     # temp[["treat"]] <- rep(as.numeric(names(predict[["summary"]][i])),
     #                        nrow(temp))
-    # temp[["treat"]] <- rep(which(predict$mbnma$treatments %in% names(predict$summary)[i]),
+    # temp[["treat"]] <- rep(which(predict$mbnma$network$treatments %in% names(predict$summary)[i]),
     #                        nrow(temp))
     temp[["treat"]] <- rep(names(predict$summary)[i],
                            nrow(temp))
@@ -422,14 +422,14 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
 
     dplyr::arrange(temp, time)
     if (temp[["time"]][1]>0) {
-      temp[["count"]][1] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$treatments %in% temp[["treat"]][1]) &
+      temp[["count"]][1] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$network$treatments %in% temp[["treat"]][1]) &
                                             raw.data[["time"]]<=temp[["time"]][1] &
                                             raw.data[["time"]]>0
                                           ,])
     } else {temp[["count"]][1] <- 0  }
 
     for (k in 2:nrow(temp)) {
-      temp[["count"]][k] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$treatments %in% temp[["treat"]][k]) &
+      temp[["count"]][k] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$network$treatments %in% temp[["treat"]][k]) &
                                             raw.data[["time"]]<=temp[["time"]][k] &
                                             raw.data[["time"]]>temp[["time"]][k-1]
                                           ,])
@@ -796,7 +796,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
       t.labs <- treat.labs[sort(unique(treatcodes))]
     }
   } else if ("treatments" %in% names(x)) {
-    t.labs <- x[["treatments"]]
+    t.labs <- x$network$[["treatments"]]
   } else {
     t.labs <- sort(unique(treatdat$param))
   }
@@ -1105,7 +1105,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Add facets
   if (facet==TRUE) {
-    g <- g + ggplot2::facet_wrap(~factor(facet, labels=mbnma$treatments), scales="free_x")
+    g <- g + ggplot2::facet_wrap(~factor(facet, labels=mbnma$network$treatments), scales="free_x")
   }
 
   # Add axis labels
@@ -1216,7 +1216,7 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
     }
     g <- g + ggplot2::facet_wrap(~factor(treat, labels=treat.labs))
   } else {
-    g <- g + ggplot2::facet_wrap(~factor(treat, labels=mbnma$treatments))
+    g <- g + ggplot2::facet_wrap(~factor(treat, labels=mbnma$network$treatments))
   }
 
   # Add axis labels

@@ -5,6 +5,7 @@
 - `plot.mb.network()` now uses a `layout` argument that takes an igraph layout function instead of `layout_in_circle` (which was a logical argument). This allows any igraph layout to be plotted rather than just a circle (e.g. `igraph::as_star()`)
 - Objects returned from `plot.mb.network` now have specific igraph attributes assigned to them, which can be easily changed by the user.
 - `user.fun` now takes a formula as an argument (for example `~ (beta.1 * dose) + (beta.2 * dose^2)`) rather than a string.
+- `mb.network` objects are now stored within lists of most other mb class objects for easy reference of data format
 
 ## Bug fixes
 

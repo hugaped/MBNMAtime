@@ -54,7 +54,7 @@ get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
 
   # Check if size of sum.mat is too great for printing
   if (is.matrix(sum.mat)) {
-    if (nrow(sum.mat) > length(mbnma$treatments)) {
+    if (nrow(sum.mat) > length(mbnma$network$treatments)) {
       sum.mat <- NULL
     }
   }
