@@ -1,0 +1,25 @@
+citHeader("To cite MBNMAtime in publications use:")
+
+citEntry(entry = "Article",
+  title        = "Modelling time-course relationships with multiple treatments: Model-based network meta-analysis for continuous summary outcomes",
+  author       = personList(
+                   as.person("Hugo Pedder"),
+                   as.person("Sofia Dias"),
+                   as.person("Margherita Bennetts"),
+                   as.person("Martin Boucher"),
+                   as.person("Nicky J Welton")
+                   ),
+  journal      = "Research Synthesis Methods",
+  year         = "2019",
+  volume       = "10",
+  number       = "2",
+  pages        = "267-286",
+  url          = "https://doi.org/10.1002/jrsm.1351",
+  doi          = "10.1002/jrsm.1351",
+
+  textVersion  =
+  paste("Pedder, H., Dias, S., Bennetts, M., Boucher, M. and Welton, N. J. (2019),",
+        "Modelling time-course relationships with multiple treatments: Model-based network meta-analysis for continuous summary outcomes.",
+        "Research Synthesis Methods, 10:267-286.",
+        "doi:10.1002/jrsm.1351")
+)

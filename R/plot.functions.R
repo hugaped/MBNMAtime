@@ -900,11 +900,12 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #' timeplot(network, level="class")
 #'
 #' @export
-timeplot <- function(network, level="treatment", ...) {
+timeplot <- function(network, level="treatment", plotby="arm", ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "mb.network", add=argcheck)
   checkmate::assertChoice(level, choices = c("treatment", "class"), add=argcheck)
+  checkmate::assertChoice(plotby, choices = c("arm", "rel"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (level=="class" & !("classes" %in% names(network))) {
@@ -913,30 +914,55 @@ timeplot <- function(network, level="treatment", ...) {
 
   plotdata <- network$data.ab
 
-  # Identify if data is CFB or not
-  base.dat <- plotdata[plotdata$fupcount==1,]
-  if (any(base.dat$time!=0)) {
-    base.dat$y <- rep(0, nrow(base.dat))
-    base.dat$se <- rep(0, nrow(base.dat))
-    base.dat$time <- rep(0, nrow(base.dat))
+  if (plotby=="arm") {
+    # Identify if data is CFB or not
+    base.dat <- plotdata[plotdata$fupcount==1,]
+    if (any(base.dat$time!=0)) {
+      base.dat$y <- rep(0, nrow(base.dat))
+      base.dat$se <- rep(0, nrow(base.dat))
+      base.dat$time <- rep(0, nrow(base.dat))
 
-    plotdata <- rbind(base.dat, plotdata)
-    plotdata <- dplyr::arrange(plotdata, studyID, time, treatment)
+      plotdata <- rbind(base.dat, plotdata)
+      plotdata <- dplyr::arrange(plotdata, studyID, time, treatment)
 
-    # Do not run this function with pylr loaded!!
-    plotdata <- plotdata %>%
-      dplyr::group_by(studyID, time) %>%
-      dplyr::mutate(arm = sequence(dplyr::n()))
+      # Do not run this function with pylr loaded!!
+      plotdata <- plotdata %>%
+        dplyr::group_by(studyID, time) %>%
+        dplyr::mutate(arm = sequence(dplyr::n()))
 
-    message(cat("Absence of observations with time=0 in network - data assumed to be change from baseline:",
+      message(cat("Absence of observations with time=0 in network - data assumed to be change from baseline:",
                   "plotting response=0 at time=0", sep="\n"))
+    }
+
+    g <- ggplot2::ggplot(plotdata,
+                         ggplot2::aes(x=plotdata$time, y=plotdata$y,
+                                      group=(paste(plotdata$studyID, plotdata$arm, sep="_")))) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point(size=1)
+
+  } else if (plotby=="rel") {
+
+    diffs <- plotdata %>%
+      dplyr::mutate(Rx.Name = factor(network$treatments[treatment], levels=network$treatments))
+    diffs <- diffs %>%
+      dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+      dplyr::filter(treatment.x < treatment.y) %>%
+      dplyr::mutate(pairDiff = y.x - y.y)
+    diffs <- diffs %>%
+      dplyr::bind_rows(diffs %>%
+                         dplyr::group_by(studyID, arm.x, arm.y) %>%
+                         dplyr::slice(1) %>%
+                         dplyr::mutate(time=0, pairDiff=0))
+
+    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=time, y=pairDiff, group=studyID)) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point() +
+      ggplot2::facet_grid(rows=vars(Rx.Name.y), cols=vars(Rx.Name.x))
+
+
   }
 
-  g <- ggplot2::ggplot(plotdata,
-                       ggplot2::aes(x=plotdata$time, y=plotdata$y,
-                                    group=(paste(plotdata$studyID, plotdata$arm, sep="_")))) +
-    ggplot2::geom_line() +
-    ggplot2::geom_point(size=1)
+
 
   if (level=="treatment") {
     g <- g + ggplot2::facet_wrap(~factor(treatment, labels=network$treatments))
