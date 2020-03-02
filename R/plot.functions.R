@@ -7,8 +7,11 @@
 #' @describeIn mb.network Generate a network plot
 #'
 #' @param x An object of class `mb.network`.
-#' @param layout_in_circle A boolean value indicating whether the network plot
-#'   should be shown in a circle or left as the igraph default layout.
+#' @param layout An igraph layout specification. This is a function specifying an igraph
+#'   layout that determines the arrangement of the vertices (nodes). The default
+#'   `igraph::as_circle()` arranged vertices in a circle. Two other useful layouts for
+#'   network plots are: `igraph::as_star()`, `igraph::with_fr()`. Others can be found
+#'   in \code{\link[igraph]{layout_}}
 #' @param edge.scale A number to scale the thickness of connecting lines
 #'   (edges). Line thickness is proportional to the number of studies for a
 #'   given comparison. Set to `0` to make thickness equal for all comparisons.
@@ -41,8 +44,8 @@
 #' # Create an mb.network object from the data
 #' network <- mb.network(osteopain)
 #'
-#' # Generate a network plot from the data
-#' plot(network, layout_in_circle=TRUE)
+#' # Arrange network plot in a star with the reference treatment in the centre
+#' plot(network, layout=igraph::as_star())
 #'
 #' # Generate a network plot at the class level that removes loops indicating comparisons
 #' #within a node
@@ -57,15 +60,15 @@
 #' plot(alognet, v.scale=2)
 #'
 #' @export
-plot.mb.network <- function(x, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
+plot.mb.network <- function(x, edge.scale=1, label.distance=0,
                            level="treatment", remove.loops=FALSE, v.color="connect",
-                           v.scale=NULL,
+                           v.scale=NULL, layout=igraph::in_circle()
                            ...)
 {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mb.network", add=argcheck)
-  checkmate::assertLogical(layout_in_circle, len=1, add=argcheck)
+  checkmate::assertClass(layout, "igraph_layout_spec", add=argcheck)
   checkmate::assertNumeric(edge.scale, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(label.distance, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(v.scale, lower = 0, finite=TRUE, null.ok=TRUE, len=1, add=argcheck)
@@ -156,17 +159,33 @@ plot.mb.network <- function(x, layout_in_circle = TRUE, edge.scale=1, label.dist
   if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
   igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
 
-  # Plot netgraph
-  if (layout_in_circle==TRUE) {
+  # Change label locations if layout_in_circle
+  laycheck <- as.character(layout)[2]
+  if (any(
+    grepl("layout_in_circle", laycheck) |
+    grepl("layout_as_star", laycheck))) {
     lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
     igraph::V(g)$label.degree <- lab.locs
-    igraph::plot.igraph(g,
-         layout = igraph::layout_in_circle(g),
-         ...
-    )
-  } else {
-    igraph::plot.igraph(g, ...)
   }
+
+  # Plot netgraph
+  layout <- igraph::layout_(g, layout)
+  igraph::plot.igraph(g,
+                      layout = layout,
+                      ...
+  )
+
+  # # Plot netgraph
+  # if (layout_in_circle==TRUE) {
+  #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
+  #   igraph::V(g)$label.degree <- lab.locs
+  #   igraph::plot.igraph(g,
+  #        layout = igraph::layout_in_circle(g),
+  #        ...
+  #   )
+  # } else {
+  #   igraph::plot.igraph(g, ...)
+  # }
 
   return(invisible(g))
 }
