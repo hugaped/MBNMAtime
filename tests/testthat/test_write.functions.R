@@ -15,13 +15,13 @@ testthat::test_that("time.fun functions correctly", {
   testthat::expect_equal(grepl("alpha\\[i\\]", timecourse$jagscode), TRUE)
   testthat::expect_equal(grepl("exp", timecourse$relationship), TRUE)
 
-  timecourse <- time.fun(fun="user", user.fun="alpha+(1/beta.1*time) + (beta.2^beta.3)", beta.2="rel.common", beta.3=2, alpha="study")
+  timecourse <- time.fun(fun="user", user.fun=~alpha+(1/beta.1*time) + (beta.2^beta.3), beta.2="rel.common", beta.3=2, alpha="study")
   testthat::expect_equal(grepl("alpha\\[i\\]", timecourse$jagscode), TRUE)
   testthat::expect_equal(grepl("time\\[i,m\\]", timecourse$jagscode), TRUE)
   testthat::expect_equal(grepl("beta.3\\[", timecourse$jagscode), FALSE)
 
   # Log linear user.fun
-  timecourse <- time.fun(fun="user", user.fun="exp(alpha+(beta.1*time))", beta.1="rel.common", alpha="study")
+  timecourse <- time.fun(fun="user", user.fun=~exp(alpha+(beta.1*time)), beta.1="rel.common", alpha="study")
   testthat::expect_equal(timecourse$time.function, "user")
   testthat::expect_equal(timecourse$jagscode, "exp(alpha[i]+(beta.1[i,k]*time[i,m]))")
   #testthat::expect_equal(timecourse$jagscode, "exp(alpha[i]+(beta.1*time[i,m]))")
@@ -34,7 +34,7 @@ testthat::test_that("time.fun functions correctly", {
   timecourse <- time.fun(fun="piecelinear", alpha="study", beta.1="rel.common", beta.2="rel.random", beta.3="const.random")
   testthat::expect_equal(grepl("time\\[i\\,m\\] < beta\\.3", timecourse$jagscode), TRUE)
 
-  testthat::expect_message(time.fun(fun="emax.hill", user.fun="alpha+(1/beta.1*time) + (beta.2^beta.3)",
+  testthat::expect_message(time.fun(fun="emax.hill", user.fun=~alpha+(1/beta.1*time) + (beta.2^beta.3),
                           beta.1="rel.common", beta.2="rel.random", beta.3="const.common", alpha="study"))
 
   timecourse.fe <- time.fun(fun="fract.poly.first", beta.1="rel.common")
@@ -307,13 +307,13 @@ testthat::test_that("test.mb.write", {
   for (i in seq_along(funlist)) {
     print(funlist[i])
 
-    user.fun <- "exp(alpha + beta.1*time)"
+    user.fun <- ~exp(alpha + beta.1*time)
     jags <- mb.write(fun=funlist[i], user.fun=user.fun, alpha="study", beta.1="rel.random")
     testthat::expect_equal(grepl("d\\.1", jags), TRUE)
     testthat::expect_equal(grepl("sd\\.1 ~ dnorm", jags), TRUE)
     testthat::expect_equal(grepl("alpha\\[i\\]", jags), TRUE)
 
-    user.fun <- "alpha + ((beta.1^beta.2) * time) + (beta.3 * time)"
+    user.fun <- ~alpha + ((beta.1^beta.2) * time) + (beta.3 * time)
     jags <- mb.write(fun=funlist[i], user.fun=user.fun,
                         alpha="arm", beta.1="rel.common", beta.2="const.random",
                         beta.3="rel.random",

@@ -409,9 +409,9 @@ Several additional arguments can be given to `mb.run()` that require further exp
 
 #### User-specified time-course function
 
-If users want to write their own time-course function rather than using one of the ones specified in `mb.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `alpha`, `beta` and `time` parameters. This allows a huge amount of additional flexibility when defining the time-course function.
+If users want to write their own time-course function rather than using one of the ones specified in `mb.run()` they can do this by specifying `fun = "user"` in the arguments. A function can then be provided to `user.fun`, which specifies a new time course in terms of `alpha`, `beta` and `time` parameters. This allows a huge amount of additional flexibility when defining the time-course function.
 
-The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
+The function assigned to `user.fun` needs to fulfill a few criteria to be valid:
 * `alpha` must be specified within the function. If modelling change from baseline data `alpha` still needs to be included, but users can set `intercept = FALSE` (see above).
 * At least one `beta` time-course parameter must be specified, up to a maximum of four. These are always named `beta.1`, `beta.2`, `beta.3` and `beta.4` (even if only one is specified), and must be included sequentially (i.e. don't include `beta.3` if `beta.1` is not included)
 * `time` must be included in the function. It can be included as multiple instances as is necessary
@@ -420,7 +420,7 @@ The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
 
 An example user-specified time-course function could be the following:
 ```{r, eval=FALSE}
-"alpha + (beta.1*time) * ((time/24)^beta.2)"
+~ alpha + (beta.1*time) * ((time/24)^beta.2)
 ```
 
 
