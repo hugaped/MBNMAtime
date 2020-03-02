@@ -569,7 +569,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     data <- network[["data.ab"]]
 
     # Remove comparisons to split on
-    data <- drop.comp(data=data, comp=comp)
+    data <- drop.comp(df=data, comp=comp)
 
     if (!(1 %in% data$treatment)) {
       string <- paste("Reference treatment removed for node-split. Treatments have been reordered with the next lowest coded treatment as the reference:\ntreatment ",
