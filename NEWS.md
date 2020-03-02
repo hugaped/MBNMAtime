@@ -2,6 +2,8 @@
 
 ## Additions/changes
 - Added citation file
+- `plot.mb.network()` now uses a `layout` argument that takes an igraph layout function instead of `layout_in_circle` (which was a logical argument). This allows any igraph layout to be plotted rather than just a circle (e.g. `igraph::as_star()`)
+- Objects returned from `plot.mb.network` now have specific igraph attributes assigned to them, which can be easily changed by the user.
 
 ## Bug fixes
 

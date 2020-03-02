@@ -132,7 +132,7 @@ testthat::test_that("plot(mb.network) functions correctly", {
   testthat::expect_silent(plot(network, layout=igraph::in_circle(),
                  edge.scale=1, label.distance=0))
 
-  testthat::expect_silent(plot(network, layout=igraph::in_star(),
+  testthat::expect_silent(plot(network, layout=igraph::as_star(),
                                edge.scale=1, label.distance=0))
 
   testthat::expect_silent(plot(network, layout = igraph::with_fr(),
@@ -154,7 +154,7 @@ testthat::test_that("plot(mb.network) functions correctly", {
   #                              edge.scale=1, label.distance=0))
 
   network.gout <- mb.network(goutSUA_CFB)
-  testthat::expect_warning(plot(network.gout, layout=igraph::in_star(),
+  testthat::expect_warning(plot(network.gout, layout=igraph::as_star(),
                                edge.scale=1, label.distance=0))
   testthat::expect_silent(plot(network.gout, layout=igraph::in_circle(),
                                level="class", remove.loops=TRUE))

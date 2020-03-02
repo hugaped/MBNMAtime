@@ -148,7 +148,7 @@ plot(network.gout, label.distance = 5)
 ```{r, error = TRUE, purl = FALSE, warning=FALSE, echo=FALSE}
 # Draw network plot in a star layout using the gout dataset
 network.gout <- mb.network(goutSUA_CFB, reference = "Plac")
-suppressWarnings(plot(network.gout, layout=igraph::in_star(), label.distance = 5))
+suppressWarnings(plot(network.gout, layout=igraph::as_star(), label.distance = 5))
 ```
 
 This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail further on in the vignette, but one approach is to assume some sort of common effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.

@@ -62,7 +62,7 @@
 #' @export
 plot.mb.network <- function(x, edge.scale=1, label.distance=0,
                            level="treatment", remove.loops=FALSE, v.color="connect",
-                           v.scale=NULL, layout=igraph::in_circle()
+                           v.scale=NULL, layout=igraph::in_circle(),
                            ...)
 {
   # Run checks
@@ -130,10 +130,6 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
   g <- g + edges
   #g <- igraph::add.edges(g, edges[[1]], weight = (comparisons[["nr"]]*10), arrow.mode=0)
 
-  if (remove.loops==TRUE) {
-    g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
-  }
-
   # Check network is connected and produce warning message if not
   disconnects <- check.network(g)
   if (v.color=="connect") {
@@ -158,6 +154,10 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
   igraph::V(g)$label.dist <- label.distance
   if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
   igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
+
+  if (remove.loops==TRUE) {
+    g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
+  }
 
   # Change label locations if layout_in_circle
   laycheck <- as.character(layout)[2]
