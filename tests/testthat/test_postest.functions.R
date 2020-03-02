@@ -46,17 +46,17 @@ quad <- mb.run(network, fun="quadratic",
 classdata <- goutSUA_CFBcomb
 classnetwork <- mb.network(classdata)
 
-exp.class.fixed <- mb.exponential(classnetwork,
+exp.class.fixed <- suppressWarnings(mb.exponential(classnetwork,
                                      lambda=list(pool="rel", method="common"),
                                      positive.scale=TRUE,
                                n.chain=3, n.iter=1200, n.burnin=800,
-                               class.effect=list("lambda"="common"))
+                               class.effect=list("lambda"="common")))
 
-exp.class.random <- mb.exponential(classnetwork,
+exp.class.random <- suppressWarnings(mb.exponential(classnetwork,
                                       lambda=list(pool="rel", method="common"),
                                       positive.scale=TRUE,
                                n.chain=3, n.iter=1200, n.burnin=800,
-                               class.effect=list("lambda"="random"))
+                               class.effect=list("lambda"="random")))
 
 
 # A model that does not save the required parameters for postestimation

@@ -131,7 +131,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
   # if (any(object[["model.arg"]][["class.effect"]]=="random")) {
   #   stop("Random class effects have not yet been fully implemented in predict(`object`)")
   # }
-  if (length(object[["model.arg"]][["class.effect"]]>0)) {
+  if (length(object[["model.arg"]][["class.effect"]])>0) {
     stop("Class effects have not yet been fully implemented in predict(`object`)")
   }
 
