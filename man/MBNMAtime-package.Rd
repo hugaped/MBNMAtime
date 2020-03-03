@@ -85,7 +85,7 @@ plot(ranks)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://www.ncbi.nlm.nih.gov/pubmed/31013000}
+  \item \url{https://doi.org/10.1002/jrsm.1351}
 }
 
 }

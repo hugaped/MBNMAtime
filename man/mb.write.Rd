@@ -14,8 +14,8 @@ mb.write(fun = "linear", user.fun = NULL, alpha = "arm",
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including \code{time} and
-one/several of: \code{alpha}, \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+\item{user.fun}{A formula specifying any relationship including \code{time} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{alpha}{Refers to the baseline mean response and is a character object
 that can take either:
@@ -99,7 +99,7 @@ model <- mb.write(fun="exponential",
 cat(model)
 
 # Define a user-defined time-course relationship for the MBNMA JAGS model
-time.fun <- "alpha + (exp(beta.1 * time) / (beta.2 * time))"
+time.fun <- ~ alpha + (exp(beta.1 * time) / (beta.2 * time))
 model <- mb.write(fun="user", user.fun=time.fun,
   beta.1="rel.random", beta.2="rel.common")
 cat(model)

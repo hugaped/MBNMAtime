@@ -4,7 +4,7 @@
 \alias{timeplot}
 \title{Plot raw responses over time by treatment or class}
 \usage{
-timeplot(network, level = "treatment", ...)
+timeplot(network, level = "treatment", plotby = "arm", ...)
 }
 \arguments{
 \item{network}{An object of class \code{mb.network}.}

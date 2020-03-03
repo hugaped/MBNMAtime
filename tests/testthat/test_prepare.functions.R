@@ -128,7 +128,7 @@ test_that("jagstonetwork functions correctly", {
   expect_equal(nrow(df)>0, TRUE)
 
   network <- mb.network(goutSUA_CFBcomb)
-  emax <- mb.emax(network, class.effect = list(emax="random"), n.iter=500)
+  emax <- suppressWarnings(mb.emax(network, class.effect = list(emax="random"), n.iter=500))
   df  <- jagstonetwork(emax)
   expect_equal("class" %in% names(df), TRUE)
   expect_equal(nrow(df)>0, TRUE)

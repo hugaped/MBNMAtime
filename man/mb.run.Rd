@@ -23,8 +23,8 @@ to monitor in JAGS}
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including \code{time} and
-one/several of: \code{alpha}, \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+\item{user.fun}{A formula specifying any relationship including \code{time} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{alpha}{Refers to the baseline mean response and is a character object
 that can take either:
@@ -298,7 +298,7 @@ mb.run(network, fun="linear",
   rho="estimate", covar="CS")
 
 # Define a user-defined time-course relationship for use in mb.run
-time.fun <- "alpha + exp(beta.1 * time) + (time^beta.2)"
+time.fun <- ~alpha + exp(beta.1 * time) + (time^beta.2)
 
 # Run model using Kullback-Liebler divergence to calculate pD
 mb.run(network, fun="user", user.fun=time.fun,

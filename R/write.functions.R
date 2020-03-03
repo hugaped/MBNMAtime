@@ -173,7 +173,7 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(fun, choices=funlist, null.ok=FALSE, add=argcheck)
-  checkmate::assertFunction(user.fun, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (fun=="linear") {
@@ -1320,7 +1320,7 @@ write.beta.ref <- function(model, timecourse,
 write.cor <- function(model, var.scale=NULL, class.effect=list()) {
 
   if (length(class.effect)>0) {
-    warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
+    message("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
   } else {
 
     sufparams <- vector()
