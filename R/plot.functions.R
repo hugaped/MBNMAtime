@@ -402,7 +402,8 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
   #treats <- as.numeric(names(predict[["summary"]]))
   #treats <- which(predict$mbnma$network$treatments %in% names(predict$summary))
   treats <- names(predict[["summary"]])
-  data.ab <- jagstonetwork(predict$mbnma)
+  #data.ab <- jagstonetwork(predict$mbnma)
+  data.ab <- predict$network$data.ab
 
   #raw.data <- network[["data.ab"]]
   raw.data <- dplyr::arrange(data.ab, studyID, fupcount, arm)
@@ -422,19 +423,19 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
 
     dplyr::arrange(temp, time)
     if (temp[["time"]][1]>0) {
-      temp[["count"]][1] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$network$treatments %in% temp[["treat"]][1]) &
+      temp[["count"]][1] <- nrow(raw.data[raw.data$treatment==which(predict$network$treatments %in% temp[["treat"]][1]) &
                                             raw.data[["time"]]<=temp[["time"]][1] &
                                             raw.data[["time"]]>0
                                           ,])
     } else {temp[["count"]][1] <- 0  }
 
     for (k in 2:nrow(temp)) {
-      temp[["count"]][k] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$network$treatments %in% temp[["treat"]][k]) &
+      temp[["count"]][k] <- nrow(raw.data[raw.data$treatment==which(predict$network$treatments %in% temp[["treat"]][k]) &
                                             raw.data[["time"]]<=temp[["time"]][k] &
                                             raw.data[["time"]]>temp[["time"]][k-1]
                                           ,])
     }
-
+print(predict.data)
     predict.data <- rbind(predict.data, temp)
   }
 
@@ -796,7 +797,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
       t.labs <- treat.labs[sort(unique(treatcodes))]
     }
   } else if ("treatments" %in% names(x)) {
-    t.labs <- x$network$[["treatments"]]
+    t.labs <- x$network[["treatments"]]
   } else {
     t.labs <- sort(unique(treatdat$param))
   }

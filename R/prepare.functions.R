@@ -1021,35 +1021,35 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 
 
 
-#' Converts JAGS data held in `class("mbnma")` object to a data.frame
+#' #' Converts JAGS data held in `class("mbnma")` object to a data.frame
+#' #'
+#' #' @return A data frame similar in format to the data frame in an `"mb.network"` object.
+#' #' @noRd
+#' jagstonetwork <- function(mbnma) {
+#'   checkmate::assertClass(mbnma, "mbnma")
 #'
-#' @return A data frame similar in format to the data frame in an `"mb.network"` object.
-#' @noRd
-jagstonetwork <- function(mbnma) {
-  checkmate::assertClass(mbnma, "mbnma")
-
-  jagsdat <- mbnma$model$data()
-
-  df <- data.frame(matrix(nrow=0, ncol=9))
-
-  class <- vector()
-  for (i in 1:jagsdat$NS) {
-    for (k in 1:jagsdat$narm[i]) {
-      for (m in 1:jagsdat$fups[i]) {
-        row <- c(i, jagsdat$treat[i,k], jagsdat$time[i,m], jagsdat$y[i,k,m], jagsdat$se[i,k,m],
-                k, m, jagsdat$fups[i], jagsdat$narm[i])
-        df <- rbind(df, row)
-      }
-    }
-  }
-
-  names(df) <- c("studyID", "treatment", "time", "y", "se", "arm", "fupcount", "fups", "narm")
-
-  if ("class" %in% names(jagsdat)) {
-    df$class <- jagsdat$class[df$treatment]
-  }
-
-  dplyr::arrange(df, fupcount, arm)
-
-  return(df)
-}
+#'   jagsdat <- mbnma$model$data()
+#'
+#'   df <- data.frame(matrix(nrow=0, ncol=9))
+#'
+#'   class <- vector()
+#'   for (i in 1:jagsdat$NS) {
+#'     for (k in 1:jagsdat$narm[i]) {
+#'       for (m in 1:jagsdat$fups[i]) {
+#'         row <- c(i, jagsdat$treat[i,k], jagsdat$time[i,m], jagsdat$y[i,k,m], jagsdat$se[i,k,m],
+#'                 k, m, jagsdat$fups[i], jagsdat$narm[i])
+#'         df <- rbind(df, row)
+#'       }
+#'     }
+#'   }
+#'
+#'   names(df) <- c("studyID", "treatment", "time", "y", "se", "arm", "fupcount", "fups", "narm")
+#'
+#'   if ("class" %in% names(jagsdat)) {
+#'     df$class <- jagsdat$class[df$treatment]
+#'   }
+#'
+#'   dplyr::arrange(df, fupcount, arm)
+#'
+#'   return(df)
+#' }
