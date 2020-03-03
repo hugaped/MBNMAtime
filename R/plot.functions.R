@@ -407,6 +407,8 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
 
   #raw.data <- network[["data.ab"]]
   raw.data <- dplyr::arrange(data.ab, studyID, fupcount, arm)
+  raw.data$studyID <- as.character(raw.data$studyID)
+
   predict.data <- predict[["summary"]][[1]]
   predict.data[["treat"]] <- NA
   predict.data[["count"]] <- NA
@@ -435,7 +437,7 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
                                             raw.data[["time"]]>temp[["time"]][k-1]
                                           ,])
     }
-print(predict.data)
+
     predict.data <- rbind(predict.data, temp)
   }
 

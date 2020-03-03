@@ -23,7 +23,7 @@ testthat::test_that("time.fun functions correctly", {
   # Log linear user.fun
   timecourse <- time.fun(fun="user", user.fun=~exp(alpha+(beta.1*time)), beta.1="rel.common", alpha="study")
   testthat::expect_equal(timecourse$time.function, "user")
-  testthat::expect_equal(timecourse$jagscode, "exp(alpha[i]+(beta.1[i,k]*time[i,m]))")
+  testthat::expect_equal(gsub(" ", "", timecourse$jagscode, fixed = TRUE), "exp(alpha[i]+(beta.1[i,k]*time[i,m]))")
   #testthat::expect_equal(timecourse$jagscode, "exp(alpha[i]+(beta.1*time[i,m]))")
 
   timecourse <- time.fun(fun="emax", alpha="arm", beta.1="const.random", beta.2="rel.random")

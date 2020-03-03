@@ -51,7 +51,7 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
                               "quadratic", "fract.poly.first", "fract.poly.second",
                               "piecelinear", "user"),
                null.ok=FALSE, add=argcheck)
-  checkmate::assertCharacter(user.fun, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
