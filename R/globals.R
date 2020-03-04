@@ -6,4 +6,4 @@
 utils::globalVariables(c("studyID", "time", "treatment", "fup", "study", "arm", "fupcount", "y",
                          "2.5%", "50%", "97.5%", "ref.median",
                          "beta.1.str", "beta.2.str", "beta.3.str", "beta.4.str",
-                         "int.fun"))
+                         "int.fun", ".data"))
