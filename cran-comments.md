@@ -1,10 +1,3 @@
-## Resubmission
-
-This is a resubmission. In this version I have:
- 
- * Used message() instead of print() to avoid writing information messages to the console that cannot be easily suppressed.
-
-
 ## Test environments
 
 * Ubuntu 16.04 (on travis-ci), R 3.2.4
@@ -18,10 +11,8 @@ This is a resubmission. In this version I have:
 
 There were no ERRORs or WARNINGs. 
 
-There were 2 NOTEs: 
+There was 1 NOTE: 
 
-* Checking CRAN incoming feasibility
-  + New submission
 * Checking Rd cross-references
   + Package unavailable to check Rd xrefs: ‘gemtc’ (gemtc package not in "Imports" in the DESCRIPTION, but it would only be needed for cross-referencing in the documentation of the package and so is not required for package functionality)
 
