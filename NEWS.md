@@ -12,7 +12,7 @@
 ### Major
 - Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.
 - Ensured comparisons are cycled through correctly in mb.nodesplit
-
+- Ensured `timeplot` raw responses can be plotted by either arm (`plotby="arm"`) or relative (`plotby="rel"`) effects.
 
 # MBNMAtime 0.1.2
 

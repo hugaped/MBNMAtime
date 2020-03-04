@@ -262,10 +262,13 @@
 #   expect_silent(timeplot(network))
 #   expect_output(timeplot(alognet), "Absence of observations")
 #
+#   expect_silent(timeplot(network, plotby="rel"))
+#
 #   expect_error(timeplot(network, level="class"), "cannot be set to class")
 #
 #   expect_silent(timeplot(classnetwork, level="treatment"))
 #   expect_silent(timeplot(classnetwork, level="class"))
+#   expect_silent(timeplot(classnetwork, plotby="rel", level="class"))
 #
 # })
 #

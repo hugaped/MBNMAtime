@@ -897,6 +897,10 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #' Plot raw responses over time by treatment or class
 #'
 #' @param network An object of class `mb.network`.
+#' @param plotby A character object that can take either `"arm"` to indicate that raw responses
+#' should be plotted separately for each study arm, or `"rel"` to indicate that the relative
+#' effects within each study should be plotted. In this way the time-course of both the absolute
+#' effects and the relative effects can be examined.
 #' @param ... Arguments to be sent to `ggplot`
 #' @inheritParams plot.mb.network
 #'
@@ -962,35 +966,44 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
       ggplot2::geom_line() +
       ggplot2::geom_point(size=1)
 
+    if (level=="treatment") {
+      g <- g + ggplot2::facet_wrap(~factor(.data$treatment, labels=network$treatments))
+      #g <- g + ggplot2::facet_wrap(ggplot2::vars(treatment))
+    } else if (level=="class") {
+      g <- g + ggplot2::facet_wrap(~factor(.data$class, labels=network$classes))
+    }
+
   } else if (plotby=="rel") {
 
-    diffs <- plotdata %>%
-      dplyr::mutate(Rx.Name = factor(network$treatments[treatment], levels=network$treatments))
+    if (level=="treatment") {
+
+      diffs <- plotdata %>%
+        dplyr::mutate(Rx.Name = factor(network$treatments[.data$treatment], levels=network$treatments))
+
+    } else if (level=="class") {
+
+      diffs <- plotdata %>%
+        dplyr::mutate(Rx.Name = factor(network$classes[.data$class], levels=network$classes))
+    }
+
     diffs <- diffs %>%
       dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
-      dplyr::filter(treatment.x < treatment.y) %>%
-      dplyr::mutate(pairDiff = y.x - y.y)
+      dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
+      dplyr::mutate(pairDiff = .data$y.x - .data$y.y)
+
     diffs <- diffs %>%
       dplyr::bind_rows(diffs %>%
-                         dplyr::group_by(studyID, arm.x, arm.y) %>%
+                         dplyr::group_by(.data$studyID, .data$arm.x, .data$arm.y) %>%
                          dplyr::slice(1) %>%
                          dplyr::mutate(time=0, pairDiff=0))
 
-    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=time, y=pairDiff, group=studyID)) +
+    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID)) +
       ggplot2::geom_line() +
       ggplot2::geom_point() +
-      ggplot2::facet_grid(rows=vars(Rx.Name.y), cols=vars(Rx.Name.x))
-
+      ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
 
   }
 
-
-
-  if (level=="treatment") {
-    g <- g + ggplot2::facet_wrap(~factor(treatment, labels=network$treatments))
-  } else if (level=="class") {
-    g <- g + ggplot2::facet_wrap(~factor(class, labels=network$classes))
-  }
 
   g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response") +
     ggplot2::theme_bw()
