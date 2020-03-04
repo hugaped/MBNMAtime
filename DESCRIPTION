@@ -3,7 +3,7 @@ Type: Package
 Title: Run Time-Course MBNMA Models
 Version: 0.1.3
 Language: en-GB
-Date: 2019-10-11
+Date: 2020-03-04
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
   person("Nicky", "Welton", role = c("ctb", "rev")),
   person("Sofia", "Dias", role = c("ctb", "rev")),
