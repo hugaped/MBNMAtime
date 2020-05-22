@@ -24,8 +24,8 @@ node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-cour
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including \code{time} and
-one/several of: \code{alpha}, \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+\item{user.fun}{A formula specifying any relationship including \code{time} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
 time-course parameter(s) specified within the time-course function (see details).}

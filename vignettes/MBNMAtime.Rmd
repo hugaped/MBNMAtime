@@ -143,12 +143,12 @@ Within these network plots, treatments are automatically aligned in a circle (as
 ```{r, error = TRUE, purl = FALSE, warning=FALSE, eval=FALSE}
 # Draw network plot using the gout dataset
 network.gout <- mb.network(goutSUA_CFB, reference = "Plac")
-plot(network.gout, layout_in_circle = TRUE, label.distance = 5)
+plot(network.gout, label.distance = 5)
 ```
 ```{r, error = TRUE, purl = FALSE, warning=FALSE, echo=FALSE}
-# Draw network plot using the gout dataset
+# Draw network plot in a star layout using the gout dataset
 network.gout <- mb.network(goutSUA_CFB, reference = "Plac")
-suppressWarnings(plot(network.gout, layout_in_circle = TRUE, label.distance = 5))
+suppressWarnings(plot(network.gout, layout=igraph::as_star(), label.distance = 5))
 ```
 
 This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail further on in the vignette, but one approach is to assume some sort of common effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.
@@ -409,9 +409,9 @@ Several additional arguments can be given to `mb.run()` that require further exp
 
 #### User-specified time-course function
 
-If users want to write their own time-course function rather than using one of the ones specified in `mb.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `alpha`, `beta` and `time` parameters. This allows a huge amount of additional flexibility when defining the time-course function.
+If users want to write their own time-course function rather than using one of the ones specified in `mb.run()` they can do this by specifying `fun = "user"` in the arguments. A function can then be provided to `user.fun`, which specifies a new time course in terms of `alpha`, `beta` and `time` parameters. This allows a huge amount of additional flexibility when defining the time-course function.
 
-The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
+The function assigned to `user.fun` needs to fulfill a few criteria to be valid:
 * `alpha` must be specified within the function. If modelling change from baseline data `alpha` still needs to be included, but users can set `intercept = FALSE` (see above).
 * At least one `beta` time-course parameter must be specified, up to a maximum of four. These are always named `beta.1`, `beta.2`, `beta.3` and `beta.4` (even if only one is specified), and must be included sequentially (i.e. don't include `beta.3` if `beta.1` is not included)
 * `time` must be included in the function. It can be included as multiple instances as is necessary
@@ -420,7 +420,7 @@ The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
 
 An example user-specified time-course function could be the following:
 ```{r, eval=FALSE}
-"alpha + (beta.1*time) * ((time/24)^beta.2)"
+~ alpha + (beta.1*time) * ((time/24)^beta.2)
 ```
 
 

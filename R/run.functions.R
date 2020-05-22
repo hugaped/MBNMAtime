@@ -14,8 +14,8 @@
 #'   to monitor in JAGS
 #' @param fun is a character specifying a functional form to be assigned to the
 #'   time-course. Options are given in `details`.
-#' @param user.fun A character specifying any relationship including `time` and
-#'   one/several of: `alpha`, `beta.1`, `beta.2`, `beta.3`, `beta.4`.
+#' @param user.fun A formula specifying any relationship including `time` and
+#'   one/several of: `beta.1`, `beta.2`, `beta.3`, `beta.4`.
 #' @param model.file A JAGS model written as a character object that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
 #'   specified options. Useful when amending priors using replace.prior()
@@ -264,7 +264,7 @@
 #'   rho="estimate", covar="CS")
 #'
 #' # Define a user-defined time-course relationship for use in mb.run
-#' time.fun <- "alpha + exp(beta.1 * time) + (time^beta.2)"
+#' time.fun <- ~alpha + exp(beta.1 * time) + (time^beta.2)
 #'
 #' # Run model using Kullback-Liebler divergence to calculate pD
 #' mb.run(network, fun="user", user.fun=time.fun,
@@ -473,10 +473,11 @@ mb.run <- function(network, parameters.to.save=NULL,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model), "arg.params"=arg.params)
   result[["model.arg"]] <- model.arg
-  result[["treatments"]] <- network[["treatments"]]
-  if ("classes" %in% names(network)) {
-    result[["classes"]] <- network[["classes"]]
-  }
+  result[["network"]] <- network
+  # result[["treatments"]] <- network[["treatments"]]
+  # if ("classes" %in% names(network)) {
+  #   result[["classes"]] <- network[["classes"]]
+  # }
   result[["type"]] <- "time"
 
   if (!("error" %in% names(result))) {

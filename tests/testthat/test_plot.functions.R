@@ -27,19 +27,19 @@
 # classdata$class[classdata$treatment!="Pl_0"] <- 2
 # classnetwork <- mb.network(classdata)
 #
-# emax.class.random <- mb.emax(classnetwork,
+# emax.class.random <- suppressWarnings(mb.emax(classnetwork,
 #                                 emax=list(pool="rel", method="common"),
 #                                 et50=list(pool="rel", method="common"),
 #                                 positive.scale=TRUE,
 #                                 n.chain=3, n.iter=1200, n.burnin=800,
-#                                 class.effect=list("et50"="random"))
+#                                 class.effect=list("et50"="random")))
 #
-# emax.class.2 <- mb.emax(classnetwork,
+# emax.class.2 <- suppressWarnings(mb.emax(classnetwork,
 #                                 emax=list(pool="arm", method="common"),
 #                                 et50=list(pool="arm", method="random"),
 #                                 positive.scale=TRUE,
 #                                 n.chain=3, n.iter=1200, n.burnin=800,
-#                                 class.effect=list("emax"="common", "et50"="random"))
+#                                 class.effect=list("emax"="common", "et50"="random")))
 #
 #
 # treats <- c(1:10)
@@ -129,22 +129,22 @@
 #
 #
 # testthat::test_that("plot(mb.network) functions correctly", {
-#   testthat::expect_silent(plot(network, layout_in_circle = TRUE,
+#   testthat::expect_silent(plot(network, layout=igraph::in_circle(),
 #                  edge.scale=1, label.distance=0))
 #
-#   testthat::expect_silent(plot(network, layout_in_circle = FALSE,
+#   testthat::expect_silent(plot(network, layout=igraph::as_star(),
 #                                edge.scale=1, label.distance=0))
 #
-#   testthat::expect_silent(plot(network, layout_in_circle = FALSE,
+#   testthat::expect_silent(plot(network, layout = igraph::with_fr(),
 #                                edge.scale=10, label.distance=0))
 #
-#   testthat::expect_silent(plot(network, layout_in_circle = FALSE,
+#   testthat::expect_silent(plot(network, layout = igraph::with_fr(),
 #                                edge.scale=0.5, label.distance=10))
 #
-#   testthat::expect_silent(plot(network, layout_in_circle = TRUE,
+#   testthat::expect_silent(plot(network, layout=igraph::in_circle(),
 #                                edge.scale=0.5, label.distance=-10))
 #
-#   testthat::expect_error(plot.mb.network(network[["data"]], layout_in_circle = TRUE,
+#   testthat::expect_error(plot.mb.network(network[["data"]], layout=igraph::in_circle(),
 #                                edge.scale=0.5, label.distance=-10))
 #
 #   # network2 <- network
@@ -154,13 +154,13 @@
 #   #                              edge.scale=1, label.distance=0))
 #
 #   network.gout <- mb.network(goutSUA_CFB)
-#   testthat::expect_warning(plot(network.gout, layout_in_circle = FALSE,
+#   testthat::expect_warning(plot(network.gout, layout=igraph::as_star(),
 #                                edge.scale=1, label.distance=0))
-#   testthat::expect_silent(plot(network.gout, layout_in_circle = TRUE,
+#   testthat::expect_silent(plot(network.gout, layout=igraph::in_circle(),
 #                                level="class", remove.loops=TRUE))
-#   testthat::expect_warning(plot(network.gout, layout_in_circle = TRUE,
+#   testthat::expect_warning(plot(network.gout, layout=igraph::in_circle(),
 #                               level="treatment"))
-#   testthat::expect_error(plot(network.gout, layout_in_circle = TRUE,
+#   testthat::expect_error(plot(network.gout, layout=igraph::in_circle(),
 #                                level="apple"))
 #
 #
@@ -262,10 +262,13 @@
 #   expect_silent(timeplot(network))
 #   expect_output(timeplot(alognet), "Absence of observations")
 #
+#   expect_silent(timeplot(network, plotby="rel"))
+#
 #   expect_error(timeplot(network, level="class"), "cannot be set to class")
 #
 #   expect_silent(timeplot(classnetwork, level="treatment"))
 #   expect_silent(timeplot(classnetwork, level="class"))
+#   expect_silent(timeplot(classnetwork, plotby="rel", level="class"))
 #
 # })
 #

@@ -1,6 +1,6 @@
-testthat::context("Testing predict.functions")
-network <- mb.network(osteopain)
-
+# testthat::context("Testing predict.functions")
+# network <- mb.network(osteopain)
+#
 # emax1 <- mb.emax(network,
 #                     emax=list(pool="arm", method="random"),
 #                     et50=list(pool="rel", method="common"),
@@ -21,7 +21,7 @@ network <- mb.network(osteopain)
 #
 #
 # network.gout <- mb.network(goutSUA_CFBcomb)
-# piece1 <- mb.piecelinear(network.gout,
+# piece1 <- suppressWarnings(mb.piecelinear(network.gout,
 #                     slope.1=list(pool="arm", method="random"),
 #                     slope.2=list(pool="rel", method="common"),
 #                     knot=list(pool="const", method=0.6),
@@ -29,9 +29,9 @@ network <- mb.network(osteopain)
 #                     n.chain=3, n.iter=200, n.burnin=100,
 #                     rho=0.2, covar="CS",
 #                     pd="popt",
-#                     class.effect=list("slope.2"="random"))
+#                     class.effect=list("slope.2"="random")))
 #
-# piece2 <- mb.run(network.gout, fun="piecelinear",
+# piece2 <- suppressWarnings(mb.run(network.gout, fun="piecelinear",
 #                     beta.1=list(pool="arm", method="random"),
 #                     beta.2=list(pool="rel", method="common"),
 #                     beta.3=list(pool="const", method=0.6),
@@ -39,7 +39,7 @@ network <- mb.network(osteopain)
 #                     n.chain=3, n.iter=200, n.burnin=100,
 #                     rho=0.2, covar="CS",
 #                     pd="popt",
-#                     class.effect=list("beta.2"="random"))
+#                     class.effect=list("beta.2"="random")))
 #
 # piece.mods <- list(piece1, piece2)
 #

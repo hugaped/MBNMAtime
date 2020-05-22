@@ -1,77 +1,77 @@
-testthat::context("Testing nodesplit.functions")
-
-#### Pain data ####
-
-network <- mb.network(osteopain)
-
-last.data <- get.latest.time(network)
-
-
-# Create dataset with mixed up treatment codes
-testdata <- osteopain
-
-testdata$treatment <- factor(as.character(testdata$treatment),
-                             levels = unique(as.character(testdata$treatment)))
-
-testnetwork <- mb.network(testdata)
-
-last.test <- get.latest.time(testnetwork)
-
-
-#### Gout data ####
-network.gout <- mb.network(goutSUA_CFB)
-last.gout <- get.latest.time(network.gout)
-
-
-#### Alogliptin data ####
-alognet <- mb.network(alog_pcfb)
-last.alog <- get.latest.time(alognet)
-
-
-
-################ Testing inconsistency.loops ################
-
-
-testthat::test_that("test.inconsistency.loops", {
-  testthat::expect_equal(nrow(inconsistency.loops(last.data)), nrow(inconsistency.loops(last.test)))
-  testthat::expect_equal(nrow(inconsistency.loops(last.data)), 2)
-
-  alogloop <- inconsistency.loops(last.alog)
-  expect_equal(nrow(alogloop), 4)
-  expect_identical(alogloop$path, unique(alogloop$path))
-
-  goutloop <- inconsistency.loops(last.gout)
-  expect_equal(nrow(goutloop), 6)
-  expect_identical(goutloop$path, unique(goutloop$path))
-})
-
-
-
-
-testthat::test_that("mb.nodesplit.comparisons is working", {
-  network <- mb.network(osteopain, reference = "Pl_0")
-  comp <- mb.nodesplit.comparisons(network)
-  testthat::expect_equal(nrow(comp), 2)
-  testthat::expect_equal(names(comp), c("t1", "t2", "path"))
-  checkmate::expect_class(comp$t1, "numeric")
-  checkmate::expect_class(comp$t2, "numeric")
-  checkmate::expect_class(comp$path, "factor")
-  testthat::expect_equal(sort(comp[1,1:2]), comp[1,1:2])
-
-  network <- mb.network(osteopain, reference = "Ce_200")
-  comp <- mb.nodesplit.comparisons(network)
-  testthat::expect_equal(nrow(comp), 6)
-  testthat::expect_equal(names(comp), c("t1", "t2", "path"))
-  checkmate::expect_class(comp$t1, "numeric")
-  checkmate::expect_class(comp$t2, "numeric")
-  checkmate::expect_class(comp$path, "factor")
-  testthat::expect_equal(sort(comp[1,1:2]), comp[1,1:2])
-})
-
-
-
-
-
+# testthat::context("Testing nodesplit.functions")
+#
+# #### Pain data ####
+#
+# network <- mb.network(osteopain)
+#
+# last.data <- get.latest.time(network)
+#
+#
+# # Create dataset with mixed up treatment codes
+# testdata <- osteopain
+#
+# testdata$treatment <- factor(as.character(testdata$treatment),
+#                              levels = unique(as.character(testdata$treatment)))
+#
+# testnetwork <- mb.network(testdata)
+#
+# last.test <- get.latest.time(testnetwork)
+#
+#
+# #### Gout data ####
+# network.gout <- mb.network(goutSUA_CFB)
+# last.gout <- get.latest.time(network.gout)
+#
+#
+# #### Alogliptin data ####
+# alognet <- mb.network(alog_pcfb)
+# last.alog <- get.latest.time(alognet)
+#
+#
+#
+# ################ Testing inconsistency.loops ################
+#
+#
+# testthat::test_that("test.inconsistency.loops", {
+#   testthat::expect_equal(nrow(inconsistency.loops(last.data)), nrow(inconsistency.loops(last.test)))
+#   testthat::expect_equal(nrow(inconsistency.loops(last.data)), 2)
+#
+#   alogloop <- inconsistency.loops(last.alog)
+#   expect_equal(nrow(alogloop), 4)
+#   expect_identical(alogloop$path, unique(alogloop$path))
+#
+#   goutloop <- inconsistency.loops(last.gout)
+#   expect_equal(nrow(goutloop), 6)
+#   expect_identical(goutloop$path, unique(goutloop$path))
+# })
+#
+#
+#
+#
+# testthat::test_that("mb.nodesplit.comparisons is working", {
+#   network <- mb.network(osteopain, reference = "Pl_0")
+#   comp <- mb.nodesplit.comparisons(network)
+#   testthat::expect_equal(nrow(comp), 2)
+#   testthat::expect_equal(names(comp), c("t1", "t2", "path"))
+#   checkmate::expect_class(comp$t1, "numeric")
+#   checkmate::expect_class(comp$t2, "numeric")
+#   checkmate::expect_class(comp$path, "factor")
+#   testthat::expect_equal(sort(comp[1,1:2]), comp[1,1:2])
+#
+#   network <- mb.network(osteopain, reference = "Ce_200")
+#   comp <- mb.nodesplit.comparisons(network)
+#   testthat::expect_equal(nrow(comp), 6)
+#   testthat::expect_equal(names(comp), c("t1", "t2", "path"))
+#   checkmate::expect_class(comp$t1, "numeric")
+#   checkmate::expect_class(comp$t2, "numeric")
+#   checkmate::expect_class(comp$path, "factor")
+#   testthat::expect_equal(sort(comp[1,1:2]), comp[1,1:2])
+# })
+#
+#
+#
+#
+#
 # testthat::test_that("mb.nodesplit is working", {
 #
 #   # Emax time-course

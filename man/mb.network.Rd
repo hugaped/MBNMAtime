@@ -5,17 +5,14 @@
 \alias{mb.network}
 \title{Create an mb.network object}
 \usage{
-\method{plot}{mb.network}(x, layout_in_circle = TRUE, edge.scale = 1,
-  label.distance = 0, level = "treatment", remove.loops = FALSE,
-  v.color = "connect", v.scale = NULL, ...)
+\method{plot}{mb.network}(x, edge.scale = 1, label.distance = 0,
+  level = "treatment", remove.loops = FALSE, v.color = "connect",
+  v.scale = NULL, layout = igraph::in_circle(), ...)
 
 mb.network(data.ab, reference = 1, description = "Network")
 }
 \arguments{
 \item{x}{An object of class \code{mb.network}.}
-
-\item{layout_in_circle}{A boolean value indicating whether the network plot
-should be shown in a circle or left as the igraph default layout.}
 
 \item{edge.scale}{A number to scale the thickness of connecting lines
 (edges). Line thickness is proportional to the number of studies for a
@@ -42,6 +39,12 @@ variable \code{class} be included in the dataset).}
 (to indicate the numbers of participants at each observation) is included in the
 dataset then the size of the nodes will be proportional to the number of participants
 within a treatment/class in the network \emph{at the earliest time point reported in each study}.}
+
+\item{layout}{An igraph layout specification. This is a function specifying an igraph
+layout that determines the arrangement of the vertices (nodes). The default
+\code{igraph::as_circle()} arranged vertices in a circle. Two other useful layouts for
+network plots are: \code{igraph::as_star()}, \code{igraph::with_fr()}. Others can be found
+in \code{\link[igraph]{layout_}}}
 
 \item{...}{Options for plotting in \code{igraph}.}
 
@@ -100,8 +103,8 @@ Data must be present for all arms within a study at each follow-up time.
 # Create an mb.network object from the data
 network <- mb.network(osteopain)
 
-# Generate a network plot from the data
-plot(network, layout_in_circle=TRUE)
+# Arrange network plot in a star with the reference treatment in the centre
+plot(network, layout=igraph::as_star())
 
 # Generate a network plot at the class level that removes loops indicating comparisons
 #within a node

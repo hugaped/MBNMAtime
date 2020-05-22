@@ -131,7 +131,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
   # if (any(object[["model.arg"]][["class.effect"]]=="random")) {
   #   stop("Random class effects have not yet been fully implemented in predict(`object`)")
   # }
-  if (length(object[["model.arg"]][["class.effect"]]>0)) {
+  if (length(object[["model.arg"]][["class.effect"]])>0) {
     stop("Class effects have not yet been fully implemented in predict(`object`)")
   }
 
@@ -176,16 +176,16 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
   # If treats have not been specified then select all of them
   if (is.null(treats)) {
     #treats <- c(1:object[["model"]][["data"]]()[["NT"]])
-    treats <- object$treatments
+    treats <- object$network$treatments
   } else if (!is.null(treats)) {
     if (is.numeric(treats)) {
       if (any(treats > object[["model"]][["data"]]()[["NT"]] | any(treats<1))) {
         stop("If given as numeric treatment codes, `treats` must be numbered similarly to treatment codes in `object`")
       }
-      treats <- object$treatments[treats]
+      treats <- object$network$treatments[treats]
     }
     if (is.character(treats)) {
-      if (!all(treats %in% object$treatments)) {
+      if (!all(treats %in% object$network$treatments)) {
         stop("`treats` includes treatments not included in `object`")
       }
     }
@@ -296,7 +296,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
   d.params <- time.params[grepl("^d\\.", time.params)]
 
   predicts <- list()
-  treatsnum <- which(object$treatments %in% treats)
+  treatsnum <- which(object$network$treatments %in% treats)
   for (treat in seq_along(treatsnum)) {
 
     # Assign treatment beta results to beta values in model
@@ -349,8 +349,8 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
     sumpred[[as.character(treats[i])]] <- summary
   }
 
-  #predict.result <- list("summary"=sumpred, "pred.mat"=predicts, "treatments"=object$treatments, "mbnma"=object)
-  predict.result <- list("summary"=sumpred, "pred.mat"=predicts, "mbnma"=object)
+  #predict.result <- list("summary"=sumpred, "pred.mat"=predicts, "treatments"=object$network$treatments, "mbnma"=object)
+  predict.result <- list("summary"=sumpred, "pred.mat"=predicts, "network"=object$network)
   class(predict.result) <- "mb.predict"
 
   return(predict.result)

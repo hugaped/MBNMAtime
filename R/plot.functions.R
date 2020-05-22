@@ -7,8 +7,11 @@
 #' @describeIn mb.network Generate a network plot
 #'
 #' @param x An object of class `mb.network`.
-#' @param layout_in_circle A boolean value indicating whether the network plot
-#'   should be shown in a circle or left as the igraph default layout.
+#' @param layout An igraph layout specification. This is a function specifying an igraph
+#'   layout that determines the arrangement of the vertices (nodes). The default
+#'   `igraph::as_circle()` arranged vertices in a circle. Two other useful layouts for
+#'   network plots are: `igraph::as_star()`, `igraph::with_fr()`. Others can be found
+#'   in \code{\link[igraph]{layout_}}
 #' @param edge.scale A number to scale the thickness of connecting lines
 #'   (edges). Line thickness is proportional to the number of studies for a
 #'   given comparison. Set to `0` to make thickness equal for all comparisons.
@@ -41,8 +44,8 @@
 #' # Create an mb.network object from the data
 #' network <- mb.network(osteopain)
 #'
-#' # Generate a network plot from the data
-#' plot(network, layout_in_circle=TRUE)
+#' # Arrange network plot in a star with the reference treatment in the centre
+#' plot(network, layout=igraph::as_star())
 #'
 #' # Generate a network plot at the class level that removes loops indicating comparisons
 #' #within a node
@@ -57,15 +60,15 @@
 #' plot(alognet, v.scale=2)
 #'
 #' @export
-plot.mb.network <- function(x, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
+plot.mb.network <- function(x, edge.scale=1, label.distance=0,
                            level="treatment", remove.loops=FALSE, v.color="connect",
-                           v.scale=NULL,
+                           v.scale=NULL, layout=igraph::in_circle(),
                            ...)
 {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mb.network", add=argcheck)
-  checkmate::assertLogical(layout_in_circle, len=1, add=argcheck)
+  checkmate::assertClass(layout, "igraph_layout_spec", add=argcheck)
   checkmate::assertNumeric(edge.scale, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(label.distance, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(v.scale, lower = 0, finite=TRUE, null.ok=TRUE, len=1, add=argcheck)
@@ -127,10 +130,6 @@ plot.mb.network <- function(x, layout_in_circle = TRUE, edge.scale=1, label.dist
   g <- g + edges
   #g <- igraph::add.edges(g, edges[[1]], weight = (comparisons[["nr"]]*10), arrow.mode=0)
 
-  if (remove.loops==TRUE) {
-    g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
-  }
-
   # Check network is connected and produce warning message if not
   disconnects <- check.network(g)
   if (v.color=="connect") {
@@ -151,21 +150,42 @@ plot.mb.network <- function(x, layout_in_circle = TRUE, edge.scale=1, label.dist
     }
   }
 
-  # Plot netgraph
-  if (layout_in_circle==TRUE) {
-    lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
-    igraph::plot.igraph(g,
-         edge.width = edge.scale * comparisons[["nr"]],
-         layout = igraph::layout_in_circle(g),
-         vertex.label.dist=label.distance,
-         vertex.label.degree=lab.locs,
-         vertex.size = node.size,
-         ...
-    )
-  } else {
-    igraph::plot.igraph(g, edge.width = edge.scale * comparisons[["nr"]], vertex.size = node.size,
-         ...)
+  # Add attributes
+  igraph::V(g)$label.dist <- label.distance
+  if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
+  igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
+
+  if (remove.loops==TRUE) {
+    g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
   }
+
+  # Change label locations if layout_in_circle
+  laycheck <- as.character(layout)[2]
+  if (any(
+    grepl("layout_in_circle", laycheck) |
+    grepl("layout_as_star", laycheck))) {
+    lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
+    igraph::V(g)$label.degree <- lab.locs
+  }
+
+  # Plot netgraph
+  layout <- igraph::layout_(g, layout)
+  igraph::plot.igraph(g,
+                      layout = layout,
+                      ...
+  )
+
+  # # Plot netgraph
+  # if (layout_in_circle==TRUE) {
+  #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
+  #   igraph::V(g)$label.degree <- lab.locs
+  #   igraph::plot.igraph(g,
+  #        layout = igraph::layout_in_circle(g),
+  #        ...
+  #   )
+  # } else {
+  #   igraph::plot.igraph(g, ...)
+  # }
 
   return(invisible(g))
 }
@@ -311,7 +331,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   # Required for overlaying ref treatment effect
   if (overlay.ref==TRUE) {
-    ref.treat <- x$mbnma$treatments[1]
+    ref.treat <- x$network$treatments[1]
 
     if (!(ref.treat %in% names(pred))) {
       stop(paste0("Reference treatment (", ref.treat, ") must be included in `x` in order for it to be plotted"))
@@ -356,6 +376,8 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
   g <- g + ggplot2::scale_color_manual(name="",
                               values=c("Reference Mean"="red"))
 
+  g <- g + ggplot2::theme_bw()
+
   return(g)
 }
 
@@ -378,12 +400,15 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
   checkmate::reportAssertions(argcheck)
 
   #treats <- as.numeric(names(predict[["summary"]]))
-  #treats <- which(predict$mbnma$treatments %in% names(predict$summary))
+  #treats <- which(predict$mbnma$network$treatments %in% names(predict$summary))
   treats <- names(predict[["summary"]])
-  data.ab <- jagstonetwork(predict$mbnma)
+  #data.ab <- jagstonetwork(predict$mbnma)
+  data.ab <- predict$network$data.ab
 
   #raw.data <- network[["data.ab"]]
   raw.data <- dplyr::arrange(data.ab, studyID, fupcount, arm)
+  raw.data$studyID <- as.character(raw.data$studyID)
+
   predict.data <- predict[["summary"]][[1]]
   predict.data[["treat"]] <- NA
   predict.data[["count"]] <- NA
@@ -392,7 +417,7 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
     temp <- predict[["summary"]][[i]]
     # temp[["treat"]] <- rep(as.numeric(names(predict[["summary"]][i])),
     #                        nrow(temp))
-    # temp[["treat"]] <- rep(which(predict$mbnma$treatments %in% names(predict$summary)[i]),
+    # temp[["treat"]] <- rep(which(predict$mbnma$network$treatments %in% names(predict$summary)[i]),
     #                        nrow(temp))
     temp[["treat"]] <- rep(names(predict$summary)[i],
                            nrow(temp))
@@ -400,14 +425,14 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
 
     dplyr::arrange(temp, time)
     if (temp[["time"]][1]>0) {
-      temp[["count"]][1] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$treatments %in% temp[["treat"]][1]) &
+      temp[["count"]][1] <- nrow(raw.data[raw.data$treatment==which(predict$network$treatments %in% temp[["treat"]][1]) &
                                             raw.data[["time"]]<=temp[["time"]][1] &
                                             raw.data[["time"]]>0
                                           ,])
     } else {temp[["count"]][1] <- 0  }
 
     for (k in 2:nrow(temp)) {
-      temp[["count"]][k] <- nrow(raw.data[raw.data$treatment==which(predict$mbnma$treatments %in% temp[["treat"]][k]) &
+      temp[["count"]][k] <- nrow(raw.data[raw.data$treatment==which(predict$network$treatments %in% temp[["treat"]][k]) &
                                             raw.data[["time"]]<=temp[["time"]][k] &
                                             raw.data[["time"]]>temp[["time"]][k-1]
                                           ,])
@@ -650,7 +675,8 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
-      ggplot2::ggtitle(params[param])
+      ggplot2::ggtitle(params[param]) +
+      ggplot2::theme_bw()
 
     graphics::plot(g)
 
@@ -773,7 +799,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
       t.labs <- treat.labs[sort(unique(treatcodes))]
     }
   } else if ("treatments" %in% names(x)) {
-    t.labs <- x[["treatments"]]
+    t.labs <- x$network[["treatments"]]
   } else {
     t.labs <- sort(unique(treatdat$param))
   }
@@ -816,7 +842,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 
   # Axis labels
   g <- g + ggplot2::xlab("Treatment / Class") +
-    ggplot2::ylab("Effect size")
+    ggplot2::ylab("Effect size") +
+    ggplot2::theme_bw()
 
   graphics::plot(g, ...)
   return(invisible(g))
@@ -870,6 +897,10 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #' Plot raw responses over time by treatment or class
 #'
 #' @param network An object of class `mb.network`.
+#' @param plotby A character object that can take either `"arm"` to indicate that raw responses
+#' should be plotted separately for each study arm, or `"rel"` to indicate that the relative
+#' effects within each study should be plotted. In this way the time-course of both the absolute
+#' effects and the relative effects can be examined.
 #' @param ... Arguments to be sent to `ggplot`
 #' @inheritParams plot.mb.network
 #'
@@ -895,11 +926,12 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #' timeplot(network, level="class")
 #'
 #' @export
-timeplot <- function(network, level="treatment", ...) {
+timeplot <- function(network, level="treatment", plotby="arm", ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "mb.network", add=argcheck)
   checkmate::assertChoice(level, choices = c("treatment", "class"), add=argcheck)
+  checkmate::assertChoice(plotby, choices = c("arm", "rel"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (level=="class" & !("classes" %in% names(network))) {
@@ -908,38 +940,73 @@ timeplot <- function(network, level="treatment", ...) {
 
   plotdata <- network$data.ab
 
-  # Identify if data is CFB or not
-  base.dat <- plotdata[plotdata$fupcount==1,]
-  if (any(base.dat$time!=0)) {
-    base.dat$y <- rep(0, nrow(base.dat))
-    base.dat$se <- rep(0, nrow(base.dat))
-    base.dat$time <- rep(0, nrow(base.dat))
+  if (plotby=="arm") {
+    # Identify if data is CFB or not
+    base.dat <- plotdata[plotdata$fupcount==1,]
+    if (any(base.dat$time!=0)) {
+      base.dat$y <- rep(0, nrow(base.dat))
+      base.dat$se <- rep(0, nrow(base.dat))
+      base.dat$time <- rep(0, nrow(base.dat))
 
-    plotdata <- rbind(base.dat, plotdata)
-    plotdata <- dplyr::arrange(plotdata, studyID, time, treatment)
+      plotdata <- rbind(base.dat, plotdata)
+      plotdata <- dplyr::arrange(plotdata, studyID, time, treatment)
 
-    # Do not run this function with pylr loaded!!
-    plotdata <- plotdata %>%
-      dplyr::group_by(studyID, time) %>%
-      dplyr::mutate(arm = sequence(dplyr::n()))
+      # Do not run this function with pylr loaded!!
+      plotdata <- plotdata %>%
+        dplyr::group_by(studyID, time) %>%
+        dplyr::mutate(arm = sequence(dplyr::n()))
 
-    message(cat("Absence of observations with time=0 in network - data assumed to be change from baseline:",
+      message(cat("Absence of observations with time=0 in network - data assumed to be change from baseline:",
                   "plotting response=0 at time=0", sep="\n"))
+    }
+
+    g <- ggplot2::ggplot(plotdata,
+                         ggplot2::aes(x=plotdata$time, y=plotdata$y,
+                                      group=(paste(plotdata$studyID, plotdata$arm, sep="_")))) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point(size=1)
+
+    if (level=="treatment") {
+      g <- g + ggplot2::facet_wrap(~factor(.data$treatment, labels=network$treatments))
+      #g <- g + ggplot2::facet_wrap(ggplot2::vars(treatment))
+    } else if (level=="class") {
+      g <- g + ggplot2::facet_wrap(~factor(.data$class, labels=network$classes))
+    }
+
+  } else if (plotby=="rel") {
+
+    if (level=="treatment") {
+
+      diffs <- plotdata %>%
+        dplyr::mutate(Rx.Name = factor(network$treatments[.data$treatment], levels=network$treatments))
+
+    } else if (level=="class") {
+
+      diffs <- plotdata %>%
+        dplyr::mutate(Rx.Name = factor(network$classes[.data$class], levels=network$classes))
+    }
+
+    diffs <- diffs %>%
+      dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+      dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
+      dplyr::mutate(pairDiff = .data$y.x - .data$y.y)
+
+    diffs <- diffs %>%
+      dplyr::bind_rows(diffs %>%
+                         dplyr::group_by(.data$studyID, .data$arm.x, .data$arm.y) %>%
+                         dplyr::slice(1) %>%
+                         dplyr::mutate(time=0, pairDiff=0))
+
+    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID)) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point() +
+      ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
+
   }
 
-  g <- ggplot2::ggplot(plotdata,
-                       ggplot2::aes(x=plotdata$time, y=plotdata$y,
-                                    group=(paste(plotdata$studyID, plotdata$arm, sep="_")))) +
-    ggplot2::geom_line() +
-    ggplot2::geom_point(size=1)
 
-  if (level=="treatment") {
-    g <- g + ggplot2::facet_wrap(~factor(treatment, labels=network$treatments))
-  } else if (level=="class") {
-    g <- g + ggplot2::facet_wrap(~factor(class, labels=network$classes))
-  }
-
-  g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response")
+  g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response") +
+    ggplot2::theme_bw()
 
   graphics::plot(g, ...)
   return(invisible(g))
@@ -1054,12 +1121,13 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Add facets
   if (facet==TRUE) {
-    g <- g + ggplot2::facet_wrap(~factor(facet, labels=mbnma$treatments), scales="free_x")
+    g <- g + ggplot2::facet_wrap(~factor(facet, labels=mbnma$network$treatments), scales="free_x")
   }
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab("Posterior mean")
+    ggplot2::ylab("Posterior mean") +
+    ggplot2::theme_bw()
 
   graphics::plot(g)
   return(invisible(list("graph"=g, "dev.data"=dev.df)))
@@ -1164,12 +1232,13 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
     }
     g <- g + ggplot2::facet_wrap(~factor(treat, labels=treat.labs))
   } else {
-    g <- g + ggplot2::facet_wrap(~factor(treat, labels=mbnma$treatments))
+    g <- g + ggplot2::facet_wrap(~factor(treat, labels=mbnma$network$treatments))
   }
 
   # Add axis labels
   g <- g + ggplot2::xlab("Time") +
-    ggplot2::ylab("Response")
+    ggplot2::ylab("Response") +
+    ggplot2::theme_bw()
 
   graphics::plot(g)
 
@@ -1349,7 +1418,8 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
                        title=ggplot2::element_text(size=18)) +
         ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
         ggplot2::facet_wrap(~factor(plotdata$comp)) +
-        ggplot2::ggtitle(paste0("Forest plot of node-split for ", params[k]))
+        ggplot2::ggtitle(paste0("Forest plot of node-split for ", params[k])) +
+        ggplot2::theme_bw()
 
       graphics::plot(forest, ...)
       plotlist[[length(plotlist)+1]] <- forest
@@ -1368,7 +1438,8 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
         ggplot2::facet_wrap(~factor(plotdata$comp)) +
         ggplot2::ggtitle(paste0("Posterior densities of node-split for ", params[k])) +
         ggplot2::guides(fill=ggplot2::guide_legend((title="Evidence Source")),
-                        linetype=ggplot2::guide_legend((title="Evidence Source")))
+                        linetype=ggplot2::guide_legend((title="Evidence Source"))) +
+        ggplot2::theme_bw()
 
       graphics::plot(density, ...)
       plotlist[[length(plotlist)+1]] <- density

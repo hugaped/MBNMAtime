@@ -1,11 +1,11 @@
 testthat::context("Testing write.functions")
 network <- mb.network(osteopain)
 
-# emax1 <- mb.emax(network,
-#                     emax=list(pool="rel", method="random"),
-#                     et50=list(pool="rel", method="common"),
-#                     positive.scale=TRUE,
-#                     n.chain=3, n.iter=200, n.burnin=100)
+emax1 <- mb.emax(network,
+                    emax=list(pool="rel", method="random"),
+                    et50=list(pool="rel", method="common"),
+                    positive.scale=TRUE,
+                    n.chain=3, n.iter=200, n.burnin=100)
 
 
 ################### Testing time.fun ################
@@ -15,15 +15,15 @@ testthat::test_that("time.fun functions correctly", {
   testthat::expect_equal(grepl("alpha\\[i\\]", timecourse$jagscode), TRUE)
   testthat::expect_equal(grepl("exp", timecourse$relationship), TRUE)
 
-  timecourse <- time.fun(fun="user", user.fun="alpha+(1/beta.1*time) + (beta.2^beta.3)", beta.2="rel.common", beta.3=2, alpha="study")
+  timecourse <- time.fun(fun="user", user.fun=~alpha+(1/beta.1*time) + (beta.2^beta.3), beta.2="rel.common", beta.3=2, alpha="study")
   testthat::expect_equal(grepl("alpha\\[i\\]", timecourse$jagscode), TRUE)
   testthat::expect_equal(grepl("time\\[i,m\\]", timecourse$jagscode), TRUE)
   testthat::expect_equal(grepl("beta.3\\[", timecourse$jagscode), FALSE)
 
   # Log linear user.fun
-  timecourse <- time.fun(fun="user", user.fun="exp(alpha+(beta.1*time))", beta.1="rel.common", alpha="study")
+  timecourse <- time.fun(fun="user", user.fun=~exp(alpha+(beta.1*time)), beta.1="rel.common", alpha="study")
   testthat::expect_equal(timecourse$time.function, "user")
-  testthat::expect_equal(timecourse$jagscode, "exp(alpha[i]+(beta.1[i,k]*time[i,m]))")
+  testthat::expect_equal(gsub(" ", "", timecourse$jagscode, fixed = TRUE), "exp(alpha[i]+(beta.1[i,k]*time[i,m]))")
   #testthat::expect_equal(timecourse$jagscode, "exp(alpha[i]+(beta.1*time[i,m]))")
 
   timecourse <- time.fun(fun="emax", alpha="arm", beta.1="const.random", beta.2="rel.random")
@@ -34,7 +34,7 @@ testthat::test_that("time.fun functions correctly", {
   timecourse <- time.fun(fun="piecelinear", alpha="study", beta.1="rel.common", beta.2="rel.random", beta.3="const.random")
   testthat::expect_equal(grepl("time\\[i\\,m\\] < beta\\.3", timecourse$jagscode), TRUE)
 
-  testthat::expect_message(time.fun(fun="emax.hill", user.fun="alpha+(1/beta.1*time) + (beta.2^beta.3)",
+  testthat::expect_message(time.fun(fun="emax.hill", user.fun=~alpha+(1/beta.1*time) + (beta.2^beta.3),
                           beta.1="rel.common", beta.2="rel.random", beta.3="const.common", alpha="study"))
 
   timecourse.fe <- time.fun(fun="fract.poly.first", beta.1="rel.common")
@@ -307,13 +307,13 @@ testthat::test_that("test.mb.write", {
   for (i in seq_along(funlist)) {
     print(funlist[i])
 
-    user.fun <- "exp(alpha + beta.1*time)"
+    user.fun <- ~exp(alpha + beta.1*time)
     jags <- mb.write(fun=funlist[i], user.fun=user.fun, alpha="study", beta.1="rel.random")
     testthat::expect_equal(grepl("d\\.1", jags), TRUE)
     testthat::expect_equal(grepl("sd\\.1 ~ dnorm", jags), TRUE)
     testthat::expect_equal(grepl("alpha\\[i\\]", jags), TRUE)
 
-    user.fun <- "alpha + ((beta.1^beta.2) * time) + (beta.3 * time)"
+    user.fun <- ~alpha + ((beta.1^beta.2) * time) + (beta.3 * time)
     jags <- mb.write(fun=funlist[i], user.fun=user.fun,
                         alpha="arm", beta.1="rel.common", beta.2="const.random",
                         beta.3="rel.random",
@@ -392,34 +392,34 @@ testthat::test_that("test.mb.write", {
 
 ############### Testing prior writing functions ###############
 
-# testthat::test_that("get.prior", {
-#   testthat::expect_equal(sort(names(get.prior(emax1$model.arg$jagscode))), sort(c("mu.2", "mu.1", "alpha", "sd.emax", "inv.R")))
-#   testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)), "list")
-#   testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)[[1]]), "character")
-#
-#   priors <- get.prior(emax1$model.arg$jagscode)
-#   for (i in seq_along(priors)) {
-#     expect_equal(grepl("d[a-z]+\\(.+\\)", priors[i]), TRUE)
-#   }
-#
-#   testthat::expect_error(get.prior(5))
-# })
-#
-#
-#
-# testthat::test_that("replace.prior", {
-#   priors <- list("alpha"="dnorm(-1, 0.01)",
-#                  "sd.emax"="dnorm(0,0.5) T(0,)",
-#                  "mu.1"="dnorm(10,0.1)")
-#
-#   testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, mbnma=emax1)), TRUE)
-#   testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, mbnma=emax1)), TRUE)
-#
-#   testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
-#   testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
-#
-#   priors <- list("banana"="dnorm(-1,0.01)")
-#
-#   testthat::expect_error(replace.prior(priors, mbnma=emax1))
-#
-# })
+testthat::test_that("get.prior", {
+  testthat::expect_equal(sort(names(get.prior(emax1$model.arg$jagscode))), sort(c("mu.2", "mu.1", "alpha", "sd.emax", "inv.R")))
+  testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)), "list")
+  testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)[[1]]), "character")
+
+  priors <- get.prior(emax1$model.arg$jagscode)
+  for (i in seq_along(priors)) {
+    expect_equal(grepl("d[a-z]+\\(.+\\)", priors[i]), TRUE)
+  }
+
+  testthat::expect_error(get.prior(5))
+})
+
+
+
+testthat::test_that("replace.prior", {
+  priors <- list("alpha"="dnorm(-1, 0.01)",
+                 "sd.emax"="dnorm(0,0.5) T(0,)",
+                 "mu.1"="dnorm(10,0.1)")
+
+  testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, mbnma=emax1)), TRUE)
+  testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, mbnma=emax1)), TRUE)
+
+  testthat::expect_equal(grepl("T\\(0,\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
+  testthat::expect_equal(grepl("mu\\.1\\[i\\] ~ dnorm\\(10,0\\.1\\)", replace.prior(priors, model=emax1$model.arg$jagscode)), TRUE)
+
+  priors <- list("banana"="dnorm(-1,0.01)")
+
+  testthat::expect_error(replace.prior(priors, mbnma=emax1))
+
+})

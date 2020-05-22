@@ -15,8 +15,8 @@ write.ref.synth(fun = "linear", user.fun = NULL, alpha = "arm",
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including \code{time} and
-one/several of: \code{alpha}, \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+\item{user.fun}{A formula specifying any relationship including \code{time} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{alpha}{Refers to the baseline mean response and is a character object
 that can take either:

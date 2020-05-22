@@ -96,7 +96,7 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
   checkmate::reportAssertions(argcheck)
 
   # Check level
-  if (level=="class" & !("classes" %in% names(x))) {
+  if (level=="class" & !("classes" %in% names(x$network))) {
     stop("`level` has been specified as `class` yet `x` is not a class effect model")
   }
   level <- ifelse(level=="treatment", "treatments", "classes")
@@ -112,17 +112,17 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
 
   # If treats have not been specified then select all of them
   if (is.null(treats)) {
-    treats <- x[[level]]
+    treats <- x$network[[level]]
   } else if (!is.null(treats)) {
     if (is.character(treats)) {
-      if (!all(treats %in% x[[level]])) {
+      if (!all(treats %in% x$network[[level]])) {
         stop("`treats` includes treatments/classes not included in `x`")
       }
     } else if (is.numeric(treats)) {
       if (any(treats > x[["model"]][["data"]]()[["NT"]] | any(treats<1))) {
         stop("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `x`")
       }
-      treats <- x[[level]][treats]
+      treats <- x$network[[level]][treats]
     }
   }
 
@@ -130,7 +130,7 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
   if ("auc" %in% params) {
 
     if (is.null(int.range)) {
-      treatsnum <- which(x$treatments %in% treats)
+      treatsnum <- which(x$network$treatments %in% treats)
       fupdata <- x$model$data()
 
       int.max <- max(fupdata$time[which(apply(fupdata$treat, MARGIN=1, FUN=function(x) any(x %in% treatsnum))),],
@@ -157,7 +157,7 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
         stop(msg)
       }
 
-      param.mod <- param.mod[,which(x[[level]] %in% treats)]
+      param.mod <- param.mod[,which(x$network[[level]] %in% treats)]
 
       rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
         order(order(x, decreasing = decreasing), decreasing=FALSE)
@@ -244,7 +244,7 @@ rankauc <- function(mbnma, decreasing=FALSE, treats=NULL,
     auc <- vector()
     rank <- matrix(nrow=length(treats), ncol=length(treats))
 
-    treatsnum <- which(mbnma$treatments %in% treats)
+    treatsnum <- which(mbnma$network$treatments %in% treats)
     for (treat in seq_along(treatsnum)) {
       time.mcmc <- timecourse
 

@@ -1,11 +1,11 @@
-testthat::context("Testing run.functions")
-data <- mb.network(osteopain)
-
-classnetwork <- mb.network(goutSUA_CFBcomb)
-
-
-################ Testing mb.run wrapped functions ################
-
+# testthat::context("Testing run.functions")
+# data <- mb.network(osteopain)
+#
+# classnetwork <- mb.network(goutSUA_CFBcomb)
+#
+#
+# ################ Testing mb.run wrapped functions ################
+#
 # testthat::test_that("mb.exponential function works correctly", {
 #   mb.result <- mb.exponential(data, lambda=list(pool="rel", method="common"),
 #                                     positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200)
@@ -195,7 +195,7 @@ classnetwork <- mb.network(goutSUA_CFBcomb)
 #     testthat::expect_equal(test, TRUE)
 #
 #     # Class effects
-#     user.fun <- "exp(alpha + beta.1*time + beta.2 + time)"
+#     user.fun <- ~exp(alpha + beta.1*time + beta.2 + time)
 #     result <- mb.run(classnetwork, fun="user", user.fun=user.fun,
 #                         beta.1=list(pool="rel", method="random"),
 #                         beta.2=list(pool="rel", method="common"),
@@ -204,7 +204,7 @@ classnetwork <- mb.network(goutSUA_CFBcomb)
 #     testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
 #     testthat::expect_equal(all(c("D.1") %in% result$parameters.to.save), FALSE)
 #
-#     user.fun <- "exp(alpha + beta.1*time + beta.2 + time)"
+#     user.fun <- ~exp(alpha + beta.1*time + beta.2 + time)
 #     result <- mb.run(classnetwork, fun="user", user.fun=user.fun,
 #                         beta.1=list(pool="arm", method="random"),
 #                         beta.2=list(pool="arm", method="common"),
@@ -219,7 +219,7 @@ classnetwork <- mb.network(goutSUA_CFBcomb)
 #                            n.chain=3, n.iter=500, n.burnin=200))
 #
 #     # UME
-#     user.fun <- "exp(alpha + beta.1*time)"
+#     user.fun <- ~exp(alpha + beta.1*time)
 #     result <- mb.run(data, fun="user", user.fun=user.fun,
 #                         beta.1=list(pool="rel", method="random"),
 #                         UME=TRUE,

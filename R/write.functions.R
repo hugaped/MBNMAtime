@@ -34,7 +34,7 @@
 #' cat(model)
 #'
 #' # Define a user-defined time-course relationship for the MBNMA JAGS model
-#' time.fun <- "alpha + (exp(beta.1 * time) / (beta.2 * time))"
+#' time.fun <- ~ alpha + (exp(beta.1 * time) / (beta.2 * time))
 #' model <- mb.write(fun="user", user.fun=time.fun,
 #'   beta.1="rel.random", beta.2="rel.common")
 #' cat(model)
@@ -51,7 +51,7 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
                               "quadratic", "fract.poly.first", "fract.poly.second",
                               "piecelinear", "user"),
                null.ok=FALSE, add=argcheck)
-  checkmate::assertCharacter(user.fun, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
@@ -173,13 +173,14 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(fun, choices=funlist, null.ok=FALSE, add=argcheck)
-  checkmate::assertCharacter(user.fun, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (fun=="linear") {
     timecourse <- "alpha + (beta.1 * time)"
   } else if (fun=="exponential") {
-    timecourse <- "alpha + exp(beta.1 * time)"
+    #timecourse <- "alpha + exp(beta.1 * time)"
+    timecourse <- "alpha + (beta.1 * (1 - exp(- time)))"
   } else if (fun=="emax") {
     timecourse <- "alpha + ((beta.1 * time) / (exp(beta.2) + time))"
     message("ET50 parameters (beta.2) are on exponential scale to ensure they take positive values on the natural scale")
@@ -201,7 +202,8 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   }
 
   if (fun=="user") {
-    timecourse <- user.fun
+    user.str <- as.character(user.fun[2])
+    timecourse <- user.str
   }
 
 
@@ -356,17 +358,18 @@ write.check <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.co
 
   if (fun=="user") {
     if (is.null(user.fun)) {
-      stop("user.fun must contain a string that includes a combination of alpha and beta parameters with time")
+      stop("user.fun must contain a function that includes a combination of alpha and beta parameters with time")
     }
 
-    if (grepl("beta.2", user.fun)==TRUE & grepl("beta.1", user.fun==FALSE)) {
+    user.str <- as.character(user.fun[2])
+    if (grepl("beta.2", user.str)==TRUE & grepl("beta.1", user.str)==FALSE) {
       stop("user.fun cannot contain beta.2 if beta.1 is not present")
-    } else if (grepl("beta.3", user.fun)==TRUE & (grepl("beta.2", user.fun==FALSE) | grepl("beta.1", user.fun==FALSE))) {
+    } else if (grepl("beta.3", user.str)==TRUE & grepl("beta.2", user.str)==FALSE | grepl("beta.1", user.str)==FALSE) {
       stop("user.fun cannot contain beta.3 if beta.2 and beta.1 are not present")
     }
 
     for (i in 1:4) {
-      if (grepl(paste0("beta.",i), user.fun)==TRUE) {
+      if (grepl(paste0("beta.",i), user.str)==TRUE) {
         if(is.null(get(paste0("beta.",i)))) {
           msg <- paste0("beta.",i, " has been specified in `user.fun` time-course function yet no arguments have been given for it")
           stop(msg)
@@ -1317,7 +1320,7 @@ write.beta.ref <- function(model, timecourse,
 write.cor <- function(model, var.scale=NULL, class.effect=list()) {
 
   if (length(class.effect)>0) {
-    warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
+    message("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
   } else {
 
     sufparams <- vector()

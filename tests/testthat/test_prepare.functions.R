@@ -118,19 +118,3 @@ test_that("mb.network functions correctly", {
 
 
 
-
-test_that("jagstonetwork functions correctly", {
-  network <- mb.network(osteopain)
-  emax <- mb.emax(network, n.iter=500)
-
-  df  <- jagstonetwork(emax)
-  expect_identical(sort(names(df)), sort(c("studyID", "treatment", "time", "y", "se", "arm", "fupcount", "fups", "narm")))
-  expect_equal(nrow(df)>0, TRUE)
-
-  network <- mb.network(goutSUA_CFBcomb)
-  emax <- mb.emax(network, class.effect = list(emax="random"), n.iter=500)
-  df  <- jagstonetwork(emax)
-  expect_equal("class" %in% names(df), TRUE)
-  expect_equal(nrow(df)>0, TRUE)
-  expect_equal(any(is.na(df$class)), FALSE)
-})

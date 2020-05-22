@@ -86,7 +86,7 @@ inconsistency.loops <- function(data)
     }
   }
 
-  splits <- data.frame("t1"=splits1, "t2"=splits2, "path"=paths, "loops"=loops)
+  splits <- data.frame("t1"=splits1, "t2"=splits2, "path"=paths, "loops"=loops, stringsAsFactors = TRUE)
 
   # Ensures only one comparison given per inconsistent loop
   splits <- splits[seq(dim(splits)[1],1),]
@@ -537,8 +537,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
       # Run UME model to estimate direct effects
       result.dir <- mb.run(network.temp, fun=fun, parameters.to.save=parameters.to.save,
                               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                              UME=UME,
-                              ...
+                              UME=UME#,
+                              #...
       )
     }
 
@@ -569,7 +569,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     data <- network[["data.ab"]]
 
     # Remove comparisons to split on
-    data <- drop.comp(data=data, comp=comp)
+    data <- drop.comp(df=data, comp=comp)
 
     if (!(1 %in% data$treatment)) {
       string <- paste("Reference treatment removed for node-split. Treatments have been reordered with the next lowest coded treatment as the reference:\ntreatment ",
@@ -580,8 +580,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     data <- mb.network(data)
 
     result.ind <- mb.run(data, parameters.to.save=parameters.to.save, fun=fun,
-                            beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                            ...
+                            beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4#,
+                            #...
     )
 
     ind.dif <- list()
@@ -648,7 +648,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
         ggplot2::theme(axis.text = ggplot2::element_text(size=15),
                        axis.title = ggplot2::element_text(size=18),
                        title=ggplot2::element_text(size=18)) +
-        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm"))
+        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+        ggplot2::theme_bw()
 
 
       # Density plots (with shaded area of overlap)
@@ -667,7 +668,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
         #scale_fill_manual(name="Evidence") +
         ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
         ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                       axis.title = ggplot2::element_text(size=14))
+                       axis.title = ggplot2::element_text(size=14)) +
+        ggplot2::theme_bw()
 
 
       # Add plots for overlap and forest in return
@@ -700,26 +702,29 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
 #' Drops arms with comp treatments to generate dataset for indirect MBNMA
 #' @noRd
-drop.comp <- function(data, comp) {
-  x <- 1
-  for (i in seq_along(unique(data$studyID))) {
+drop.comp <- function(df, comp) {
+  #x <- 1
+  studies <- unique(df$studyID)
+
+  for (i in seq_along(studies)) {
     # Separate single study
-    subset <- subset(data, data$studyID==unique(data$studyID)[i])
+    subset <- subset(df, df$studyID==studies[i])
 
     if (all(comp %in% subset$treatment)) {
       # Remove study from dataset
-      data <- subset(data, data$studyID!=unique(data$studyID)[i])
+      df <- subset(df, df$studyID!=studies[i])
 
       if (subset$narm[1]>2) {
-        subset <- subset(subset, subset$treatment!=comp[abs(x)+1])
-        x <- x-1
+        subset <- subset(subset, subset$treatment!=sample(comp,1))
+        #subset <- subset(subset, subset$treatment!=comp[abs(x)+1])
+        #x <- x-1
 
         # Reinsert ammended study
-        data <- rbind(data, subset)
+        df <- rbind(df, subset)
       }
     }
   }
-  return(data)
+  return(df)
 }
 
 

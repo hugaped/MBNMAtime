@@ -46,17 +46,17 @@
 # classdata <- goutSUA_CFBcomb
 # classnetwork <- mb.network(classdata)
 #
-# exp.class.fixed <- mb.exponential(classnetwork,
+# exp.class.fixed <- suppressWarnings(mb.exponential(classnetwork,
 #                                      lambda=list(pool="rel", method="common"),
 #                                      positive.scale=TRUE,
 #                                n.chain=3, n.iter=1200, n.burnin=800,
-#                                class.effect=list("lambda"="common"))
+#                                class.effect=list("lambda"="common")))
 #
-# exp.class.random <- mb.exponential(classnetwork,
+# exp.class.random <- suppressWarnings(mb.exponential(classnetwork,
 #                                       lambda=list(pool="rel", method="common"),
 #                                       positive.scale=TRUE,
 #                                n.chain=3, n.iter=1200, n.burnin=800,
-#                                class.effect=list("lambda"="random"))
+#                                class.effect=list("lambda"="random")))
 #
 #
 # # A model that does not save the required parameters for postestimation
@@ -100,8 +100,8 @@
 #
 #         testthat::expect_equal(length(pred$pred.mat), length(treats))
 #         #testthat::expect_equal(names(pred$pred.mat), as.character(treats))
-#         testthat::expect_equal(names(pred$pred.mat), model$treatments[treats])
-#         testthat::expect_identical(names(pred), c("summary", "pred.mat", "mbnma"))
+#         testthat::expect_equal(names(pred$pred.mat), model$network$treatments[treats])
+#         testthat::expect_identical(names(pred), c("summary", "pred.mat", "network"))
 #         testthat::expect_equal(nrow(pred$pred.mat[[1]]), model$BUGSoutput$n.sims)
 #         testthat::expect_equal(nrow(pred$summary[[1]]), length(times))
 #         testthat::expect_equal(identical(pred$summary[[1]]$time, times), TRUE)
@@ -244,7 +244,7 @@
 #   subs.list <- list(10, 5, 40)
 #   dec.list <- list(TRUE, FALSE, TRUE)
 #   for (i in seq_along(model.list)) {
-#     auc <- MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=model.list[[i]]$treatments[treats.list[[i]]],
+#     auc <- MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=model.list[[i]]$network$treatments[treats.list[[i]]],
 #              int.range=int.list[[i]], subdivisions=subs.list[[i]], n.iter=100)
 #
 #     testthat::expect_equal(names(auc), c("summary", "prob.matrix", "rank.matrix", "auc.int"))
@@ -252,7 +252,7 @@
 #     testthat::expect_equal(nrow(auc[["prob.matrix"]]), ncol(auc[["prob.matrix"]]))
 #     testthat::expect_equal(nrow(auc[["prob.matrix"]]), length(treats.list[[i]]))
 #     testthat::expect_equal(nrow(auc[["rank.matrix"]]), 100)
-#     testthat::expect_equal(colnames(auc[["rank.matrix"]]), model.list[[i]]$treatments[treats.list[[i]]])
+#     testthat::expect_equal(colnames(auc[["rank.matrix"]]), model.list[[i]]$network$treatments[treats.list[[i]]])
 #   }
 #
 #   i <- 1
@@ -309,7 +309,7 @@
 #                     direction=-1, treats=treats.list[[2]], n.iter=100), NA)
 #
 #   if (is.numeric(treats.list[[i]])) {
-#     matchtreat <- exponential$treatments[treats.list[[i]]]
+#     matchtreat <- exponential$network$treatments[treats.list[[i]]]
 #   } else if (is.character(treats.list[[i]])) {
 #     matchtreat <- treats.list[[i]]
 #   }
@@ -339,7 +339,7 @@
 #   testthat::expect_equal(nrow(rank$beta.2[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
 #
 #   if (is.numeric(treats.list[[i]])) {
-#     matchtreat <- quad$treatments[treats.list[[i]]]
+#     matchtreat <- quad$network$treatments[treats.list[[i]]]
 #   } else if (is.character(treats.list[[i]])) {
 #     matchtreat <- treats.list[[i]]
 #   }

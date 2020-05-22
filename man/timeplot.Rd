@@ -4,7 +4,7 @@
 \alias{timeplot}
 \title{Plot raw responses over time by treatment or class}
 \usage{
-timeplot(network, level = "treatment", ...)
+timeplot(network, level = "treatment", plotby = "arm", ...)
 }
 \arguments{
 \item{network}{An object of class \code{mb.network}.}
@@ -12,6 +12,11 @@ timeplot(network, level = "treatment", ...)
 \item{level}{A string indicating whether nodes/facets should represent \code{treatment}
 or \code{class} in the plot. Can be used to examine the expected impact of modelling
 class/agent effects.}
+
+\item{plotby}{A character object that can take either \code{"arm"} to indicate that raw responses
+should be plotted separately for each study arm, or \code{"rel"} to indicate that the relative
+effects within each study should be plotted. In this way the time-course of both the absolute
+effects and the relative effects can be examined.}
 
 \item{...}{Arguments to be sent to \code{ggplot}}
 }
