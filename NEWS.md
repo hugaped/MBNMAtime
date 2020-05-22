@@ -1,3 +1,13 @@
+# MBNMAtime 0.1.4
+
+## Additions/changes
+- Corrected calculation for Bayesian p-value in `mb.nodesplit()`
+
+## Bug fixes
+
+### Major
+
+
 # MBNMAtime 0.1.3
 
 ## Additions/changes

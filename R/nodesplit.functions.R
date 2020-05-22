@@ -617,7 +617,9 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
       overlap.mat <- list("direct"=dir.dif[[i]], "indirect"=ind.dif[[i]])
       overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
-      p.values <- overlap$OV
+      #p.values <- overlap$OV
+      diff <- sum((dir.res-ind.res)>0) / length(dir.res)
+      p.values <- min(diff, 1-diff)
 
 
       # Quantiles
