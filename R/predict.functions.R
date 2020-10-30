@@ -111,7 +111,7 @@
 #' }
 #'
 #' @export
-predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=TRUE)),
+predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, na.rm=TRUE)),
                           E0=0,
                           treats = NULL,
                           ref.resp=NULL, synth="fixed",
@@ -179,7 +179,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
     treats <- object$network$treatments
   } else if (!is.null(treats)) {
     if (is.numeric(treats)) {
-      if (any(treats > object[["model"]][["data"]]()[["NT"]] | any(treats<1))) {
+      if (any(treats > object$model.arg$jagsdata$NT | any(treats<1))) {
         stop("If given as numeric treatment codes, `treats` must be numbered similarly to treatment codes in `object`")
       }
       treats <- object$network$treatments[treats]
@@ -275,6 +275,12 @@ predict.mbnma <- function(object, times=c(0:max(object$model$data()$time, na.rm=
 
       }
     }
+  }
+
+  # Convert predicted times to splines
+  if (c("rcs", "bs", "ns") %in% object$model.arg$fun) {
+    spline <- genspline(times, spline=object$model.arg$fun, knots=object$model.arg$knots)
+    timecourse <- gsub("(spline\\[)i,(m,[0-9]\\])", "\\1\\2", timecourse)
   }
 
 
@@ -401,17 +407,10 @@ init.predict <- function(mbnma) {
     }
   }
 
-  timecourse <- time.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun,
+  timecourse <- time.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
                          alpha=mbnma$model.arg$alpha, beta.1=beta.1.str, beta.2=beta.2.str,
                          beta.3=beta.3.str, beta.4=beta.4.str)[["relationship"]]
 
-  # Add piecewise function if fun==piecelinear
-  # if (fun=="piecelinear") {
-  #   timecourse <-
-  #     "ifelse(time < beta.3, alpha, 0) + ifelse(time < beta.3, beta.1*time, 0) + ifelse(time >= beta.3, alpha + (beta.1*beta.3), 0) + ifelse(time >= beta.3, beta.2*time, 0)"
-  # }
-
-  # Add
 
   # Generate vector with indices of betas included in model
   beta.incl <- vector()
