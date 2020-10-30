@@ -318,169 +318,201 @@ add_index <- function(data.ab, reference=1) {
 #' jagsdat <- getjagsdata(painnet$data.ab, rho="estimate", covstruct="AR1")
 #'
 #' @export
-getjagsdata <- function(data.ab, class=FALSE, rho=NULL, covstruct="CS") {
+getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", knots=3) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(covstruct, choices=c("CS", "AR1"), null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(fun, any.missing=FALSE,
+                             null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
 
   # dataset = factor indicating which data is required for the analysis (treatment univariate, treatment multivariate, class univariate, class multivariate)
-  if (class==FALSE & is.null(rho)) {
-    dataset <- 1
-  } else if (class==TRUE & is.null(rho)) {
-    dataset <- 2
-  } else if (class==FALSE & !is.null(rho)) {
-    dataset <- 3
-  } else if (class==TRUE & !is.null(rho)) {
-    dataset <- 4
-  }
+  # if (class==FALSE & is.null(rho)) {
+  #   dataset <- 1
+  # } else if (class==TRUE & is.null(rho)) {
+  #   dataset <- 2
+  # } else if (class==FALSE & !is.null(rho)) {
+  #   dataset <- 3
+  # } else if (class==TRUE & !is.null(rho)) {
+  #   dataset <- 4
+  # }
 
-  if (dataset==1 | dataset==3) {
-    varnames <- c("studyID", "y", "se", "treatment", "time", "arm", "fupcount")
-  } else if (dataset==2 | dataset==4) {
-    varnames <- c("studyID", "y", "se", "treatment", "time", "arm", "fupcount", "class")
+  varnames <- c("studyID", "y", "se", "treatment", "time", "arm", "fupcount")
+
+  if (class==TRUE) {
+    varnames <- append(varnames, "class")
   }
-  nvar <- length(varnames)
 
   # Check correct variables are present
-  if (!identical((varnames %in% names(df)), rep(TRUE, nvar))) {
+  if (!all(varnames %in% names(df))) {
     msg <- paste0("Variables are missing from dataset:\n",
                  paste(varnames[!(varnames %in% names(df))], collapse="\n"))
     stop(msg)
   }
 
-  #df <- add_index(df, reference=reference)[["data"]]
-
+  # Prepare df
   df <- dplyr::arrange(df, dplyr::desc(narm), dplyr::desc(fups), studyID, arm, time)
 
+  df$studynam <- df$studyID
   df <- transform(df,studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
-  y <- array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)*max(df$fupcount)),
-             dim=c(max(as.numeric(df$studyID)),
-                   max(df$arm),
-                   max(df$fupcount)))
 
-  se <- array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)*max(df$fupcount)),
-              dim=c(max(as.numeric(df$studyID)),
-                    max(df$arm),
-                    max(df$fupcount)))
+  # Prepare list variables at each level
+  datavars.ikm <- c("y", "se")
+  datavars.ik <- c("treat")
+  datavars.im <- c("time")
+  if (c("rcs", "ns", "bs") %in% fun) {
+    datavars.im <- append(datavars.im, "spline")
+  }
 
-  time <- array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)*max(df$fupcount)),
-                dim=c(max(as.numeric(df$studyID)),
-                      max(df$arm),
-                      max(df$fupcount)))
+
+  # Create a separate object for each datavars
+  for (i in seq_along(datavars.ikm)) {
+    assign(datavars.ikm[i], array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)*max(df$fupcount)),
+                              dim=c(max(as.numeric(df$studyID)),
+                                    max(df$arm),
+                                    max(df$fupcount)
+                              ))
+    )
+  }
+  for (i in seq_along(datavars.ik)) {
+    assign(datavars.ik[i], array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
+                                  dim=c(max(as.numeric(df$studyID)),
+                                        max(df$arm)
+                                  ))
+    )
+  }
+  for (i in seq_along(datavars.im)) {
+    assign(datavars.im[i], array(rep(NA, max(as.numeric(df$studyID))*max(df$fupcount)),
+                                  dim=c(max(as.numeric(df$studyID)),
+                                        max(df$fupcount)
+                                  ))
+    )
+  }
 
   narm <- vector()
   fups <- vector()
   NS <- max(as.numeric(df$studyID))
-  NT <- max(df$treatment)
 
-  treat <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
-                  nrow = max(as.numeric(df$studyID)), ncol = max(df$arm)
-  )
+  # Generate list in which to store individual data variables
+  datalist <- list(get(datavars.ikm[1]), get(datavars.ikm[2]),
+                   narm=narm, fups=fups, NS=NS, studyID=vector(),
+                   NT=max(df$treatment))
+  names(datalist)[1:2] <- datavars.ikm
 
-  if (dataset==2 | dataset==4) {
-    Nclass <- max(df$class)
-    # class <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
-    #                 nrow = max(as.numeric(df$studyID)), ncol = max(df$arm)
-    # )
+  for (i in seq_along(datavars.ik)) {
+    datalist[[datavars.ik[i]]] <- get(datavars.ik[i])
+  }
+  for (i in seq_along(datavars.im)) {
+    datalist[[datavars.im[i]]] <- get(datavars.im[i])
+  }
 
+  if (class==TRUE) {
     codes <- data.frame(df$treatment, df$class)
     codes <- dplyr::arrange(codes, df$treatment)
     classcode <- unique(codes)$df.class
+
+    datalist[["Nclass"]] <- Nclass
+    datalist[["class"]] <- classcode
   }
 
+  # Generate empty spline matrix
+  if (!is.null(fun)) {
+    if (any(c("rcs", "ns", "bs") %in% fun)) {
+      splinefun <- unique(fun[which(fun %in% c("rcs", "bs", "ns"))])
+      if (length(splinefun)>1) {
+        stop("Only a single spline type (either 'rcs', 'bs' OR 'ns') can be used in a single model")
+      }
+
+      times <- df[, colnames(df) %in% c("time")]
+      times <- unique(sort(times))
+
+      # Generate spline basis matrix
+      spline <- genspline(times, spline=splinefun, knots=knots)
+      timespline <- data.frame("time"=times, "spline"=spline)
+      # timespline <- times %>%
+      #   dplyr::mutate(spline=genspline(times, spline=splinefun, knots=knots))
+
+      df <- suppressMessages(dplyr::left_join(df, timespline))
+
+      knotnum <- ifelse(length(knots)>1, length(knots), knots)
+
+      datalist[["spline"]] <- array(dim=c(nrow(datalist[["time"]]),
+                                          ncol(datalist[["time"]]),
+                                          knotnum-1))
+
+    }
+  }
+
+
+  # Add data to datalist elements
   for (i in 1:max(as.numeric(df$studyID))) {
+    datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i][1])
+
     for (k in 1:max(df$arm[df$studyID==i])) {
-      for (m in 1:max(df$fupcount[df$studyID==i])) {
 
-        y[i,k,m] <- df$y[as.numeric(df$studyID)==i &
-                           df$arm==k &
-                           df$fupcount==m]
+      datalist[["treat"]][i,k] <- unique(df$treatment[as.numeric(df$studyID)==i &
+                                                                       df$arm==k])
 
-        se[i,k,m] <- df$se[as.numeric(df$studyID)==i &
-                             df$arm==k &
-                             df$fupcount==m]
+      # for (z in seq_along(datavars.ik)) {
+      #   datalist[[datavars.ik[z]]][i,k] <- unique(df[[datavars.ik[z]]][as.numeric(df$studyID)==i &
+      #                                                                    df$arm==k])
+      # }
 
-        time[i,k,m] <- df$time[as.numeric(df$studyID)==i &
-                                 df$arm==k &
-                                 df$fupcount==m]
-      }
-
-      treat[i,k] <- max(df$treatment[as.numeric(df$studyID)==i &
-                                       df$arm==k])
-
-      #if (dataset==2 | dataset==4) {
-      #  class[i,k] <- max(df$class[as.numeric(df$studyID)==i &
-      #                               df$arm==k])
-      #}
-
-    }
-    narm <- append(narm, max(df$arm[as.numeric(df$studyID)==i]))
-    fups <- append(fups, max(df$fupcount[as.numeric(df$studyID)==i]))
-  }
-
-  time <- time[1:max(as.numeric(df$studyID)),1,]
-
-  mat.triangle <- vector()
-  p <- 1
-  for (i in 2:max(fups)) {
-    mat.triangle[fups==i] <- p
-    p <- p+i
-  }
-
-
-  mat.order <- array(dim=c(max(fups), max(fups), NS))
-  for (i in 1:NS) {
-    p <- 1
-    for (c in 1:(fups[i]-1)) {
-      for (r in (c+1):fups[i]) {
-        mat.order[r,c,i] <- p
-        mat.order[c,r,i] <- p
-        p <- p+1
+      for (m in 1:max(unique(df$fupcount[df$studyID==i]))) {
+        for (z in seq_along(datavars.ikm)) {
+          datalist[[datavars.ikm[z]]][i,k,m] <- df[[datavars.ikm[z]]][as.numeric(df$studyID)==i &
+                                                                    df$arm==k & df$fupcount==m]
+        }
       }
     }
-  }
 
+    for (m in 1:max(unique(df$fupcount[df$studyID==i]))) {
+      datalist[["time"]][i,m] <- unique(df$time[as.numeric(df$studyID)==i &
+                                           df$fupcount==m])
 
-  # Return data array
-  datalist <- list(y=y, se=se, time=time, fups=fups, narm=narm, NS=NS)
-
-  # Add treatment details only if multiple treatments available
-  #(allows for jags model of reference treatment)
-  if (NT>1) {
-    datalist[["NT"]] <- NT
-    datalist[["treat"]] <- treat
-  }
-
-
-  if (dataset==2) {
-    datalist[["Nclass"]] <- Nclass
-    datalist[["class"]] <- classcode
-    #datalist[["classkey"]] <- classcode
-  } else if (dataset==3) {
-    #datalist[["mat.triangle"]] <- mat.triangle
-    #datalist[["mat.order"]] <- mat.order
-  } else if (dataset==4) {
-    #datalist[["mat.triangle"]] <- mat.triangle
-    #datalist[["mat.order"]] <- mat.order
-    datalist[["Nclass"]] <- Nclass
-    datalist[["class"]] <- classcode
-    #datalist[["classkey"]] <- classcode
+      if (any(c("rcs", "ns", "bs") %in% fun)) {
+        datalist[["spline"]][i,m,] <- as.numeric(df[as.numeric(df$studyID)==i &
+                                           df$arm==1 & df$fupcount==m,
+                                         grepl("spline", colnames(df))])
+      }
+    }
+    datalist[["narm"]] <- append(datalist[["narm"]], max(df$arm[as.numeric(df$studyID)==i]))
+    datalist[["fups"]] <- append(datalist[["fups"]], max(df$fupcount[as.numeric(df$studyID)==i]))
   }
 
   if (!is.null(rho) & !is.null(covstruct)) {
     if (covstruct=="AR1") {
       #datalist[["mat.triangle"]] <- mat.triangle
       #datalist[["mat.order"]] <- mat.order
-      datalist[["timedif.0"]] <- time[,2]-time[,1]
+      datalist[["timedif.0"]] <- datalist$time[,2]-datalist$time[,1]
     }
   }
+
+  # mat.triangle <- vector()
+  # p <- 1
+  # for (i in 2:max(datalist$fups)) {
+  #   mat.triangle[datalist$fups==i] <- p
+  #   p <- p+i
+  # }
+  #
+  #
+  # mat.order <- array(dim=c(max(datalist$fups), max(datalist$fups), datalist$NS))
+  # for (i in 1:datalist$NS) {
+  #   p <- 1
+  #   for (c in 1:(datalist$fups[i]-1)) {
+  #     for (r in (c+1):datalist$fups[i]) {
+  #       mat.order[r,c,i] <- p
+  #       mat.order[c,r,i] <- p
+  #       p <- p+1
+  #     }
+  #   }
+  # }
 
   return(datalist)
 
@@ -1053,3 +1085,92 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #'
 #'   return(df)
 #' }
+
+
+
+
+
+
+#' Generates spline basis matrices for fitting to time-course function
+#'
+#' @param x A numeric vector indicating all time points available in the dataset
+#' @param spline Indicates the type of spline function. Can be either natural cubic spline (`"ns"`), restricted cubic
+#'   spline (`"rcs"`) or B-spline (`"bs"`).
+#' @param ord a positive integer giving the order of the spline function. This is the number of coefficients in each
+#'   piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.
+#' @param max.time A number indicating the maximum time between which to calculate knot points.
+#' @inheritParams mbnma.run
+#'
+#'
+genspline <- function(x, spline="rcs", knots=3, ord=4, max.time=max(x)){
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertNumeric(knots, add=argcheck)
+  checkmate::assertNumeric(ord, add=argcheck)
+  checkmate::assertNumeric(max.time, null.ok = FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Check knot specification
+  if (length(knots)==1) {
+    if (knots<3) {
+      stop("Minimum number of knots is 3")
+    }
+  } else if (length(knots)>1) {
+    if (length(knots)<3){
+      stop("Minimum number of knots is 3")
+    }
+  }
+
+  # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
+  if (x[1]==0 & length(unique(x))==1) {
+
+    if (length(knots)==1 & knots[1]>=1) {
+      return(matrix(rep(0,knots-1), nrow=1))
+    } else if (length(knots)>1 | knots[1]<1) {
+      return(matrix(rep(0,length(knots)-1), nrow=1))
+    }
+
+  } else {
+
+    x0 <- x
+    if (!0 %in% x0) {
+      x0 <- c(0,x0)
+    }
+
+    # Calculate quantiles for knots
+    if (length(knots)==1 & knots[1]>=1) {
+      p <- seq(0,1,1/(knots+1))
+      p <- p[-c(1,length(p))]
+      knots <- stats::quantile(0:max.time, probs = p)
+      names(knots) <- NULL
+    } else if (length(knots)>1 | knots[1]<1) {
+      knots <- stats::quantile(0:max.time, probs = knots)
+    }
+
+    # Generate spline basis matrix
+    if (spline=="bs") {
+      splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
+    } else if (spline=="rcs") {
+      splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
+    } else if (spline=="ns") {
+      splinedesign <- splines::ns(x0, knots=knots)
+      splinedesign <- cbind(x0, splinedesign)
+    }
+
+    # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
+    if (length(x0)>1) {
+      splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
+    } else {
+      splinedesign <- matrix(0, ncol=length(splinedesign))
+    }
+
+    if (!is.matrix(splinedesign)) {
+      splinedesign <- matrix(splinedesign, nrow=1)
+    }
+
+
+    return(splinedesign)
+
+  }
+}

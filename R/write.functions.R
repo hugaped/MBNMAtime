@@ -39,18 +39,14 @@
 #'   beta.1="rel.random", beta.2="rel.common")
 #' cat(model)
 #' @export
-mb.write <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
+mb.write <- function(fun="linear", user.fun=NULL, alpha="study", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
+                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
                         var.scale=NULL,
                         class.effect=list(), UME=FALSE) {
 
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(fun, choices=c("linear", "exponential", "emax", "emax.hill",
-                              "quadratic", "fract.poly.first", "fract.poly.second",
-                              "piecelinear", "user"),
-               null.ok=FALSE, add=argcheck)
   checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
@@ -59,10 +55,6 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   checkmate::assertChoice(covar, choices=c("CS", "AR1"), null.ok=TRUE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
-
-  # Store argument values
-  #argList <- as.list(match.call(expand.dots = TRUE)[-1])
-
 
 
   ####### VECTORS #######
@@ -84,21 +76,15 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
     }
   }
 
-
-  # timecor <- write.check(fun=fun, user.fun=user.fun, alpha=alpha,
-  #                        beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-  #                        positive.scale=positive.scale, intercept=intercept,
-  #                        timecor=timecor, rho=rho, covar=covar,
-  #                        class.effect=class.effect, UME=UME)
   write.check(fun=fun, user.fun=user.fun, alpha=alpha,
                                       beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                                       positive.scale=positive.scale, intercept=intercept,
-                                      rho=rho, covar=covar, var.scale=var.scale,
+                                      rho=rho, covar=covar, var.scale=var.scale, knots=knots,
                                       class.effect=class.effect, UME=UME)
 
   model <- write.model()
 
-  timecourse <- time.fun(fun=fun, user.fun=user.fun,
+  timecourse <- time.fun(fun=fun, user.fun=user.fun, knots=knots,
                          alpha=alpha, beta.1=beta.1, beta.2=beta.2,
                          beta.3=beta.3, beta.4=beta.4)[["jagscode"]]
 
@@ -154,7 +140,8 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
 #'
 #' @inherit mb.run details
 #'
-time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL) {
+time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", knots=3,
+                     beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL) {
   # fun can be any of the following functions: linear, exponential, piecewise linear, Emax, Emax with Hill parameter, fractional polynomial (Jansen 2015)
   # user.fun can be any user function combining alpha, beta.1 / beta.2 / beta.3, gamma.1 and gamma.2, and time
   # alpha can be:
@@ -166,13 +153,8 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   # "common" to estimate a single parameter across the network that is independent of treatment
   # Given a numeric value to allow user to provide data for a single parameter across the network that is independent of treatment
 
-  funlist <- c("linear", "exponential", "emax", "emax.hill",
-               "quadratic", "fract.poly.first", "fract.poly.second",
-               "piecelinear", "user")
-
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(fun, choices=funlist, null.ok=FALSE, add=argcheck)
   checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -199,6 +181,16 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
   } else if (fun=="piecelinear") {
     #timecourse <- "((time < beta.3) * alpha) + ((time < beta.3) * (beta.1 * time)) + ((time >= beta.3) * alpha.knot) + ((time >= beta.3) * (beta.2 * time))"
     timecourse <- "((time < beta.3) * alpha) + ((time < beta.3) * (beta.1 * time)) + ((time >= beta.3) * (alpha + (beta.1 * beta.3))) + ((time >= beta.3) * (beta.2 * time))"
+  } else if (any(c("rcs", "ns", "bs") %in% fun)) {
+    knotnum <- ifelse(length(knots)>1, length(knots), knots)
+    timetemp <- "alpha + "
+    for (knot in 1:(knotnum-1)) {
+      timetemp <- paste0(timetemp, "(beta.", knot, " * spline[i,m,", knot, "])")
+      if (knot<knotnum-1) {
+        timetemp <- paste0(timetemp, " + ")
+      }
+    }
+    timecourse <- timetemp
   }
 
   if (fun=="user") {
@@ -236,12 +228,7 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
 
   jagscode <- timecourse
 
-  # if (fun=="fract.poly.first" | fun=="fract.poly.second") {
-  #   jagscode <- gsub("time.fp.1", "time.fp.1[i,m]", jagscode, perl=T)
-  #   jagscode <- gsub("time.fp.2", "time.fp.2[i,m]", jagscode, perl=T)
-  # } else {
-     jagscode <- gsub("time", "time[i,m]", jagscode, perl=T)
-  # }
+  jagscode <- gsub("time", "time[i,m]", jagscode, perl=T)
 
   if (alpha=="study") {
     jagscode <- gsub("alpha(?!\\.)", "alpha[i]", jagscode, perl=T)
@@ -290,7 +277,7 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.commo
 #'   correlation between time points if it passes.
 #'
 write.check <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
+                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
                         var.scale=NULL,
                         class.effect=list(), UME=FALSE) {
   parameters <- c("alpha", "beta.1", "beta.2", "beta.3", "beta.4")
@@ -300,7 +287,29 @@ write.check <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.co
   checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::assertNumeric(var.scale, null.ok = TRUE)
+  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
+
+  timefuns <- c("none", "linear", "quadratic", "exponential", "emax", "emax.hill",
+                "fract.poly.first", "fract.poly.second", "piecelinear", "user", "rcs", "bs", "ns")
+  checkmate::assertChoice(fun, choices=timefuns,
+                          null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check knots
+  knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
+  if (length(knots)==1) {
+    if (knots<3) {
+      stop(knoterr)
+    }
+  } else if (length(knots)>1 & length(knots)<3) {
+    stop(knoterr)
+  }
+  if (length(knots)>1) {
+    if (!(all(knots<=1 & all(knots>=0)))) {
+      stop("`knots` specified as quantiles must be between 0 and 1")
+    }
+  }
+
 
   # Checks that beta parameters are single values
   for (i in 1:4) {

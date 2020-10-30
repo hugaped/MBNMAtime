@@ -34,6 +34,10 @@
 #' time-course parameter(s) specified within the time-course function (see details).
 #' @param beta.4 A list with named elements `pool` and `method` that refers to
 #' time-course parameter(s) specified within the time-course function (see details).
+#' @param knots The number/location of knots if a restricted cubic spline time-course function is fitted (`fun="rcs"`).
+#' If a single number is given it indicates the number of knots (they will
+#'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
+#'   Minimum number of knots is 3.
 #' @param positive.scale A boolean object that indicates whether all continuous
 #'   mean responses (y) are positive and therefore whether the baseline response
 #'   should be given a prior that constrains it to be positive.
@@ -79,7 +83,7 @@
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
 #'   use is automatically calculated.
 #'
-#' @param n.iter number of total iterations per chain (including burn in; default: 15000)
+#' @param n.iter number of total iterations per chain (including burn in; default: 20000)
 #' @param n.thin thinning rate. Must be a positive integer. Set `n.thin > 1`` to save memory
 #' and computation time if `n.iter` is large. Default is
 #' `max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
@@ -187,6 +191,8 @@
 #'   Emax parameter, `beta.2` refers to ET50 parameter
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
+#'   * `"rcs"` restricted cubic splines with knot number/location defined by `knot`.`beta.1` refers to the
+#'   first spline coeffficient, `beta.2` to the second coefficient, etc.
 #'   * `"fract.poly.first"` (first-order fractional polynomial): `beta.1` refers to the slope
 #'   parameter, `beta.3` refers to the power parameter
 #'   * `"fract.poly.second"` (second-order fractional polynomial): `beta.1` refers to the first slope
@@ -277,12 +283,13 @@ mb.run <- function(network, parameters.to.save=NULL,
                       fun="linear", user.fun=NULL,
                       alpha="study", beta.1=list(pool="rel", method="common"),
                       beta.2=NULL, beta.3=NULL, beta.4=NULL,
+                      knots=3,
                       positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
                       var.scale=NULL,
                       class.effect=list(), UME=FALSE,
-                      pd="pv", parallel=TRUE,
+                      pd="pd.kl", parallel=FALSE,
                       priors=NULL,
-                      n.iter=10000, n.chains=3,
+                      n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       model.file=NULL,
                       arg.params=NULL, ...
@@ -353,13 +360,14 @@ mb.run <- function(network, parameters.to.save=NULL,
 
   if (is.null(model.file)) {
     model <- mb.write(fun=fun, user.fun=user.fun,
-                         alpha=alpha,
-                         beta.1=beta.1.str, beta.2=beta.2.str,
-                         beta.3=beta.3.str, beta.4=beta.4.str,
-                         positive.scale=positive.scale, intercept=intercept,
-                         rho=rho, covar=covar,
-                         class.effect=class.effect, UME=UME,
-                         var.scale=var.scale
+                      alpha=alpha,
+                      beta.1=beta.1.str, beta.2=beta.2.str,
+                      beta.3=beta.3.str, beta.4=beta.4.str,
+                      knots=knots,
+                      positive.scale=positive.scale, intercept=intercept,
+                      rho=rho, covar=covar,
+                      class.effect=class.effect, UME=UME,
+                      var.scale=var.scale
     )
 
     # Change beta.1 and beta.2 to emax and et50, etc. if necessary
@@ -432,8 +440,8 @@ mb.run <- function(network, parameters.to.save=NULL,
   #### Run jags model ####
 
   data.ab <- network[["data.ab"]]
-  result.jags <- mb.jags(data.ab, model,
-                       class=class, rho=rho, covar=covar,
+  result.jags <- mb.jags(data.ab, model, fun=fun,
+                       class=class, rho=rho, covar=covar, knots=knots,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
                        n.burnin=n.burnin, n.thin=n.thin,
@@ -441,24 +449,26 @@ mb.run <- function(network, parameters.to.save=NULL,
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
 
-  if (pd == "pd.kl" | pd == "popt") {
-    if (pd=="pd.kl") {
-      temp <- rjags::dic.samples(result$model, n.iter=2000, type="pD")
-    } else if (pd=="popt") {
-      temp <- rjags::dic.samples(result$model, n.iter=2000, type="popt")
+  if (!("error" %in% names(result))) {
+    if (pd == "pd.kl" | pd == "popt") {
+      if (pd=="pd.kl") {
+        temp <- rjags::dic.samples(result$model, n.iter=2000, type="pD")
+      } else if (pd=="popt") {
+        temp <- rjags::dic.samples(result$model, n.iter=2000, type="popt")
+      }
+      result$BUGSoutput$pD <- sum(temp$penalty)
+
+    } else if (pd == "plugin") {
+      # plugin method
+      warning("Plugin method only works for normal likelihood")
+      result$BUGSoutput$pD <- pDcalc(obs1=jagsdata[["y"]], obs2=jagsdata[["se"]], fups=jagsdata[["fups"]], narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                                     theta.result=result$BUGSoutput$mean$theta, resdev.result=result$BUGSoutput$mean$resdev,
+                                     type="time")
     }
-    result$BUGSoutput$pD <- sum(temp$penalty)
 
-  } else if (pd == "plugin") {
-    # plugin method
-    warning("Plugin method only works for normal likelihood")
-    result$BUGSoutput$pD <- pDcalc(obs1=jagsdata[["y"]], obs2=jagsdata[["se"]], fups=jagsdata[["fups"]], narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                                   theta.result=result$BUGSoutput$mean$theta, resdev.result=result$BUGSoutput$mean$resdev,
-                                   type="time")
+    # Recalculate DIC so it is adjusted for choice of pD
+    result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
   }
-
-  # Recalculate DIC so it is adjusted for choice of pD
-  result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
@@ -466,6 +476,7 @@ mb.run <- function(network, parameters.to.save=NULL,
                     "jagscode"=model, "alpha"=alpha,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3, "beta.4"=beta.4,
+                    "knots"=knots,
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
@@ -489,8 +500,8 @@ mb.run <- function(network, parameters.to.save=NULL,
 }
 
 
-mb.jags <- function(data.ab, model,
-                       class=FALSE, rho=NULL, covar=NULL,
+mb.jags <- function(data.ab, model, fun=NULL,
+                       class=FALSE, rho=NULL, covar=NULL, knots=3,
                        parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL,
                        warn.rhat=FALSE, ...) {
@@ -502,12 +513,13 @@ mb.jags <- function(data.ab, model,
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
                   null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(fun, any.missing=FALSE, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
   if (is.null(likelihood) & is.null(link)) {
     # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, knots=knots, fun=fun) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
   } else if (is.null(rho) & is.null(covar)) {
     # For MBNMAdose
     # jagsdata <- getjagsdata(data.ab, class=class,
@@ -521,6 +533,12 @@ mb.jags <- function(data.ab, model,
   } else if (grepl("maxdose", model)) {
     # Only used in MBNMAdose
     #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
+  }
+
+  # Drop time from jagsdata in spline models
+  timedat <- jagsdata[["time"]]
+  if (fun %in% c("rcs", "ns", "bs")) {
+    jagsdata[["time"]] <- NULL
   }
 
   # Put data from jagsdata into separate R objects
@@ -561,6 +579,8 @@ mb.jags <- function(data.ab, model,
       rhat.warning(out)
     }
   }
+
+  jagsdata[["time"]] <- timedat # add time back to jagsdata if spline models were used
 
   return(list("jagsoutput"=out, "jagsdata"=jagsdata))
 }
