@@ -41,7 +41,7 @@
 #' @export
 mb.write <- function(fun="linear", user.fun=NULL, alpha="study", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
                         positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
-                        var.scale=NULL,
+                        var.scale=NULL, link="identity",
                         class.effect=list(), UME=FALSE) {
 
 
@@ -78,7 +78,7 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="study", beta.1="rel.com
 
   write.check(fun=fun, user.fun=user.fun, alpha=alpha,
                                       beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                                      positive.scale=positive.scale, intercept=intercept,
+                                      positive.scale=positive.scale, intercept=intercept, link=link,
                                       rho=rho, covar=covar, var.scale=var.scale, knots=knots,
                                       class.effect=class.effect, UME=UME)
 
@@ -94,7 +94,7 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="study", beta.1="rel.com
   timecourse <- alphacode[["timecourse"]]
   model <- alphacode[["model"]]
 
-  model <- write.likelihood(model, timecourse, rho, covar)
+  model <- write.likelihood(model=model, timecourse=timecourse, rho=rho, covar=covar, link=link)
 
   #model <- write.fract.poly(model, timecourse)
 
@@ -278,13 +278,14 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", knots=3,
 #'
 write.check <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
                         positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
-                        var.scale=NULL,
+                        var.scale=NULL, link="identity",
                         class.effect=list(), UME=FALSE) {
   parameters <- c("alpha", "beta.1", "beta.2", "beta.3", "beta.4")
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("identity", "log", "smd"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::assertNumeric(var.scale, null.ok = TRUE)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
@@ -608,19 +609,31 @@ alpha[i,k] ~ dnorm(0,0.0001)
 #' @return A character object of JAGS MBNMA model code that includes likelihood
 #'   components of the model
 #'
-write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL) {
+write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="identity") {
 
-# Linear predictor
-predictor <- "theta[i,k,m] <- "
-
-norm.like <- "
+  # Likelihoods
+  norm.like <- "
 y[i,k,m] ~ dnorm(theta[i,k,m], prec[i,k,m])
 prec[i,k,m] <- pow(se[i,k,m], -2)
 "
 
-mnorm.like <- "
+  mnorm.like <- "
 y[i,k,1:fups[i]] ~ dmnorm.vcov(theta[i,k,1:fups[i]], cov.mat[i,k,1:fups[i],1:fups[i]])
 "
+
+# Linear predictor
+  if (link=="identity") {
+    predictor <- "theta[i,k,m] <- "
+  } else if (link=="log") {
+    predictor <- "log(theta[i,k,m]) <- "
+  } else if (link=="smd") {
+    predictor <- "phi[i,k,m] <- theta[i,k,m] * pool.sd[i,k]\ntheta[i,k,m] <- "
+    norm.like <- gsub("theta", "phi", norm.like)
+    mnorm.like <- gsub("theta", "phi", mnorm.like)
+
+    model <- gsub("theta", "phi", model) # Swap in resdev
+  }
+
 
 if (!is.null(rho)) {
   if (rho=="estimate") {
@@ -697,6 +710,21 @@ cor[i,c,r] <- pow(rho, (abs(time[i,r] - time[i,c])) / timedif.0[i])
 
   # Add linear predictor
   model <- gsub(inserts[["insert.obs"]], paste0("\\1", paste0(predictor, timecourse), "\\2"), model)
+
+  # Add SD pooling components
+  if (link=="smd") {
+    smd.sub <- "\nsd[i,k,m] <- se[i,k,m] * pow(n[i,k,m],0.5)\nnvar[i,k,m] <- (n[i,k,m]-1) * pow(sd[i,k,m],2)\n"
+    model <- gsub(inserts[["insert.obs"]], paste0("\\1", smd.sub, "\\2"), model)
+
+    pool.sd <- "
+for (m in 1:fups[i]) {
+  df[i,m] <- sum(n[i,1:narm[i],m]) - narm[i]
+  pool.var[i,m] <- sum(nvar[i,1:narm[i],m])/df[i]
+  pool.sd[i,m] <- pow(pool.var[i,m], 0.5)
+}
+"
+    model <- gsub(inserts[["insert.study"]], paste0("\\1", pool.sd, "\\2"), model)
+  }
 
   return(model)
 }
@@ -1238,7 +1266,7 @@ write.beta <- function(model, timecourse,
 #' Adds sections of JAGS code for an MBNMA reference synthesis model that
 #' correspond to beta parameters
 #' @noRd
-write.beta.ref <- function(model, timecourse,
+write.beta.ref <- function(model, timecourse, knots=3,
                        beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                        mu.synth="random"
 ) {
@@ -1514,7 +1542,7 @@ write.remove.loops <- function(model) {
 #'
 #' @export
 write.ref.synth <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
+                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
                         mu.synth="random",
                         class.effect=list(), UME=FALSE, priors=NULL) {
 
@@ -1533,13 +1561,13 @@ write.ref.synth <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="re
   write.check(fun=fun, user.fun=user.fun, alpha=alpha,
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
               positive.scale=positive.scale, intercept=intercept,
-              rho=rho, covar=covar,
+              rho=rho, covar=covar, knots=knots,
               class.effect=class.effect, UME=UME)
 
   model <- write.model()
 
   suppressMessages(
-    timecourse <- time.fun(fun=fun, user.fun=user.fun,
+    timecourse <- time.fun(fun=fun, user.fun=user.fun, knots=knots,
                            alpha=alpha, beta.1=beta.1, beta.2=beta.2,
                            beta.3=beta.3, beta.4=beta.4)[["jagscode"]]
   )
@@ -1553,7 +1581,7 @@ write.ref.synth <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="re
 
   #model <- write.fract.poly(model, timecourse)
 
-  model <- write.beta.ref(model, timecourse,
+  model <- write.beta.ref(model, timecourse, knots=knots,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                           mu.synth=mu.synth
                           )

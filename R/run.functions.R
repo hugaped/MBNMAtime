@@ -45,6 +45,8 @@
 #'   be included in the model. Can be used to imply whether mean responses in
 #'   data are change from baseline (`FALSE`) or not (setting it to `FALSE`
 #'   removes the intercept, `alpha`, from the model).
+#' @param link Can take either `"identity"`, `"log"` (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+#'   `"smd"` (for modelling Standardised Mean Differences).
 #'
 #' @param rho The correlation coefficient when modelling correlation between time points. If left
 #'   as `NULL` (the default) then this implies modelling no correlation between time points.
@@ -283,7 +285,7 @@ mb.run <- function(network, parameters.to.save=NULL,
                       fun="linear", user.fun=NULL,
                       alpha="study", beta.1=list(pool="rel", method="common"),
                       beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                      knots=3,
+                      knots=3, link="identity",
                       positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
                       var.scale=NULL,
                       class.effect=list(), UME=FALSE,
@@ -363,7 +365,7 @@ mb.run <- function(network, parameters.to.save=NULL,
                       alpha=alpha,
                       beta.1=beta.1.str, beta.2=beta.2.str,
                       beta.3=beta.3.str, beta.4=beta.4.str,
-                      knots=knots,
+                      knots=knots, link=link,
                       positive.scale=positive.scale, intercept=intercept,
                       rho=rho, covar=covar,
                       class.effect=class.effect, UME=UME,
@@ -477,7 +479,7 @@ mb.run <- function(network, parameters.to.save=NULL,
                     "alpha"=alpha,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3, "beta.4"=beta.4,
-                    "knots"=knots,
+                    "knots"=knots, "link"=link,
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
