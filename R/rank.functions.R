@@ -29,8 +29,8 @@ rank <- function (x, ...) {
 #'   a numeric vector of treatment/class codes (as coded in `mbnma`)
 #'   that indicate which treatments/classes to calculate rankings for. If left `NULL``
 #'   then rankings will be calculated for all treatments/classes.
-#' @param direction Indicates whether positive responses are better (taking the value `1`) or
-#'   negative responses are better (taking the value `-1`)
+#' @param lower_better Indicates whether negative responses are better (`lower_better=TRUE`) or
+#'   positive responses are better (`lower_better=FALSE`)
 #' @param int.range A numeric vector with two elements that indicates the range
 #'   over which to calculate AUC. Takes the form c(lower bound, upper bound). If left
 #'   as `NULL` (the default) then the range will be between zero and the maximum follow-up
@@ -72,15 +72,15 @@ rank <- function (x, ...) {
 #'   et50=list(pool="rel", method="random"))
 #'
 #' # Rank treatments by time-course parameter from the model with lower scores being better
-#' rank(emax, params=c("d.emax", "d.et50"), direction=-1)
+#' rank(emax, params=c("d.emax", "d.et50"), lower_better=TRUE)
 #'
 #' # Rank treatments by AUC
-#' rank(emax, params="auc", treats=c(1:3), direction=-1,
+#' rank(emax, params="auc", treats=c(1:3), lower_better=TRUE,
 #'   int.range=c(0,20))
 #' }
 #'
 #' @export
-rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
+rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
                        int.range=NULL, level="treatment", n.iter=x$BUGSoutput$n.sims,
                        ...) {
 
@@ -88,7 +88,7 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mbnma", add=argcheck)
   checkmate::assertCharacter(params, any.missing=FALSE, unique=TRUE, add=argcheck)
-  checkmate::assertInt(direction, lower=-1, upper=1, add=argcheck)
+  checkmate::assertLogical(lower_better, null.ok=FALSE, len=1, add=argcheck)
   checkmate::assertNumeric(int.range, lower=0, finite=TRUE, any.missing=FALSE, len=2, null.ok=TRUE,
                            sorted=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices=c("treatment", "class"), add=argcheck)
@@ -139,13 +139,6 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
     }
   }
 
-
-  if (direction==-1) {
-    decreasing <- FALSE
-  } else if (direction==1) {
-    decreasing <- TRUE
-  } else {stop("`direction` must be either -1 or 1 for ranking")}
-
   rank.result <- list()
   for (i in seq_along(params)) {
     if (params[i] %in% x[["parameters.to.save"]]) {
@@ -160,7 +153,7 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
       param.mod <- param.mod[,which(x$network[[level]] %in% treats)]
 
       rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
-        order(order(x, decreasing = decreasing), decreasing=FALSE)
+        order(order(x, decreasing = !lower_better), decreasing=FALSE)
       }))
       colnames(rank.mat) <- treats
 
@@ -170,7 +163,7 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
              "rank.matrix"=rank.mat)
 
     } else if (params[i]=="auc") {
-      rank.result[["auc"]] <- rankauc(x, decreasing=decreasing,
+      rank.result[["auc"]] <- rankauc(x, lower_better=lower_better,
                                        treats=treats,
                                        int.range=int.range, n.iter=n.iter, ...)
     } else {
@@ -195,19 +188,17 @@ rank.mbnma <- function(x, params="auc", direction=1, treats=NULL,
 #' @param treats A character vector of treatment/class names (depending on the value of `level`). If left `NULL``
 #'   then rankings will be calculated for all treatments/classes. Note that unlike `rank.mbnma()` this argument
 #'   cannot take a numeric vector.
-#' @param decreasing A boolean object to indicate whether higher values are better (`decreasing=TRUE`) or
-#' worse (`decreasing=FALSE`).
 #'
 #' @inherit rank.mbnma return
 #' @inherit rank.mbnma details
 #'
-rankauc <- function(mbnma, decreasing=FALSE, treats=NULL,
+rankauc <- function(mbnma, lower_better=FALSE, treats=NULL,
                      int.range=NULL, n.iter=mbnma$BUGSoutput$n.sims, ...) {
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertCharacter(treats, null.ok = TRUE)
-  checkmate::assertLogical(decreasing, any.missing=FALSE, len=1, add=argcheck)
+  checkmate::assertLogical(lower_better, any.missing=FALSE, len=1, add=argcheck)
   checkmate::assertIntegerish(int.range, lower=0, any.missing=FALSE, len=2, sorted=TRUE, null.ok = TRUE,
                               add=argcheck)
   #checkmate::assertInt(subdivisions, lower=1, add=argcheck)
@@ -282,7 +273,7 @@ rankauc <- function(mbnma, decreasing=FALSE, treats=NULL,
 
   # Ranking
   rank.mat <- t(apply(auc.result, MARGIN=1, FUN=function(x) {
-    order(order(x, decreasing = decreasing), decreasing=FALSE)
+    order(order(x, decreasing = !lower_better), decreasing=FALSE)
   }))
 
   colnames(auc.result) <- treats
