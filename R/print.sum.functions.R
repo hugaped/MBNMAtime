@@ -748,3 +748,30 @@ print.mb.predict <- function(x, ...) {
 
   print(sum.df, digits = max(3, getOption("digits")-3), max=ncol(sum.df)*10, ...)
 }
+
+
+
+
+
+
+
+#' MBNMA ggplot2 theme style
+#' @noRd
+theme_mbnma <- function() {
+  ggplot2::theme_bw(base_family="Avenir") %+replace%
+    theme(
+      # change stuff here
+      panel.background  = element_blank(),
+      plot.background = element_rect(fill="gray96", colour=NA),
+      legend.background = element_rect(fill="transparent", colour=NA),
+      legend.key = element_rect(fill="transparent", colour=NA),
+
+      # From multinma
+      panel.border = ggplot2::element_rect(colour = "grey70", fill = NA),
+      panel.grid.major = ggplot2::element_line(colour = "grey95"),
+      panel.grid.minor = ggplot2::element_line(colour = "grey95"),
+      strip.background = ggplot2::element_rect(colour = "grey70",
+                                               fill = "grey90"),
+      strip.text = ggplot2::element_text(colour = "black")
+    )
+}
