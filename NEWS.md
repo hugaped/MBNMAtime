@@ -3,11 +3,11 @@
 ## Additions/changes
 - Added restricted cubic spline functions (`fun="rcs"`)
 - Modelling can now incorporate Standardised Mean Differences (`link="smd"`) or Ratios of Means (`link="log"`) to allow modelling of studies with different scales
-- Corrected calculation for Bayesian p-value in `mb.nodesplit()`
 
 ## Bug fixes
 
 ### Major
+- Corrected calculation for Bayesian p-value in `mb.nodesplit()`
 
 
 # MBNMAtime 0.1.3
