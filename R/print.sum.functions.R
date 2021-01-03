@@ -757,21 +757,21 @@ print.mb.predict <- function(x, ...) {
 
 #' MBNMA ggplot2 theme style
 #' @noRd
-theme_mbnma <- function() {
-  ggplot2::theme_bw(base_family="Avenir") %+replace%
-    theme(
+theme_mbnma <- function(...) {
+  ggplot2::theme_bw(...) +
+    ggplot2::theme(
       # change stuff here
-      panel.background  = element_blank(),
-      plot.background = element_rect(fill="gray96", colour=NA),
-      legend.background = element_rect(fill="transparent", colour=NA),
-      legend.key = element_rect(fill="transparent", colour=NA),
+      panel.background  = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill="gray96", colour=NA),
+      legend.background = ggplot2::element_rect(fill="transparent", colour=NA),
+      legend.key = ggplot2::element_rect(fill="transparent", colour=NA),
 
       # From multinma
-      panel.border = ggplot2::element_rect(colour = "grey70", fill = NA),
+      #panel.border = ggplot2::element_rect(colour = "grey70", fill = NA),
       panel.grid.major = ggplot2::element_line(colour = "grey95"),
       panel.grid.minor = ggplot2::element_line(colour = "grey95"),
-      strip.background = ggplot2::element_rect(colour = "grey70",
-                                               fill = "grey90"),
+      strip.background = ggplot2::element_rect(colour = "black",
+                                               fill = "lightsteelblue1"),
       strip.text = ggplot2::element_text(colour = "black")
     )
 }
