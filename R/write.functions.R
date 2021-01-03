@@ -627,7 +627,7 @@ y[i,k,1:fups[i]] ~ dmnorm.vcov(theta[i,k,1:fups[i]], cov.mat[i,k,1:fups[i],1:fup
   } else if (link=="log") {
     predictor <- "log(theta[i,k,m]) <- "
   } else if (link=="smd") {
-    predictor <- "phi[i,k,m] <- theta[i,k,m] * pool.sd[i,k]\ntheta[i,k,m] <- "
+    predictor <- "phi[i,k,m] <- theta[i,k,m] * pool.sd[i,m]\ntheta[i,k,m] <- "
     norm.like <- gsub("theta", "phi", norm.like)
     mnorm.like <- gsub("theta", "phi", mnorm.like)
 
@@ -719,7 +719,7 @@ cor[i,c,r] <- pow(rho, (abs(time[i,r] - time[i,c])) / timedif.0[i])
     pool.sd <- "
 for (m in 1:fups[i]) {
   df[i,m] <- sum(n[i,1:narm[i],m]) - narm[i]
-  pool.var[i,m] <- sum(nvar[i,1:narm[i],m])/df[i]
+  pool.var[i,m] <- sum(nvar[i,1:narm[i],m])/df[i,m]
   pool.sd[i,m] <- pow(pool.var[i,m], 0.5)
 }
 "

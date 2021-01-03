@@ -442,7 +442,7 @@ mb.run <- function(network, parameters.to.save=NULL,
   #### Run jags model ####
 
   data.ab <- network[["data.ab"]]
-  result.jags <- mb.jags(data.ab, model, fun=fun,
+  result.jags <- mb.jags(data.ab, model, fun=fun, link=link,
                        class=class, rho=rho, covar=covar, knots=knots,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
@@ -503,10 +503,10 @@ mb.run <- function(network, parameters.to.save=NULL,
 }
 
 
-mb.jags <- function(data.ab, model, fun=NULL,
+mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                        class=FALSE, rho=NULL, covar=NULL, knots=3,
                        parameters.to.save=parameters.to.save,
-                       likelihood=NULL, link=NULL,
+                       likelihood=NULL,
                        warn.rhat=FALSE, ...) {
 
   # Run checks
@@ -520,9 +520,9 @@ mb.jags <- function(data.ab, model, fun=NULL,
   checkmate::reportAssertions(argcheck)
 
 
-  if (is.null(likelihood) & is.null(link)) {
+  if (is.null(likelihood)) {
     # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, knots=knots, fun=fun) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, knots=knots, fun=fun, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
   } else if (is.null(rho) & is.null(covar)) {
     # For MBNMAdose
     # jagsdata <- getjagsdata(data.ab, class=class,

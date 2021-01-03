@@ -16,8 +16,8 @@
 #' * `treatment` Treatment identifiers (can be numeric, factor or character)
 #' * `class` An optional column indicating a particular class identifier. Observations with the same treatment
 #' identifier must also have the same class identifier.
-#' * `N` An optional column indicating the number of participants used to calculate the
-#' response at a given observation
+#' * `n` An optional column indicating the number of participants used to calculate the
+#' response at a given observation (required if modelling using Standardised Mean Differences)
 #' @param reference A number or character (depending on the format of `treatment` within `data.ab`)
 #' indicating the reference treatment in the network (i.e. those for which estimated relative treatment
 #' effects estimated by the model will be compared to).
@@ -87,8 +87,6 @@ mb.network <- function(data.ab, reference=1, description="Network") {
 #' @param data.ab A data frame of arm-level data in "long" format containing the columns:
 #' * `studyID` Study identifiers
 #' * `time` Numeric data indicating follow-up times
-#' * `y` Numeric data indicating the mean response for a given observation
-#' * `se` Numeric data indicating the standard error for a given observation
 #' * `treatment` Treatment identifiers (can be numeric, factor or character)
 #' * `class` An optional column indicating a particular class code. Treatments with the same identifier
 #' must also have the same class code.
@@ -116,6 +114,9 @@ add_index <- function(data.ab, reference=1) {
 
   # Run Checks
   checkmate::assertDataFrame(data.ab)
+
+
+  ##### Assigning reference treatment #####
 
   if (length(reference)>1) {
     stop("reference must be an object of length 1")
@@ -167,12 +168,12 @@ add_index <- function(data.ab, reference=1) {
   }
 
 
+  ######## Treatment coding ########
+
   # Numeric data must be checked that sequence is consistent for sequential numbering
   # Factor data must be allocated codes based on factor levels
   # Character data must be allocated codes automatically (reference is only one that matters)
 
-
-  #message("Treatments are being recoded to enforce sequential numbering")
   if (is.numeric(data.ab$treatment)) {
     activelist <- unique(data.ab$treatment)[-match(reference, unique(data.ab$treatment))]
 
@@ -196,11 +197,10 @@ add_index <- function(data.ab, reference=1) {
   data.ab$treatment <- as.numeric(factor(data.ab$treatment,
                                     levels=orderlist)) # provide factor for sorting so that reference is #1
 
-  #data.ab$treatment <- as.numeric(factor(data.ab$treatment,
-  #                                       levels=orderlist)) # provide factor for sorting so that reference is #1
 
 
   #### Check for multiple arms of same treatment in same study and throw an error if found
+
   check <- data.ab %>%
     dplyr::group_by(studyID, time, treatment) %>%
     dplyr::mutate(duplicate=dplyr::n())
@@ -219,12 +219,7 @@ add_index <- function(data.ab, reference=1) {
   #### Add indices
 
   data.ab <- dplyr::arrange(data.ab, studyID, time, treatment)
-  #data.ab <- arrange(data.ab, studyID, time, desc(treatment))
 
-  #data.ab <- transform(data.ab,studyID=as.numeric(factor(studyID)))
-  #data.ab <- arrange(data.ab, studyID, time, treatment)   NOT SURE THIS LINE IS NECESSARY
-
-  # Do not run this function with pylr loaded!!
   data.ab <- data.ab %>%
     dplyr::group_by(studyID, time) %>%
     dplyr::mutate(arm = sequence(dplyr::n()))
@@ -318,7 +313,7 @@ add_index <- function(data.ab, reference=1) {
 #' jagsdat <- getjagsdata(painnet$data.ab, rho="estimate", covstruct="AR1")
 #'
 #' @export
-getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", knots=3) {
+getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity", knots=3) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -344,6 +339,10 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   varnames <- c("studyID", "y", "se", "treatment", "time", "arm", "fupcount")
 
+  if (link=="smd") {
+    varnames <- append(varnames, "n")
+  }
+
   if (class==TRUE) {
     varnames <- append(varnames, "class")
   }
@@ -364,9 +363,10 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   # Prepare list variables at each level
   datavars.ikm <- c("y", "se")
+  if (link=="smd") {datavars.ikm <- append(datavars.ikm, "n")}
   datavars.ik <- c("treat")
   datavars.im <- c("time")
-  if (c("rcs", "ns", "bs") %in% fun) {
+  if (any(c("rcs", "ns", "bs") %in% fun)) {
     datavars.im <- append(datavars.im, "spline")
   }
 
@@ -400,10 +400,13 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   NS <- max(as.numeric(df$studyID))
 
   # Generate list in which to store individual data variables
-  datalist <- list(get(datavars.ikm[1]), get(datavars.ikm[2]),
-                   narm=narm, fups=fups, NS=NS, studyID=vector(),
-                   NT=max(df$treatment))
-  names(datalist)[1:2] <- datavars.ikm
+  datalist <- list(get(datavars.ikm[1]), get(datavars.ikm[2]))
+  if (link=="smd") {
+    datalist <- append(datalist, list(get(datavars.ikm[3])))
+  }
+  datalist <- append(datalist, list(narm=narm, fups=fups, NS=NS,
+                                    studyID=vector(), NT=max(df$treatment)))
+  names(datalist)[1:length(datavars.ikm)] <- datavars.ikm
 
   for (i in seq_along(datavars.ik)) {
     datalist[[datavars.ik[i]]] <- get(datavars.ik[i])
@@ -945,6 +948,24 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
   data.ab <- dplyr::arrange(data.ab, studyID, time, treatment)
 
   # Check data.ab has required column names
+  msg <- "Required variable names are: 'studyID', 'time', `treatment`, 'y' and `se`"
+  if (!all(varnames %in% names(data.ab))) {
+    if ("dose" %in% names(data.ab)) {
+      message(paste(
+        "`dose` is included as a variable in the dataset but required variables for time-course",
+        "MBNMA are not. Are you trying to run dose-response MBNMA?",
+        "If so use the MBNMAdose package rather than MBNMAtime.",
+        sep="\n"))
+    }
+    stop(msg)
+  }
+
+  # Check if N is in data.ab
+  if ("n" %in% names(data.ab)) {
+    varnames <- append(varnames, "n")
+  }
+
+  # Check data.ab has required column names
   if (all(varnames %in% names(data.ab))==FALSE) {
     stop("Required variable names are: 'studyID', 'time', 'y', 'se', 'treatment'")
   }
@@ -960,10 +981,21 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
     stop(paste0("NA values in:\n", paste(na.vars, collapse="\n")))
   }
 
+  # Check that required variables are numeric
+  if (!is.numeric(data.ab$time) | !is.numeric(data.ab$y) | !is.numeric(data.ab$se)) {
+    stop("`time`, `y` and `se` must all be numeric")
+  }
 
   # Check that all SEs are positive
   if (!all(data.ab[["se"]]>0)) {
     stop("All SEs must be >0")
+  }
+
+  # Check that all n are positive
+  if ("n" %in% varnames) {
+    if (!all(data.ab[["n"]]>=0)) {
+      stop("All values for n must be >=0")
+    }
   }
 
   # Generate narms index for checking if studies are only single-arm
