@@ -538,24 +538,27 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
     #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
   }
 
-  # Drop time from jagsdata in spline models
-  timedat <- jagsdata[["time"]]
+  # Remove studyID from jagsdata (not used in model)
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL
+
+  # Drop time from tempjags in spline models
   if (fun %in% c("rcs", "ns", "bs")) {
-    jagsdata[["time"]] <- NULL
+    tempjags[["time"]] <- NULL
   }
 
   # Put data from jagsdata into separate R objects
-  for (i in seq_along(jagsdata)) {
+  for (i in seq_along(tempjags)) {
     ##first extract the object value
-    temp <- jagsdata[[i]]
+    temp <- tempjags[[i]]
     ##now create a new variable with the original name of the list item
-    eval(parse(text=paste(names(jagsdata)[[i]],"<- temp")))
+    eval(parse(text=paste(names(tempjags)[[i]],"<- temp")))
   }
 
-  # Take names of variables in jagsdata for use in rjags
+  # Take names of variables in tempjags for use in rjags
   jagsvars <- list()
-  for (i in seq_along(names(jagsdata))) {
-    jagsvars[[i]] <- names(jagsdata)[i]
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
   }
 
   # Create a temporary model file
@@ -582,8 +585,6 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
       rhat.warning(out)
     }
   }
-
-  jagsdata[["time"]] <- timedat # add time back to jagsdata if spline models were used
 
   return(list("jagsoutput"=out, "jagsdata"=jagsdata))
 }
