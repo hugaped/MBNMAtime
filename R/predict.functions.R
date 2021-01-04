@@ -26,9 +26,12 @@
 #'   at time = 0. This is specified as a random number generator
 #'   (RNG) given as a string, and can take any RNG distribution for which a function exists
 #'   in R. For example: `"rnorm(n, 7, 0.5)"`.
-#' @param treats A character vector of treatment names or a numeric vector of treatment codes (as coded in `mbnma`)
-#'   that indicate which treatments to calculate predictions for. If left `NULL``
-#'   then predictions will be calculated for all treatments.
+#' @param treats A character vector of treatment/class names or a numeric vector of treatment/class codes (as coded in `mbnma`)
+#'   that indicate which treatments/classes to calculate predictions for. If left `NULL``
+#'   then predictions will be calculated for all treatments/classes. Whether vector should be for treatments or classes depends
+#'   on the value of `level`.
+#' @param level Can take either `"treatment"` to make predictions for treatments, or `"class"` to make predictions for classes (in
+#'   which case `object` must be a class effect model).
 #' @param ref.resp An object to indicate the value(s) to use for the reference treatment response in MBNMA models
 #'   in which the reference treatment response is not estimated within the model (i.e. those that model any time-
 #'   course paramters using `pool="rel"`). This can take a number of different formats depending
@@ -113,7 +116,7 @@
 #' @export
 predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, na.rm=TRUE)),
                           E0=0,
-                          treats = NULL,
+                          treats = NULL, level="treatment",
                           ref.resp=NULL, synth="fixed",
                           ...) {
   ######## CHECKS ########
@@ -123,16 +126,23 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   checkmate::assertClass(object, "mbnma", add=argcheck)
   checkmate::assertNumeric(times, lower=0, finite=TRUE, any.missing=FALSE, unique=TRUE,
                 sorted=TRUE, add=argcheck)
+  checkmate::assertChoice(level, choices=c("treatment", "class"), add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
   #checkmate::assertClass(treats, classes=c("numeric", "character"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Check whether class effects have been used and give error if so
-  # if (any(object[["model.arg"]][["class.effect"]]=="random")) {
-  #   stop("Random class effects have not yet been fully implemented in predict(`object`)")
-  # }
-  if (length(object[["model.arg"]][["class.effect"]])>0) {
-    stop("Class effects have not yet been fully implemented in predict(`object`)")
+  # Check if level="class" that class effect model was fitted
+  if (level=="class") {
+    if (length(object[["model.arg"]][["class.effect"]])==0) {
+      stop("`level` has been set to `class` but no class effect models were not used")
+    }
+    if (sum(grepl("^d\\.", object$parameters.to.save)) != sum(grepl("^D\\.", object$parameters.to.save))) {
+      stop("To predict level='class' all relative effects must be modelled with class effects")
+    }
+
+    level <- "classes"
+  } else if (level=="treatment") {
+    level <- "treatments"
   }
 
   # Check whether UME has been used and stop if so
@@ -176,17 +186,18 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   # If treats have not been specified then select all of them
   if (is.null(treats)) {
     #treats <- c(1:object[["model"]][["data"]]()[["NT"]])
-    treats <- object$network$treatments
+    treats <- object$network[[level]]
+    NT <- ifelse(level=="treatments", object$model.arg$jagsdata$NT, object$model.arg$jagsdata$Nclass)
   } else if (!is.null(treats)) {
     if (is.numeric(treats)) {
-      if (any(treats > object$model.arg$jagsdata$NT | any(treats<1))) {
-        stop("If given as numeric treatment codes, `treats` must be numbered similarly to treatment codes in `object`")
+      if (any(treats > NT | any(treats<1))) {
+        stop("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `object`")
       }
-      treats <- object$network$treatments[treats]
+      treats <- object$network[[level]][treats]
     }
     if (is.character(treats)) {
-      if (!all(treats %in% object$network$treatments)) {
-        stop("`treats` includes treatments not included in `object`")
+      if (!all(treats %in% object$network[[level]])) {
+        stop("`treats` includes treatments/classes not included in `object`")
       }
     }
   }
@@ -300,9 +311,13 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   }
 
   d.params <- time.params[grepl("^d\\.", time.params)]
+  if (level=="classes") {
+    D.params <- time.params[grepl("^D\\.", time.params)]
+  }
+
 
   predicts <- list()
-  treatsnum <- which(object$network$treatments %in% treats)
+  treatsnum <- which(object$network[[level]] %in% treats)
   for (treat in seq_along(treatsnum)) {
 
     # Assign treatment beta results to beta values in model
@@ -314,7 +329,11 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
     # Assign d results to d values in model
     for (i in seq_along(d.params)) {
-      assign(d.params[i], model.vals[[d.params[i]]][,treatsnum[treat]])
+      if (level=="treatments") {
+        assign(d.params[i], model.vals[[d.params[i]]][,treatsnum[treat]])
+      } else if (level=="classes") {
+        assign(d.params[i], model.vals[[D.params[i]]][,treatsnum[treat]])
+      }
     }
 
     #treatpred <- vector(mode="numeric", length=n)
@@ -500,7 +519,7 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
 
       # Assign results from MBNMA to result variables for each beta
       if (betatemp %in% arg.params |
-          paste0("d.", suffix) %in% arg.params) {
+          any(paste0(c("d.", "D."), suffix) %in% arg.params)) {
         if (mbnma$model.arg[[beta.name]]$method == "common" &  mbnma$model.arg[[beta.name]]$pool %in% c("const", "arm")) {
 
           # Store MCMC results for relevant parameters
@@ -545,9 +564,12 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
             # Store matrix of d values generated from random distribution determined by model parameters
             # This section could be performed for each iteration (rather than on posterior medians)
             mat <- cbind(mbnma$BUGSoutput$median[[paste0("d.", suffix)]],
-                         mbnma$BUGSoutput$median[[paste0("sd.", suffix)]])
-            model.vals[[paste0("d.", beta.incl[i])]] <-
-              apply(mat, MARGIN = 1, FUN=function(x) {stats::rnorm(n, x[1], x[2])})
+                         rep(mbnma$BUGSoutput$median[[paste0("sd.", suffix)]],
+                             length(mbnma$BUGSoutput$median[[paste0("d.", suffix)]]))
+                             )
+            mat <- apply(mat, MARGIN = 1, FUN=function(x) {stats::rnorm(n, x[1], x[2])})
+            mat[,1] <- rep(0, nrow(mat))
+            model.vals[[paste0("d.", beta.incl[i])]] <- mat
           }
           #}
         }
@@ -562,6 +584,38 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
 
       } else {
         stop("Parameter(s) in time-course function not included in those monitored in JAGS model")
+      }
+
+      # Add class effects
+      if (length(mbnma$model.arg$class.effect)>0) {
+        if (beta.name %in% names(mbnma$model.arg$class.effect) &
+            any(grepl(paste0("D\\.", suffix), colnames(sims.matrix)))) {
+
+
+          if (mbnma$model.arg$class.effect[[beta.name]]=="common") {
+            # Store MCMC results for relevant parameters
+            model.vals[[paste0("D.", beta.incl[i])]] <-
+              sims.matrix[,grepl(paste0("^D\\.", suffix), colnames(sims.matrix))]
+          } else if (mbnma$model.arg$class.effect[[beta.name]]=="random") {
+            if (!any(grepl(paste0("sd\\.D\\.", suffix), colnames(sims.matrix)))) {
+              stop(paste0("sd.D has not been monitored for random class effect for d.", suffix,
+                          "\nRandom class effects extracted from model for prediction"))
+            }
+
+            # Generate D values samples from distribution
+            len <- sum(grepl(paste0("^D\\.", suffix), colnames(sims.matrix)))
+            mat <- array(dim=c(n, len, 2))
+            mat[,,1] <- sims.matrix[,grepl(paste0("^D\\.", suffix), colnames(sims.matrix))]
+            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.D\\.", suffix), colnames(sims.matrix))]
+            mat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+
+            mat[,1] <- rep(0, nrow(mat))
+            model.vals[[paste0("D.", beta.incl[i])]] <- mat
+          }
+
+          time.params <- append(time.params, paste0("D.", beta.incl[i]))
+
+        }
       }
     }
   }
