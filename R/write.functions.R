@@ -39,19 +39,17 @@
 #'   beta.1="rel.random", beta.2="rel.common")
 #' cat(model)
 #' @export
-mb.write <- function(fun="linear", user.fun=NULL, alpha="study", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
-                        var.scale=NULL, link="identity",
+mb.write <- function(fun=linear(), link="identity", positive.scale=TRUE, intercept=TRUE,
+                     rho=NULL, covar=NULL, var.scale=NULL,
                         class.effect=list(), UME=FALSE) {
 
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
-  checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
+  checkmate::assertClass(fun, classes = "timefun", add=argcheck)
+  checkmate::assertChoice(link, choices=c("identity", "log", "smd"), add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  #checkmate::assertLogical(timecor, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertChoice(covar, choices=c("CS", "AR1"), null.ok=TRUE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -64,23 +62,13 @@ mb.write <- function(fun="linear", user.fun=NULL, alpha="study", beta.1="rel.com
   # Change UME to relate to parameters in model
   if (length(UME)==1) {
     if (UME==TRUE) {
-      UME <- vector()
-      treat.params <- parameters[2:5]
-      for (i in seq_along(treat.params)) {
-        if (!is.null(get(treat.params[i]))) {
-          if (get(treat.params[i]) %in% c("rel.common","rel.random")) {
-            UME <- append(UME, treat.params[i])
-          }
-        }
-      }
+      UME <- fun$params[which(fun$bpool=="rel")]
     }
   }
 
-  write.check(fun=fun, user.fun=user.fun, alpha=alpha,
-                                      beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                                      positive.scale=positive.scale, intercept=intercept, link=link,
-                                      rho=rho, covar=covar, var.scale=var.scale, knots=knots,
-                                      class.effect=class.effect, UME=UME)
+  write.check(fun=fun, positive.scale=positive.scale, intercept=intercept, link=link,
+              rho=rho, covar=covar, var.scale=var.scale, knots=knots,
+              class.effect=class.effect, UME=UME)
 
   model <- write.model()
 
@@ -276,24 +264,16 @@ time.fun <- function(fun="linear", user.fun=NULL, alpha="arm", knots=3,
 #'   will return an object that indicates whether the arguments imply modelling a
 #'   correlation between time points if it passes.
 #'
-write.check <- function(fun="linear", user.fun=NULL, alpha="arm", beta.1="rel.common", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                        positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL, knots=3,
+write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
                         var.scale=NULL, link="identity",
-                        class.effect=list(), UME=FALSE) {
-  parameters <- c("alpha", "beta.1", "beta.2", "beta.3", "beta.4")
+                        class.effect=list(), UME=c()) {
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(alpha, choices=c("arm", "study"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(link, choices=c("identity", "log", "smd"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
-  checkmate::assertNumeric(var.scale, null.ok = TRUE)
-  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
-
-  timefuns <- c("none", "linear", "quadratic", "exponential", "emax", "emax.hill",
-                "fract.poly.first", "fract.poly.second", "piecelinear", "user", "rcs", "bs", "ns")
-  checkmate::assertChoice(fun, choices=timefuns,
-                          null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(var.scale, null.ok = TRUE, add=argcheck)
+  checkmate::assertClass(fun, "timefun", add = argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check knots

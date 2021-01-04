@@ -282,28 +282,25 @@
 #' }
 #' @export
 mb.run <- function(network, parameters.to.save=NULL,
-                      fun="linear", user.fun=NULL,
-                      alpha="study", beta.1=list(pool="rel", method="common"),
-                      beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                      knots=3, link="identity",
-                      positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
+                      fun=linear(), positive.scale=FALSE, intercept=TRUE,
+                      link="identity",
+                      rho=NULL, covar=NULL,
                       var.scale=NULL,
                       class.effect=list(), UME=FALSE,
                       pd="pd.kl", parallel=FALSE,
                       priors=NULL,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
-                      model.file=NULL,
-                      arg.params=NULL, ...
+                      model.file=NULL, ...
 ) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(fun, classes = "timefun", add=argcheck)
   checkmate::assertClass(network, "mb.network", add=argcheck)
   checkmate::assertCharacter(model.file, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertList(arg.params, unique=TRUE, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -312,96 +309,14 @@ mb.run <- function(network, parameters.to.save=NULL,
     n.burnin <- n.burnin - 1
   }
 
-  # Check betas are specified correctly and prepare format for subsequent functions
-  for (i in 1:4) {
-    betaname <- paste0("beta.", i)
-    if (!is.null(get(betaname))) {
-      assign(betaname, check.beta.arg(get(betaname)))
-      assign(paste0(betaname, ".str"), compound.beta(get(betaname)))
-    } else if (is.null(get(betaname))) {
-      assign(paste0(betaname, ".str"), NULL)
-    }
-  }
-
-  if (!is.null(arg.params)) {
-    if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
-      stop("arg.params has been incorrectly specified")
-    }
-    #wrap.params <- c("emax", "et50")
-    wrap.params <- arg.params$wrap.params
-    #run.params <- c("beta.1", "beta.2")
-    run.params <- arg.params$run.params
-
-    fun.params <- list(names(class.effect), UME)
-
-    # Check class effect and UME names match wrapper arguments
-    if (!all(names(class.effect) %in% wrap.params)) {
-      stop(paste0("The following list element names in `class.effect` do not match time-course parameter names for the given function:\n",
-                  paste(names(class.effect)[!(names(class.effect) %in% wrap.params)], collapse=", ")))
-    }
-    if (is.character(UME) & !all(UME %in% wrap.params)) {
-      stop(paste0("The following parameters specified in `UME` do not match time-course parameter names for the given function:\n",
-                  paste(UME[!(UME %in% wrap.params)], collapse=", ")))
-    }
-
-    for (i in seq_along(fun.params)) {
-      for (k in seq_along(fun.params[[i]])) {
-        for (m in seq_along(wrap.params)) {
-          if (wrap.params[m] %in% fun.params[[i]][k]) {
-            fun.params[[i]][k] <- run.params[m]
-          }
-        }
-      }
-      # for (k in seq_along(wrap.params)) {
-      #   print(wrap.params[k])
-      #   if (wrap.params[k] %in% fun.params[[i]]) {
-      #     fun.params[[i]] <- run.params[k]
-      #   }
-      # }
-    }
-
-    names(class.effect) <- fun.params[[1]]
-    UME <- fun.params[[2]]
-  }
 
   if (is.null(model.file)) {
-    model <- mb.write(fun=fun, user.fun=user.fun,
-                      alpha=alpha,
-                      beta.1=beta.1.str, beta.2=beta.2.str,
-                      beta.3=beta.3.str, beta.4=beta.4.str,
-                      knots=knots, link=link,
+    model <- mb.write(fun=fun, link=link,
                       positive.scale=positive.scale, intercept=intercept,
                       rho=rho, covar=covar,
                       class.effect=class.effect, UME=UME,
                       var.scale=var.scale
     )
-
-    # Change beta.1 and beta.2 to emax and et50, etc. if necessary
-    if (!is.null(arg.params)) {
-      code.params <- c("d", "delta", "sd", "beta", "D", "sd.D", "BETA", "sd.BETA")
-      for (i in seq_along(wrap.params)) {
-        for (k in seq_along(code.params)) {
-          model <- gsub(paste(code.params[k], strsplit(run.params[i], split="[.]")[[1]][2], sep="."),
-                        paste(code.params[k], wrap.params[i], sep="."), model)
-        }
-      }
-
-      # This bit is messy...remove if problematic though it will cause issues with parameters.to.save
-      param.list <- list("beta.1"=beta.1.str, "beta.2"=beta.2.str, "beta.3"=beta.3.str, "beta.4"=beta.4.str)
-      temp <- names(unlist(sapply(param.list, function(x) {
-        if(!is.null(x)) {
-          if (x %in% c("arm.common", "arm.random", "const.common", "const.random")) {
-            x
-          }
-        }
-      })))
-      temp <- unlist(sapply(temp, FUN=function(x) strsplit(x, split="[.]")[[1]][2]))
-      wrap.params <- append(wrap.params, temp)
-
-    } else {
-      wrap.params <- which(sapply(list(beta.1.str, beta.2.str, beta.3.str, beta.4.str),
-                                  is.character))
-    }
 
     if (!is.null(priors)) {
       model <- replace.prior(priors=priors, model=model)
@@ -415,7 +330,7 @@ mb.run <- function(network, parameters.to.save=NULL,
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
     parameters.to.save <-
-      gen.parameters.to.save(model.params=wrap.params, model=model)
+      gen.parameters.to.save(fun=fun, class.effect=class.effect, model=model)
   }
 
   # Add nodes to monitor to calculate plugin pd
@@ -434,10 +349,6 @@ mb.run <- function(network, parameters.to.save=NULL,
             paste(pluginvars, collapse=", "))
   }
 
-  # Ensure timecor and class are set correctly for getjagsdata
-  # if (grepl("rho", model)==TRUE) {
-  #   timecor <- TRUE
-  # } else {timecor <- FALSE}
   if (length(class.effect)>0) {
     class <- TRUE
   } else {class <- FALSE}
@@ -447,7 +358,7 @@ mb.run <- function(network, parameters.to.save=NULL,
 
   data.ab <- network[["data.ab"]]
   result.jags <- mb.jags(data.ab, model, fun=fun, link=link,
-                       class=class, rho=rho, covar=covar, knots=knots,
+                       class=class, rho=rho, covar=covar,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
                        n.burnin=n.burnin, n.thin=n.thin,
@@ -478,18 +389,15 @@ mb.run <- function(network, parameters.to.save=NULL,
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
-                    "fun"=fun, "user.fun"=user.fun,
+                    "fun"=fun,
                     "jagscode"=model, "jagsdata"=jagsdata,
-                    "alpha"=alpha,
-                    "beta.1"=beta.1, "beta.2"=beta.2,
-                    "beta.3"=beta.3, "beta.4"=beta.4,
-                    "knots"=knots, "link"=link,
+                    "link"=link,
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
                     "var.scale"=var.scale,
-                    "parallel"=parallel, "pd"=pd,
-                    "priors"=get.prior(model), "arg.params"=arg.params)
+                    "parallel"=parallel, "pd"=pd)#,
+                    #"priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
   result[["network"]] <- network
   # result[["treatments"]] <- network[["treatments"]]
@@ -508,7 +416,7 @@ mb.run <- function(network, parameters.to.save=NULL,
 
 
 mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
-                       class=FALSE, rho=NULL, covar=NULL, knots=3,
+                       class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
                        likelihood=NULL,
                        warn.rhat=FALSE, ...) {
@@ -516,17 +424,17 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
-  checkmate::assertCharacter(model, any.missing=FALSE, len=1, add=argcheck)
+  checkmate::assertCharacter(model, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
                   null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(fun, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertClass(fun, "timefun", add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
   if (is.null(likelihood)) {
     # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, knots=knots, fun=fun, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, knots=fun$knots, fun=fun$name, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
   } else if (is.null(rho) & is.null(covar)) {
     # For MBNMAdose
     # jagsdata <- getjagsdata(data.ab, class=class,
@@ -535,11 +443,8 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
 
 
   # Add variable for maxtime to jagsdata if required
-  if (grepl("maxtime", model)) {
+  if (any(grepl("maxtime", model))) {
     jagsdata[["maxtime"]] <- max(data.ab$time)
-  } else if (grepl("maxdose", model)) {
-    # Only used in MBNMAdose
-    #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
   }
 
   # Remove studyID from jagsdata (not used in model)
@@ -547,7 +452,7 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   tempjags[["studyID"]] <- NULL
 
   # Drop time from tempjags in spline models
-  if (fun %in% c("rcs", "ns", "bs")) {
+  if (fun$name %in% c("rcs", "ns", "bs")) {
     tempjags[["time"]] <- NULL
   }
 
@@ -568,7 +473,7 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   # Create a temporary model file
   tmpf=tempfile()
   tmps=file(tmpf,"w")
-  cat(model,file=tmps)
+  cat(paste(model, collapse="\n"),file=tmps)
   close(tmps)
 
   out <- tryCatch({
@@ -598,72 +503,61 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
 
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
-#' Identical to `gen.parameters.to.save()` in MBNMAdose
-#'
-#' @param model.params A character or numeric vector containing the names of the
-#' dose-response parameters in the model
+#' @inheritParams mb.run
 #' @param model A JAGS model written as a character object
-gen.parameters.to.save <- function(model.params, model) {
+gen.parameters.to.save <- function(fun, class.effect, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
   # model is a JAGS model written as a character object
 
-  checkmate::assertCharacter(model, len=1)
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(fun, classes = "timefun", add=argcheck)
+  checkmate::assertCharacter(model, min.len = 10)
+  checkmate::reportAssertions(argcheck)
 
-  model.params <- as.character(model.params)
 
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
-  for (i in seq_along(model.params)) {
-    # if (grepl(paste0("\\\nd\\.", model.params[i], "\\[(c,)?k\\] ~"), model)==TRUE |
-    #     grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
-    if (grepl(paste0("\\\nd\\.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
-    } else if (grepl(paste0("\\\nd\\.", model.params[i]), model)==FALSE) {
-      if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("beta.", model.params[i]))
-      }
-    }
-    if (grepl(paste0("\\\nsd\\.", model.params[i], " ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nsd\\.beta.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.beta.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nD\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("D.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nsd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.D.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nBETA\\.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("BETA.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nsd\\.BETA\\.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.BETA.", model.params[i]))
-    }
-  }
+  for (i in seq_along(fun$params)) {
 
-  for (i in 1:4) {
-    if (grepl(paste0("\\\nd\\.", i, " ~"), model)==TRUE) {
+    # For unnamed parameters
+    if (any(grepl(paste0("^d\\.", i), model))==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", i))
+    }
+    if (any(grepl(paste0("^D\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("D.", i))
+    }
+    if (any(grepl(paste0("^sd\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.", i))
+    }
+    if (any(grepl(paste0("^sd\\.D\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.D.", i))
+    }
+
+    # For named parameters
+    if (any(grepl(fun$params[i], model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, fun$params[i])
+    }
+    if (any(grepl(toupper(fun$params[i]), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, toupper(fun$params[i]))
+    }
+    if (any(grepl(paste0("^sd\\.", fun$params[i]), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.", fun$params[i]))
+    }
+    if (any(grepl(paste0("^sd\\.", toupper(fun$params[i])), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.", toupper(fun$params[i])))
     }
   }
 
   # For MBNMAtime
-  if (grepl("rho", model)==TRUE) {
+  if (any(grepl("rho", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, "rho")
   } else {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
   }
 
-  # For MBNMAdose
-  if (grepl("\\\nsd ~", model)==TRUE) {
-    parameters.to.save <- append(parameters.to.save, "sd")
-  }
-
   return(unique(parameters.to.save))
-
 }
 
 
