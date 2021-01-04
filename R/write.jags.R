@@ -511,8 +511,8 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
           # Insert prior for heterogeneity
           model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=c(paste0("sd.", i, " ~ dnorm(0,0.0025) T(0,)"),
-                                  paste0("tau.", i, " <- pow(sd.", i, ", -2)"))
+                                x=c(paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)"),
+                                  paste0("tau.", i, " <- pow(sd.beta.", i, ", -2)"))
                                 )
         }
       } else {
@@ -534,12 +534,12 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
           # Insert prior for heterogeneity
           model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=c(paste0("sd.", i, " ~ dnorm(0,0.0025) T(0,)"),
-                                  paste0("tau.", i, " <- pow(sd.", i, ", -2)"))
+                                x=c(paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)"),
+                                  paste0("tau.", i, " <- pow(sd.beta.", i, ", -2)"))
           )
 
           # Insert multi-arm correction zero
-          model <- model.insert(model, pos=which(names(model)=="start"),
+          model <- model.insert(model, pos=which(names(model)=="study"),
                                 x=paste0("w.", i, "[i,1] <- 0"))
         }
       }
@@ -896,11 +896,11 @@ add.funparams <- function(model, fun) {
   for (i in seq_along(fun$params)) {
     if (!grepl("beta", fun$params[i])) {
       if (fun$apool[i]=="rel") {
-        model <- gsub(paste0("d\\.", i, "\\["), paste0(names(fun$apool)[i], "["), model)
+        model <- gsub(paste0("(?<![A-z])d\\.", i, "\\["), paste0(names(fun$apool)[i], "["), model, perl=TRUE)
       } else if (fun$apool[i]=="abs" & is.character(fun$amethod[i])) {
         model <- gsub(paste0("beta\\.", i), names(fun$apool)[i], model)
       }
-      model <- gsub(paste0("sd\\.", i), paste0("sd.", names(fun$apool)[i]), model)
+      model <- gsub(paste0("sd\\.beta.", i), paste0("sd.", names(fun$apool)[i]), model)
 
       # Check for class effects
       model <- gsub(paste0("D\\.", i, "\\["), paste0(toupper(names(fun$apool)[i]), "["), model)

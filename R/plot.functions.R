@@ -754,35 +754,31 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 
   # Add all available params if is.null(params)
   if (is.null(params)) {
-    params <- vector()
 
-    # Add d
-    params <- append(params,
-                     x[["parameters.to.save"]][grep("^d\\.", x[["parameters.to.save"]])]
+    params <- c(x$model.arg$fun$params,
+                paste0("sd.", x$model.arg$fun$params),
+                toupper(x$model.arg$fun$params),
+                paste0("sd.", toupper(x$model.arg$fun$params)),
+                paste0("d.", 1:4),
+                paste0("sd.beta.", 1:4),
+                paste0("D.", 1:4),
+                paste0("sd.BETA.", 1:4)
     )
 
-    # Add D
-    params <- append(params,
-                     x[["parameters.to.save"]][grep("^D\\.", x[["parameters.to.save"]])]
-    )
+    params <- params[params %in% x$parameters.to.save]
 
-    # Add BETA
-    params <- append(params,
-                     x[["parameters.to.save"]][grep("^BETA\\.", x[["parameters.to.save"]])]
-    )
-
-    # Add beta
-    for (i in seq_along(x[["BUGSoutput"]][["root.short"]])) {
-      if (grepl("^beta\\.", x[["BUGSoutput"]][["root.short"]][i]) &
-          length(x[["BUGSoutput"]][["long.short"]][[i]])>1) {
-        params <- append(params, x[["BUGSoutput"]][["root.short"]][i])
+    drop <- vector()
+    for (i in seq_along(params)) {
+      if (length(x[["BUGSoutput"]][["median"]][[params[i]]])<=1) {
+        drop <- append(drop, i)
       }
     }
+    params <- params[-drop]
+
     if (length(params)==0) {
       stop("No time-course consistency parameters can be identified from the model")
     }
   }
-
 
   # Compile parameter data into one data frame
   mb.sum <- as.data.frame(x[["BUGSoutput"]][["summary"]])
@@ -794,8 +790,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
   }
   plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
 
-  # Change param labels for agents
-  treatdat <- plotdata[grepl("^d\\.", rownames(plotdata)) | grepl("^beta\\.", rownames(plotdata)),]
+  # Change param labels for treatments
+  treatdat <- plotdata[!grepl("[[:upper:]]", rownames(plotdata)),]
   if (!is.null(treat.labs)) {
     treatcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(treatdat)))
     if (length(treat.labs)!=max(treatcodes)) {
@@ -803,21 +799,21 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
     } else {
       t.labs <- treat.labs[sort(unique(treatcodes))]
     }
-  } else if ("treatments" %in% names(x)) {
+  } else if ("treatments" %in% names(x$network)) {
     t.labs <- x$network[["treatments"]]
   } else {
     t.labs <- sort(unique(treatdat$param))
   }
 
   # Change param labels for classes
-  classdat <- plotdata[grepl("^D\\.", rownames(plotdata)) | grepl("^BETA\\.", rownames(plotdata)),]
+  classdat <- plotdata[grepl("[[:upper:]]", rownames(plotdata)),]
   c.labs <- vector()
   if (nrow(classdat)!=0) {
     if (!is.null(class.labs)) {
       classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
       c.labs <- class.labs[classcodes]
-    } else if ("classes" %in% names(x)) {
-      c.labs <- x[["classes"]][x[["classes"]]!="Placebo"]
+    } else if ("classes" %in% names(x$network)) {
+      c.labs <- x$network[["classes"]][x$network[["classes"]]!="Placebo"]
     } else {
       c.labs <- sort(unique(classdat$param))
     }
@@ -825,8 +821,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 
   # Increase param number for classes
   ntreat <- ifelse(nrow(treatdat)>0, max(treatdat$param), 0)
-  plotdata$param[grepl("^D\\.", rownames(plotdata)) | grepl("^BETA\\.", rownames(plotdata))] <-
-    plotdata$param[grepl("^D\\.", rownames(plotdata)) | grepl("^BETA\\.", rownames(plotdata))] + ntreat
+  plotdata$param[grepl("[[:upper:]]", rownames(plotdata))] <-
+    plotdata$param[grepl("[[:upper:]]", rownames(plotdata))] + ntreat
 
   # Attach labels
   if (nrow(treatdat)>0) {
@@ -838,7 +834,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
     stop("`treat.labs` or `class.labs` have not been specified correctly")
   }
 
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=factor(plotdata$param))) +
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
     ggplot2::coord_flip()
