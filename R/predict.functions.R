@@ -562,12 +562,12 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
               sims.matrix[,grepl(paste0("^d\\.", suffix), colnames(sims.matrix))]
           } else if (mbnma$model.arg[[beta.name]]$method=="random") {
             # Store matrix of d values generated from random distribution determined by model parameters
-            # This section could be performed for each iteration (rather than on posterior medians)
-            mat <- cbind(mbnma$BUGSoutput$median[[paste0("d.", suffix)]],
-                         rep(mbnma$BUGSoutput$median[[paste0("sd.", suffix)]],
-                             length(mbnma$BUGSoutput$median[[paste0("d.", suffix)]]))
-                             )
-            mat <- apply(mat, MARGIN = 1, FUN=function(x) {stats::rnorm(n, x[1], x[2])})
+            len <- sum(grepl(paste0("^d\\.", suffix), colnames(sims.matrix)))
+            mat <- array(dim=c(n, len, 2))
+            mat[,,1] <- sims.matrix[,grepl(paste0("^d\\.", suffix), colnames(sims.matrix))]
+            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", suffix), colnames(sims.matrix))]
+            mat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+
             mat[,1] <- rep(0, nrow(mat))
             model.vals[[paste0("d.", beta.incl[i])]] <- mat
           }
