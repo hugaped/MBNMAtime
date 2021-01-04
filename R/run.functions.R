@@ -307,6 +307,10 @@ mb.run <- function(network, parameters.to.save=NULL,
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
+  if (n.iter==n.burnin) {
+    n.burnin <- n.burnin - 1
+  }
 
   # Check betas are specified correctly and prepare format for subsequent functions
   for (i in 1:4) {
@@ -611,10 +615,11 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[(c,)?k\\] ~"), model)==TRUE |
-        grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
+    # if (grepl(paste0("\\\nd\\.", model.params[i], "\\[(c,)?k\\] ~"), model)==TRUE |
+    #     grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
+    if (grepl(paste0("\\\nd\\.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
-    } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
+    } else if (grepl(paste0("\\\nd\\.", model.params[i]), model)==FALSE) {
       if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
         parameters.to.save <- append(parameters.to.save, paste0("beta.", model.params[i]))
       }

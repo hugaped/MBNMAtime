@@ -420,7 +420,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
     codes <- dplyr::arrange(codes, df$treatment)
     classcode <- unique(codes)$df.class
 
-    datalist[["Nclass"]] <- Nclass
+    datalist[["Nclass"]] <- length(unique(df$class))
     datalist[["class"]] <- classcode
   }
 

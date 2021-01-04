@@ -3,6 +3,7 @@
 ## Additions/changes
 - Added restricted cubic spline functions (`fun="rcs"`)
 - Modelling can now incorporate Standardised Mean Differences (`link="smd"`) or Ratios of Means (`link="log"`) to allow modelling of studies with different scales
+- `lower_better` argument used instead of `decreasing` for rankings
 
 ## Bug fixes
 
