@@ -54,7 +54,8 @@ rank <- function (x, ...) {
 #'   Area Under the Curve (AUC). This accounts for the effect of multiple
 #'   time-course parameters simultaneously on the treatment response, but will
 #'   be impacted by the range of time over which AUC is calculated (`int.range`).
-#'   Currently `"auc"` cannot be ranked for class effect models.
+#'   This requires integration over `int.range` and can take some time to run (particularly)
+#'   for spline functions as this uses the trapezoid method rather than adaptive quadrature).
 #'
 #'   As with other post-estimation functions, `rank()` should only be performed on
 #'   models which have successfully converged. Note that rankings can be very sensitive to
@@ -81,7 +82,8 @@ rank <- function (x, ...) {
 #'
 #' @export
 rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
-                       int.range=NULL, level="treatment", n.iter=x$BUGSoutput$n.sims,
+                       int.range=NULL,
+                       level="treatment", n.iter=x$BUGSoutput$n.sims,
                        ...) {
 
   # Run checks
@@ -105,9 +107,9 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
   if ("auc" %in% params) {
     params <- c(params[params!="auc"], "auc")
 
-    if (length(x$model.arg$class.effect)>0) {
-      stop("AUC cannot currently be calculated for class effect models")
-    }
+    # if (length(x$model.arg$class.effect)>0) {
+    #   stop("AUC cannot currently be calculated for class effect models")
+    # }
   }
 
   # If treats have not been specified then select all of them
@@ -164,7 +166,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
 
     } else if (params[i]=="auc") {
       rank.result[["auc"]] <- rankauc(x, lower_better=lower_better,
-                                       treats=treats,
+                                       treats=treats, level=level,
                                        int.range=int.range, n.iter=n.iter, ...)
     } else {
       stop(paste0(params[i],
@@ -192,29 +194,42 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
 #' @inherit rank.mbnma return
 #' @inherit rank.mbnma details
 #'
-rankauc <- function(mbnma, lower_better=FALSE, treats=NULL,
-                     int.range=NULL, n.iter=mbnma$BUGSoutput$n.sims, ...) {
+rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
+                    int.range=c(0,max(mbnma$network$data.ab$time)),
+                    n.iter=mbnma$BUGSoutput$n.sims, subdivisions=100, ...) {
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
-  checkmate::assertCharacter(treats, null.ok = TRUE)
+  checkmate::assertCharacter(treats, null.ok = FALSE)
+  checkmate::assertChoice(level, choices = c("treatments", "classes"), add=argcheck)
   checkmate::assertLogical(lower_better, any.missing=FALSE, len=1, add=argcheck)
-  checkmate::assertIntegerish(int.range, lower=0, any.missing=FALSE, len=2, sorted=TRUE, null.ok = TRUE,
+  checkmate::assertIntegerish(subdivisions, lower=2, add=argcheck)
+  checkmate::assertIntegerish(int.range, lower=0, any.missing=FALSE, len=2, sorted=TRUE,
                               add=argcheck)
   #checkmate::assertInt(subdivisions, lower=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Initial predict parameters
   #nsims <- mbnma$BUGSoutput$n.sims
-  timecourse <- init.predict(mbnma)[["timecourse"]]
-  beta.incl <- init.predict(mbnma)[["beta.incl"]]
+  # timecourse <- init.predict(mbnma)[["timecourse"]]
+  # beta.incl <- init.predict(mbnma)[["beta.incl"]]
 
   # Extract parameter values from MBNMA result
-  model.vals <- get.model.vals(mbnma, timecourse, beta.incl, E0=0)
+  model.vals <- get.model.vals(mbnma, E0=0,
+                               level=level)
 
   # Create vector of parameters in expanded time-course function
   timecourse <- model.vals[["timecourse"]]
   time.params <- model.vals[["time.params"]]
+
+  # Switch spline in timecourse and generate spline matrix
+  if (any(c("rcs", "ns", "bs") %in% mbnma$model.arg$fun$name)) {
+    timecourse <- gsub("\\[m\\,", "[,", timecourse)
+
+    seg <- seq(from=int.range[1], to=int.range[2], length.out=subdivisions)
+    spline <- genspline(seg,
+                        spline=mbnma$model.arg$fun$name, knots=mbnma$model.arg$fun$knots)
+  }
 
   # Replace mu with 0
   for (i in seq_along(time.params)) {
@@ -223,6 +238,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL,
       time.params <- time.params[-i]
     }
   }
+
 
   # NEW SECTION
   auc.result <- matrix(ncol=length(treats))
@@ -235,7 +251,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL,
     auc <- vector()
     rank <- matrix(nrow=length(treats), ncol=length(treats))
 
-    treatsnum <- which(mbnma$network$treatments %in% treats)
+    treatsnum <- which(mbnma$network[[level]] %in% treats)
     for (treat in seq_along(treatsnum)) {
       time.mcmc <- timecourse
 
@@ -249,17 +265,27 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL,
                           time.mcmc)
       }
 
-      temp <- paste("int.fun <- function(time) {",
-                    time.mcmc,
-                    "}",
-                    sep=" ")
-      eval(parse(text=temp))
+      if (any(c("rcs", "ns", "bs") %in% mbnma$model.arg$fun$name)) {
 
-      integral <- stats::integrate(int.fun,
-                            lower=int.range[1], upper=int.range[2])#,
-                            #...)
+        # Using trapezoid method for spline function
+        y <- eval(parse(text=time.mcmc))
+        auc <- append(auc, sum(diff(seg)*zoo::rollmean(y,2)))
 
-      auc <- append(auc, integral$value)
+      } else {
+        temp <- paste("int.fun <- function(time) {",
+                      time.mcmc,
+                      "}",
+                      sep=" ")
+
+        eval(parse(text=temp))
+
+        integral <- stats::integrate(int.fun,
+                                     lower=int.range[1], upper=int.range[2],
+                                     subdivisions=subdivisions)
+
+        auc <- append(auc, integral$value)
+      }
+
     }
 
     # Need to name columns with treats

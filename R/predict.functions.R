@@ -240,7 +240,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
     # If ref.resp specified as values for each time-course parameter (in a list)
     if (any(class(ref.resp)=="list")) {
       msg <- paste0("Priors required for: ", paste(mu.params, collapse=", "))
-      message(crayon::blue(msg))
+      message(msg)
 
       names(ref.resp) <- paste0("mu.", match(names(ref.resp), object$model.arg$fun$params))
 
