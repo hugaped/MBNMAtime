@@ -292,7 +292,6 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   if (any(c("rcs", "bs", "ns") %in% object$model.arg$fun)) {
     spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots)
   }
-  print(timecourse)
 
   ########## Predict responses ###########
 
