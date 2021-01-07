@@ -282,7 +282,7 @@
 #' }
 #' @export
 mb.run <- function(network, parameters.to.save=NULL,
-                      fun=linear(), positive.scale=FALSE, intercept=TRUE,
+                      fun=texp(), positive.scale=FALSE, intercept=TRUE,
                       link="identity",
                       rho=NULL, covar=NULL,
                       var.scale=NULL,
@@ -396,8 +396,8 @@ mb.run <- function(network, parameters.to.save=NULL,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
                     "var.scale"=var.scale,
-                    "parallel"=parallel, "pd"=pd)#,
-                    #"priors"=get.prior(model))
+                    "parallel"=parallel, "pd"=pd,
+                    "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
   result[["network"]] <- network
   # result[["treatments"]] <- network[["treatments"]]
@@ -434,7 +434,7 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
 
   if (is.null(likelihood)) {
     # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, knots=fun$knots, fun=fun$name, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
   } else if (is.null(rho) & is.null(covar)) {
     # For MBNMAdose
     # jagsdata <- getjagsdata(data.ab, class=class,
@@ -547,6 +547,11 @@ gen.parameters.to.save <- function(fun, class.effect, model) {
     }
     if (any(grepl(paste0("^sd\\.", toupper(fun$params[i])), model))==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.", toupper(fun$params[i])))
+    }
+
+    # Remove if both d and beta are in for any parameter
+    if (paste0("d.",i) %in% parameters.to.save & paste0("beta.",i) %in% parameters.to.save) {
+      parameters.to.save <- parameters.to.save[!parameters.to.save %in% paste0("beta.",i)]
     }
   }
 
@@ -1720,8 +1725,10 @@ mb.update <- function(mbnma, param="theta",
   checkmate::assertChoice(param, choices = c("dev", "resdev", "theta"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (!(grepl(paste0("\n", param), mbnma$model.arg$jagscode)==TRUE |
-        grepl(paste0(" ", param), mbnma$model.arg$jagscode)==TRUE)) {
+  # if (!(grepl(paste0("\n", param), mbnma$model.arg$jagscode)==TRUE |
+  #       grepl(paste0(" ", param), mbnma$model.arg$jagscode)==TRUE)) {
+  if (!(any(grepl(paste0("^", param), mbnma$model.arg$jagscode)==TRUE) |
+        any(grepl(paste0(" ", param), mbnma$model.arg$jagscode)==TRUE))) {
     stop(paste0(param, " not in model code"))
   }
 

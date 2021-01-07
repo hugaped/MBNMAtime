@@ -2,40 +2,43 @@
 # Author: Hugo Pedder
 # Date created: 2021-01-04
 
-linear <- function(pool.slope="rel", method.slope="common") {
+texp <- function(pool.rate="rel", method.rate="common") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(pool.slope, choices=c("rel", "abs"), add=argcheck)
-  checkmate::assertChoice(method.slope, choices=c("common", "random"), add=argcheck)
+  checkmate::assertChoice(pool.rate, choices=c("rel", "abs"), add=argcheck)
+  checkmate::assertChoice(method.rate, choices=c("common", "random"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Define time-course function
+  fun <- ~ slope * (1 - exp(-time))
+  latex <- "\beta_1 * (1 - exp(-x_m))"
+  jags <- "beta.1 * (1 - exp(- time[i,m]))"
 
-  fun <- ~ slope * time
-  jags <- "beta.1 * time[i,m]"
-
-  if (pool.slope=="rel") {
+  if (pool.rate=="rel") {
     jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
-  } else if (pool.slope=="abs" & method.slope=="random") {
+  } else if (pool.rate=="abs" & method.rate=="random") {
     jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
   }
 
   # Generate output values
-  paramnames <- "slope"
+  paramnames <- "rate"
   nparam <- 1
 
-  apool <- poolslope
+  apool <- pool.rate
   names(apool) <- paramnames
-  amethod <- method.slope
+  amethod <- method.rate
   names(amethod) <- paramnames
+  bname <- paste0("beta.", 1:nparam)
+  names(bname) <- paramnames
 
   bpool <- paste0("pool.", 1:nparam)
   names(bpool) <- paramnames
   bmethod <- paste0("method.", 1:nparam)
   names(bmethod) <- paramnames
 
-  out <- list(name="linear", fun=fun, params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, amethod=amethod,
+  out <- list(name="exp", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
 
   class(out) <- "timefun"
@@ -47,7 +50,8 @@ linear <- function(pool.slope="rel", method.slope="common") {
 
 
 
-emax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method.et50="common") {
+temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method.et50="common",
+                 pool.hill=NULL, method.hill=NULL) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -55,10 +59,33 @@ emax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method.
   checkmate::assertChoice(method.emax, choices=c("common", "random"), add=argcheck)
   checkmate::assertChoice(pool.et50, choices=c("rel", "abs"), add=argcheck)
   checkmate::assertChoice(method.et50, choices=c("common", "random"), add=argcheck)
+  checkmate::assertChoice(pool.hill, choices=c("rel", "abs"), null.ok = TRUE, add=argcheck)
+  checkmate::assertChoice(method.hill, choices=c("common", "random"), null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  fun <- ~ (emax * time) / (exp(et50) + time)
-  jags <- "(beta.1 * time[i,m]) / (exp(beta.2) + time[i,m])"
+  if (is.null(method.hill)) {
+    ehill <- FALSE
+  } else {
+    ehill <- TRUE
+    pool.hill <- "abs"
+  }
+
+  if (ehill) {
+    fun <- ~ (emax * (time ^ hill)) / ((exp(et50) ^ hill) + (time ^ hill))
+    jags <- "(beta.1 * (time[i,m] ^ exp(beta.3))) / ((exp(beta.2) ^ exp(beta.3)) + (time[i,m] ^ exp(beta.3)))"
+    latex <- "$\\frac{\\beta_1 \\times x_m^{e^\\beta_3}}{{e^\\beta_2}^{e^\\beta_3} + x_m^{e^\\beta_3}}$"
+    plotmath <- "frac(beta[1] %*% x[m]^e^beta[3], e^beta[2]^e^beta[3] + x[m]^e^beta[3])"
+  } else {
+    fun <- ~ (emax * time) / (exp(et50) + time)
+    jags <- "(beta.1 * time[i,m]) / (exp(beta.2) + time[i,m])"
+    latex <- "$\\frac{\\beta_1 \\times x_m}{{e^\\beta_2} + x_m}$"
+    plotmath <- "frac(beta[1] %*% x[m], e^beta[2] + x[m])"
+
+    # plot.new()
+    # text(0.5,0.5, eval(parse(text=paste0("expression(", plotmath, ")"))))
+  }
+
+
 
   if (pool.emax=="rel") {
     jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
@@ -72,36 +99,122 @@ emax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method.
     jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
   }
 
+  if (ehill) {
+    if (pool.hill=="abs" & method.et50=="random") {
+      jags <- gsub("beta\\.3", "i.beta.3[i,k]", jags)
+    }
+  }
+
+
   # Generate output values
   paramnames <- c("emax", "et50")
   nparam <- 2
 
   apool <- c(pool.emax, pool.et50)
-  names(apool) <- paramnames
   amethod <- c(method.emax, method.et50)
+
+  if (ehill) {
+    paramnames <- append(paramnames, "hill")
+    nparam <- 3
+    apool <- append(apool, pool.hill)
+    amethod <- append(amethod, method.hill)
+  }
+  bname <- paste0("beta.", 1:nparam)
+
+  names(apool) <- paramnames
   names(amethod) <- paramnames
+  names(bname) <- paramnames
 
   bpool <- paste0("pool.", 1:nparam)
   names(bpool) <- paramnames
   bmethod <- paste0("method.", 1:nparam)
   names(bmethod) <- paramnames
 
-  out <- list(name="emax", fun=fun, params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, amethod=amethod,
+  out <- list(name="emax", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"
 
   message("'et50' parameters are on exponential scale to ensure they take positive values on the natural scale")
+
+  if (ehill) {
+    message("'hill' parameters are on exponential scale to ensure they take positive values on the natural scale")
+  }
   return(out)
 }
 
 
 
+#'
+#' @param degree the degree of the polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic,
+tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",
+                  pool.3="rel", method.3="common", pool.4="rel", method.4="common") {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
+  for (i in 1:4) {
+    checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
+    checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
+  }
+  checkmate::reportAssertions(argcheck)
+
+  # Define time-course function
+  fun <- "beta.1 * time"
+  latex <- "beta_1 * x_m"
+  for (i in 1:3) {
+    if (degree>i) {
+      fun <- paste0(fun, " + beta.", i+1, " * (time^", i+1, ")")
+      latex <- paste0(latex, " + beta_", i+1, " * time^", i+1)
+    }
+  }
+  jags <- gsub("time", "time[i,m]", fun)
+  fun <- as.formula(paste0("~", fun))
 
 
-fractpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",
-                      method.power1="common", method.power2="common") {
+  for (i in 1:degree) {
+    if (get(paste0("pool.",i))=="rel") {
+      jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
+    } else if (get(paste0("pool.",i))=="abs" & get(paste0("method.",i))=="random") {
+      jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
+    }
+  }
 
+
+  # Generate output values
+  paramnames <- paste0("beta.", 1:degree)
+  nparam <- degree
+
+  apool <- vector()
+  amethod <- vector()
+  for (i in 1:nparam) {
+    apool <- append(apool, get(paste0("pool.",i)))
+    amethod <- append(amethod, get(paste0("method.",i)))
+  }
+  bname <- paste0("beta.", 1:nparam)
+
+  names(apool) <- paramnames
+  names(amethod) <- paramnames
+  names(bname) <- paramnames
+
+  bpool <- paste0("pool.", 1:nparam)
+  bmethod <- paste0("method.", 1:nparam)
+  names(bpool) <- paramnames
+  names(bmethod) <- paramnames
+
+  out <- list(name="poly", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
+              bpool=bpool, bmethod=bmethod)
+  class(out) <- "timefun"
+
+  return(out)
+}
+
+
+
+#' @param degree the degree of the fractional polynomial
+tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",
+                   method.power1="common", method.power2="common") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, len=1, lower=1, upper = 2, add=argcheck)
@@ -112,14 +225,21 @@ fractpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", m
   }
   checkmate::reportAssertions(argcheck)
 
+  pool.power1 <- "abs"
+
+  # Define time-course function
   if (degree==1) {
     fun <- ~ beta.1 * ifelse(time>0, ifelse(beta.2==0, log(time), time^beta.2), 0)
     jags <- "beta.1 * ifelse(time[i,m]>0, ifelse(beta.2==0, log(time[i,m]), time[i,m]^beta.2), 0)"
+    latex <- "TO BE WRITTEN"
   } else if (degree==2) {
+    pool.power2 <- "abs"
     fun <- ~ beta.1 * ifelse(time>0, ifelse(beta.3==0, log(time), time^beta.3), 0) + (beta.2 * ifelse(beta.4==beta.3, ifelse(time>0, ifelse(beta.4==0, log(time)^2, (time^beta.4) * log(time)), 0), ifelse(time>0, ifelse(beta.4==0, log(time), time^beta.4), 0)))
     jags <- "beta.1 * ifelse(time[i,m]>0, ifelse(beta.3==0, log(time[i,m]), time[i,m]^beta.3), 0) + (beta.2 * ifelse(beta.4==beta.3, ifelse(time[i,m]>0, ifelse(beta.4==0, log(time[i,m])^2, (time[i,m]^beta.4) * log(time[i,m])), 0), ifelse(time[i,m]>0, ifelse(beta.4==0, log(time[i,m]), time[i,m]^beta.4), 0)))"
+    latex <- "TO BE WRITTEN"
   }
 
+  # Set parameters
   if (pool.1=="rel") {
     jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
   } else if (pool.1=="abs" & method.1=="random") {
@@ -142,29 +262,50 @@ fractpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", m
     if (method.power2=="random") {
       jags <- gsub("beta\\.4", "beta.4[i,k]", jags)
     }
-  } else {
-    stop("'degree' can take either 1 or 2")
   }
 
-  params <- ifelse(degree==1, c("beta.1", "power1"), c("beta.1", "beta.2", "power1", "power2"))
 
-  out <- list(name="fractpoly", fun=fun, degree=degree,
-              params=params, nparam=length(params), jags=jags,
-              pool.1=pool.1, method.1=method.1,
-              pool.2=pool.2, method.2=method.2,
-              method.power1=method.power1, method.power2=method.power2,
-              bpool=paste0("pool.", 1:(nparam-degree)), bmethod=paste0("method.", 1:nparam))
+  # Generate output values
+  paramnames <- c(paste0("beta.", 1:degree), paste0("power", 1:degree))
+  nparam <- degree*2
+
+  apool <- vector()
+  amethod <- vector()
+  for (i in 1:degree) {
+    apool <- append(apool, get(paste0("pool.",i)))
+    amethod <- append(amethod, get(paste0("method.",i)))
+  }
+  for (i in 1:degree) {
+    apool <- append(apool, get(paste0("pool.power",degree)))
+    amethod <- append(amethod, get(paste0("method.power",degree)))
+  }
+  bname <- paste0("beta.", 1:nparam)
+
+  #names(apool) <- paramnames[1:degree]
+  names(apool) <- paramnames
+  names(amethod) <- paramnames
+  names(bname) <- paramnames
+
+  #bpool <- paste0("pool.", 1:degree)
+  bpool <- paste0("pool.", 1:nparam)
+  bmethod <- paste0("method.", 1:nparam)
+  #names(bpool) <- paramnames[1:degree]
+  names(bpool) <- paramnames[1:nparam]
+  names(bmethod) <- paramnames
+
+  out <- list(name="fpoly", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
+              bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"
 
   return(out)
+
 }
 
 
 
 
-
-
-funspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
+tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common") {
 
@@ -180,47 +321,81 @@ funspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
 
   # Check knots
   knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
-  if (length(knots)==1 & knots>=1) {
-    if (knots<3 & type=="rcs") {
+  if (length(knots)==1) {
+    if (knots>=1) {
+      if (knots<3 & type=="rcs") {
+        stop(knoterr)
+      }
+      nknot <- knots
+    } else {
       stop(knoterr)
     }
-    nknot <- knots
   } else if (length(knots)>1) {
     if (length(knots)<3 & type=="rcs") {
       stop(knoterr)
     }
     nknot <- length(knots)
   }
+
   if (length(knots)>1) {
     if (!(all(knots<=1 & all(knots>=0)))) {
       stop("`knots` specified as quantiles must be between 0 and 1")
     }
   }
 
-  # Define function
-  base <- "beta.1 * spline[i,m,1]"
+
+  # Define time-course function
+  base <- "beta.1 * spline.1"
+  basetex <- "\beta_1 * X[m,1]"
   jags <- base
+  latex <- basetex
   if (nknot>1) {
-    for (i in 2:nknot) {
+    for (i in 2:(nknot-1)) {
       temp <- gsub("1", i, base)
       jags <- paste(jags, "+", temp)
+
+      temptex <- gsub("1", i, basetex)
+      latex <- paste(latex, "+", temptex)
     }
   }
-
   fun <- as.formula(paste("~", jags))
+  jags <- gsub("(spline)\\.([0-9])", "\\1[i,m,\\2]", jags)
 
-  for (i in 1:nknot) {
-    if (get(paste0("pool.", i))=="rel") {
+
+  # Define parameters
+  for (i in 1:(nknot-1)) {
+    if (get(paste0("pool.",i))=="rel") {
       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
-    } else if (get(paste0("pool.", i))=="abs" & get(paste0("method.", i))=="random") {
+    } else if (get(paste0("pool.",i))=="abs" & get(paste0("method.",i))=="random") {
       jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
     }
   }
 
-  out <- list(name=type, fun=fun, knots=knots, params=paste0("beta.", 1:nparam), nparam=nknot, jags=jags,
-              pool.1=pool.1, method.1=method.1, pool.2=pool.2, method.2=method.2,
-              pool.3=pool.3, method.3=method.3, pool.4=pool.4, method.4=method.4,
-              bpool=paste0("pool.", 1:nparam), bmethod=paste0("method.", 1:nparam))
+
+  # Generate output values
+  paramnames <- paste0("beta.", 1:(nknot-1))
+  nparam <- nknot - 1
+
+  apool <- vector()
+  amethod <- vector()
+  for (i in 1:nparam) {
+    apool <- append(apool, get(paste0("pool.",i)))
+    amethod <- append(amethod, get(paste0("method.",i)))
+  }
+  bname <- paste0("beta.", 1:nparam)
+
+  names(apool) <- paramnames
+  names(amethod) <- paramnames
+  names(bname) <- paramnames
+
+  bpool <- paste0("pool.", 1:nparam)
+  bmethod <- paste0("method.", 1:nparam)
+  names(bpool) <- paramnames
+  names(bmethod) <- paramnames
+
+  out <- list(name=type, fun=fun, latex=latex, params=paramnames, nparam=nparam, knots=knots, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
+              bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"
 
   return(out)
@@ -231,16 +406,78 @@ funspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
 
 
 
+# tpiece <- function(knots, pool.1="rel", method.1="common",
+#                    pool.2="rel", method.2="common", pool.3="rel", method.3="common",
+#                    pool.4="rel", method.4="common") {
+#
+#   # Run checks
+#   argcheck <- checkmate::makeAssertCollection()
+#   checkmate::assertNumeric(knots, min.len=1, max.len=3, null.ok = FALSE, add=argcheck)
+#   for (i in 1:4) {
+#     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
+#     checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
+#   }
+#   checkmate::reportAssertions(argcheck)
+#
+#
+#   # Define time-course function
+#   # Diffiulty of including alpha...
+#   latex <- "TO BE WRITTEN"
+#
+#   "((time < beta.3) * alpha) + ((time < beta.3) * (beta.1 * time)) + ((time >= beta.3) * (alpha + (beta.1 * beta.3))) + ((time >= beta.3) * (beta.2 * time))"
+#
+#
+#
+#   # Define parameters
+#   for (i in 1:degree) {
+#     if (get(paste0("pool."),i)=="rel") {
+#       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
+#     } else if (get(paste0("pool."),i)=="abs" & get(paste0("method."),i)=="random") {
+#       jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
+#     }
+#   }
+#
+#
+#   # Generate output values
+#   paramnames <- paste0("beta.", 1:degree)
+#   nparam <- degree
+#
+#   apool <- vector()
+#   amethod <- vector()
+#   for (i in 1:nparam) {
+#     apool <- append(get(paste0("pool.",i)))
+#     amethod <- append(get(paste0("method.",i)))
+#   }
+#
+#   names(apool) <- paramnames
+#   names(amethod) <- paramnames
+#
+#   bpool <- paste0("pool.", 1:nparam)
+#   bmethod <- paste0("method.", 1:nparam)
+#   names(bpool) <- paramnames
+#   names(bmethod) <- paramnames
+#
+#   out <- list(name=type, fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+#               apool=apool, amethod=amethod,
+#               bpool=bpool, bmethod=bmethod)
+#   class(out) <- "timefun"
+#
+#   return(out)
+# }
 
 
-funuser <- function(fun, pool.1="rel", method.1="common",
+
+
+
+
+tuser <- function(fun, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common") {
+
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertFormula(fun, add=argcheck)
-  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   for (i in 1:4) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
     checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
@@ -248,7 +485,7 @@ funuser <- function(fun, pool.1="rel", method.1="common",
   checkmate::reportAssertions(argcheck)
 
   # Check user function
-  user.str <- as.character(user.fun[2])
+  user.str <- as.character(fun[2])
   if (grepl("beta\\.2", user.str)==TRUE & grepl("beta\\.1", user.str)==FALSE) {
     stop("'fun' cannot contain beta.2 if beta.1 is not present")
   } else if (grepl("beta\\.3", user.str)==TRUE & grepl("beta\\.2", user.str)==FALSE | grepl("beta\\.1", user.str)==FALSE) {
@@ -257,7 +494,13 @@ funuser <- function(fun, pool.1="rel", method.1="common",
   if (!(grepl("time", user.str))) {
     stop("'fun' must be a function of beta parameters and time")
   }
+  if (grepl("alpha", user.str)) {
+    stop("The intercept (alpha) should not be included in 'fun'")
+  }
+  jags <- gsub("time", "time[i,m]", user.str)
 
+
+  # Get number of parameters
   nparam <- 1
   if (grepl("beta\\.4", user.str)) {
     nparam <- 4
@@ -267,30 +510,40 @@ funuser <- function(fun, pool.1="rel", method.1="common",
     nparam <- 2
   }
 
-  # Define function
-  base <- "beta.1 * time[i,m]"
-  jags <- base
-  if (nparam>1) {
-    for (i in 2:nparam) {
-      temp <- gsub("1", i, base)
-      jags <- paste(jags, "+", temp)
-    }
-  }
-
+  # Define parameters
   for (i in 1:nparam) {
-    if (get(paste0("pool.", i))=="rel") {
+    if (get(paste0("pool."),i)=="rel") {
       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
-    } else if (get(paste0("pool.", i))=="abs" & get(paste0("method.", i))=="random") {
+    } else if (get(paste0("pool."),i)=="abs" & get(paste0("method."),i)=="random") {
       jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
     }
   }
 
-  out <- list(name="funuser", fun=fun, params=paste0("beta.", 1:nparam), nparam=nparam, jags=jags,
-              pool.1=pool.1, method.1=method.1, pool.2=pool.2, method.2=method.2,
-              pool.3=pool.3, method.3=method.3, pool.4=pool.4, method.4=method.4,
-              bpool=paste0("pool.", 1:nparam), bmethod=paste0("method.", 1:nparam))
+  # Generate output values
+  paramnames <- paste0("beta.", 1:degree)
+  nparam <- degree
+
+  apool <- vector()
+  amethod <- vector()
+  for (i in 1:nparam) {
+    apool <- append(apool, get(paste0("pool.",i)))
+    amethod <- append(amethod, get(paste0("method.",i)))
+  }
+  bname <- paste0("beta.", 1:nparam)
+
+  names(apool) <- paramnames
+  names(amethod) <- paramnames
+  names(bname) <- names(bname)
+
+  bpool <- paste0("pool.", 1:nparam)
+  bmethod <- paste0("method.", 1:nparam)
+  names(bpool) <- paramnames
+  names(bmethod) <- paramnames
+
+  out <- list(name="user", fun=fun, latex=NULL, params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
+              bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"
 
   return(out)
-
 }

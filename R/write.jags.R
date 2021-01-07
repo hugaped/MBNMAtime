@@ -547,8 +547,8 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
   }
 
   # Absolute time-course parameters
-  for (i in seq_along(fun$bmethod)) {
-    if (is.na(fun$bmethod[i]) | fun$apool[i]=="abs") {
+  for (i in seq_along(fun$amethod)) {
+    if ("abs" %in% fun$apool[i]) {
 
       if (is.character(fun$amethod[i])) {
         # Insert prior for absolute effect
@@ -763,7 +763,8 @@ remove.loops <- function(model) {
 
 #' Get current priors from JAGS model code
 #'
-#' This function takes JAGS model presented as a character vector and identifies what
+#' Identical to `get.prior()` in MBNMAdose.
+#' This function takes JAGS model presented as a string and identifies what
 #' prior values have been used for calculation.
 #'
 #' @inheritParams write.beta
@@ -799,9 +800,10 @@ remove.loops <- function(model) {
 get.prior <- function(model) {
 
   # Run Checks
-  checkmate::assertCharacter(model, len=1)
-
-  model <- strsplit(model, split="\n")[[1]]
+  checkmate::assertCharacter(model)
+  if (!(any(grepl("Begin Model Code", model)) & any(grepl("Model ends", model)))) {
+    stop("'model' is not a character vector of MBNMA JAGS model code")
+  }
 
   priorcode <- model[c(grep("^.+~ [A-z]+\\([-?0-9]", model),
                        grep("^.+~ [A-z]+\\(Omega", model))]
@@ -849,7 +851,7 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(model, len=1, null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(model, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -858,11 +860,13 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   }
 
   if (!is.null(mbnma)) {
-    model <- strsplit(mbnma$model.arg$jagscode, split="\n")[[1]]
-  } else if (!is.null(model)) {
-    model <- strsplit(model, split="\n")[[1]]
-  } else {
+    model <- mbnma$model.arg$jagscode
+  } else if (is.null(model)) {
     stop("Must provide EITHER an existing MBNMA model (using `mbnma`) OR MBNMA JAGS code (using `model`)")
+  }
+
+  if (!(any(grepl("Begin Model Code", model)) & any(grepl("Model ends", model)))) {
+    stop("'model' is not a character vector of MBNMA JAGS model code")
   }
 
   for (i in seq_along(priors)) {
@@ -883,10 +887,12 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   start <- grep("^model\\{", model)
   end <- grep("# Model ends", model) + 1
 
-  model <- paste(model[start:end], collapse="\n")
+  #model <- paste(model[start:end], collapse="\n")
+  model <- model[start:end]
 
   return(model)
 }
+
 
 
 
@@ -895,9 +901,9 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 add.funparams <- function(model, fun) {
   for (i in seq_along(fun$params)) {
     if (!grepl("beta", fun$params[i])) {
-      if (fun$apool[i]=="rel") {
+      if ("rel" %in% fun$apool[i]) {
         model <- gsub(paste0("(?<![A-z])d\\.", i, "\\["), paste0(names(fun$apool)[i], "["), model, perl=TRUE)
-      } else if (fun$apool[i]=="abs" & is.character(fun$amethod[i])) {
+      } else if ("abs" %in% fun$apool[i] & is.character(fun$amethod[i])) {
         model <- gsub(paste0("beta\\.", i), names(fun$apool)[i], model)
       }
       model <- gsub(paste0("sd\\.beta.", i), paste0("sd.", names(fun$apool)[i]), model)

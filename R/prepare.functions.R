@@ -313,15 +313,14 @@ add_index <- function(data.ab, reference=1) {
 #' jagsdat <- getjagsdata(painnet$data.ab, rho="estimate", covstruct="AR1")
 #'
 #' @export
-getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity", knots=3) {
+getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity") {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(covstruct, choices=c("CS", "AR1"), null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(fun, any.missing=FALSE,
-                             null.ok=TRUE, add=argcheck)
+  checkmate::assertClass(fun, "timefun", null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
@@ -366,7 +365,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   if (link=="smd") {datavars.ikm <- append(datavars.ikm, "n")}
   datavars.ik <- c("treat")
   datavars.im <- c("time")
-  if (any(c("rcs", "ns", "bs") %in% fun)) {
+  if (any(c("rcs", "ns", "bs") %in% fun$name)) {
     datavars.im <- append(datavars.im, "spline")
   }
 
@@ -426,24 +425,20 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   # Generate empty spline matrix
   if (!is.null(fun)) {
-    if (any(c("rcs", "ns", "bs") %in% fun)) {
-      splinefun <- unique(fun[which(fun %in% c("rcs", "bs", "ns"))])
-      if (length(splinefun)>1) {
-        stop("Only a single spline type (either 'rcs', 'bs' OR 'ns') can be used in a single model")
-      }
+    if (any(c("rcs", "ns", "bs") %in% fun$name)) {
 
       times <- df[, colnames(df) %in% c("time")]
       times <- unique(sort(times))
 
       # Generate spline basis matrix
-      spline <- genspline(times, spline=splinefun, knots=knots)
+      spline <- genspline(times, spline=fun$name, knots=fun$knots)
       timespline <- data.frame("time"=times, "spline"=spline)
       # timespline <- times %>%
       #   dplyr::mutate(spline=genspline(times, spline=splinefun, knots=knots))
 
       df <- suppressMessages(dplyr::left_join(df, timespline))
 
-      knotnum <- ifelse(length(knots)>1, length(knots), knots)
+      knotnum <- ifelse(length(fun$knots)>1, length(fun$knots), fun$knots)
 
       datalist[["spline"]] <- array(dim=c(nrow(datalist[["time"]]),
                                           ncol(datalist[["time"]]),
@@ -479,7 +474,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
       datalist[["time"]][i,m] <- unique(df$time[as.numeric(df$studyID)==i &
                                            df$fupcount==m])
 
-      if (any(c("rcs", "ns", "bs") %in% fun)) {
+      if (any(c("rcs", "ns", "bs") %in% fun$name)) {
         datalist[["spline"]][i,m,] <- as.numeric(df[as.numeric(df$studyID)==i &
                                            df$arm==1 & df$fupcount==m,
                                          grepl("spline", colnames(df))])

@@ -131,7 +131,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
 
     if (is.null(int.range)) {
       treatsnum <- which(x$network$treatments %in% treats)
-      fupdata <- x$model$data()
+      fupdata <- x$model.arg$jagsdata
 
       int.max <- max(fupdata$time[which(apply(fupdata$treat, MARGIN=1, FUN=function(x) any(x %in% treatsnum))),],
                      na.rm = TRUE)

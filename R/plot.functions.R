@@ -661,16 +661,11 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       treat <- append(treat, rep(treats[i], nrow(rank.mat)))
       ranks.param <- append(ranks.param, rank.mat[,i])
     }
-    data <- data.frame("ranks"=ranks.param, "treat"=treat)
+    df <- data.frame("ranks"=ranks.param, "treat"=treat)
 
-    # if (!is.null(treat.labs)) {
-    #   data$treat <- factor(data$treat, labels=treat.labs)
-    # } else {
-    #   data$treat <- factor(as.numeric(as.character(data$treat)))
-    # }
-    data$treat <- factor(data$treat, labels=treat.labs)
+    df$treat <- factor(df$treat, labels=treat.labs)
 
-    g <- ggplot2::ggplot(data, ggplot2::aes(x=data$ranks)) +
+    g <- ggplot2::ggplot(df, ggplot2::aes(x=ranks)) +
       ggplot2::geom_bar(...) +
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
@@ -773,7 +768,9 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
         drop <- append(drop, i)
       }
     }
-    params <- params[-drop]
+    if (length(drop)>0) {
+      params <- params[-drop]
+    }
 
     if (length(params)==0) {
       stop("No time-course consistency parameters can be identified from the model")
@@ -1258,7 +1255,8 @@ get.treattimes <- function(mbnma, add.df, type="treat") {
   checkmate::reportAssertions(argcheck)
 
   # Get codes
-  index.df <- reshape2::melt(mbnma$model$data()[[type]])
+  #index.df <- reshape2::melt(mbnma$model$data()[[type]])
+  index.df <- reshape2::melt(mbnma$model.arg$jagsdata[[type]])
   index.df <- index.df[stats::complete.cases(index.df),]
 
   # Match codes to data frame

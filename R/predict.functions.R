@@ -22,10 +22,10 @@
 #'   to non-sensical predictions.
 #'   * `numeric()` A single numeric value representing the deterministic response at time = 0,
 #'   given.
-#'   * `character()` A single string representing a stochastic distribution for the response
+#'   * `formula()` A formula representing a stochastic distribution for the response
 #'   at time = 0. This is specified as a random number generator
 #'   (RNG) given as a string, and can take any RNG distribution for which a function exists
-#'   in R. For example: `"rnorm(n, 7, 0.5)"`.
+#'   in R. For example: `~rnorm(n, 7, 0.5)`.
 #' @param treats A character vector of treatment/class names or a numeric vector of treatment/class codes (as coded in `mbnma`)
 #'   that indicate which treatments/classes to calculate predictions for. If left `NULL``
 #'   then predictions will be calculated for all treatments/classes. Whether vector should be for treatments or classes depends
@@ -48,16 +48,16 @@
 #'   within the model that have been modelled using consistency relative effects (`pool="rel"`).
 #'   These are given as a list, in which each named element corresponds to a time-course
 #'   parameter modelled in `mbnma`. Their values can be either of the following:
-#'   * `numeric()` A single numeric value representing the deterministic value of the time-course parameter in
+#'   * `numeric()` A numeric value representing the deterministic value of the time-course parameter in
 #'   question in individuals given the reference treatment. `0` is used as the default, though this may produce
 #'   nonsensical predictions as this typically assumes no effect of time on the reference treatment.
-#'   * `character()` A single string representing a stochastic distribution for the value of the time-course
-#'   parameter in question. This is specified as a random number generator (RNG) given as a string,
-#'   and can take any RNG distribution for which a function exists in R. For example: `"rnorm(n, -3, 0.2)"`.
+#'   * `formula()` A formula representing a stochastic distribution for the value of the time-course
+#'   parameter in question. This is specified as a random number generator (RNG) given as a formula,
+#'   and can take any RNG distribution for which a function exists in R. For example: `~rnorm(n, -3, 0.2)`.
 
 #' @param synth A character object that can take the value `"fixed"` or `"random"` that
 #'   specifies the the type of pooling to use for synthesis of `ref.resp`. Using `"random"` rather
-#'   than `"fixed"` for `synth` will result in wider 95\\% CrI for predictions.
+#'   than `"common"` for `synth` will result in wider 95\\% CrI for predictions.
 #' @param ... Arguments to be sent to R2jags for synthesis of the network
 #'   reference treatment effect (using [ref.synth()])
 #'
@@ -92,8 +92,8 @@
 #' # Predict responses using a stochastic baseline (E0) and a distribution for the
 #' #network reference treatment
 #' preds <- predict(emax, times=c(0:10),
-#'   E0="rnorm(n, 7, 0.5)",
-#'   ref.resp=list("emax"="rnorm(n, -0.5, 0.05)"))
+#'   E0=~rnorm(n, 7, 0.5),
+#'   ref.resp=list(emax=~rnorm(n, -0.5, 0.05)))
 #' summary(preds)
 #'
 #' # Predict responses using the original dataset to estimate the network reference
@@ -117,7 +117,7 @@
 predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, na.rm=TRUE)),
                           E0=0,
                           treats = NULL, level="treatment",
-                          ref.resp=NULL, synth="fixed",
+                          ref.resp=NULL, synth="common",
                           ...) {
   ######## CHECKS ########
 
@@ -127,19 +127,18 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   checkmate::assertNumeric(times, lower=0, finite=TRUE, any.missing=FALSE, unique=TRUE,
                 sorted=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices=c("treatment", "class"), add=argcheck)
-  checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
+  checkmate::assertChoice(synth, choices=c("random", "common"), add=argcheck)
   #checkmate::assertClass(treats, classes=c("numeric", "character"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check if level="class" that class effect model was fitted
   if (level=="class") {
     if (length(object[["model.arg"]][["class.effect"]])==0) {
-      stop("`level` has been set to `class` but no class effect models were not used")
+      stop(crayon::red("`level` has been set to `class` but no class effect models were not used"))
     }
-    if (sum(grepl("^d\\.", object$parameters.to.save)) != sum(grepl("^D\\.", object$parameters.to.save))) {
-      stop("To predict level='class' all relative effects must be modelled with class effects")
+    if (!all.equal(object$model.arg$fun$params, names(object$model.arg$class.effect))) {
+      stop(crayon::red("To predict level='class' all relative effects must be modelled with class effects"))
     }
-
     level <- "classes"
   } else if (level=="treatment") {
     level <- "treatments"
@@ -147,38 +146,30 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
   # Check whether UME has been used and stop if so
   if (object[["model.arg"]][["UME"]]!=FALSE) {
-    stop("UME model cannot be used for prediction")
+    stop(crayon::red("UME model cannot be used for prediction"))
   }
 
   # Check ref.resp has been specified correctly if any mbnma parameters are "rel"
-  if (check.betas(object)==TRUE) {
+  #if (check.betas(object)==TRUE) {
+  if ("rel" %in% object$model.arg$fun$apool) {
     if (is.null(ref.resp)) {
 
       # If ref.resp is not given then assign 0 to all rel time-course parameters
       ref.resp <- list()
-      for (i in 1:4) {
-        if (!is.null(object$model.arg[[paste0("beta.",i)]])) {
-          if (object$model.arg[[paste0("beta.",i)]]$pool=="rel") {
-            if (!is.null(object$model.arg$arg.params)) {
-              elname <- object$model.arg$arg.params$wrap.params[object$model.arg$arg.params$run.params==
-                                                                 paste0("beta.",i)]
-            } else {
-              elname <- paste0("beta.",i)
-            }
-            ref.resp[[elname]] <- 0
-          }
-        }
+      rels <- names(object$model.arg$fun$apool)[object$model.arg$fun$apool %in% "rel"]
+      for (i in seq_along(rels)) {
+        ref.resp[[rels[i]]] <- 0
       }
     } else {
 
       # If ref.resp is given ensure it is of the correct class
       if (!(any(class(ref.resp) %in% c("data.frame", "tibble", "list")))) {
-        stop("`object` includes time-course parameters modelled using relative effects (pool=`rel`).
+        stop(crayon::red("`object` includes time-course parameters modelled using relative effects (pool=`rel`).
       The reference treatment response for them must be provided to `ref.resp` as a list,
-      or estimated from a dataset of reference treatment studies by providing a data frame.")
+      or estimated from a dataset of reference treatment studies by providing a data frame."))
       }
     }
-  } else if (check.betas(object)==FALSE) {
+  } else if (!"rel" %in% object$model.arg$fun$apool) {
     ref.resp <- NULL
   }
 
@@ -191,31 +182,34 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   } else if (!is.null(treats)) {
     if (is.numeric(treats)) {
       if (any(treats > NT | any(treats<1))) {
-        stop("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `object`")
+        stop(crayon::red("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `object`"))
       }
       treats <- object$network[[level]][treats]
     }
     if (is.character(treats)) {
       if (!all(treats %in% object$network[[level]])) {
-        stop("`treats` includes treatments/classes not included in `object`")
+        stop(crayon::red("`treats` includes treatments/classes not included in `object`"))
       }
     }
   }
 
   #### Check E0 ####
   if (is.null(E0)) {
-    stop("E0 has not been defined")
+    stop(crayon::red("E0 has not been defined"))
   }
 
   # Check that distribution for E0 is of the correct format
-  if (is.character(E0)) {
+  if (class(E0)=="formula") {
+    E0 <- as.character(E0)[2]
     if (grepl("r[A-z]+\\(n,.+\\)", E0)==FALSE) {
-      stop("Stochastic distribution for E0 must be expressed as a string in the form of a supported R distribution (e.g. `rnorm(n, 5,2)`)")
+      stop(crayon::red("Stochastic distribution for E0 must be expressed as a string in the form of a supported R distribution (e.g. '~rnorm(n, 5,2)')"))
     }
   } else if (is.numeric(E0)) {
     if (length(E0)!=1) {
-      stop("`E0` can only take a single numeric value if not expressed as a stochastic distribution")
+      stop(crayon::red("`E0` can only take a single numeric value if not expressed as a stochastic distribution"))
     }
+  } else {
+    stop(crayon::red("'E0' has been incorrectly specified"))
   }
 
 
@@ -224,48 +218,54 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   n <- object$BUGSoutput$n.sims
 
   # Initial predict parameters
-  timecourse <- list(init.predict(object)[["timecourse"]])
-  beta.incl <- init.predict(object)[["beta.incl"]]
-
+  # timecourse <- list(init.predict(object)[["timecourse"]])
+  # beta.incl <- init.predict(object)[["beta.incl"]]
+  # beta.incl <- object$model.arg$fun$params
+  # timecourse <- paste0("alpha + ", object$model.arg$fun$jags)
 
   # Extract parameter values from MBNMA result
-  model.vals <- get.model.vals(mbnma=object, timecourse=timecourse,
-                               beta.incl=beta.incl, E0=E0)
+  model.vals <- get.model.vals(mbnma=object, E0=E0, level=level)
   timecourse <- model.vals[["timecourse"]]
   time.params <- model.vals[["time.params"]]
 
 
   ########## Get reference treatment effect ###########
-  mu.prior <- model.vals[["mu.prior"]]
-  mu.params <- time.params[grepl("^mu.", time.params)]
+  #mu.prior <- model.vals[["mu.prior"]]
+  mu.params <- time.params[grepl("^mu\\.", time.params)]
+
 
 
   if (!is.null(ref.resp)) {
 
     # If ref.resp specified as values for each time-course parameter (in a list)
     if (any(class(ref.resp)=="list")) {
-      msg <- paste0("Priors required for: ", paste(mu.prior, collapse=", "))
-      message(msg)
+      msg <- paste0("Priors required for: ", paste(mu.params, collapse=", "))
+      message(crayon::blue(msg))
 
-      if (identical(sort(mu.prior),sort(names(ref.resp)))==FALSE) {
+      names(ref.resp) <- paste0("mu.", match(names(ref.resp), object$model.arg$fun$params))
+
+      if (identical(sort(mu.params), sort(names(ref.resp)))==FALSE) {
         msg <- "Named elements of `ref.resp` do not correspond to consistency time-course parameters monitored within the model."
-        stop(msg)
+        stop(crayon::bold(crayon::red(msg)))
       } else {
-        message("Success: Elements in prior match consistency time-course treatment effect parameters")
+        message(crayon::bold(crayon::green("Success: Elements in prior match consistency time-course treatment effect parameters")))
       }
 
       # Assign ref.resp to mu values in model
       for (i in seq_along(ref.resp)) {
 
-        if (is.character(ref.resp[[i]])) {
+        if (class(ref.resp[[i]])=="formula") {
+          ref.resp[[i]] <- as.character(ref.resp[[i]])[2]
           if (grepl("r[A-z]+\\(n,.+\\)", ref.resp[[i]])==FALSE) {
-            stop("Stochastic distribution for ref.resp must be expressed as a string in the form of a supported R distribution (e.g. `rnorm(n, 5,2)`)")
+            stop(crayon::red("Stochastic distribution for ref.resp must be expressed as a formula in the form of a supported R distribution (e.g. ~rnorm(n, 5,2))"))
           }
         }
-        assign(mu.params[which(names(ref.resp)[i]==mu.prior)],
+        assign(mu.params[which(names(ref.resp)[i]==mu.params)],
                eval(parse(text=ref.resp[[i]])))
       }
     } else if (any(class(ref.resp) %in% c("data.frame", "tibble"))) {
+
+      stop("'ref.synth' not supported in current version - updates coming soon")
 
       ### PLACEBO SYNTHESIS MODEL ###
       synth.result <- ref.synth(data.ab=ref.resp, mbnma=object, synth=synth)
@@ -279,10 +279,10 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
                        synth.result[[paste0("m.", mu.params[i])]],
                        synth.result[[paste0("sd.", mu.params[i])]])
           )
-        } else if (synth=="fixed") {
+        } else if (synth=="common") {
           assign(mu.params[i], rep(synth.result[[paste0("m.", mu.params[i])]],
                                    n))
-        } else (stop("synth must be either `fixed` or `random`"))
+        } else (stop(crayon::red("synth must be either `common` or `random`")))
 
       }
     }
@@ -290,10 +290,9 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
   # Convert predicted times to splines
   if (any(c("rcs", "bs", "ns") %in% object$model.arg$fun)) {
-    spline <- genspline(times, spline=object$model.arg$fun, knots=object$model.arg$knots)
-    timecourse <- gsub("(spline\\[)i,(m,[0-9]\\])", "\\1\\2", timecourse)
+    spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots)
   }
-
+  print(timecourse)
 
   ########## Predict responses ###########
 
@@ -311,32 +310,16 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   }
 
   d.params <- time.params[grepl("^d\\.", time.params)]
-  if (level=="classes") {
-    D.params <- time.params[grepl("^D\\.", time.params)]
-  }
-
 
   predicts <- list()
   treatsnum <- which(object$network[[level]] %in% treats)
   for (treat in seq_along(treatsnum)) {
 
-    # Assign treatment beta results to beta values in model
-    for (i in seq_along(beta.params)) {
-      if (is.matrix(model.vals[[beta.params[i]]])) {
-        assign(beta.params[i], model.vals[[beta.params[i]]][,treatsnum[treat]])
-      }
-    }
-
     # Assign d results to d values in model
     for (i in seq_along(d.params)) {
-      if (level=="treatments") {
-        assign(d.params[i], model.vals[[d.params[i]]][,treatsnum[treat]])
-      } else if (level=="classes") {
-        assign(d.params[i], model.vals[[D.params[i]]][,treatsnum[treat]])
-      }
+      assign(d.params[i], model.vals[[d.params[i]]][,treatsnum[treat]])
     }
 
-    #treatpred <- vector(mode="numeric", length=n)
     treatpred <- data.frame("pred"=rep(NA,n))
     for (m in seq_along(times)) {
       time <- times[m]
@@ -385,62 +368,62 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
 
 
-#' Check if any relative effects are specified within time-course parameters in an mbnma model
+#' #' Check if any relative effects are specified within time-course parameters in an mbnma model
+#' #'
+#' #' @inheritParams predict.mbnma
+#' #'
+#' #' @return A boolean object that takes `TRUE` if any time-course parameters specify relative effects and `FALSE` if not
+#' #'
+#' #' @noRd
+#' check.betas <- function(mbnma) {
+#'   mbnma.betas <- vector()
+#'   for (i in 1:4) {
+#'     mbnma.betas <- append(mbnma.betas, mbnma[["model.arg"]][[paste0("beta.", i)]]$pool)
+#'     }
 #'
-#' @inheritParams predict.mbnma
+#'   if (any(mbnma.betas == "rel")) {
+#'     return(TRUE)
+#'   } else {return(FALSE)}
+#' }
+
+
+
+#' #' Get code parameter values from previous MBNMA result
+#' #'
+#' #' @inheritParams predict.mbnma
+#' #'
+#' #' @return A list with two elements:
+#' #' * `timecourse` A character object that specifies the time-course used in `mbnma` (in terms of alpha, beta, and time)
+#' #' * `beta.incl` A numeric vector that indicates the time-course parameters that were included in `mbnma`
+#' #'
+#' #' @noRd
+#' init.predict <- function(mbnma) {
 #'
-#' @return A boolean object that takes `TRUE` if any time-course parameters specify relative effects and `FALSE` if not
+#'   # Check betas are specified correctly and prepare format for subsequent functions
+#'   for (i in 1:4) {
+#'     betaname <- paste0("beta.", i)
+#'     if (!is.null(mbnma$model.arg[[betaname]])) {
+#'       assign(paste0(betaname, ".str"), compound.beta(mbnma$model.arg[[betaname]]))
+#'     } else if (is.null(mbnma$model.arg[[betaname]])) {
+#'       assign(paste0(betaname, ".str"), NULL)
+#'     }
+#'   }
 #'
-#' @noRd
-check.betas <- function(mbnma) {
-  mbnma.betas <- vector()
-  for (i in 1:4) {
-    mbnma.betas <- append(mbnma.betas, mbnma[["model.arg"]][[paste0("beta.", i)]]$pool)
-    }
-
-  if (any(mbnma.betas == "rel")) {
-    return(TRUE)
-  } else {return(FALSE)}
-}
-
-
-
-#' Get code parameter values from previous MBNMA result
+#'   timecourse <- time.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
+#'                          alpha=mbnma$model.arg$alpha, beta.1=beta.1.str, beta.2=beta.2.str,
+#'                          beta.3=beta.3.str, beta.4=beta.4.str)[["relationship"]]
 #'
-#' @inheritParams predict.mbnma
 #'
-#' @return A list with two elements:
-#' * `timecourse` A character object that specifies the time-course used in `mbnma` (in terms of alpha, beta, and time)
-#' * `beta.incl` A numeric vector that indicates the time-course parameters that were included in `mbnma`
+#'   # Generate vector with indices of betas included in model
+#'   beta.incl <- vector()
+#'   for (i in 1:4) {
+#'     if (grepl(paste0("beta.", i), timecourse)) {
+#'       beta.incl <- append(beta.incl, i)
+#'     }
+#'   }
 #'
-#' @noRd
-init.predict <- function(mbnma) {
-
-  # Check betas are specified correctly and prepare format for subsequent functions
-  for (i in 1:4) {
-    betaname <- paste0("beta.", i)
-    if (!is.null(mbnma$model.arg[[betaname]])) {
-      assign(paste0(betaname, ".str"), compound.beta(mbnma$model.arg[[betaname]]))
-    } else if (is.null(mbnma$model.arg[[betaname]])) {
-      assign(paste0(betaname, ".str"), NULL)
-    }
-  }
-
-  timecourse <- time.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
-                         alpha=mbnma$model.arg$alpha, beta.1=beta.1.str, beta.2=beta.2.str,
-                         beta.3=beta.3.str, beta.4=beta.4.str)[["relationship"]]
-
-
-  # Generate vector with indices of betas included in model
-  beta.incl <- vector()
-  for (i in 1:4) {
-    if (grepl(paste0("beta.", i), timecourse)) {
-      beta.incl <- append(beta.incl, i)
-    }
-  }
-
-  return(list("timecourse"=timecourse, "beta.incl"=beta.incl))
-}
+#'   return(list("timecourse"=timecourse, "beta.incl"=beta.incl))
+#' }
 
 
 
@@ -452,11 +435,6 @@ init.predict <- function(mbnma) {
 #'
 #' @inheritParams predict.mbnma
 #' @inheritParams ref.synth
-#' @param timecourse A character object that specifies the time-course used in
-#'   `mbnma` (in terms of alpha, beta, and time), as generated by
-#'   `init.predict()`
-#' @param beta.incl A numeric vector that indicates the time-course parameters
-#'   that were included in `mbnma`, as generated by `init.predict()`
 #'
 #' @return A list containing named elements that correspond to different
 #'   time-course parameters in `mbnma`. These elements contain MCMC results
@@ -468,18 +446,16 @@ init.predict <- function(mbnma) {
 #'   * `timecourse` A character object that specifies the time-course used in `mbnma` in terms of
 #'   alpha, beta, mu, d and time. Consistency relative time-course parameters
 #'   are specified in terms of mu and d.
-#'   * `mu.prior` A character vector that
-#'   indicates for which time-course parameters a network reference treatment
-#'   effect will be required for prediction.
 #'   * `time.params` A character vector
 #'   that indicates the different time-course parameters that are required for
 #'   the prediction
 #'
 #'   @noRd
-get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
+get.model.vals <- function(mbnma, E0=0, level="treatments") {
+
   model.vals <- list()
   time.params <- "alpha"
-  mu.prior <- vector()
+  #mu.prior <- vector()
 
   n <- mbnma$BUGSoutput$n.sims
 
@@ -491,140 +467,142 @@ get.model.vals <- function(mbnma, timecourse, beta.incl, E0=0) {
     model.vals[["alpha"]] <- alpha
   }
 
+  # Remove indices from timecourse for betas and time
+  timecourse <- gsub("\\[i\\,[a-z]\\]", "", mbnma$model.arg$fun$jags) # Remove [i,k] from betas and [i,m] from time
+  timecourse <- gsub("i\\,", "", timecourse) # Remove i from time and spline
+  timecourse <- paste0("alpha + ", timecourse)
 
-  # Get code parameter values from previous MBNMA result
-  # model.arg <- names(mbnma[["model.arg"]])
-  # for (i in seq_along(model.arg)) {
-  #   assign(model.arg[i], mbnma[["model.arg"]][[model.arg[i]]])
-  # }
 
   sims.matrix <- mbnma$BUGSoutput$sims.matrix
 
-  arg.params <- mbnma[["parameters.to.save"]]
-  for (i in seq_along(beta.incl)) {
+  fun <- mbnma$model.arg$fun
+  params <- mbnma$model.arg$fun$params
 
-    beta.name <- paste0("beta.", beta.incl[i])
-    if (!is.null(mbnma$model.arg[[beta.name]])) {
-
-      # Change named beta to named model parameter specific to time-course
-      if (!is.null(mbnma$model.arg$arg.params)) {
-        suffix <- mbnma$model.arg$arg.params[["wrap.params"]][
-          which(mbnma$model.arg$arg.params[["run.params"]]==beta.name)
-          ]
-      } else {
-        suffix <- beta.incl[i]
-      }
-
-      betatemp <- paste0("beta.", suffix)
-
-      # Assign results from MBNMA to result variables for each beta
-      if (betatemp %in% arg.params |
-          any(paste0(c("d.", "D."), suffix) %in% arg.params)) {
-        if (mbnma$model.arg[[beta.name]]$method == "common" &  mbnma$model.arg[[beta.name]]$pool %in% c("const", "arm")) {
-
-          # Store MCMC results for relevant parameters
-          model.vals[[paste0("beta.", beta.incl[i])]] <-
-            sims.matrix[,grepl(paste0("^beta\\.", suffix), colnames(sims.matrix))]
-
-          # Add beta parameters to the vector of time-course parameters
-          time.params <- append(time.params, paste0("beta.", beta.incl[i]))
-
-        } else if (mbnma$model.arg[[beta.name]]$method=="random" & mbnma$model.arg[[beta.name]]$pool %in% c("const", "arm")) {
-          # Store matrix of beta values generated from random distribution determined by model parameters
-          # This section could be performed for each iteration (rather than on posterior medians)
-          mat <- cbind(mbnma$BUGSoutput$median[[paste0("beta.", suffix)]],
-                       mbnma$BUGSoutput$median[[paste0("sd.beta.", suffix)]])
-          model.vals[[paste0("beta.", beta.incl[i])]] <-
-            apply(mat, MARGIN = 1, FUN=function(x) {stats::rnorm(n, x[1], x[2])})
-
-          # Add beta parameters to the vector of time-course parameters
-          time.params <- append(time.params, paste0("beta.", beta.incl[i]))
-
-        } else if (mbnma$model.arg[[beta.name]]$pool=="rel") {
-
-          # Ammend time-course equation
-          timecourse <- gsub(paste0("(beta\\.", beta.incl[i],")"),
-                                  paste0("(mu.", i, " + d.", i, ")"), timecourse)
-
-          # Add d parameters to the vector of time-course parameters
-          time.params <- append(time.params, c(paste0("d.", beta.incl[i]), paste0("mu.", beta.incl[i])))
-
-          if (!is.null(mbnma$model.arg$arg.params)) {
-            mu.prior <- append(mu.prior, suffix)
-          } else {
-            mu.prior <- append(mu.prior, beta.name)
-          }
-
-          #if (get(beta.name)$pool=="rel") {
-          if (mbnma$model.arg[[beta.name]]$method=="common") {
-            # Store MCMC results for relevant parameters
-            model.vals[[paste0("d.", beta.incl[i])]] <-
-              sims.matrix[,grepl(paste0("^d\\.", suffix), colnames(sims.matrix))]
-          } else if (mbnma$model.arg[[beta.name]]$method=="random") {
-            # Store matrix of d values generated from random distribution determined by model parameters
-            len <- sum(grepl(paste0("^d\\.", suffix), colnames(sims.matrix)))
-            mat <- array(dim=c(n, len, 2))
-            mat[,,1] <- sims.matrix[,grepl(paste0("^d\\.", suffix), colnames(sims.matrix))]
-            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", suffix), colnames(sims.matrix))]
-            mat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
-
-            mat[,1] <- rep(0, nrow(mat))
-            model.vals[[paste0("d.", beta.incl[i])]] <- mat
-          }
-          #}
-        }
-      } else if (is.numeric(mbnma$model.arg[[beta.name]]$method)) {
-
-        # Store MCMC results for relevant parameters
-        model.vals[[paste0("beta.", beta.incl[i])]] <-
-          rep(mbnma$model.arg[[beta.name]]$method, n)
+  for (i in seq_along(params)) {
+    if ("abs" %in% fun$apool[i]) {
+      if ("common" %in% fun$amethod[i]) {
+        # Store matrix of MCMC iterations to list
+        model.vals[[fun$bname[i]]] <-
+          sims.matrix[,grepl(paste0("^", params[i]), colnames(sims.matrix))]
 
         # Add beta parameters to the vector of time-course parameters
-        time.params <- append(time.params, paste0("beta.", beta.incl[i]))
+        time.params <- append(time.params, fun$bname[i])
+      } else if ("random" %in% fun$amethod[i]) {
+        # Store matrix of beta values generated from random distribution determined by model parameters
+        len <- sum(grepl(paste0("^", params[i]), colnames(sims.matrix)))
+        mat <- array(dim=c(n, len, 2))
+        mat[,,1] <- sims.matrix[,grepl(paste0("^", params[i]), colnames(sims.matrix))]
+        mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))]
+        mat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
-      } else {
-        stop("Parameter(s) in time-course function not included in those monitored in JAGS model")
+        model.vals[[fun$bname[i]]] <- mat
+
+        # Add beta parameters to the vector of time-course parameters
+        time.params <- append(time.params, fun$bname[i])
+
+      } else if (is.numeric(fun$amethod[i])) {
+        stop(paste0("Fixed time-course parameter for", params[i], " currently not supported for prediction"))
       }
+    } else if ("rel" %in% fun$apool[i]) {
 
-      # Add class effects
-      if (length(mbnma$model.arg$class.effect)>0) {
-        if (beta.name %in% names(mbnma$model.arg$class.effect) &
-            any(grepl(paste0("D\\.", suffix), colnames(sims.matrix)))) {
+      # Ammend time-course equation
+      timecourse <- gsub(fun$bname[i], paste0("(mu.", i, " + d.", i, ")"), timecourse)
 
+      # Add mu to list of parameters
+      time.params <- append(time.params, paste0("mu.", i))
+      time.params <- append(time.params, paste0("d.", i))
+      #mu.prior <- append(mu.prior, paste0("mu.", i))
 
-          if (mbnma$model.arg$class.effect[[beta.name]]=="common") {
-            # Store MCMC results for relevant parameters
-            model.vals[[paste0("D.", beta.incl[i])]] <-
-              sims.matrix[,grepl(paste0("^D\\.", suffix), colnames(sims.matrix))]
-          } else if (mbnma$model.arg$class.effect[[beta.name]]=="random") {
-            if (!any(grepl(paste0("sd\\.D\\.", suffix), colnames(sims.matrix)))) {
-              stop(paste0("sd.D has not been monitored for random class effect for d.", suffix,
-                          "\nRandom class effects extracted from model for prediction"))
-            }
+      # If class effects are present
+      if (params[i] %in% names(mbnma$model.arg$class.effect)) {
 
-            # Generate D values samples from distribution
-            len <- sum(grepl(paste0("^D\\.", suffix), colnames(sims.matrix)))
-            mat <- array(dim=c(n, len, 2))
-            mat[,,1] <- sims.matrix[,grepl(paste0("^D\\.", suffix), colnames(sims.matrix))]
-            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.D\\.", suffix), colnames(sims.matrix))]
-            mat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+        if (level=="treatments") {
+          findd <- ifelse(grepl("beta", params[i]), paste0("^D\\.", i), paste0("^", toupper(params[i])))
 
-            mat[,1] <- rep(0, nrow(mat))
-            model.vals[[paste0("D.", beta.incl[i])]] <- mat
+          tperc <- table(mbnma$network$classkey$class)
+          mat <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
+          if (ncol(mat)!=length(tperc)) {
+            stop("Classes in 'network$classkey' do not match with those monitored in 'mbnma'")
           }
 
-          time.params <- append(time.params, paste0("D.", beta.incl[i]))
+          # Duplicate class columns for treatments within a class
+          mcmcmat <- as.matrix(mat[,1], ncol=1)
+          for (k in 2:length(tperc)) {
+            mcmcmat <- cbind(mcmcmat, matrix(rep(mat[,k], tperc[k]), ncol=tperc[k]))
+          }
+
+          if ("random" %in% mbnma$model.arg$class.effect[[params[i]]]) {
+            # Store matrix of beta values generated from random distribution determined by model parameters
+            mcmcarray <- array(dim=c(n, ncol(mcmcmat), 2))
+            mcmcarray[,,1] <- mcmcmat
+            mcmcarray[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", toupper(params[i])), colnames(sims.matrix))]
+            mcmcarray[,2:ncol(mcmcmat),] <-
+              apply(mcmcarray[,2:ncol(mcmcmat),], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+
+            mcmcmat <- mcmcarray[,,1]
+          }
+
+          # Store MCMC results for relevant parameters
+          model.vals[[paste0("d.", i)]] <- mcmcmat
+        }
+
+        if (level=="classes") {
+          findd <- ifelse(grepl("beta", params[i]), paste0("^D\\.", i), paste0("^", toupper(params[i])))
+
+          if ("common" %in% mbnma$model.arg$class.effect[[params[i]]]) {
+            # Store MCMC results for relevant parameters
+            model.vals[[paste0("d.", i)]] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
+          } else if ("random" %in% mbnma$model.arg$class.effect[[params[i]]]) {
+            # Store matrix of beta values generated from random distribution determined by model parameters
+            len <- sum(grepl(findd, colnames(sims.matrix)))
+            mat <- array(dim=c(n, len, 2))
+            mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
+            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", toupper(params[i])), colnames(sims.matrix))]
+            mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+
+            model.vals[[paste0("d.", i)]] <- mat[,,1]
+          }
+        }
+
+      # If class effects are not present
+      } else {
+        time.params <- append(time.params, paste0("d.", i))
+        findd <- ifelse(grepl("beta", params[i]), paste0("^d\\.", i), paste0("^", params[i]))
+
+        if ("common" %in% fun$amethod[i]) {
+
+          # Store MCMC results for relevant parameters
+          model.vals[[paste0("d.", i)]] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
+
+        } else if ("random" %in% fun$amethod[i]) {
+
+          # Store matrix of beta values generated from random distribution determined by model parameters
+          len <- sum(grepl(findd, colnames(sims.matrix)))
+          mat <- array(dim=c(n, len, 2))
+          mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
+          mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))]
+          mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+
+          model.vals[[paste0("d.", i)]] <- mat[,,1]
 
         }
       }
+    } else {
+      stop(paste0(params[i], " has not been monitored in the model but is necessary for prediction."))
     }
   }
-  model.vals[["mu.prior"]] <- mu.prior
+
+  #model.vals[["mu.prior"]] <- mu.prior
   model.vals[["timecourse"]] <- timecourse
-  model.vals[["time.params"]] <- time.params
+  model.vals[["time.params"]] <- unique(time.params)
 
   return(model.vals)
 }
+
+
+
+
+
 
 
 
@@ -777,6 +755,10 @@ ref.synth <- function(data.ab, mbnma, synth="random",
   return(result)
 
 }
+
+
+
+
 
 
 
