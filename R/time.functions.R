@@ -21,6 +21,11 @@ texp <- function(pool.rate="rel", method.rate="common") {
     jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
   }
 
+  f <- function(time, beta.1) {
+    y <- beta.1 * (1-exp(-time))
+    return(y)
+  }
+
   # Generate output values
   paramnames <- "rate"
   nparam <- 1
@@ -37,7 +42,8 @@ texp <- function(pool.rate="rel", method.rate="common") {
   bmethod <- paste0("method.", 1:nparam)
   names(bmethod) <- paramnames
 
-  out <- list(name="exp", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+  out <- list(name="exp", fun=fun, f=f, latex=latex,
+              params=paramnames, nparam=nparam, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
 
@@ -106,6 +112,12 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
   }
 
 
+  f <- function(time, beta.1, beta.2, beta.3) {
+    y <- (beta.1 * (time ^ beta.3) ) / ((exp(beta.2) ^ beta.3) + (time ^ beta.3))
+    return(y)
+  }
+
+
   # Generate output values
   paramnames <- c("emax", "et50")
   nparam <- 2
@@ -130,7 +142,8 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
   bmethod <- paste0("method.", 1:nparam)
   names(bmethod) <- paramnames
 
-  out <- list(name="emax", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+  out <- list(name="emax", fun=fun, f=f,
+              latex=latex, params=paramnames, nparam=nparam, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"
@@ -265,6 +278,57 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
   }
 
 
+  # Write function
+  if (degree==1) {
+    f <- function(time, beta.1, beta.2) {
+      if (time>0) {
+        if (beta.2==0) {
+          y <- log(time)
+        } else {
+          y <- time^beta.2
+        }
+      } else {
+        y <- 0
+      }
+      return(beta.1 * y)
+    }
+  } else if (degree==2) {
+    f <- function(time, beta.1, beta.2, beta.3, beta.4) {
+      if (time>0) {
+        if (beta.3==0) {
+          y1 <- log(time)
+        } else {
+          y1 <- time^beta.3
+        }
+      } else {
+        y1 <- 0
+      }
+      y1 <- beta.1 * y1
+
+      if (beta.4==beta.3) {
+        if (time>0) {
+          if (beta.4==0) {
+            y2 <- log(time)^2
+          } else {
+            y2 <- time^beta.4 * log(time)
+          }
+        } else {
+          if (time >0) {
+            if (beta.4==0) {
+              y2 <- log(time)
+            } else {
+              y2 <- time^beta.4
+            }
+          }
+        }
+      } else {
+        y2 <- 0
+      }
+      return(y1 + y2)
+    }
+  }
+
+
   # Generate output values
   paramnames <- c(paste0("beta.", 1:degree), paste0("power", 1:degree))
   nparam <- degree*2
@@ -293,7 +357,8 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
   names(bpool) <- paramnames[1:nparam]
   names(bmethod) <- paramnames
 
-  out <- list(name="fpoly", fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
+  out <- list(name="fpoly", fun=fun, f=f,
+              latex=latex, params=paramnames, nparam=nparam, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"

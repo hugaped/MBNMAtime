@@ -1447,3 +1447,71 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 
   return(invisible(plotlist))
 }
+
+
+
+
+
+
+#' Plot illustrative time-course functions
+#'
+#' Can be used to plot potential time-course functions to identify if they may
+#' be a suitable fit for the data.
+#'
+#' @param x An object of `class("timefun")`
+#' @inheritParams tuser()
+#'
+#' @return An illustrative plot of the time-course function with the parameters specified
+#' in `beta.1`, `beta.2`, `beta.3` and `beta.4`
+#'
+#'
+#' @export
+plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
+                         beta.3=0, beta.4=0) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(x, "timefun", add=argcheck)
+  checkmate::assertNumeric(beta.1, add=argcheck)
+  checkmate::assertNumeric(beta.2, add=argcheck)
+  checkmate::assertNumeric(beta.3, add=argcheck)
+  checkmate::assertNumeric(beta.4, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  time <- seq(0,100)
+
+  funstr <- x$jags
+  #funstr <- gsub("beta", "tempbeta", funstr)
+  funstr <- gsub("\\[i\\,k\\]", "", funstr)
+  funstr <- gsub("\\[i\\,m\\]", "", funstr)
+
+  if (any(c("rcs", "ns", "bs") %in% x$name)) {
+    spline <- genspline(time, spline=x$name, knots=x$knots)
+    funstr <- gsub("spline\\[i\\,m", "spline[", funstr)
+  }
+
+  if (any(c("user", "fpoly") %in% x$name)) {
+    stop("Plotting for 'tfpoly()' and 'tuser()' not currently supported")
+  }
+
+  nparam <- x$nparam
+
+  df <- data.frame("y"=NA, "time"=NA)
+  y <- eval(parse(text=funstr))
+  df <- rbind(df, setNames(cbind(y,time), names(df)))
+  df <- df[-1,]
+
+  vals <- vector()
+  for (i in 1:nparam) {
+    vals <- append(vals, get(paste0("beta.", i)))
+  }
+
+  g <- ggplot2::ggplot(df, ggplot2::aes(x=time, y=y)) +
+    ggplot2::geom_line(size=1) +
+    ggplot2::labs(subtitle=paste(paste0("beta.", 1:nparam, " = ", vals), collapse="    ")) +
+    ggplot2::xlab("Time") +
+    theme_mbnma()
+
+  graphics::plot(g)
+  return(invisible(g))
+}
