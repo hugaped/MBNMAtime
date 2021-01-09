@@ -40,7 +40,7 @@
 #'   beta.1="rel.random", beta.2="rel.common")
 #' cat(model)
 #' @export
-mb.write <- function(fun=linear(), link="identity", positive.scale=TRUE, intercept=TRUE,
+mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
                      rho=NULL, covar=NULL, var.scale=NULL,
                      class.effect=list(), UME=FALSE) {
 
@@ -914,5 +914,113 @@ add.funparams <- function(model, fun) {
 
     }
   }
+  return(model)
+}
+
+
+
+
+
+
+
+#' Write MBNMA time-course models JAGS code for synthesis of studies
+#' investigating reference treatment
+#'
+#' Writes JAGS code for a Bayesian time-course model for model-based network
+#' meta-analysis (MBNMA) that pools reference treatment effects from different
+#' studies. This model only pools single study arms and therefore does not pool
+#' relative effects.
+#'
+#' @param mu.synth A string that takes the value `fixed` or `random`, indicating
+#'   the type of synthesis model to use
+#' @inheritParams mb.run
+#'
+#' @return A character object of JAGS MBNMA model code that includes beta
+#'   parameter components of the model
+#'
+#' @examples
+#' # Write an exponential time-course MBNMA synthesis model
+#' model <- write.ref.synth(fun="exponential",
+#'   alpha="arm", beta.1="rel.common", mu.synth="fixed")
+#' cat(model) # Concatenates model representations making code more easily readable
+#'
+#' @export
+write.ref.synth <- function(fun=tpoly(degree = 1), link="identity",
+                            positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
+                            mu.synth="random",
+                            priors=NULL) {
+
+  ####### VECTORS #######
+
+  write.check(fun=fun, positive.scale=positive.scale, intercept=intercept,
+              rho=rho, covar=covar)
+
+  model <- write.model()
+
+  alphacode <- write.timecourse(model=model, fun=fun, intercept=intercept, positive.scale=positive.scale)
+
+  timecourse <- alphacode[["timecourse"]]
+  model <- alphacode[["model"]]
+
+  model <- write.likelihood(model=model, timecourse=timecourse, rho=rho, covar=covar, link=link)
+
+  model <- write.beta.ref(model=model, timecourse=timecourse, fun=fun)
+
+  model <- remove.loops(model)
+
+  # Add user-specific priors (but only those for reference treatment)
+  if (!is.null(priors)) {
+    ref.priors <- get.prior(model)
+    for (i in seq_along(ref.priors)) {
+      if (names(ref.priors)[i] %in% names(priors)) {
+        ref.priors[[i]] <- priors[[names(ref.priors)[i]]]
+      }
+    }
+    model <- replace.prior(ref.priors, model=model)
+  }
+
+  return(model)
+}
+
+
+
+
+
+
+#' Adds sections of JAGS code for an MBNMA reference synthesis model that
+#' correspond to beta parameters
+#' @noRd
+write.beta.ref <- function(model, timecourse, fun,
+                           mu.synth="random"
+) {
+
+  for (i in seq_along(fun$apool)) {
+    if ("rel" %in% fun$apool[i]) {
+
+      model <- model.insert(model, pos=which(names(model)=="end"),
+                            x=paste0("mu.", i, " ~ dnorm(0,0.0001)"))
+
+      if (mu.synth=="common") {
+        model <- gsub(paste0("beta\\.",i, "\\[i\\,k\\]"), paste0("mu.",i), model)
+      } else if (mu.synth=="random") {
+        model <- gsub(paste0("beta\\.",i), paste0("i.mu.",i), model)
+
+        model <- model.insert(model, pos=which(names(model)=="arm"),
+                              x=paste0("i.mu.", i, "[i,k] ~ dnorm(mu.", i, ", tau.mu.", i, ")"))
+
+        model <- model.insert(model, pos=which(names(model)=="end"),
+                              x=paste0("sd.mu.", i, " ~ dnorm(0,0.0025) T(0,)"))
+        model <- model.insert(model, pos=which(names(model)=="end"),
+                              x=paste0("tau.mu.", i, " <- pow(sd.mu.", i, ", -2)"))
+      }
+    }
+  }
+
+  # Create dummy variables to avoid JAGS warnings
+  model <- model.insert(model, pos=which(names(model)=="start"),
+                        x="dummy1 <- NT")
+  model <- model.insert(model, pos=which(names(model)=="start"),
+                        x="dummy2 <- treat")
+
   return(model)
 }

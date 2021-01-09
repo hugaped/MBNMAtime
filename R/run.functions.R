@@ -281,9 +281,9 @@
 #'   pd="pd.kl")
 #' }
 #' @export
-mb.run <- function(network, parameters.to.save=NULL,
-                      fun=texp(), positive.scale=FALSE, intercept=TRUE,
+mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=TRUE,
                       link="identity",
+                      parameters.to.save=NULL,
                       rho=NULL, covar=NULL,
                       var.scale=NULL,
                       class.effect=list(), UME=FALSE,

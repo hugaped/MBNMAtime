@@ -265,22 +265,22 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
       }
     } else if (any(class(ref.resp) %in% c("data.frame", "tibble"))) {
 
-      stop("'ref.synth' not supported in current version - updates coming soon")
-
       ### PLACEBO SYNTHESIS MODEL ###
       synth.result <- ref.synth(data.ab=ref.resp, mbnma=object, synth=synth)
-      #synth.result <- ref.synth(data.ab=ref.resp, mbnma=object, synth=synth, ...)
+
+      synth.result <- synth.result$BUGSoutput$median
+      synth.result[["deviance"]] <- NULL
 
       # Assign synth.result to mu values in model
       for (i in seq_along(mu.params)) {
         if (synth=="random") {
           assign(mu.params[i],
                  stats::rnorm(n,
-                       synth.result[[paste0("m.", mu.params[i])]],
+                       synth.result[[mu.params[i]]],
                        synth.result[[paste0("sd.", mu.params[i])]])
           )
         } else if (synth=="common") {
-          assign(mu.params[i], rep(synth.result[[paste0("m.", mu.params[i])]],
+          assign(mu.params[i], rep(synth.result[[mu.params[i]]],
                                    n))
         } else (stop(crayon::red("synth must be either `common` or `random`")))
 
@@ -662,6 +662,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 #'
 #' @export
 ref.synth <- function(data.ab, mbnma, synth="random",
+                      link=mbnma$model.arg$link,
                       n.iter=mbnma$BUGSoutput$n.iter,
                       n.burnin=mbnma$BUGSoutput$n.burnin,
                       n.thin=mbnma$BUGSoutput$n.thin,
@@ -677,7 +678,7 @@ ref.synth <- function(data.ab, mbnma, synth="random",
   argcheck <- checkmate::makeAssertCollection()
 
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
-  checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
+  checkmate::assertChoice(synth, choices=c("random", "common"), add=argcheck)
   checkmate::assertInt(n.iter, lower=1, add=argcheck)
   checkmate::assertInt(n.burnin, lower=1, add=argcheck)
   checkmate::assertInt(n.thin, lower=1, add=argcheck)
@@ -689,61 +690,30 @@ ref.synth <- function(data.ab, mbnma, synth="random",
   #to study model
   # Do all the mb.write bits but without the consistency bits
 
-  model.arg <- names(mbnma[["model.arg"]])
-  for (i in seq_along(model.arg)) {
-    assign(model.arg[i], mbnma[["model.arg"]][[model.arg[i]]])
-  }
-
-  # Check betas are specified correctly and prepare format for subsequent functions
-  for (i in 1:4) {
-    betaname <- paste0("beta.", i)
-    #if (!is.null(get(betaname))) {
-    if (!is.null(mbnma$model.arg[[betaname]])) {
-      # SPECIFIC TO REFERENCE SYNTHESIS MODEL since "arm" is equivalent to "const" if there is only one treatment
-      if (mbnma$model.arg[[betaname]]$pool == "arm") {
-        assign(betaname, list(pool="const", method=mbnma$model.arg[[betaname]]$method))
-      }
-
-      assign(paste0(betaname, ".str"), compound.beta(mbnma$model.arg[[betaname]]))
-    } else {
-      assign(paste0(betaname, ".str"), NULL)
-    }
-  }
-
-  jagsmodel <- write.ref.synth(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun,
-                               alpha=mbnma$model.arg$alpha,
-                               beta.1=beta.1.str, beta.2=beta.2.str,
-                               beta.3=beta.3.str, beta.4=beta.4.str,
-                               positive.scale=mbnma$model.arg$positive.scale, intercept=mbnma$model.arg$intercept,
-                               rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar, knots=mbnma$model.arg$knots,
+  jagsmodel <- write.ref.synth(fun=mbnma$model.arg$fun, positive.scale=mbnma$model.arg$positive.scale,
+                               intercept=mbnma$model.arg$intercept,
+                               rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar,
                                mu.synth=synth,
-                               class.effect=mbnma$model.arg$class.effect, UME=mbnma$model.arg$UME,
                                priors=mbnma$model.arg$priors
   )
 
-
   parameters.to.save <- vector()
-  for (i in 1:4) {
-    if (!is.null(mbnma$model.arg[[paste0("beta.", i)]])) {
-      if (mbnma$model.arg[[paste0("beta.", i)]]$pool=="rel") {
-        parameters.to.save <- append(parameters.to.save, paste0("m.mu.", i))
-        if (synth=="random") {
-          parameters.to.save <- append(parameters.to.save, paste0("sd.mu.", i))
-        }
+  for (i in seq_along(mbnma$model.arg$fun$apool)) {
+    if ("rel" %in% mbnma$model.arg$fun$apool[i]) {
+      parameters.to.save <- append(parameters.to.save, paste0("mu.",i))
+      if (synth=="random") {
+        parameters.to.save <- append(parameters.to.save, paste0("sd.mu.",i))
       }
     }
   }
 
-  jags.result <- mb.jags(data.ab,
+  jags.result <- mb.jags(data.ab, link=mbnma$model.arg$link,
                             model=jagsmodel, fun=mbnma$model.arg$fun,
-                            rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar, knots=mbnma$model.arg$knots,
+                            rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar,
                             parameters.to.save=parameters.to.save,
                             n.iter=n.iter, n.burnin=n.burnin,
                             n.thin=n.thin, n.chains=n.chains,
                             ...)[["jagsoutput"]]
-
-  result <- jags.result$BUGSoutput$median
-  result[["deviance"]] <- NULL
 
   if (any(jags.result$BUGSoutput$summary[,
                                          colnames(jags.result$BUGSoutput$summary)=="Rhat"
@@ -751,7 +721,7 @@ ref.synth <- function(data.ab, mbnma, synth="random",
     warning("Rhat values for parameter(s) in reference treatment synthesis model are >1.02. Suggest running for more iterations.")
   }
 
-  return(result)
+  return(jags.result)
 
 }
 
