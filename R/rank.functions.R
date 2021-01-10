@@ -362,3 +362,61 @@ calcprob <- function(rank.mat, treats=NULL) {
 }
 
 
+
+
+
+
+
+#' Rank predictions at a specific time point
+#'
+#' @param x an object of `class("mb.predict")` that contains predictions from an MBNMA model
+#' @param time a number indicating the time point at which predictions should be ranked. It must
+#' be one of the time points for which predictions in `x` are available.
+#' @param treats A character vector of treatment/class names for which responses have been predicted
+#'   in `x` As default, rankings will be calculated for all treatments/classes in `x`.
+#' @param lower_better Indicates whether negative responses are better (`lower_better=TRUE`) or
+#'
+#' @inheritParams rank.mbnma
+rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE,
+                                        treats=names(x$summary)) {
+
+  # Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(x, "mb.predict", add=argcheck)
+  checkmate::assertNumeric(time, len=1, lower=0, add=argcheck)
+  checkmate::assertLogical(lower_better, null.ok=FALSE, len=1, add=argcheck)
+  checkmate::assertCharacter(treats, null.ok=FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!all(treats %in% names(x$summary))) {
+    stop("'treats' includes treatments/classes not included in 'x'")
+  }
+  if (!time %in% x$summary[[1]]$time) {
+    stop("'time' is not a time point given in 'x'")
+  }
+
+
+  #### Compute rankings ####
+
+  # Get time point of interest from x
+  index <- which(x$summary[[1]]$time %in% time)
+  rank.mat <- lapply(x$pred.mat, FUN=function(k) k[,index])
+  rank.mat <- t(do.call(rbind, rank.mat))
+
+  # Compute rankings for each iteration
+  rank.mat <- t(apply(rank.mat, MARGIN=1, FUN=function(x) {
+    order(order(x, decreasing = !lower_better), decreasing=FALSE)
+  }))
+  colnames(rank.mat) <- treats
+
+  # Store rankings
+  rank.result <- list(temp=
+                        list("summary"=sumrank(rank.mat),
+                             "prob.matrix"=calcprob(rank.mat, treats=treats),
+                             "rank.matrix"=rank.mat)
+                        )
+  names(rank.result) <- paste0("Predictions at time = ", time)
+
+  class(rank.result) <- "mb.rank"
+  return(rank.result)
+}
