@@ -34,10 +34,6 @@
 #' time-course parameter(s) specified within the time-course function (see details).
 #' @param beta.4 A list with named elements `pool` and `method` that refers to
 #' time-course parameter(s) specified within the time-course function (see details).
-#' @param knots The number/location of knots if a restricted cubic spline time-course function is fitted (`fun="rcs"`).
-#' If a single number is given it indicates the number of knots (they will
-#'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
-#'   Minimum number of knots is 3.
 #' @param positive.scale A boolean object that indicates whether all continuous
 #'   mean responses (y) are positive and therefore whether the baseline response
 #'   should be given a prior that constrains it to be positive.

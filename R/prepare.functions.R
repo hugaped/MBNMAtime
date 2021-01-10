@@ -431,18 +431,21 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
       times <- unique(sort(times))
 
       # Generate spline basis matrix
-      spline <- genspline(times, spline=fun$name, knots=fun$knots)
+      spline <- genspline(times, spline=fun$name, knots=fun$knots, degree=fun$degree)
       timespline <- data.frame("time"=times, "spline"=spline)
-      # timespline <- times %>%
-      #   dplyr::mutate(spline=genspline(times, spline=splinefun, knots=knots))
 
       df <- suppressMessages(dplyr::left_join(df, timespline))
+      #df <- suppressMessages(dplyr::left_join(df, spline))
 
-      knotnum <- ifelse(length(fun$knots)>1, length(fun$knots), fun$knots)
+      #knotnum <- ifelse(length(fun$knots)>1, length(fun$knots), fun$knots)
+      knotnum <- ncol(spline)
 
+      # datalist[["spline"]] <- array(dim=c(nrow(datalist[["time"]]),
+      #                                     ncol(datalist[["time"]]),
+      #                                     knotnum-1))
       datalist[["spline"]] <- array(dim=c(nrow(datalist[["time"]]),
                                           ncol(datalist[["time"]]),
-                                          knotnum-1))
+                                          knotnum))
 
     }
   }
@@ -1123,31 +1126,31 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' @param x A numeric vector indicating all time points available in the dataset
 #' @param spline Indicates the type of spline function. Can be either natural cubic spline (`"ns"`), restricted cubic
 #'   spline (`"rcs"`) or B-spline (`"bs"`).
-#' @param ord a positive integer giving the order of the spline function. This is the number of coefficients in each
-#'   piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.
-#' @param max.time A number indicating the maximum time between which to calculate knot points.
+#' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
+#'  (e.g. `degree=3` represents a cubic spline).
+#' @param max.time A number indicating the maximum time between which to calculate the spline function.
 #' @inheritParams mbnma.run
 #'
 #'
-genspline <- function(x, spline="rcs", knots=3, ord=4, max.time=max(x)){
+genspline <- function(x, spline="rcs", knots=3, degree=2, max.time=max(x)){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertNumeric(knots, add=argcheck)
-  checkmate::assertNumeric(ord, add=argcheck)
+  checkmate::assertIntegerish(degree, add=argcheck)
   checkmate::assertNumeric(max.time, null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check knot specification
-  if (length(knots)==1) {
-    if (knots<3) {
-      stop("Minimum number of knots is 3")
-    }
-  } else if (length(knots)>1) {
-    if (length(knots)<3){
-      stop("Minimum number of knots is 3")
-    }
-  }
+  # if (length(knots)==1) {
+  #   if (knots<3) {
+  #     stop("Minimum number of knots is 3")
+  #   }
+  # } else if (length(knots)>1) {
+  #   if (length(knots)<3){
+  #     stop("Minimum number of knots is 3")
+  #   }
+  # }
 
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
@@ -1177,23 +1180,31 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.time=max(x)){
 
     # Generate spline basis matrix
     if (spline=="bs") {
-      splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
+      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree)
     } else if (spline=="rcs") {
       splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
-      splinedesign <- splines::ns(x0, knots=knots)
-      splinedesign <- cbind(x0, splinedesign)
+      splinedesign <- splines::ns(x=x0, knots=knots)
+
+      # splinedesign <- splines::ns(x0, knots=knots)
+      # splinedesign <- cbind(x0, splinedesign)
     }
+    rownames(splinedesign) <- x0
 
     # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
-    if (length(x0)>1) {
-      splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
-    } else {
-      splinedesign <- matrix(0, ncol=length(splinedesign))
-    }
+    splinedesign <- splinedesign[rownames(splinedesign) %in% x,]
+    # if (length(x0)>1) {
+    #   splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
+    # } else {
+    #   splinedesign <- matrix(0, ncol=length(splinedesign))
+    # }
 
     if (!is.matrix(splinedesign)) {
       splinedesign <- matrix(splinedesign, nrow=1)
+    }
+
+    if (ncol(splinedesign)>4) {
+      stop("splines of this complexity cannot currently be modelled using 'tspline()'...\nand your data is unlikely to be able to support it!")
     }
 
 

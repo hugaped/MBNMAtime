@@ -368,9 +368,11 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 }
 
 
-
-
-tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
+#'
+#'
+#' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
+#'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
+tspline <- function(type="rcs", knots=3, degree=2, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common") {
 
@@ -378,35 +380,53 @@ tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(type, choices=c("rcs", "bs", "ns"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
+  checkmate::assertIntegerish(degree, add=argcheck)
   for (i in 1:4) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
     checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
   }
   checkmate::reportAssertions(argcheck)
 
-  # Check knots
-  knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
-  if (length(knots)==1) {
-    if (knots>=1) {
-      if (knots<3 & type=="rcs") {
-        stop(knoterr)
-      }
-      nknot <- knots
-    } else {
-      stop(knoterr)
-    }
-  } else if (length(knots)>1) {
-    if (length(knots)<3 & type=="rcs") {
-      stop(knoterr)
-    }
-    nknot <- length(knots)
-  }
+  # Check knots and degrees
+  x <- c(0:100)
+  x <- genspline(x, spline=type, knots = knots, degree=degree)
 
-  if (length(knots)>1) {
-    if (!(all(knots<=1 & all(knots>=0)))) {
-      stop("`knots` specified as quantiles must be between 0 and 1")
-    }
-  }
+  nparam <- ncol(x)
+
+  # knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
+  # if (length(knots)==1) {
+  #   if (knots>=1) {
+  #     if (knots<3 & type=="rcs") {
+  #       stop(knoterr)
+  #     }
+  #     if (type=="rcs") {
+  #       nparam <- knots-1
+  #     } else if (type=="bs") {
+  #       nparam <- knots
+  #     }
+  #
+  #   } else {
+  #     if (type=="rcs") {
+  #       stop(knoterr)
+  #     }
+  #   }
+  # } else if (length(knots)>1) {
+  #   if (length(knots)<3 & type=="rcs") {
+  #     stop(knoterr)
+  #   }
+  #   if (type=="rcs") {
+  #     nparam <- length(knots)-1
+  #   } else if (type=="bs") {
+  #
+  #   }
+  #
+  # }
+  #
+  # if (length(knots)>1) {
+  #   if (!(all(knots<=1 & all(knots>=0)))) {
+  #     stop("`knots` specified as quantiles must be between 0 and 1")
+  #   }
+  # }
 
 
   # Define time-course function
@@ -414,8 +434,8 @@ tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
   basetex <- "\beta_1 * X[m,1]"
   jags <- base
   latex <- basetex
-  if (nknot>1) {
-    for (i in 2:(nknot-1)) {
+  if (nparam>1) {
+    for (i in 2:(nparam)) {
       temp <- gsub("1", i, base)
       jags <- paste(jags, "+", temp)
 
@@ -428,7 +448,7 @@ tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
 
 
   # Define parameters
-  for (i in 1:(nknot-1)) {
+  for (i in 1:(nparam)) {
     if (get(paste0("pool.",i))=="rel") {
       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
     } else if (get(paste0("pool.",i))=="abs" & get(paste0("method.",i))=="random") {
@@ -438,8 +458,7 @@ tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
 
 
   # Generate output values
-  paramnames <- paste0("beta.", 1:(nknot-1))
-  nparam <- nknot - 1
+  paramnames <- paste0("beta.", 1:nparam)
 
   apool <- vector()
   amethod <- vector()
@@ -458,7 +477,8 @@ tspline <- function(type="rcs", knots=3, pool.1="rel", method.1="common",
   names(bpool) <- paramnames
   names(bmethod) <- paramnames
 
-  out <- list(name=type, fun=fun, latex=latex, params=paramnames, nparam=nparam, knots=knots, jags=jags,
+  out <- list(name=type, fun=fun, latex=latex, params=paramnames,
+              nparam=nparam, knots=knots, degree=degree, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"
