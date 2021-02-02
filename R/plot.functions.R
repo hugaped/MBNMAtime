@@ -333,7 +333,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
 
   # Plot ggplot axes
-  g <- ggplot2::ggplot(data, ggplot2::aes(x=time, y=`50%`, ymin=`2.5%`, ymax=`97.5%`))
+  g <- ggplot2::ggplot(data, ggplot2::aes(x=time, y=`50%`, ymin=`2.5%`, ymax=`97.5%`), ...)
 
   # Add shaded regions for observations in original dataset
   if (disp.obs==TRUE) {
@@ -360,9 +360,8 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
                                           "95% CrI"="dashed"))
 
   g <- g + ggplot2::scale_color_manual(name="",
-                              values=c("Reference Mean"="red"))
-
-  g <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
+                              values=c("Reference Mean"="red")) +
+    theme_mbnma()
 
   return(g)
 }
@@ -651,14 +650,13 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 
     df$treat <- factor(df$treat, labels=treat.labs)
 
-    g <- ggplot2::ggplot(df, ggplot2::aes(x=ranks)) +
+    g <- ggplot2::ggplot(df, ggplot2::aes(x=ranks), ...) +
       ggplot2::geom_bar() +
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
-      ggplot2::ggtitle(params[param])
-
-    g <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
+      ggplot2::ggtitle(params[param]) +
+      theme_mbnma()
 
     graphics::plot(g)
 
@@ -1025,11 +1023,15 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
       ggplot2::geom_point() +
       ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
 
+    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID), ...) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point() +
+      ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x)) +
+      theme_mbnma()
+
   }
 
   g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response")
-
-  g <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
 
   graphics::plot(g)
   return(invisible(g))
@@ -1135,10 +1137,10 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Plots the residual deviances over time grouped by study and arm
   if (plot.type=="scatter") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fup, y=mean), group=(paste(study, arm, sep="_"))) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fup, y=mean), group=(paste(study, arm, sep="_")), ...) +
       ggplot2::geom_point()
   } else if (plot.type=="box") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fup), y=mean)) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fup), y=mean), ...) +
       ggplot2::geom_boxplot()
   }
 
@@ -1149,9 +1151,8 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab("Posterior mean")
-
-  g <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
+    ggplot2::ylab("Posterior mean") +
+    theme_mbnma()
 
   graphics::plot(g)
   return(invisible(list("graph"=g, "dev.data"=dev.df)))
@@ -1241,7 +1242,7 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
 
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
-                       ggplot2::aes(x=time, y=mean, group=paste(study, arm, sep="_"))) +
+                       ggplot2::aes(x=time, y=mean, group=paste(study, arm, sep="_")), ...) +
     ggplot2::geom_line()
 
   # Overlay observed responses
@@ -1261,9 +1262,8 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
 
   # Add axis labels
   g <- g + ggplot2::xlab("Time") +
-    ggplot2::ylab("Response")
-
-  g <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
+    ggplot2::ylab("Response") +
+    theme_mbnma()
 
   graphics::plot(g)
 
@@ -1363,13 +1363,13 @@ get.theta.dev <- function(mbnma, param="theta") {
 
 #' @describeIn mb.nodesplit Plot outputs from nodesplit models
 #'
-#' @param x An object of `class("mb.nodesplit")`
+#' @param x An object of `class("nodesplit")`
 #' @param plot.type A character string that can take the value of `"forest"` to plot
 #' only forest plots, `"density"` to plot only density plots, or left as `NULL` (the
 #' default) to plot both types of plot.
 #' @param params A character vector corresponding to a time-course parameter(s) for which to plot results.
 #' If left as `NULL` (the default), nodes-split results for all time-course parameters will be plotted.
-#' @param ... Arguments to be sent to `ggplot2::ggplot()`
+#' @param ... Arguments to be sent to `ggplot2::ggplot()` or `ggdist::stat_halfeye()`
 #'
 #' @details The S3 method `plot()` on an `mb.nodesplit` object generates either
 #' forest plots of posterior medians and 95\\% credible intervals, or density plots
@@ -1383,10 +1383,15 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(x, "mb.nodesplit", add=argcheck)
+  checkmate::assertClass(x, "nodesplit", add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("density", "forest"), null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Set colours
+  cols <- RColorBrewer::brewer.pal(3, "Set1")
+
+  plotlist <- list()
 
   # Check if params are within nodesplit
   if (!is.null(params)) {
@@ -1404,74 +1409,62 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
     plot.type <- c("density", "forest")
   }
 
-  forestdata <- x[[1]]$forest.plot$data[0,]
-  densitydata <- x[[1]]$density.plot$data[0,]
-  forestfacet <- vector()
-  forestparam <- vector()
-  densityfacet <- vector()
-  densityparam <- vector()
+  plot.df <- data.frame(value=NA, Source=NA, Parameter=NA, Comparison=NA)
   for (i in seq_along(x)) {
     for (k in seq_along(params)) {
-      comp <- paste(x[[i]][[k]]$comparison, collapse=" vs ")
-      temp <- x[[i]][[k]]$forest.plot$data
-      forestfacet <- append(forestfacet, rep(comp, nrow(temp)))
-      forestparam <- append(forestparam, rep(params[k], nrow(temp)))
-      forestdata <- rbind(forestdata, temp)
-
-      temp <- x[[i]][[k]]$density.plot$data
-      densityfacet <- append(densityfacet, rep(comp, nrow(temp)))
-      densityparam <- append(densityparam, rep(params[k], nrow(temp)))
-      densitydata <- rbind(densitydata, temp)
+      temp <- x[[i]][[k]]$mcmc[,c("value", "Source")]
+      temp$Parameter <- rep(params[k], nrow(temp))
+      temp$Comparison <- rep(names(x)[i], nrow(temp))
+      plot.df <- rbind(plot.df, temp)
     }
   }
-  forestdata$comp <- forestfacet
-  densitydata$comp <- densityfacet
-  forestdata$param <- forestparam
-  densitydata$param <- densityparam
+  plot.df <- plot.df[-1,]
 
-  plotlist <- list()
-  for (k in seq_along(params)) {
-    if ("forest" %in% plot.type) {
-      plotdata <- forestdata[forestdata$param==params[k],]
-      forest <-
-        ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med,
-                                                    ymin=plotdata$l95, ymax=plotdata$u95)) +
-        ggplot2::geom_pointrange() +
-        ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
-        ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") +
-        ggplot2::theme(axis.text = ggplot2::element_text(size=10),
-                       axis.title = ggplot2::element_text(size=12),
-                       title=ggplot2::element_text(size=18)) +
-        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-        ggplot2::facet_wrap(~factor(plotdata$comp)) +
-        ggplot2::ggtitle(paste0("Forest plot of node-split for ", params[k]))
+  # Factorise
+  plot.df <- plot.df %>% dplyr::mutate(
+    Parameter = factor(Parameter),
+    Comparison = factor(Comparison)
+  )
 
-      forest <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
+  # Forest plots
+  if ("forest" %in% plot.type) {
+    gg <-
+      ggplot2::ggplot(data=plot.df, ggplot2::aes(x=value, y=Source,
+                                                 linetype=Source, shape=Source, color=Source)) +
+      ggdist::stat_halfeye(.width=0.95) +
+      ggplot2::ylab("") + ggplot2::xlab("Treatment effect (95% CrI)") +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=15),
+                     axis.title = ggplot2::element_text(size=18),
+                     legend.text = ggplot2::element_text(size=15),
+                     title=ggplot2::element_text(size=18),
+                     legend.key.size = unit(1, "cm")) +
+      ggplot2::scale_color_manual(values=cols) +
+      ggplot2::facet_wrap(Parameter~Comparison, scales = "free_x")
 
-      graphics::plot(forest)
-      plotlist[[length(plotlist)+1]] <- forest
-    }
-    if ("density" %in% plot.type) {
-      plotdata <- densitydata[densitydata$param==params[k],]
+    gg <- do.call(ggdist::stat_halfeye, args=list(...)) + theme_mbnma()
 
-      density <- ggplot2::ggplot(plotdata, ggplot2::aes(x=plotdata$value,
-                                                        linetype=plotdata$Estimate, fill=plotdata$Estimate)) +
-        ggplot2::geom_density(alpha=0.2) +
-        ggplot2::xlab("Treatment effect (95% CrI)") +
-        ggplot2::ylab("Posterior density") +
-        ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
-        ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                       axis.title = ggplot2::element_text(size=14)) +
-        ggplot2::facet_wrap(~factor(plotdata$comp)) +
-        ggplot2::ggtitle(paste0("Posterior densities of node-split for ", params[k])) +
-        ggplot2::guides(fill=ggplot2::guide_legend((title="Evidence Source")),
-                        linetype=ggplot2::guide_legend((title="Evidence Source")))
+    graphics::plot(gg)
+    plotlist[[length(plotlist)+1]] <- gg
+  }
 
-      density <- do.call(ggplot2::ggplot, args=list(...)) + theme_mbnma()
 
-      graphics::plot(density)
-      plotlist[[length(plotlist)+1]] <- density
-    }
+  # Density plots (with shaded area of overlap)
+  if ("density" %in% plot.type) {
+    dens.df <- subset(plot.df, Source!="NMA")
+
+    dens <- ggplot2::ggplot(dens.df, ggplot2::aes(x=value, linetype=Source, fill=Source), ...) +
+      ggplot2::geom_density(alpha=0.2, size=1) +
+      ggplot2::xlab(title) +
+      ggplot2::ylab("Posterior density") +
+      ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=12),
+                     axis.title = ggplot2::element_text(size=14)) +
+      ggplot2::scale_fill_manual(values=cols) +
+      ggplot2::facet_wrap(Parameter~Comparison, scales = "free_x") +
+      theme_mbnma()
+
+    graphics::plot(dens)
+    plotlist[[length(plotlist)+1]] <- dens
   }
 
   return(invisible(plotlist))
