@@ -354,8 +354,7 @@ mb.nodesplit.comparisons <- function(network)
 #' }
 #' @export
 mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
-                            nodesplit.parameters="all", fun="linear", user.fun=NULL,
-                            beta.1=list(pool="rel", method="common"), beta.2=NULL, beta.3=NULL, beta.4=NULL,
+                            nodesplit.parameters="all", fun=tpoly(degree = 1),
                             ...
 )
 {
@@ -373,65 +372,34 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
   checkmate::reportAssertions(argcheck)
 
   # Check betas are specified correctly and prepare format for subsequent functions
-  for (i in 1:4) {
-    betaname <- paste0("beta.", i)
-    if (!is.null(get(betaname))) {
-      assign(paste0(betaname, ".str"), compound.beta(get(betaname)))
-    } else if (is.null(get(betaname))) {
-      assign(paste0(betaname, ".str"), NULL)
-    }
-  }
+  # for (i in 1:4) {
+  #   betaname <- paste0("beta.", i)
+  #   if (!is.null(get(betaname))) {
+  #     assign(paste0(betaname, ".str"), compound.beta(get(betaname)))
+  #   } else if (is.null(get(betaname))) {
+  #     assign(paste0(betaname, ".str"), NULL)
+  #   }
+  # }
 
   # Get treatment labels
   trt.labs <- network$treatments
-
-
-  # Checks - NEEDS TO BE CHANGED TO REFLECT MODEL CODE...COULD HAPPEN AFTER mb.write and then
-  #used to look inside the written model code to check numbers of parameters etc.
-  # "d.2" is not a parameter in current model with single prior - it is "beta.2"
-  #if (is.null(parameters.to.save)) {
-  #  if (fun=="linear" | fun=="exponential") {
-  #    parameters.to.save=c("d.1")
-  #  } else if (fun=="emax") {
-  #    parameters.to.save=c("d.1", "d.2")
-  #  }
-  #}
 
   # Check nodesplit.parameters has true values
   if (is.null(nodesplit.parameters)) {
     stop("No parameters have been specified on which to node-split")
   }
 
-  if (!all(nodesplit.parameters %in% c("all", "beta.1", "beta.2", "beta.3", "beta.4"))) {
-    stop("Parameter specified for nodesplit.parameters does not exist in model. They must be of the type 'beta.1', 'beta.2', etc.")
+  if (!all(nodesplit.parameters %in% c("all", fun$params[which(fun$apool=="rel")]))) {
+    stop("Parameter specified for nodesplit.parameters must be a parameter modelled using relative effects specified\nwithin the model")
   }
 
-  # Check that nodesplit.parameters and class effects are not on same parameter
-  #for (i in seq_along(names(class.effect))) {
-  #  if (names(class.effect)[i] %in% nodesplit.parameters) {
-  #    stop(paste0("Node splitting cannot be applied to parameters with class effects. ", names(class.effect)[i], " has been given a class effect"))
-  #  }
-  #}
 
   if (nodesplit.parameters=="all") {
     UME <- TRUE
-    nodesplit.parameters <- vector()
-    treat.params <- c("beta.1", "beta.2", "beta.3", "beta.4")
-
-    for (i in seq_along(treat.params)) {
-      if (!is.null(get(treat.params[i]))) {
-        if (get(treat.params[i])$pool == "rel") {
-          nodesplit.parameters <- append(nodesplit.parameters, treat.params[i])
-        }
-      }
-    }
-
+    nodesplit.parameters <- fun$params[which(fun$apool=="rel")]
   } else {
     UME <- nodesplit.parameters
   }
-
-
-  # Separate ... arguments for mb.write and mb.run
 
 
   ########### CHECKS OF DATASET FOR VALIDITY OF NODE-SPLITTING (possibly use Val Valkenhoef automation) ############
@@ -445,34 +413,10 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
   }
 
 
-  ######## Write JAGS scripts ########
-
-  #These can be removed later as now incorporated into mb.run
-  # Only needs to capture key time-course parameters in model for gen.paramaters.to.save
-  model.ind <- mb.write(fun=fun, user.fun=user.fun, beta.1=beta.1.str, beta.2=beta.2.str,
-                           beta.3=beta.3.str, beta.4=beta.4.str, UME=FALSE
-                           )
-
-  #model.dir <- mb.write(fun=fun, user.fun=user.fun, alpha=alpha, beta.1=beta.1, beta.2=beta.2,
-  #                         beta.3=beta.3, beta.4=beta.4,
-  #                         positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-  #                         class.effect=class.effect, UME=UME)
-
-  # parameters.to.save <- gen.parameters.to.save(parameters.to.save=parameters.to.save,
-  #                                              model.params = c(1,2,3,4),
-  #                                              model = model.ind
-  # )
-
-  parameters.to.save <-
-    gen.parameters.to.save(model.params=c(1,2,3,4), model=model.ind)
-
-
   ############# Run NMA model #############
 
-  result.nma <- mb.run(network, parameters.to.save=parameters.to.save, fun=fun,
-                       beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                       ...
-                       )
+  result.nma <- do.call(mb.run, args=list(network=network, fun=fun,
+                                         ...))
 
 
   ######### Loop over all node splits in network ########
@@ -492,37 +436,26 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     message("Running NMA model")
 
     nma.dif <- list()
-    nodesplit.parameters <- sort(nodesplit.parameters)
-
-    for (param in 1:4) {
-      if (paste0("beta.", param) %in% nodesplit.parameters) {
-
-        node1 <- paste0("d.", param, "[", comp[1], "]")
-        node2 <- paste0("d.", param, "[", comp[2], "]")
-
-        nma1 <- result.nma$BUGSoutput$sims.matrix[,colnames(result.nma$BUGSoutput$sims.matrix)==node1]
-        nma2 <- result.nma$BUGSoutput$sims.matrix[,colnames(result.nma$BUGSoutput$sims.matrix)==node2]
-
-        nma.dif[[paste0("beta.", param)]] <- nma2 - nma1
+    for (param in seq_along(nodesplit.parameters)) {
+      if (grepl("beta", nodesplit.parameters[param])) {
+        index <- which(nodesplit.parameters[param] %in% fun$params)
+        node1 <- paste0("d.", index, "[", comp[1], "]")
+        node2 <- paste0("d.", index, "[", comp[2], "]")
+      } else{
+        node1 <- paste0(nodesplit.parameters[param], "[", comp[1], "]")
+        node2 <- paste0(nodesplit.parameters[param], "[", comp[2], "]")
       }
+
+      nma1 <- result.nma$BUGSoutput$sims.matrix[,colnames(result.nma$BUGSoutput$sims.matrix)==node1]
+      nma2 <- result.nma$BUGSoutput$sims.matrix[,colnames(result.nma$BUGSoutput$sims.matrix)==node2]
+
+      nma.dif[[nodesplit.parameters[param]]] <- nma2 - nma1
     }
 
 
     #######################################
     ######### For direct model  ###########
     #######################################
-
-    # dir.dif <- list()
-    # nodesplit.parameters <- sort(nodesplit.parameters)
-    #
-    # for (param in 1:4) {
-    #   if (paste0("beta.", param) %in% nodesplit.parameters) {
-    #     node <- paste0("d.", param, "[", comp[1], ",", comp[2], "]")
-    #     #dir.dif[[length(dir.dif)+1]] <-
-    #     dir.dif[[paste0("beta.", param)]] <-
-    #       result.dir$BUGSoutput$sims.matrix[,colnames(result.dir$BUGSoutput$sims.matrix)==node]
-    #   }
-    # }
 
     # Change network reference treatment to estimate direct effects
     if (!exists("results.dir") |
@@ -535,25 +468,23 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
       }
 
       # Run UME model to estimate direct effects
-      result.dir <- mb.run(network.temp, fun=fun, parameters.to.save=parameters.to.save,
-                              beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                              UME=UME#,
-                              #...
-      )
+      result.dir <- do.call(mb.run, args=list(network=network.temp, fun=fun, UME=UME,
+                                              ...))
     }
 
     # Store required model parameter values
     comp.temp <- which(network$treatments[comp[2]] == network.temp$treatments)
     dir.dif <- list()
-    nodesplit.parameters <- sort(nodesplit.parameters)
-
-    for (param in 1:4) {
-      if (paste0("beta.", param) %in% nodesplit.parameters) {
-        node <- paste0("d.", param, "[1,", comp.temp, "]")
-        #dir.dif[[length(dir.dif)+1]] <-
-        dir.dif[[paste0("beta.", param)]] <-
-          result.dir$BUGSoutput$sims.matrix[,colnames(result.dir$BUGSoutput$sims.matrix)==node]
+    for (param in seq_along(nodesplit.parameters)) {
+      if (grepl("beta", nodesplit.parameters[param])) {
+        index <- which(nodesplit.parameters[param] %in% fun$params)
+        node <- paste0("d.", index, "[1,", comp.temp, "]")
+      } else{
+        node <- paste0(nodesplit.parameters[param], "[1,", comp.temp, "]")
       }
+
+      dir.dif[[nodesplit.parameters[param]]] <-
+        result.dir$BUGSoutput$sims.matrix[,colnames(result.dir$BUGSoutput$sims.matrix)==node]
     }
 
     message("Direct complete")
@@ -566,10 +497,10 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     ####### For MBNMA indirect model ########
     #########################################
 
-    data <- network[["data.ab"]]
+    df <- network[["data.ab"]]
 
     # Remove comparisons to split on
-    data <- drop.comp(df=data, comp=comp)
+    df <- drop.comp(df=df, comp=comp)
 
     if (!(1 %in% data$treatment)) {
       string <- paste("Reference treatment removed for node-split. Treatments have been reordered with the next lowest coded treatment as the reference:\ntreatment ",
@@ -577,28 +508,25 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
       warning(string)
     }
 
-    data <- mb.network(data)
+    ind.net <- mb.network(df)
 
-    result.ind <- mb.run(data, parameters.to.save=parameters.to.save, fun=fun,
-                            beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4#,
-                            #...
-    )
+    result.ind <- do.call(mb.run, args=list(network=ind.net, fun=fun, ...))
 
     ind.dif <- list()
-    nodesplit.parameters <- sort(nodesplit.parameters)
-
-    for (param in 1:4) {
-      if (paste0("beta.", param) %in% nodesplit.parameters) {
-
-        node1 <- paste0("d.", param, "[", comp[1], "]")
-        node2 <- paste0("d.", param, "[", comp[2], "]")
-
-        ind1 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node1]
-        ind2 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node2]
-
-        #ind.dif[[length(ind.dif)+1]] <- ind2 - ind1
-        ind.dif[[paste0("beta.", param)]] <- ind2 - ind1
+    for (param in seq_along(nodesplit.parameters)) {
+      if (grepl("beta", nodesplit.parameters[param])) {
+        index <- which(nodesplit.parameters[param] %in% fun$params)
+        node1 <- paste0("d.", index, "[", comp[1], "]")
+        node2 <- paste0("d.", index, "[", comp[2], "]")
+      } else{
+        node1 <- paste0(nodesplit.parameters[param], "[", comp[1], "]")
+        node2 <- paste0(nodesplit.parameters[param], "[", comp[2], "]")
       }
+
+      ind1 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node1]
+      ind2 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node2]
+
+      ind.dif[[nodesplit.parameters[param]]] <- ind2 - ind1
     }
 
 
@@ -618,8 +546,18 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
       overlap.mat <- list("direct"=dir.dif[[i]], "indirect"=ind.dif[[i]])
       overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
       #p.values <- overlap$OV
-      diff <- sum((dir.res-ind.res)>0) / length(dir.res)
+      diff <- sum((dir.dif[[i]]-ind.dif[[i]])>0) / length(dir.dif[[i]])
       p.values <- min(diff, 1-diff)
+
+      plot.df <- data.frame(source=c(rep("NMA", length(nma.dif[[i]])),
+                                     rep("Direct", length(dir.dif[[i]])),
+                                     rep("Indirect", length(ind.dif[[i]]))
+                                     ),
+                            value=c(nma.dif[[i]],
+                                    dir.dif[[i]],
+                                    ind.dif[[i]]
+                                    )) %>%
+        dplyr::mutate(Source=factor(source))
 
 
       # Quantiles
@@ -630,70 +568,24 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
       quantiles <- list("difference" = quantile_dif, "direct"=quantile_dir, "indirect"=quantile_ind, "nma"=quantile_nma)
 
 
-      # GGplots
-
-      source <- c("NMA", "Direct", "Indirect")
-      l95 <- c(quantile_nma[1], quantile_dir[1], quantile_ind[1])
-      med <- c(quantile_nma[2], quantile_dir[2], quantile_ind[2])
-      u95 <- c(quantile_nma[3], quantile_dir[3], quantile_ind[3])
-      plotdata <- data.frame(source, l95, med, u95)
-
-      #title <- paste0(names(ind.dif)[i], ": Treatment ", comp[2], " vs Treatment ", comp[1])
-      title <- paste0(names(ind.dif)[i], ": ", trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
-
-      gg <-
-        ggplot2::ggplot(data=plotdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
-        ggplot2::geom_pointrange() +
-        #ggplot2::geom_hline(yintercept=0, lty=2) +
-        ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
-        ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
-        ggplot2::theme(axis.text = ggplot2::element_text(size=15),
-                       axis.title = ggplot2::element_text(size=18),
-                       title=ggplot2::element_text(size=18)) +
-        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-        ggplot2::theme_bw()
-
-
-      # Density plots (with shaded area of overlap)
-      #MBNMA <- Sowers2005_nma[1:length(Direct)]
-      molten <- data.frame(ind.dif[[i]], dir.dif[[i]])
-      molten <- reshape2::melt(molten, measure.vars=names(molten))
-      names(molten) <- c("Estimate", "value")
-      linetypes <- c("solid", "dash")
-      levels(molten$Estimate) <- c("Indirect", "Direct")
-
-      dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
-        ggplot2::geom_density(alpha=0.2) +
-        ggplot2::xlab(title) +
-        ggplot2::ylab("Posterior density") +
-        #scale_linetype_manual(values=factor(molten$Estimate)) +
-        #scale_fill_manual(name="Evidence") +
-        ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
-        ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                       axis.title = ggplot2::element_text(size=14)) +
-        ggplot2::theme_bw()
-
-
       # Add plots for overlap and forest in return
       nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
-                        "parameter"=paste("d.", i,
+                        "parameter"=paste(names(ind.dif)[i],
                                           paste("[",comp[1], ",", comp[2], "]", sep=""),
                                           sep=""),
                         "overlap matrix"=overlap.mat,
                         "p.values"=p.values, "quantiles"=quantiles,
-                        "forest.plot"=gg, "density.plot"=dens,
-                        "direct"=result.dir, "indirect"=result.ind)
+                        #"forest.plot"=gg, "density.plot"=dens,
+                        "mcmc"=plot.df)
 
-      #nodesplit.comparison[[length(nodesplit.comparison)+1]] <- nodesplit
       nodesplit.comparison[[names(ind.dif)[i]]] <- nodesplit
 
     }
 
-    nodesplit.results[[paste("d",comp[1],comp[2], sep=".")]] <- nodesplit.comparison
-
+    nodesplit.results[[paste(trt.labs[comp[2]], trt.labs[comp[1]], sep=" vs ")]] <- nodesplit.comparison
   }
 
-  class(nodesplit.results) <- "mb.nodesplit"
+  class(nodesplit.results) <- "nodesplit"
 
   return(nodesplit.results)
 }
