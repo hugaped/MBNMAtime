@@ -11,7 +11,7 @@ texp <- function(pool.rate="rel", method.rate="common") {
   checkmate::reportAssertions(argcheck)
 
   # Define time-course function
-  fun <- ~ slope * (1 - exp(-time))
+  fun <- ~ rate * (1 - exp(-time))
   latex <- "\beta_1 * (1 - exp(-x_m))"
   jags <- "beta.1 * (1 - exp(- time[i,m]))"
 
@@ -52,6 +52,60 @@ texp <- function(pool.rate="rel", method.rate="common") {
   return(out)
 }
 
+
+
+
+tloglin <- function(pool.rate="rel", method.rate="common", off=.1) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(pool.rate, choices=c("rel", "abs"), add=argcheck)
+  checkmate::assertChoice(method.rate, choices=c("common", "random"), add=argcheck)
+  checkmate::assertNumeric(off, len=1, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Define time-course function
+  fun <- ~ rate * log(time + off)
+  latex <- "\beta_1 * log(x_m + off)"
+  jags <- paste0("beta.1 * log(time[i,m] + ", off, ")")
+
+  if (pool.rate=="rel") {
+    jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
+  } else if (pool.rate=="abs" & method.rate=="random") {
+    jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
+  }
+
+  f <- function(time, beta.1, beta.2, off) {
+    y <- beta.1 * log(time + off)
+    return(y)
+  }
+
+  # Generate output values
+  paramnames <- "rate"
+  nparam <- 1
+
+  apool <- pool.rate
+  names(apool) <- paramnames
+  amethod <- method.rate
+  names(amethod) <- paramnames
+  bname <- paste0("beta.", 1:nparam)
+  names(bname) <- paramnames
+
+  bpool <- paste0("pool.", 1:nparam)
+  names(bpool) <- paramnames
+  bmethod <- paste0("method.", 1:nparam)
+  names(bmethod) <- paramnames
+
+  out <- list(name="loglin", fun=fun, f=f, latex=latex, off=off,
+              params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
+              bpool=bpool, bmethod=bmethod)
+
+  class(out) <- "timefun"
+
+  return(out)
+
+}
 
 
 
