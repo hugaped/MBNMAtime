@@ -326,7 +326,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
     parameters.to.save <-
-      gen.parameters.to.save(fun=fun, class.effect=class.effect, model=model)
+      gen.parameters.to.save(fun=fun, model=model)
   }
 
   # Add nodes to monitor to calculate plugin pd
@@ -501,7 +501,7 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
 #'
 #' @inheritParams mb.run
 #' @param model A JAGS model written as a character object
-gen.parameters.to.save <- function(fun, class.effect, model) {
+gen.parameters.to.save <- function(fun, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
   # model is a JAGS model written as a character object
