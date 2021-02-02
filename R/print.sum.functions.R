@@ -762,7 +762,7 @@ theme_mbnma <- function(...) {
     ggplot2::theme(
       # change stuff here
       panel.background  = ggplot2::element_blank(),
-      plot.background = ggplot2::element_rect(fill="gray96", colour=NA),
+      plot.background = ggplot2::element_rect(fill="white", colour=NA),
       legend.background = ggplot2::element_rect(fill="transparent", colour=NA),
       legend.key = ggplot2::element_rect(fill="transparent", colour=NA),
 
