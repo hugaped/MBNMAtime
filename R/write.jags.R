@@ -63,7 +63,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   # Change UME to relate to parameters in model
   if (length(UME)==1) {
     if (UME==TRUE) {
-      UME <- fun$params[which(fun$bpool=="rel")]
+      UME <- fun$params[which(fun$apool=="rel")]
     } else if (UME==FALSE) {
       UME <- c()
     }
@@ -156,7 +156,7 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=N
                 paste(UME[which(UME %in% names(class.effect))], collapse=", "), " have been assigned UME and class effects"))
   }
 
-  if (any(fun$bpool[which(fun$params %in% UME)] == "abs")) {
+  if (any(fun$apool[which(fun$params %in% UME)] == "abs")) {
     stop("'UME' can only be specified for time-course parameters in 'fun' that have been modelled as pool='rel'")
   }
 
@@ -429,7 +429,7 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
 #'
 write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
-  for (i in seq_along(fun$bpool)) {
+  for (i in seq_along(fun$apool)) {
     if (fun$apool[i]=="rel") {
 
       # Split beta into relative effects
