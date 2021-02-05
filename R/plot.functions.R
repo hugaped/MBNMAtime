@@ -1010,7 +1010,7 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
     diffs <- diffs %>%
       dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
       dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
-      dplyr::mutate(pairDiff = .data$y.x - .data$y.y)
+      dplyr::mutate(pairDiff = .data$y.y - .data$y.x)
 
     diffs <- diffs %>%
       dplyr::bind_rows(diffs %>%
