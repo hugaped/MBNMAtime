@@ -771,7 +771,7 @@ summary.mb.network <- function(object,...) {
                          )
 
   # Print data frame
-  print(knitr::kable(treat.df, col.names = c("Treatment", "Follow-up per study", "Study duration")))
+  print(knitr::kable(treat.df, col.names = c("Treatment", "Follow-up measurements per study", "Study duration")))
   cat("\n")
 
   # Check network is connected at treatment-level
