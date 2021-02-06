@@ -1537,3 +1537,17 @@ plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
   graphics::plot(g)
   return(invisible(g))
 }
+
+
+
+
+
+
+plot.invisible <- function(...){
+  ff <- tempfile()
+  grDevices::png(filename=ff)
+  res <- graphics::plot(...)
+  grDevices::dev.off()
+  unlink(ff)
+  return(res)
+}
