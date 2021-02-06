@@ -388,6 +388,10 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
       model <- model.insert(model, pos=which(names(model)=="arm"), x=covar.ar1)
       model <- model.insert(model, pos=which(names(model)=="study"), x=timepoint.corr)
     }
+
+    # Remove residual deviance calculations
+    # Drop resdev, dev and totresdev
+    model <- subset(model, !grepl("dev", model))
   }
 
   # Add linear predictor
@@ -697,7 +701,7 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     if (cor=="estimate") {
       addcode <- append(addcode, c(
         "for (m in 1:(mat.size-1)) {",
-        "rho[m] ~ dunif(-1,1)",
+        "rho[m] ~ dunif(0,1)",
         "}"
       ))
 
