@@ -62,7 +62,8 @@
 #' @export
 plot.mb.network <- function(x, edge.scale=1, label.distance=0,
                            level="treatment", remove.loops=FALSE, v.color="connect",
-                           v.scale=NULL, layout=igraph::in_circle(),
+                           v.scale=NULL, layout=igraph::in_circle(), legend=TRUE,
+                           legend.x="bottomleft", legend.y=NULL,
                            ...)
 {
   # Run checks
@@ -75,6 +76,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
   checkmate::assertChoice(level, choices = c("treatment", "class"), add=argcheck)
   checkmate::assertChoice(v.color, choices = c("connect", "class"), add=argcheck)
   checkmate::assertLogical(remove.loops, len=1, add=argcheck)
+  checkmate::assertLogical(legend, len=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Generate comparisons (using get.latest.time and mb.contrast?
@@ -172,6 +174,11 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
   # Plot netgraph
   g$layout <- igraph::layout_(g, layout)
   igraph::plot.igraph(g, ...)
+
+  # Add legend
+  if (v.color=="class" & legend==TRUE) {
+    graphics::legend(x=legend.x, y=legend.y, legend=x$classes, pt.bg=unique(igraph::V(g)$color), pch=21, pt.cex=1.5, cex=0.8)
+  }
 
   return(invisible(g))
 }
