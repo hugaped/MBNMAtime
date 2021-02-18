@@ -447,42 +447,6 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 
   nparam <- ncol(x)
 
-  # knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
-  # if (length(knots)==1) {
-  #   if (knots>=1) {
-  #     if (knots<3 & type=="rcs") {
-  #       stop(knoterr)
-  #     }
-  #     if (type=="rcs") {
-  #       nparam <- knots-1
-  #     } else if (type=="bs") {
-  #       nparam <- knots
-  #     }
-  #
-  #   } else {
-  #     if (type=="rcs") {
-  #       stop(knoterr)
-  #     }
-  #   }
-  # } else if (length(knots)>1) {
-  #   if (length(knots)<3 & type=="rcs") {
-  #     stop(knoterr)
-  #   }
-  #   if (type=="rcs") {
-  #     nparam <- length(knots)-1
-  #   } else if (type=="bs") {
-  #
-  #   }
-  #
-  # }
-  #
-  # if (length(knots)>1) {
-  #   if (!(all(knots<=1 & all(knots>=0)))) {
-  #     stop("`knots` specified as quantiles must be between 0 and 1")
-  #   }
-  # }
-
-
   # Define time-course function
   base <- "beta.1 * spline.1"
   basetex <- "\beta_1 * X[m,1]"
