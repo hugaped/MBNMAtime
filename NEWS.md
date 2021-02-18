@@ -7,6 +7,7 @@
 - Functions given to `mb.run()` are now given as `class("timefun")` and time-course parameters are specified within these functions
 - Predictions from `predict.mbnma()` can now be ranked
 - Forest plots now also plot posterior densities using `ggdist::stat_halfeye()`
+- Neater outputs when using `print()` or `summary()`
 
 
 ## Bug fixes
