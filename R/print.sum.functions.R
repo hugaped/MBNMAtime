@@ -512,7 +512,7 @@ summary.nodesplit <- function(object, ...) {
 #' @param groupby A character object that can take the value `"time.param"` to present
 #' results grouped by time-course parameter (the default) or `"comparison"` to present
 #' results grouped by treatment comparison.
-#' @param ... further arguments passed to or from other methods
+#' @param ... arguments to be sent to `knitr::kable()`
 #'
 #' @export
 print.nodesplit <- function(x, groupby="time.param", ...) {
@@ -522,57 +522,76 @@ print.nodesplit <- function(x, groupby="time.param", ...) {
   checkmate::assertChoice(groupby, choices=c("time.param", "comparison"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  width <- "\t\t"
-  output <- "========================================\nNode-splitting analysis of inconsistency\n========================================"
+  cat(crayon::bold("========================================\nNode-splitting analysis of inconsistency\n========================================\n"))
+
+  sum.df <- summary.nodesplit(x)
 
   if (groupby=="time.param") {
     params <- names(x[[1]])
-    colnam <- "comparison\tp.value\t\t\tMedian (95% CrI)"
+
     for (i in seq_along(params)) {
-      paramname <- paste("\n\n\n####", params[i], "####\n", sep=" ")
-      paramsect <- colnam
+      cat(paste0("\n", crayon::bold(crayon::underline(params[i])), "\n\n"))
 
-      for (k in seq_along(x)) {
-        pval <- signif(x[[k]][[params[i]]]$p.values,
-                      max(3L, getOption("digits") - 3L))
-        tab <- x[[k]][[params[i]]]$quantiles
+      param.df <- sum.df[sum.df$Time.Param==params[i],]
 
-        heading <- paste(names(x)[k], pval, sep=width)
-        direct <- paste("-> direct", "", neatCrI(tab$direct), sep=width)
-        indirect <- paste("-> indirect", "", neatCrI(tab$indirect), sep=width)
+      comparisons <- unique(param.df$Comparison)
 
-        out <- paste(heading, direct, indirect, sep="\n")
+      out.df <- param.df[1,]
+      for (k in seq_along(comparisons)) {
+        head <- param.df[param.df$Comparison==comparisons[k],][1,]
+        head$Median <- NA
+        head$`2.5%` <- NA
+        head$`97.5%` <- NA
 
-        paramsect <- append(paramsect, out)
+        tail <- param.df[param.df$Comparison==comparisons[k],]
+        tail$Comparison <- c("-> direct", "-> indirect")
+        tail$p.value <- rep(NA,2)
+
+        tail <- rbind(tail, rep(NA, ncol(tail)))
+
+        out.df <- rbind(out.df, rbind(head,tail))
       }
-      groupsect <- paste(c(paramname, paramsect), collapse="\n")
-      output <- append(output, groupsect)
+      out.df <- out.df[-1, c("Comparison", "p.value", "Median", "2.5%", "97.5%")]
+
+      rownames(out.df) <- NULL
+
+      out <- knitr::kable(out.df, col.names = c("Comparison", "p-value", "Median", "2.5%", "97.5%"), ...)
+      cat(gsub('\\bNA\\b', '  ', out), sep='\n')
     }
+
   } else if (groupby=="comparison") {
     params <- names(x)
-    colnam <- "time parameter\tp.value\t\t\tMedian (95% CrI)"
+
     for (i in seq_along(params)) {
-      paramname <- paste("\n\n\n####", params[i], "####\n", sep=" ")
-      paramsect <- colnam
+      cat(paste0("\n", crayon::bold(crayon::underline(params[i])), "\n\n"))
 
-      for (k in seq_along(x[[1]])) {
-        pval <- signif(x[[params[i]]][[k]]$p.values,
-                      max(3L, getOption("digits") - 3L))
-        tab <- x[[params[i]]][[k]]$quantiles
+      param.df <- sum.df[sum.df$Comparison==params[i],]
+      timeparams <- unique(param.df$Time.Param)
 
-        heading <- paste(names(x[[i]])[k], pval, sep=width)
-        direct <- paste("-> direct", "", neatCrI(tab$direct), sep=width)
-        indirect <- paste("-> indirect", "", neatCrI(tab$indirect), sep=width)
+      out.df <- param.df[1,]
+      for (k in seq_along(timeparams)) {
+        head <- param.df[param.df$Time.Param==timeparams[k],][1,]
+        head$Median <- NA
+        head$`2.5%` <- NA
+        head$`97.5%` <- NA
 
-        out <- paste(heading, direct, indirect, sep="\n")
+        tail <- param.df[param.df$Time.Param==timeparams[k],]
+        tail$Time.Param <- c("-> direct", "-> indirect")
+        tail$p.value <- rep(NA,2)
 
-        paramsect <- append(paramsect, out)
+        tail <- rbind(tail, rep(NA, ncol(tail)))
+
+        out.df <- rbind(out.df, rbind(head,tail))
       }
-      groupsect <- paste(c(paramname, paramsect), collapse="\n")
-      output <- append(output, groupsect)
+      out.df <- out.df[-1, c("Time.Param", "p.value", "Median", "2.5%", "97.5%")]
+
+      rownames(out.df) <- NULL
+
+      out <- knitr::kable(out.df, col.names = c("Time-course parameter", "p-value", "Median", "2.5%", "97.5%"), ...)
+      cat(gsub('\\bNA\\b', '  ', out), sep='\n')
+
     }
   }
-  cat(output, ...)
 }
 
 
