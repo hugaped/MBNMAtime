@@ -1,34 +1,36 @@
 testthat::context("Testing prepare.functions")
-data <- osteopain
+
+datalist <- list(osteopain, copd, goutSUA_CFBcomb)
 
 ################### Testing add_index ################
 
 testthat::test_that("add_index functions correctly", {
-  testthat::expect_equal(is.character(add_index(data)[["treatments"]]), TRUE)
-  testthat::expect_equal(is.numeric(add_index(data)[["data.ab"]]$treatment), TRUE)
+  for (i in seq_along(datalist)) {
+    testthat::expect_equal(is.character(add_index(datalist[[i]])[["treatments"]]), TRUE)
+    testthat::expect_equal(is.numeric(add_index(datalist[[i]])[["data.ab"]]$treatment), TRUE)
 
-  testthat::expect_error(mb.network(data, ref="test"))
+    testthat::expect_error(mb.network(datalist[[i]], ref="test"))
 
-  testthat::expect_error(mb.network(data, ref=40))
+    testthat::expect_error(mb.network(datalist[[i]], ref=40))
+    testthat::expect_message(mb.network(datalist[[i]], ref=1))
+    testthat::expect_message(mb.network(datalist[[i]], ref=NULL))
 
-  testthat::expect_silent(mb.network(data, ref="Pl_0"))
-  testthat::expect_message(mb.network(data, ref=1))
+    testthat::expect_error(mb.network(datalist[[i]], ref="Notarealtreatment"))
+  }
 
-  testthat::expect_message(mb.network(data, ref=NULL))
+  testthat::expect_silent(mb.network(osteopain, ref="Pl_0"))
 
-  network <- mb.network(data, ref=3)
-  network <- mb.network(data, ref="Ce_200")
+  network <- mb.network(osteopain, ref=3)
+  network <- mb.network(osteopain, ref="Ce_200")
   testthat::expect_equal(network$treatments[1], "Ce_200")
 
-  network <- mb.network(data, ref="Et_90")
+  network <- mb.network(osteopain, ref="Et_90")
   testthat::expect_equal(network$treatments[1], "Et_90")
 
   #### Test character data frames ####
-  testdata <- data
+  testdata <- osteopain
   testdata$treatment <- as.character(testdata$treatment)
 
-  testthat::expect_error(mb.network(testdata, ref=1))
-  testthat::expect_error(mb.network(testdata, ref="Notarealtreatment"))
   testthat::expect_silent(mb.network(testdata, ref="Lu_200"))
 
 
@@ -118,3 +120,79 @@ test_that("mb.network functions correctly", {
 
 
 
+
+
+test_that("genspline functions correctly", {
+  x <- c(0:100)
+
+  # B-splines
+  bs <- genspline(x, spline="bs", knots = 1, degree=1)
+  expect_equal(c("matrix", "array"), class(bs))
+  expect_equal(ncol(bs), 2)
+
+  bs <- genspline(x, spline="bs", knots = 1, degree=2)
+  expect_equal(ncol(bs), 3)
+
+  bs <- genspline(x, spline="bs", knots = 2, degree=2)
+  expect_equal(ncol(bs), 4)
+
+  bs <- genspline(x, spline="bs", knots = c(0.1,0.8), degree=2)
+  expect_equal(ncol(bs), 4)
+
+  expect_error(genspline(x, spline="bs", knots = -1, degree=2))
+  expect_error(genspline(x, spline="bs", knots = c(1,4)), "probs")
+  expect_error(genspline(x, spline="bs", knots = 1, degree=-2))
+
+  # Piecewise linear splines
+  ls <- genspline(x, spline="ls", knots = 1)
+  expect_equal(c("matrix", "array"), class(ls))
+  expect_equal(ncol(ls), 2)
+
+  ls <- genspline(x, spline="ls", knots = 3)
+  expect_equal(ncol(ls), 4)
+
+  ls <- genspline(x, spline="ls", knots = c(0.1,0.8))
+  expect_equal(ncol(ls), 3)
+
+  expect_error(genspline(x, spline="ls", knots = -1))
+  expect_error(genspline(x, spline="ls", knots = c(1,4)), "probs")
+  expect_error(genspline(x, spline="ls", knots = 5), "unlikely to be able to support it")
+
+  # Natural cubic splines
+  ns <- genspline(x, spline="ns", knots = 1, degree=1)
+  expect_equal(c("matrix", "array"), class(ns))
+  expect_equal(ncol(ns), 2)
+
+  ns <- genspline(x, spline="ns", knots = 1, degree=2)
+  expect_equal(ncol(ns), 2) # degree doesn't matter for ns
+
+  ns <- genspline(x, spline="ns", knots = 3)
+  expect_equal(ncol(ns), 4)
+
+  ns <- genspline(x, spline="ns", knots = c(0.1,0.8))
+  expect_equal(ncol(ns), 3)
+
+  expect_error(genspline(x, spline="ns", knots = -1))
+  expect_error(genspline(x, spline="ns", knots = c(1,4)), "probs")
+  expect_error(genspline(x, spline="ns", knots = 5), "unlikely to be able to support it")
+
+  # Restricted cubic splines
+  rcs <- genspline(x, spline="rcs", knots = 3)
+  expect_equal(c("matrix", "array"), class(rcs))
+  expect_equal(ncol(rcs), 2)
+
+  rcs <- genspline(x, spline="rcs", knots = 3, degree=2)
+  expect_equal(ncol(rcs), 2) # degree doesn't matter for ns
+
+  rcs <- genspline(x, spline="rcs", knots = 4)
+  expect_equal(ncol(rcs), 3)
+
+  rcs <- genspline(x, spline="rcs", knots = c(0.1,0.8,0.9))
+  expect_equal(ncol(rcs), 2)
+
+  expect_error(genspline(x, spline="rcs", knots = 1, degree=1))
+  expect_error(genspline(x, spline="rcs", knots = -1))
+  expect_error(genspline(x, spline="rcs", knots = c(1,4,7)), "probs")
+  expect_error(genspline(x, spline="rcs", knots = 7), "unlikely to be able to support it")
+
+})
