@@ -4,7 +4,8 @@
 \name{osteopain}
 \alias{osteopain}
 \title{Studies of pain relief medications for osteoarthritis}
-\format{A data frame with 417 rows and 7 variables:
+\format{
+A data frame with 417 rows and 7 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
@@ -13,7 +14,8 @@
 \item \code{treatment} Treatment identifiers as factors. Labels are shortened treatment names.
 \item \code{arm} Arm identifiers coded for each study
 \item \code{treatname} Character data giving the full names of each treatment
-}}
+}
+}
 \source{
 Pfizer Ltd.
 }

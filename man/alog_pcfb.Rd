@@ -4,16 +4,20 @@
 \name{alog_pcfb}
 \alias{alog_pcfb}
 \title{Studies of alogliptin for lowering blood glucose concentration in patients with type II diabetes}
-\format{A data frame in long format (one row per arm and study), with 46 rows and 6 variables:
+\format{
+A data frame in long format (one row per arm and study), with 46 rows and 9 variables:
 \itemize{
 \item \code{studyID} Study identifiers
+\item \code{clinicaltrialGov_ID} The clinicaltrial.gov ID code
 \item \code{agent} Character data indicating the agent to which participants were randomised
 \item \code{dose} Numeric data indicating the standardised dose received
 \item \code{treatment} Character data indicating the treatment (combination of agent and dose) to which participants were randomised
+\item \code{time} Numeric data indicating the time at which the observation was measured (given in weeks)
 \item \code{y} Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
 \item \code{se} Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
-\item \code{time} Numeric data indicating the time at which the observation was measured (given in weeks)
-}}
+\item \code{N} Numeric data indicating the number in each arm at each follow-up time
+}
+}
 \usage{
 alog_pcfb
 }
@@ -29,7 +33,7 @@ within the network.
 }
 \details{
 \code{alog_pcfb} is a data frame in long format (one row per observation, arm and study),
-with the variables \code{studyID}, \code{agent}, \code{dose}, \code{treatment}, \code{y}, \code{se}, \code{N} and \code{time}.
+with the variables \code{studyID}, \code{clinicaltrialGov_ID}, \code{agent}, \code{dose}, \code{treatment}, \code{time}, \code{y}, \code{se}, and \code{N}.
 }
 \references{
 \insertAllCited{}

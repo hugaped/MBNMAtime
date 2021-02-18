@@ -4,7 +4,8 @@
 \name{obesityBW_CFB}
 \alias{obesityBW_CFB}
 \title{Studies of treatments for reducing body weight in patients with obesity}
-\format{A data frame with 710 rows and 7 variables:
+\format{
+A data frame with 710 rows and 7 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
@@ -15,7 +16,8 @@
 \item \code{treatname} Character data giving the full names of each treatment in the format agent_dose
 \item \code{agent} Agent (drug) names stored as characters
 \item \code{agentclass} The drug class of the agent (a broader category than \code{agent}) stored as characters
-}}
+}
+}
 \source{
 Pfizer Ltd.
 }

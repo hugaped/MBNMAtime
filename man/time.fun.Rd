@@ -5,9 +5,16 @@
 \title{Write time-course function component of JAGS code for MBNMA time-course
 models}
 \usage{
-\method{time}{fun}(fun = "linear", user.fun = NULL, alpha = "arm",
-  beta.1 = "rel.common", beta.2 = NULL, beta.3 = NULL,
-  beta.4 = NULL)
+\method{time}{fun}(
+  fun = "linear",
+  user.fun = NULL,
+  alpha = "arm",
+  knots = 3,
+  beta.1 = "rel.common",
+  beta.2 = NULL,
+  beta.3 = NULL,
+  beta.4 = NULL
+)
 }
 \arguments{
 \item{fun}{is a character specifying a functional form to be assigned to the
@@ -22,7 +29,7 @@ that can take either:
 \item \code{"study"} to constrain baseline to be equal for all
 arms within a study (\code{i} index is added))
 \item \code{"arm"} to allow baseline to
-vary between arms within a study (\code{i,k} index is added)).
+vary between arms within a study (\verb{i,k} index is added)).
 }}
 
 \item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to

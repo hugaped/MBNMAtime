@@ -17,7 +17,7 @@ Parameters must vary by treatment for ranking to be possible. Can include
 \item{treat.labs}{A vector of treatment labels in the same order as treatment codes.
 Easiest to use treatment labels stored by \code{mb.network()}}
 
-\item{...}{Arguments to be sent to \code{ggplot::geom_bar()}}
+\item{...}{Arguments to be sent to \code{ggplot2::ggplot()}}
 }
 \value{
 A series of histograms that show rankings for each treatment/agent/prediction, with a

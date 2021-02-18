@@ -5,9 +5,20 @@
 \alias{mb.network}
 \title{Create an mb.network object}
 \usage{
-\method{plot}{mb.network}(x, edge.scale = 1, label.distance = 0,
-  level = "treatment", remove.loops = FALSE, v.color = "connect",
-  v.scale = NULL, layout = igraph::in_circle(), ...)
+\method{plot}{mb.network}(
+  x,
+  edge.scale = 1,
+  label.distance = 0,
+  level = "treatment",
+  remove.loops = FALSE,
+  v.color = "connect",
+  v.scale = NULL,
+  layout = igraph::in_circle(),
+  legend = TRUE,
+  legend.x = "bottomleft",
+  legend.y = NULL,
+  ...
+)
 
 mb.network(data.ab, reference = 1, description = "Network")
 }
@@ -57,8 +68,8 @@ in \code{\link[igraph]{layout_}}}
 \item \code{treatment} Treatment identifiers (can be numeric, factor or character)
 \item \code{class} An optional column indicating a particular class identifier. Observations with the same treatment
 identifier must also have the same class identifier.
-\item \code{N} An optional column indicating the number of participants used to calculate the
-response at a given observation
+\item \code{n} An optional column indicating the number of participants used to calculate the
+response at a given observation (required if modelling using Standardised Mean Differences)
 }}
 
 \item{reference}{A number or character (depending on the format of \code{treatment} within \code{data.ab})

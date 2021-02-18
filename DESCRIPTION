@@ -50,6 +50,6 @@ SystemRequirements: JAGS (>= 4.3.0) (http://mcmc-jags.sourceforge.net)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 RdMacros: Rdpack

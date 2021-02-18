@@ -4,7 +4,14 @@
 \alias{getjagsdata}
 \title{Prepares data for JAGS}
 \usage{
-getjagsdata(data.ab, class = FALSE, rho = NULL, covstruct = "CS")
+getjagsdata(
+  data.ab,
+  fun = NULL,
+  class = FALSE,
+  rho = NULL,
+  covstruct = "CS",
+  link = "identity"
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -16,9 +23,12 @@ getjagsdata(data.ab, class = FALSE, rho = NULL, covstruct = "CS")
 \item \code{treatment} Treatment identifiers (can be numeric, factor or character)
 \item \code{class} An optional column indicating a particular class identifier. Observations with the same treatment
 identifier must also have the same class identifier.
-\item \code{N} An optional column indicating the number of participants used to calculate the
-response at a given observation
+\item \code{n} An optional column indicating the number of participants used to calculate the
+response at a given observation (required if modelling using Standardised Mean Differences)
 }}
+
+\item{fun}{is a character specifying a functional form to be assigned to the
+time-course. Options are given in \code{details}.}
 
 \item{class}{A boolean object indicating whether or not \code{data.ab} contains
 information on different classes of treatments}
@@ -33,6 +43,9 @@ analyses.}
 \item{covstruct}{A character to indicate the covariance structure required for modelling correlation between
 time points (if any), since
 this determines some of the data. Can be either \code{"CS"} (compound symmetry) or \code{"AR1"} (autoregressive AR1).}
+
+\item{link}{Can take either \code{"identity"}, \code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

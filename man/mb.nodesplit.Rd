@@ -5,10 +5,13 @@
 \alias{plot.mb.nodesplit}
 \title{Perform node-splitting on a MBNMA time-course network}
 \usage{
-mb.nodesplit(network, comparisons = mb.nodesplit.comparisons(network),
-  nodesplit.parameters = "all", fun = "linear", user.fun = NULL,
-  beta.1 = list(pool = "rel", method = "common"), beta.2 = NULL,
-  beta.3 = NULL, beta.4 = NULL, ...)
+mb.nodesplit(
+  network,
+  comparisons = mb.nodesplit.comparisons(network),
+  nodesplit.parameters = "all",
+  fun = tpoly(degree = 1),
+  ...
+)
 
 \method{plot}{mb.nodesplit}(x, plot.type = NULL, params = NULL, ...)
 }
@@ -24,24 +27,9 @@ node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-cour
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
 
-\item{user.fun}{A formula specifying any relationship including \code{time} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+\item{...}{Arguments to be sent to \code{ggplot2::ggplot()} or \code{ggdist::stat_halfeye()}}
 
-\item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.2}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.3}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.4}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{...}{Arguments to be sent to \code{mb.run()}}
-
-\item{x}{An object of \code{class("mb.nodesplit")}}
+\item{x}{An object of \code{class("nodesplit")}}
 
 \item{plot.type}{A character string that can take the value of \code{"forest"} to plot
 only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
@@ -56,7 +44,7 @@ A an object of \code{class("mb.nodesplit")} that is a list containing elements
 comparison) contains additional numbered elements corresponding to each parameter in the
 time-course function on which node splitting was performed. These elements then contain:
 \itemize{
-\item \code{overlap matrix} MCMC results for the difference between direct and indirect evidence
+\item \verb{overlap matrix} MCMC results for the difference between direct and indirect evidence
 \item \code{p.values} Bayesian p-value for the test of consistency between direct and indirect evidence
 \item \code{quantiles}
 \item \code{forest.plot}
@@ -76,7 +64,7 @@ van Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 }
 \details{
 The S3 method \code{plot()} on an \code{mb.nodesplit} object generates either
-forest plots of posterior medians and 95\% credible intervals, or density plots
+forest plots of posterior medians and 95\\\% credible intervals, or density plots
 of posterior densities for direct and indirect evidence.
 }
 \section{Methods (by generic)}{

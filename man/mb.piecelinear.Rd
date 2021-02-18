@@ -4,12 +4,24 @@
 \alias{mb.piecelinear}
 \title{Run MBNMA model with a piecewise linear time-course function}
 \usage{
-mb.piecelinear(network, slope.1 = list(pool = "rel", method = "common"),
-  slope.2 = list(pool = "rel", method = "common"), knot = list(pool =
-  "const", method = "common"), alpha = "study", positive.scale = FALSE,
-  intercept = TRUE, rho = NULL, covar = NULL, var.scale = NULL,
-  class.effect = list(), UME = FALSE, pd = "pv", parallel = TRUE,
-  priors = NULL, ...)
+mb.piecelinear(
+  network,
+  slope.1 = list(pool = "rel", method = "common"),
+  slope.2 = list(pool = "rel", method = "common"),
+  knot = list(pool = "const", method = "common"),
+  alpha = "study",
+  positive.scale = FALSE,
+  intercept = TRUE,
+  rho = NULL,
+  covar = NULL,
+  var.scale = NULL,
+  class.effect = list(),
+  UME = FALSE,
+  pd = "pv",
+  parallel = TRUE,
+  priors = NULL,
+  ...
+)
 }
 \arguments{
 \item{network}{An object of class \code{mb.network}.}
@@ -31,7 +43,7 @@ that can take either:
 \item \code{"study"} to constrain baseline to be equal for all
 arms within a study (\code{i} index is added))
 \item \code{"arm"} to allow baseline to
-vary between arms within a study (\code{i,k} index is added)).
+vary between arms within a study (\verb{i,k} index is added)).
 }}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
@@ -92,7 +104,7 @@ replacement prior distribution values given as strings
 \item{...}{Arguments to be sent to \code{mb.run()}}
 }
 \value{
-An object of S3 class \code{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\code{and can check traceplots using}R2jags::traceplot()\code{or various functions from the package}mcmcplots`.
+An object of S3 class \verb{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\verb{and can check traceplots using}R2jags::traceplot()\verb{or various functions from the package}mcmcplots`.
 
 Nodes that are automatically monitored (if present in the model) have the
 following interpretation. They will have an additional suffix that relates

@@ -4,48 +4,34 @@
 \alias{mb.run}
 \title{Run MBNMA time-course models}
 \usage{
-mb.run(network, parameters.to.save = NULL, fun = "linear",
-  user.fun = NULL, alpha = "study", beta.1 = list(pool = "rel",
-  method = "common"), beta.2 = NULL, beta.3 = NULL, beta.4 = NULL,
-  positive.scale = FALSE, intercept = TRUE, rho = NULL,
-  covar = NULL, var.scale = NULL, class.effect = list(),
-  UME = FALSE, pd = "pv", parallel = TRUE, priors = NULL,
-  n.iter = 10000, n.chains = 3, n.burnin = floor(n.iter/2),
-  n.thin = max(1, floor((n.iter - n.burnin)/1000)), model.file = NULL,
-  arg.params = NULL, ...)
+mb.run(
+  network,
+  fun = tpoly(degree = 1),
+  positive.scale = FALSE,
+  intercept = TRUE,
+  link = "identity",
+  parameters.to.save = NULL,
+  rho = NULL,
+  covar = NULL,
+  var.scale = NULL,
+  class.effect = list(),
+  UME = FALSE,
+  pd = "pd.kl",
+  parallel = FALSE,
+  priors = NULL,
+  n.iter = 20000,
+  n.chains = 3,
+  n.burnin = floor(n.iter/2),
+  n.thin = max(1, floor((n.iter - n.burnin)/1000)),
+  model.file = NULL,
+  ...
+)
 }
 \arguments{
 \item{network}{An object of class \code{mb.network}.}
 
-\item{parameters.to.save}{A character vector containing names of parameters
-to monitor in JAGS}
-
 \item{fun}{is a character specifying a functional form to be assigned to the
 time-course. Options are given in \code{details}.}
-
-\item{user.fun}{A formula specifying any relationship including \code{time} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
-
-\item{alpha}{Refers to the baseline mean response and is a character object
-that can take either:
-\itemize{
-\item \code{"study"} to constrain baseline to be equal for all
-arms within a study (\code{i} index is added))
-\item \code{"arm"} to allow baseline to
-vary between arms within a study (\code{i,k} index is added)).
-}}
-
-\item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.2}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.3}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.4}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response
@@ -55,6 +41,12 @@ should be given a prior that constrains it to be positive.}
 be included in the model. Can be used to imply whether mean responses in
 data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
+
+\item{link}{Can take either \code{"identity"}, \code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences).}
+
+\item{parameters.to.save}{A character vector containing names of parameters
+to monitor in JAGS}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. If left
 as \code{NULL} (the default) then this implies modelling no correlation between time points.
@@ -102,27 +94,51 @@ use is automatically calculated.}
 replacement prior distribution values given as strings
 \strong{using distributions as specified in JAGS syntax}.}
 
-\item{n.iter}{number of total iterations per chain (including burn in; default: 15000)}
+\item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
 \item{n.chains}{number of Markov chains (default: 3)}
 
 \item{n.burnin}{length of burn in, i.e. number of iterations to discard at the
-beginning. Default is \code{n.iter/2``, that is, discarding the first half of the simulations. If }n.burnin` is 0, jags() will run 100 iterations for adaption.}
+beginning. Default is \verb{n.iter/2``, that is, discarding the first half of the simulations. If }n.burnin` is 0, jags() will run 100 iterations for adaption.}
 
-\item{n.thin}{thinning rate. Must be a positive integer. Set \code{n.thin > 1`` to save memory and computation time if }n.iter\code{is large. Default is}max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
+\item{n.thin}{thinning rate. Must be a positive integer. Set \verb{n.thin > 1`` to save memory and computation time if }n.iter\verb{is large. Default is}max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
 simulations.}
 
 \item{model.file}{A JAGS model written as a character object that can be used
 to overwrite the JAGS model that is automatically written based on the
 specified options. Useful when amending priors using replace.prior()}
 
+\item{...}{Arguments to be sent to R2jags.}
+
+\item{user.fun}{A formula specifying any relationship including \code{time} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+
+\item{alpha}{Refers to the baseline mean response and is a character object
+that can take either:
+\itemize{
+\item \code{"study"} to constrain baseline to be equal for all
+arms within a study (\code{i} index is added))
+\item \code{"arm"} to allow baseline to
+vary between arms within a study (\verb{i,k} index is added)).
+}}
+
+\item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
+time-course parameter(s) specified within the time-course function (see details).}
+
+\item{beta.2}{A list with named elements \code{pool} and \code{method} that refers to
+time-course parameter(s) specified within the time-course function (see details).}
+
+\item{beta.3}{A list with named elements \code{pool} and \code{method} that refers to
+time-course parameter(s) specified within the time-course function (see details).}
+
+\item{beta.4}{A list with named elements \code{pool} and \code{method} that refers to
+time-course parameter(s) specified within the time-course function (see details).}
+
 \item{arg.params}{Contains a list of arguments sent to \code{mb.run()} by time-course
 specific wrapper functions}
-
-\item{...}{Arguments to be sent to R2jags.}
 }
 \value{
-An object of S3 class \code{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\code{and can check traceplots using}R2jags::traceplot()\code{or various functions from the package}mcmcplots`.
+An object of S3 class \verb{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\verb{and can check traceplots using}R2jags::traceplot()\verb{or various functions from the package}mcmcplots`.
 
 Nodes that are automatically monitored (if present in the model) have the
 following interpretation. They will have an additional suffix that relates
@@ -225,6 +241,8 @@ to the change in gradient
 Emax parameter, \code{beta.2} refers to ET50 parameter
 \item \code{"emax.hill"} (emax with a Hill parameter): \code{beta.1} refers to Emax parameter, \code{beta.2} refers
 to ET50 parameter, \code{beta.3} refers to Hill parameter
+\item \code{"rcs"} restricted cubic splines with knot number/location defined by \code{knot}.\code{beta.1} refers to the
+first spline coeffficient, \code{beta.2} to the second coefficient, etc.
 \item \code{"fract.poly.first"} (first-order fractional polynomial): \code{beta.1} refers to the slope
 parameter, \code{beta.3} refers to the power parameter
 \item \code{"fract.poly.second"} (second-order fractional polynomial): \code{beta.1} refers to the first slope

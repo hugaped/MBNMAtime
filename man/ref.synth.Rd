@@ -5,11 +5,17 @@
 \title{Synthesise single arm studies with repeated observations of the same
 treatment over time}
 \usage{
-ref.synth(data.ab, mbnma, synth = "random",
+ref.synth(
+  data.ab,
+  mbnma,
+  synth = "common",
+  link = mbnma$model.arg$link,
   n.iter = mbnma$BUGSoutput$n.iter,
   n.burnin = mbnma$BUGSoutput$n.burnin,
   n.thin = mbnma$BUGSoutput$n.thin,
-  n.chains = mbnma$BUGSoutput$n.chains, ...)
+  n.chains = mbnma$BUGSoutput$n.chains,
+  ...
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the
@@ -26,7 +32,7 @@ a time-course MBNMA model}
 
 \item{synth}{A character object that can take the value \code{"fixed"} or \code{"random"} that
 specifies the the type of pooling to use for synthesis of \code{ref.resp}. Using \code{"random"} rather
-than \code{"fixed"} for \code{synth} will result in wider 95\% CrI for predictions.}
+than \code{"common"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
 
 \item{n.iter}{number of total iterations per chain (including burn in;
     default: 2000)}
