@@ -106,180 +106,135 @@ get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
 
 
 
-print.treat.str <- function(mbnma) {
-  betanames <- get.beta.names(mbnma)
+print.treat.str <- function(mbnma, digits=4, ...) {
+  fun <- mbnma$model.arg$fun
+  treat.df <- mbnma$BUGSoutput$summary
 
   treat.sect <- c()
 
-  # Time course parameters (treatment-level) (generate treat.str)
-  for (i in seq_along(betanames)) {
-    sect.head <- paste("####", betanames[[i]], "time-course parameter pooling ####", sep=" ")
+  for (i in seq_along(fun$apool)) {
+    cat(crayon::underline(crayon::bold(paste0(names(fun$apool)[i], " parameter\n"))))
 
-    data.head <- paste("Parameter", "Median (95%CrI)", sep="\t\t")
-    data.head <- paste(data.head, "---------------------------------", sep="\n")
-
-    if (mbnma$model.arg[[names(betanames)[i]]]$pool=="rel") {
-      param <- "d"
-    } else if (mbnma$model.arg[[names(betanames)[i]]]$pool %in% c("arm", "const")) {
-      param <- "beta"
+    paramdet <- vector()
+    if (fun$apool[i]=="rel") {
+      paramdet <- append(paramdet, paste0("Pooling: relative effects"))
+    } else if (fun$apool[i]=="abs") {
+      paramdet <- append(paramdet, paste0("Pooling: absolute effects"))
     }
 
-    data.tab <- get.timeparam.str(mbnma, beta=names(betanames)[i], param = param)
-    if (!is.null(data.tab)) {
-      data.str <- paste(data.head,
-                        data.tab,
-                        sep="")
-    } else if (names(betanames)[i] %in% names(mbnma$model.arg$class.effect)) {
-      data.str <- "--- CLASS EFFECTS MODELLED (results shown in separate section below) ---"
-    } else if (is.null(data.tab)) {
-      data.str <- "--- DATA TOO LONG FOR SUMMARY ---"
-    }
-
-    sd.str <- NULL
-
-    # UME
-    if ((mbnma$model.arg$UME==TRUE | betanames[[i]] %in% mbnma$model.arg$UME) &
-        mbnma$model.arg[[names(betanames)[i]]]$pool=="rel") {
-      sect.head <- paste(sect.head,
-                         "Unrelated Mean Effects modelled for this parameter (not shown here)", sep="\n")
-    }
-
-    # Parameters on exponential scale
-    if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
-      if (names(betanames)[i] %in% c("beta.2", "et50")) {
-        sect.head <- paste(sect.head,
-                           "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
+    if (is.numeric(fun$amethod[i])) {
+      paramdet <- append(paramdet, paste0("Assigned a numeric value: ", fun$amethod[i]))
+    } else {
+      if (fun$amethod[i]=="common") {
+        paramdet <- append(paramdet, paste0("Method: common treatment effects"))
+      } else if (fun$amethod[i]=="random") {
+        paramdet <- append(paramdet, paste0("Method: random treatment effects"))
       }
     }
 
-    # String for pooling
-    if (mbnma$model.arg[[names(betanames)[i]]]$pool=="rel") {
-      pool <- "relative effects"
-    } else if (mbnma$model.arg[[names(betanames)[i]]]$pool=="arm") {
-      pool <- "arm-based"
-    } else if (mbnma$model.arg[[names(betanames)[i]]]$pool=="const") {
-      pool <- "constant (single parameter constant across all studies and treatments within the network)"
-    }
-    pool.str <- paste("Pooling:", pool, sep=" ")
-
-    # String for method
-    if (mbnma$model.arg[[names(betanames)[i]]]$method=="common") {
-      method <- "common (fixed) effects\n\nEstimated from the data:\n"
-    } else if (mbnma$model.arg[[names(betanames)[i]]]$method=="random") {
-      method <- "random effects\n\nEstimated from the data:\n"
-
-      if (grepl("beta", betanames[[i]])) {
-        suffix <- strsplit(betanames[[i]], split="\\.")[[1]][2]
-      } else {
-        suffix <- betanames[[i]]
-      }
-
-      sd.str <- "\n# Between-study SD\n"
-      match.1 <- paste0("^sd\\.(beta\\.)?", suffix)
-      #match.2 <- paste0("^sd\\.beta", betanames[[i]])
-      temp <- mbnma$BUGSoutput$summary[grepl(match.1, rownames(mbnma$BUGSoutput$summary)),
-                                       c(3,5,7)]
-      nametemp <- rownames(mbnma$BUGSoutput$summary)[grepl(match.1, rownames(mbnma$BUGSoutput$summary))]
-      if (!is.vector(temp)) {stop("temp should only be length 1")}
-
-      sd.str <- paste(sd.str, data.head,
-                      paste(nametemp, neatCrI(temp), sep="\t\t"),
-                      sep="\n")
-
-    } else if (is.numeric(mbnma$model.arg[[names(betanames)[i]]]$method)) {
-      method <- paste("none\n\nAssigned a numeric value:",
-                      mbnma$model.arg[[names(betanames)[i]]]$method,
-                      sep=" ")
-      data.str <- ""
-    }
-    method.str <- paste("Method:", method, sep=" ")
-
-    treat.str <- paste(sect.head, pool.str, method.str, data.str, sep="\n")
-
-    if (!is.null(sd.str)) {
-      treat.str <- paste(treat.str, sd.str, sep="\n")
+    if (names(fun$apool)[i] %in% c("et50", "hill")) {
+      paramdet <- append(paramdet, "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale")
     }
 
-    treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
+    if (names(fun$amethod)[i] %in% names(mbnma$model.arg$class.effect)) {
+      paramdet <- append(paramdet,  "Class effects modelled for this parameter")
+    }
+
+    if (any(c(names(fun$apool)[i], TRUE) %in% mbnma$model.arg$UME)) {
+      paramdet <- append(paramdet, "UME results modelled for this parameter.\nToo many parameters to display in this summary")
+
+      cat(paste(paramdet, collapse="\n"))
+    } else {
+      cat(paste(paramdet, collapse="\n"))
+
+      # Select summary rows that correspond to parameter of interest
+      index <- grepl(paste0("^", names(fun$apool)[i]), rownames(treat.df)) |
+        grepl(paste0("^d\\.", i), rownames(treat.df)) |
+        grepl(paste0("^beta\\.", i), rownames(treat.df))
+
+      param.df <- data.frame(treat=mbnma$network$treatments,
+                             param=rownames(treat.df)[index],
+                             median=treat.df[index,'50%'],
+                             l95=treat.df[index,'2.5%'],
+                             u95=treat.df[index,'97.5%']
+                             )
+      rownames(param.df) <- NULL
+      print(knitr::kable(param.df, col.names = c("Treatment", "Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+    }
+
+    # Add between-study SD for parameter
+    if (fun$amethod[i]=="random") {
+      cat("\nBetween-study SD modelled for this parameter:")
+
+      index <- grepl(paste0("^sd\\.", names(fun$apool)[i]), rownames(treat.df)) |
+        grepl(paste0("^sd\\.d\\.", i), rownames(treat.df)) |
+        grepl(paste0("^sd\\.beta\\.", i), rownames(treat.df))
+
+      param.df <- data.frame(param=rownames(treat.df)[index],
+                             median=treat.df[index,'50%'],
+                             l95=treat.df[index,'2.5%'],
+                             u95=treat.df[index,'97.5%']
+      )
+      rownames(param.df) <- NULL
+      print(knitr::kable(param.df, col.names = c("Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+    }
+    cat("\n\n")
   }
-  return(treat.sect)
 }
 
 
 
 
 
-print.class.str <- function(mbnma) {
+print.class.str <- function(mbnma, digits=4, ...) {
   if (length(mbnma$model.arg$class.effect)>0) {
+    treat.df <- mbnma$BUGSoutput$summary
+
     classes <- mbnma$model.arg$class.effect
 
-    head <- "\n#### Class effects ####\n"
-    data.head <- paste("Parameter", "Median (95%CrI)", sep="\t")
-    data.head <- paste(data.head, "---------------------------------", sep="\n")
+    cat(crayon::bold(crayon::underline("Class Effects\n")))
 
-    data.str <- c(data.head)
-    class.str <- c()
-    sd.str <- NULL
     for (i in seq_along(classes)) {
-      betaparam <- names(classes)[i]
 
-      if (!is.null(mbnma$model.arg$arg.params)) {
-        wrapparam <- mbnma$model.arg$arg.params$wrap.params[
-          mbnma$model.arg$arg.params$run.params==names(classes)[i]]
+      cat(paste0("\nClass effects for ", names(classes)[i], "\n"))
 
-        class.str <- c(class.str, paste("Class effect on",
-                                        paste0(wrapparam,":"), classes[[i]], "\n",
-                                        sep=" "))
-      } else {
-        wrapparam <- ""
-        class.str <- c(class.str, paste("Class effect on",
-                                        paste0(betaparam,":"), classes[[i]], "\n",
-                                        sep=" "))
-        }
-
-
-      # betaparam <- mbnma$model.arg$arg.params$run.params[
-      #   mbnma$model.arg$arg.params$wrap.params==names(classes)[i]]
-
-      if (mbnma$model.arg[[betaparam]]$pool=="rel") {
-        data.str <- paste0(data.str,
-                      get.timeparam.str(mbnma, beta = names(classes)[i], param = "D"))
-      } else if (mbnma$model.arg[[betaparam]]$pool=="arm") {
-        data.str <- c(data.str,
-                      get.timeparam.str(mbnma, beta = names(classes)[i], param = "BETA"))
+      if ("common" %in% classes[[i]]) {
+        cat("Common (fixed) class effects")
+      } else if ("random" %in% classes[[i]]) {
+        cat("Random (exchangeable) class effects")
       }
 
+      # Select summary rows that correspond to parameter of interest
+      index <- grepl(paste0("^", toupper(names(classes)[i])), rownames(treat.df)) |
+        grepl(paste0("^D\\.", i), rownames(treat.df))
+
+      param.df <- data.frame(treat=mbnma$network$classes,
+                             param=rownames(treat.df)[index],
+                             median=treat.df[index,'50%'],
+                             l95=treat.df[index,'2.5%'],
+                             u95=treat.df[index,'97.5%']
+      )
+      rownames(param.df) <- NULL
+      print(knitr::kable(param.df, col.names = c("Class", "Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+
+      # Add between-study SD for parameter
       if (classes[[i]]=="random") {
-        sd.str <- "\n# Within-class SD\n"
-        match.1 <- paste0("(", strsplit(names(classes)[i], split="\\.")[[1]][2], ")?")
-        match.2 <- paste0("(", wrapparam, ")?")
-        match <- paste0("^sd\\.[A-Z]+\\.", match.1, match.2)
-        temp <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
-                                         c(3,5,7)]
-        if (!is.vector(temp)) {stop("temp should only be length 1")}
+        cat("\nWithin-class SD modelled for this parameter:")
 
-        sd.str <- paste(sd.str, data.head,
-                        paste(rownames(mbnma$BUGSoutput$summary)[grepl(match, rownames(mbnma$BUGSoutput$summary))],
-                          neatCrI(temp), sep="\t\t"),
-                        sep="\n")
-        # sd.str <- "\n# Within-class SD\n"
-        # match <- grepl("^sd\\.[A-Z]+\\.", names(classes)[i])
-        # temp <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
-        #                                  c(3,5,7)]
-        # sd.str <- paste(sd.str, data.head, neatCrI(temp))
+        index <- grepl(paste0("^sd\\.", toupper(names(classes)[i])), rownames(treat.df)) |
+          grepl(paste0("^sd\\.D\\.", i), rownames(treat.df))
+
+        param.df <- data.frame(param=rownames(treat.df)[index],
+                               median=treat.df[index,'50%'],
+                               l95=treat.df[index,'2.5%'],
+                               u95=treat.df[index,'97.5%']
+        )
+        rownames(param.df) <- NULL
+        print(knitr::kable(param.df, col.names = c("Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
       }
+      cat("\n")
+
     }
-    class.sect <- c(head,
-                    paste(class.str, collapse="\n"),
-                    paste(data.str, collapse="\n"))
-
-    if (!is.null(sd.str)) {
-      class.sect <- c(class.sect, sd.str, "\n")
-    }
-
-    class.sect <- paste(class.sect, collapse="\n")
-
-    return(class.sect)
   }
 }
 
@@ -291,10 +246,27 @@ print.class.str <- function(mbnma) {
 print.overall.str <- function(mbnma) {
 
   # Print title
-  title <- "========================================\nTime-course MBNMA\n========================================\n"
+  title <- crayon::bold("========================================\nTime-course MBNMA\n========================================\n")
+
+  # Prep time-course function
+  timefun <- mbnma$model.arg$fun$name
+
+  if (timefun %in% c("poly", "fpoly")) {
+    timefun <- paste0(timefun, " (degree = ", mbnma$model.arg$fun$nparam, ")")
+  }
+  if (timefun=="rcs") {
+    timefun <- paste0("Restricted cubic spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), ")")
+  } else if (timefun=="ns") {
+    timefun <- paste0("Natural cubic spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), ")")
+  } else if (timefun=="ls") {
+    timefun <- paste0("Piecewise linear spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), ")")
+  } else if (timefun=="bs") {
+    timefun <- paste0("B-spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), "; degree = ",
+                      mbnma$model.arg$fun$degree, ")")
+  }
 
   # Print time-course function
-  overall.sect <- paste("Time-course function:", mbnma$model.arg$fun, sep=" ")
+  overall.sect <- paste("Time-course function:", timefun, sep=" ")
 
   # Add info on intercept
   if (mbnma$model.arg$intercept==TRUE) {
@@ -310,36 +282,37 @@ print.overall.str <- function(mbnma) {
 
   overall.sect <- paste(title, overall.sect, sep="\n")
 
-  return(overall.sect)
+  cat(overall.sect)
 }
 
 
 
 
-print.cor.str <- function(mbnma) {
+print.cor.str <- function(mbnma, digits=4) {
   if (!is.null(mbnma$model.arg$rho)) {
-    head <- "\n#### Correlation between time points ####\n"
+    cat(paste0("\n", crayon::underline(crayon::bold("Correlation between time points")), "\n"))
     cov.str <- paste("Covariance structure:", mbnma$model.arg$covar, sep=" ")
 
     if (is.numeric(mbnma$model.arg$rho)) {
-      rho.str <- paste("Rho assigned a numeric value:", mbnma$model.arg$rho, sep=" ")
+      cat(paste("Rho assigned a numeric value:", mbnma$model.arg$rho, sep=" "))
     } else if (mbnma$model.arg$rho=="estimate") {
-      data.head <- paste("Parameter", "Median (95%CrI)", sep="\t")
-      data.head <- paste(data.head, "---------------------------------", sep="\n")
       if ("rho" %in% mbnma$parameters.to.save) {
-        data.str <- neatCrI(mbnma$BUGSoutput$summary[
-          rownames(mbnma$BUGSoutput$summary)=="rho",
-          c(3,5,7)])
-        data.str <- paste("rho", data.str, sep="\t\t")
-      } else {
-        data.str <- "<rho not monitored in parameters.to.save>"
-      }
-      data.str <- paste(data.head, data.str, sep="\n")
+        cat("Rho estimated from the data:")
+        rho <- mbnma$BUGSoutput$summary["rho",]
 
-      rho.str <- paste("Rho estimated from the data:\n", data.str, sep="\n")
+        rho <- data.frame(param="rho",
+                               median=rho['50%'],
+                               l95=rho['2.5%'],
+                               u95=rho['97.5%']
+        )
+        rownames(rho) <- NULL
+        print(knitr::kable(rho, col.names = c("Parameter", "Median", "2.5%", "97.5%"), digits=digits))
+
+      } else {
+        cat("<rho not monitored in parameters.to.save>")
+      }
     }
-    cor.sect <- paste(head, cov.str, rho.str, "", sep="\n")
-    return(cor.sect)
+    cat("\n\n")
   }
 }
 
@@ -349,7 +322,7 @@ print.cor.str <- function(mbnma) {
 print.modfit.str <- function(x) {
   totresdev.str <- c()
 
-  head <- "#### Model Fit Statistics ####\n"
+  head <- crayon::bold("#### Model Fit Statistics ####\n")
 
   # pD
   pd.str <- "Effective number of parameters:"
@@ -393,7 +366,7 @@ print.modfit.str <- function(x) {
 #' Print summary MBNMA results to the console
 #'
 #' @inheritParams predict.mbnma
-#' @param ... further arguments passed to or from other methods
+#' @param ... further arguments passed to `knitr::kable`
 #'
 #' @export
 summary.mbnma <- function(object, ...) {
@@ -404,26 +377,25 @@ summary.mbnma <- function(object, ...) {
     stop("Cannot use `summary()` method if `parameters.to.save` have been assigned. Use `print()` instead.")
   }
 
-  # Check for rhat < 1.02
-  rhat.warning(object)
-
   # Overall section
-  overall.sect <- print.overall.str(object)
+  print.overall.str(object)
+  cat("\n\n")
 
   # Print treatment-level section
-  treat.sect <- print.treat.str(object)
-
-  # Correlation section
-  cor.sect <- print.cor.str(object)
+  print.treat.str(object, ...)
 
   # Class-effect section
-  class.sect <- print.class.str(object)
+  print.class.str(object, ...)
+
+  # Correlation section
+  print.cor.str(object, ...)
 
   # Model fit statistics section
-  modfit.sect <- print.modfit.str(object)
+  cat(print.modfit.str(object))
 
-  output <- paste(overall.sect, treat.sect, cor.sect, class.sect, modfit.sect, sep="\n")
-  cat(output, ...)
+  # Check for rhat < 1.02
+  cat("\n")
+  rhat.warning(object)
 }
 
 
@@ -464,7 +436,7 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
     msg <- paste0("The following parameters have Rhat values > ",
                   cutoff,
                   " which could be due to convergence issues:\n")
-    warning(paste0(msg, paste(rhats, collapse="\n")))
+    cat(crayon::red((paste0(msg, paste(rhats, collapse="\n")))))
   }
 }
 
@@ -761,8 +733,8 @@ summary.mb.network <- function(object,...) {
     dplyr::group_by(studyID, treatment) %>%
     dplyr::slice_tail() %>%
     dplyr::group_by(treatment) %>%
-    dplyr::summarise(med=median(fups), min=min(fups), max=max(fups),
-                     medt=median(time), mint=min(time), maxt=max(time)) %>%
+    dplyr::summarise(med=stats::median(fups), min=min(fups), max=max(fups),
+                     medt=stats::median(time), mint=min(time), maxt=max(time)) %>%
     dplyr::arrange(treatment)
 
   treat.df <- data.frame("Treatment"=as.character(factor(treat.df$treatment, labels=object$treatments)),
