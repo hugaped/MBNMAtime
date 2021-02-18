@@ -13,6 +13,12 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
+
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
+[![Travis build status](https://travis-ci.com/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAtime)
+<!-- badges: end -->
+
 # MBNMAtime
 
 The goal of `MBNMAtime` is to provide a collection of useful commands that allow users to run time-course Model-Based Network Meta-Analyses (MBNMA) or Model-Based Meta-Analyses (MBMA). This allows meta-analysis of studies with multiple follow-up measurements that can account for time-course for a single or multiple treatment comparisons.

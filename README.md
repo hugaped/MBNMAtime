@@ -1,6 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
+[![Travis build
+status](https://travis-ci.com/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAtime)
+<!-- badges: end -->
+
 # MBNMAtime
 
 The goal of `MBNMAtime` is to provide a collection of useful commands
