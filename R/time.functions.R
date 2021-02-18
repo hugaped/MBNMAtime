@@ -426,13 +426,13 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #'
 #' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
 #'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
-tspline <- function(type="rcs", knots=3, degree=2, pool.1="rel", method.1="common",
+tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(type, choices=c("rcs", "bs", "ns"), add=argcheck)
+  checkmate::assertChoice(type, choices=c("rcs", "bs", "ns", "ls"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::assertIntegerish(degree, add=argcheck)
   for (i in 1:4) {

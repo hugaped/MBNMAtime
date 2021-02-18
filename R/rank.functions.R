@@ -223,7 +223,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
   time.params <- model.vals[["time.params"]]
 
   # Switch spline in timecourse and generate spline matrix
-  if (any(c("rcs", "ns", "bs") %in% mbnma$model.arg$fun$name)) {
+  if (any(c("rcs", "ns", "bs", "ls") %in% mbnma$model.arg$fun$name)) {
     timecourse <- gsub("\\[m\\,", "[,", timecourse)
 
     seg <- seq(from=int.range[1], to=int.range[2], length.out=subdivisions)
@@ -265,7 +265,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
                           time.mcmc)
       }
 
-      if (any(c("rcs", "ns", "bs") %in% mbnma$model.arg$fun$name)) {
+      if (any(c("rcs", "ns", "bs", "ls") %in% mbnma$model.arg$fun$name)) {
 
         # Using trapezoid method for spline function
         y <- eval(parse(text=time.mcmc))

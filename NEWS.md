@@ -1,7 +1,7 @@
 # MBNMAtime 0.1.4
 
 ## Additions/changes
-- Added restricted cubic spline functions (`fun="rcs"`)
+- Added spline functions (piecewise linear splines, B-splines, restricted cubic splines, natural splines)
 - Modelling can now incorporate Standardised Mean Differences (`link="smd"`) or Ratios of Means (`link="log"`) to allow modelling of studies with different scales
 - `lower_better` argument used instead of `decreasing` for rankings
 - Functions given to `mb.run()` are now given as `class("timefun")` and time-course parameters are specified within these functions

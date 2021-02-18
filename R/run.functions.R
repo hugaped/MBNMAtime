@@ -448,7 +448,7 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   tempjags[["studyID"]] <- NULL
 
   # Drop time from tempjags in spline models
-  if (fun$name %in% c("rcs", "ns", "bs") & !"AR1" %in% covar) {
+  if (fun$name %in% c("rcs", "ns", "bs", "ls") & !"AR1" %in% covar) {
     tempjags[["time"]] <- NULL
   }
 

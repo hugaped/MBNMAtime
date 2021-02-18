@@ -365,7 +365,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   if (link=="smd") {datavars.ikm <- append(datavars.ikm, "n")}
   datavars.ik <- c("treat")
   datavars.im <- c("time")
-  if (any(c("rcs", "ns", "bs") %in% fun$name)) {
+  if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
     datavars.im <- append(datavars.im, "spline")
   }
 
@@ -425,7 +425,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   # Generate empty spline matrix
   if (!is.null(fun)) {
-    if (any(c("rcs", "ns", "bs") %in% fun$name)) {
+    if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
 
       times <- df[, colnames(df) %in% c("time")]
       times <- unique(sort(times))
@@ -477,7 +477,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
       datalist[["time"]][i,m] <- unique(df$time[as.numeric(df$studyID)==i &
                                            df$fupcount==m])
 
-      if (any(c("rcs", "ns", "bs") %in% fun$name)) {
+      if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
         datalist[["spline"]][i,m,] <- as.numeric(df[as.numeric(df$studyID)==i &
                                            df$arm==1 & df$fupcount==m,
                                          grepl("spline", colnames(df))])
@@ -1124,15 +1124,15 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' Generates spline basis matrices for fitting to time-course function
 #'
 #' @param x A numeric vector indicating all time points available in the dataset
-#' @param spline Indicates the type of spline function. Can be either natural cubic spline (`"ns"`), restricted cubic
-#'   spline (`"rcs"`) or B-spline (`"bs"`).
+#' @param spline Indicates the type of spline function. Can be either a piecewise linear spline (`"ls"`),
+#' natural cubic spline (`"ns"`), restricted cubic spline (`"rcs"`) or B-spline (`"bs"`).
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.time A number indicating the maximum time between which to calculate the spline function.
 #' @inheritParams mbnma.run
 #'
 #'
-genspline <- function(x, spline="rcs", knots=3, degree=2, max.time=max(x)){
+genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1188,6 +1188,8 @@ genspline <- function(x, spline="rcs", knots=3, degree=2, max.time=max(x)){
 
       # splinedesign <- splines::ns(x0, knots=knots)
       # splinedesign <- cbind(x0, splinedesign)
+    } else if (spline=="ls") {
+      splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
     }
     rownames(splinedesign) <- x0
 
