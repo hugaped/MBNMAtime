@@ -206,7 +206,8 @@ write.model <- function() {
     "}",
     "",
     "totresdev <- sum(resstudydev[])",
-    end="totdev <- sum(studydev[])",
+    "totdev <- sum(studydev[])",
+    end="",
     "# Model ends",
     "}"
   )
@@ -325,7 +326,7 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
   # Write rho prior and multivariate code sections
   if (!is.null(rho)) {
     if (rho=="estimate") {
-      rho.prior <- "rho ~ dunif(-1,1)"
+      rho.prior <- "rho ~ dunif(0,1)"
     } else if (is.numeric(rho)) {
       rho.prior <- paste0("rho <- ", rho)
     }
@@ -668,6 +669,13 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
                   paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]"),
                   model
     )
+
+    # Add correlation for mu
+    model <- gsub(paste0("mu\\.", sufparams[i], "\\[i\\]"),
+                  paste0("mu\\[i,", sufparams[i], "\\]"),
+                  model
+    )
+    model <- model[-grep(paste0("^mu\\[i,", sufparams[i], "\\]"), model)]
   }
 
   if (cor.prior=="wishart") {
@@ -676,6 +684,12 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     # Insert multivariate normal dist (Wishart)
     model <- model.insert(model, pos=which(names(model)=="trt.prior"),
                           x=paste0("mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])"))
+
+    # Insert multivariate normal dist for mu (Wishart)
+    model <- model.insert(model, pos=which(names(model)=="study"),
+                          x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], inv.Rmu[1:", mat.size, ", 1:", mat.size, "])"))
+    model <- model.insert(model, pos=which(names(model)=="end"),
+                          x=paste0("inv.Rmu ~ dwish(Omega[,], ", mat.size, ")"))
 
     # Check that var.scale has correct length and add omega to code
     if (is.null(var.scale)) {
