@@ -1129,7 +1129,10 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.time A number indicating the maximum time between which to calculate the spline function.
-#' @inheritParams mbnma.run
+#' @param knots The number/location of knots. If a single integer is given it indicates the number of knots (they will
+#'   be equally spaced across the range of doses). If a numeric vector is given it indicates the quantiles of the knots as
+#'   a proportion of the maximum study follow-up in the dataset. For example, if the maximum follow-up time in the dataset
+#'   is 10 months, `knots=c(0.1,0.5)` would indicate knots should be fitted at 1 and 5 months follow-up.
 #'
 #'
 genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
