@@ -1499,8 +1499,8 @@ mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), s
 #'
 #'   For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 #'   can lead to non-sensical results when calculating pD via the plugin method.
-#'   Alternative approaches are to use pV (`pv`) as an approximation (Plummer REF) or
-#'   pD calculated by Kullback–Leibler divergence (`pd.kl`) or using an optimism adjustment (`popt`) (REF).
+#'   Alternative approaches are to use pV (`pv`) as an approximation \insertCite{plummer2008}{MBNMAtime} or
+#'   pD calculated by Kullback–Leibler divergence (`pd.kl`) or using an optimism adjustment (`popt`) \insertCite{plummer2008}{MBNMAtime}.
 #'
 #' @references TO ADD pV REF
 #' @inherit mb.run references
