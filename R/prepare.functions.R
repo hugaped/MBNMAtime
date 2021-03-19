@@ -362,8 +362,8 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   # Prepare list variables at each level
   datavars.ikm <- c("y", "se")
-  if (link=="smd") {datavars.ikm <- append(datavars.ikm, "n")}
   datavars.ik <- c("treat")
+  if (link=="smd") {datavars.ik <- append(datavars.ik, "n")}
   datavars.im <- c("time")
   if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
     datavars.im <- append(datavars.im, "spline")
@@ -400,9 +400,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   # Generate list in which to store individual data variables
   datalist <- list(get(datavars.ikm[1]), get(datavars.ikm[2]))
-  if (link=="smd") {
-    datalist <- append(datalist, list(get(datavars.ikm[3])))
-  }
+
   datalist <- append(datalist, list(narm=narm, fups=fups, NS=NS,
                                     studyID=vector(), NT=max(df$treatment)))
   names(datalist)[1:length(datavars.ikm)] <- datavars.ikm
@@ -459,6 +457,11 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
       datalist[["treat"]][i,k] <- unique(df$treatment[as.numeric(df$studyID)==i &
                                                                        df$arm==k])
+
+      if (link=="smd") {
+        datalist[["n"]][i,k] <- unique(df$n[as.numeric(df$studyID)==i &
+                                                          df$arm==k & df$fupcount==1])
+      }
 
       # for (z in seq_along(datavars.ik)) {
       #   datalist[[datavars.ik[z]]][i,k] <- unique(df[[datavars.ik[z]]][as.numeric(df$studyID)==i &
@@ -958,10 +961,6 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
     stop(msg)
   }
 
-  # Check if N is in data.ab
-  if ("n" %in% names(data.ab)) {
-    varnames <- append(varnames, "n")
-  }
 
   # Check data.ab has required column names
   if (all(varnames %in% names(data.ab))==FALSE) {
@@ -989,10 +988,21 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
     stop("All SEs must be >0")
   }
 
-  # Check that all n are positive
   if ("n" %in% varnames) {
+    # Check that all n are positive
     if (!all(data.ab[["n"]]>=0)) {
       stop("All values for n must be >=0")
+    }
+    # Check that n is numeric
+    if (!is.numeric(data.ab[["n"]])) {
+      stop("'n' must be numeric")
+    }
+    # Check that all n at fupcount=1 are present
+    temp <- data.ab %>% dplyr::group_by(studyID, treatment) %>%
+      dplyr::mutate(fupcount=sequence(dplyr::n()))
+
+    if (any(is.na(temp$n[temp$fupcount==1]))) {
+      warning("Values at starting time point for 'n' cannot be missing if modelling using link='smd'")
     }
   }
 
