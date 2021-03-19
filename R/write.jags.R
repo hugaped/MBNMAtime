@@ -160,6 +160,10 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=N
     stop("'UME' can only be specified for time-course parameters in 'fun' that have been modelled as pool='rel'")
   }
 
+  if (any(fun$apool[which(fun$params %in% names(class.effect))] == "abs")) {
+    stop("Class effects can only be specified for time-course parameters in 'fun' that have been modelled as pool='rel'")
+  }
+
 }
 
 
