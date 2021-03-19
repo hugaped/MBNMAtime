@@ -146,13 +146,14 @@
 #'
 #' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic
 #' obstructure pulmonary disease (COPD) \insertCite{karabis2013}{MBNMAtime}. Data are extracted from \insertCite{tallarita2019}{MBNMAtime}.
-#' SEs were imputed for three studies in which they were missing using the median standard deviation calculated from other studies in the
+#' SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing,
+#' using the median standard deviation calculated from other studies in the
 #' dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean
 #' change from baseline to follow-up. The dataset includes 13 Randomised-Controlled Trials (RCTs), comparing 2 treatments (Tiotropium and
 #' Aclidinium) and placebo.
 #'
 #' `copd` is a data frame in long format (one row per observation, arm and study),
-#' with the variables `studyID`, `time`, `y`, `se`, `nrand`, and `treatment`.
+#' with the variables `studyID`, `time`, `y`, `se`, `treatment`, and `n`.
 #'
 #' @format A data frame in long format (one row per arm and study), with 80 rows and 6 variables:
 #' * `studyID` Study identifiers
@@ -160,6 +161,7 @@
 #' * `y` Numeric data indicating the mean change from baseline in FEV1 (litres) in a study arm
 #' * `se` Numeric data indicating the standard error for the mean change from baseline in FEV1 in a study arm
 #' * `treatment` Factor data indicating the treatment to which participants were randomised
+#' * `n` Numeric data indicating the number of participants randomised to each arm
 #'
 #' @references
 #' \insertAllCited{}
