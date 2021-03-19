@@ -313,7 +313,7 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
     predictor <- timecourse <- paste0("log(theta[i,k,m]) <- ", timecourse)
   } else if (link=="smd") {
     predictor <- c(
-      "phi[i,k,m] <- theta[i,k,m] * pool.sd[i,m]",
+      "phi[i,k,m] <- theta[i,k,m] * pool.sd[i]",
       paste0("theta[i,k,m] <- ", timecourse)
     )
     norm.like <- gsub("theta", "phi", norm.like)
@@ -399,17 +399,26 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
   model <- model.insert(model, pos=which(names(model)=="fup"), x=predictor)
 
   if (link=="smd") {
+    # smd.sub <- c(
+    #   "sd[i,k,m] <- se[i,k,m] * pow(n[i,k,m],0.5)",
+    #   "nvar[i,k,m] <- (n[i,k,m]-1) * pow(sd[i,k,m],2)"
+    # )
     smd.sub <- c(
-      "sd[i,k,m] <- se[i,k,m] * pow(n[i,k,m],0.5)",
-      "nvar[i,k,m] <- (n[i,k,m]-1) * pow(sd[i,k,m],2)"
+      "sd[i,k] <- se[i,k,1] * pow(n[i,k],0.5)",
+      "nvar[i,k] <- (n[i,k]-1) * pow(sd[i,k],2)"
     )
-    model <- model.insert(model, pos=which(names(model)=="fup"), x=smd.sub)
+    model <- model.insert(model, pos=which(names(model)=="arm"), x=smd.sub)
 
+    # pool.sd <- c(
+    #   "for (m in 1:fups[i]) {",
+    #   "df[i,m] <- sum(n[i,1:narm[i],m]) - narm[i]",
+    #   "pool.var[i,m] <- sum(nvar[i,1:narm[i],m])/df[i,m]",
+    #   "pool.sd[i,m] <- pow(pool.var[i,m], 0.5)"
+    # )
     pool.sd <- c(
-      "for (m in 1:fups[i]) {",
-      "df[i,m] <- sum(n[i,1:narm[i],m]) - narm[i]",
-      "pool.var[i,m] <- sum(nvar[i,1:narm[i],m])/df[i,m]",
-      "pool.sd[i,m] <- pow(pool.var[i,m], 0.5)"
+      "df[i] <- sum(n[i,1:narm[i]]) - narm[i]",
+      "pool.var[i] <- sum(nvar[i,1:narm[i]])/df[i]",
+      "pool.sd[i] <- pow(pool.var[i], 0.5)"
     )
     model <- model.insert(model, pos=which(names(model)=="study"), x=pool.sd)
   }
