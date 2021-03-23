@@ -274,7 +274,8 @@ add_index <- function(data.ab, reference=1) {
 #'   information on different classes of treatments
 #' @param covstruct A character to indicate the covariance structure required for modelling correlation between
 #' time points (if any), since
-#' this determines some of the data. Can be either `"CS"` (compound symmetry) or `"AR1"` (autoregressive AR1).
+#' this determines some of the data. Can be either `"CS"` (compound symmetry), `"AR1"` (autoregressive AR1) or
+#' `"varadj"` (variance-adjustment).
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to
 #'   JAGS. List elements are:
@@ -319,7 +320,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
-  checkmate::assertChoice(covstruct, choices=c("CS", "AR1"), null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(covstruct, choices=c("varadj", "CS", "AR1"), null.ok=TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 

@@ -44,14 +44,16 @@
 #' @param link Can take either `"identity"`, `"log"` (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
 #'   `"smd"` (for modelling Standardised Mean Differences).
 #'
-#' @param rho The correlation coefficient when modelling correlation between time points. If left
-#'   as `NULL` (the default) then this implies modelling no correlation between time points.
-#'   Can either be specified as a string representing a prior distribtuion for it to be estimated from the data
-#'   (e.g. `rho="dunif(0,1)"`) or can be assigned a numeric value (e.g. `rho=0.7`), which fixes `rho` in the model
-#'   to the assigned value (e.g. for use in a deterministic sensitivity analysis).
-#' @param covar A character specifying the covariance structure to use for the
-#'   multivariate normal likelihood. Can currently take either `"CS"` (compound
-#'   symmetry) or `"AR1"` (autoregressive AR1).
+#' @param rho The correlation coefficient when modelling correlation between time points. The default is a string representing a
+#'   prior distribution indicating that it be estimated from the data (default: `rho="dunif(0,1)"`). If left
+#'   as `NULL` then this implies modelling no correlation between time points. Can also be assigned a numeric value
+#'   (e.g. `rho=0.7`), which fixes `rho` in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+#' @param covar A character specifying the covariance structure to use for modelling correlation between time-points. This can
+#'   be done by specifying one of the following:
+#'   * `"varadj"` - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
+#'   time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
+#'   * `"CS"` - a multivariate normal likelihood with a compound symmetry structure
+#'   * `"AR1"` - a multivariate normal likelihood with an autogregressive AR1 structure
 #'
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated time-course parameters when relative effects are modelled on more than
@@ -203,10 +205,7 @@
 #'
 #' @section Correlation between observations:
 #'   When modelling correlation between observations using `rho`, values for `rho` must imply a
-#'   positive semidefinite covariance matrix. If estimating `rho` from the data (by assigning it
-#'   `"estimate"`), the default prior distribution (`dunif(-1,1)`) may include values that exclude
-#'   a positive semidefinite covariance matrix. This prior can be restricted (e.g. to `dunif(0,1)`)
-#'   using the `priors` argument (see \code{\link{get.prior}})
+#'   positive semidefinite covariance matrix.
 #'
 #' @importFrom Rdpack reprompt
 #' @importFrom magrittr "%>%"
@@ -279,7 +278,7 @@
 mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=TRUE,
                       link="identity",
                       parameters.to.save=NULL,
-                      rho=NULL, covar=NULL,
+                      rho="dunif(0,1)", covar="varadj",
                       var.scale=NULL,
                       class.effect=list(), UME=FALSE,
                       pd="pd.kl", parallel=FALSE,
@@ -553,7 +552,8 @@ gen.parameters.to.save <- function(fun, model) {
   # For MBNMAtime
   if (any(grepl("rho", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, "rho")
-  } else {
+  }
+  if (any(grepl("totresdev", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
   }
 

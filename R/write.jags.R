@@ -51,7 +51,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   checkmate::assertChoice(link, choices=c("identity", "log", "smd"), add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertChoice(covar, choices=c("CS", "AR1"), null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(covar, choices=c("varadj", "CS", "AR1"), null.ok=TRUE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -329,7 +329,9 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
 
   # Write rho prior and multivariate code sections
   if (!is.null(rho)) {
-    if (is.numeric(rho)) {
+    if (is.character(rho)) {
+      rho.prior <- paste0("rho ~ ", rho)
+    } else if (is.numeric(rho)) {
       rho.prior <- paste0("rho <- ", rho)
     }
   }
@@ -378,23 +380,28 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
   if (is.null(rho)) {
     model <- model.insert(model, pos=which(names(model)=="fup"), x=norm.like)
   } else if (!is.null(rho)) {
-    model <- model.insert(model, pos=which(names(model)=="arm"), x=mnorm.like)
     model <- model.insert(model, pos=which(names(model)=="end"), x=rho.prior)
 
-    # Possibly use to remove devs
-    # model <- model[-grep("dev", model)]
+    if (covar %in% c("CS", "AR1")) {
+      model <- model.insert(model, pos=which(names(model)=="arm"), x=mnorm.like)
 
-    # Add covariance matrices
-    if (covar=="CS") {
-      model <- model.insert(model, pos=which(names(model)=="arm"), x=covar.cs)
-    } else if (covar=="AR1") {
-      model <- model.insert(model, pos=which(names(model)=="arm"), x=covar.ar1)
-      model <- model.insert(model, pos=which(names(model)=="study"), x=timepoint.corr)
+      # Add covariance matrices
+      if (covar=="CS") {
+        model <- model.insert(model, pos=which(names(model)=="arm"), x=covar.cs)
+      } else if (covar=="AR1") {
+        model <- model.insert(model, pos=which(names(model)=="arm"), x=covar.ar1)
+        model <- model.insert(model, pos=which(names(model)=="study"), x=timepoint.corr)
+      }
+
+      # Remove residual deviance calculations
+      # Drop resdev, dev and totresdev
+      model <- subset(model, !grepl("dev", model))
+    }
+    if (covar %in% c("varadj")) {
+      norm.like[1] <- gsub("(prec\\[i\\,k\\,m\\])", "\\1*rho", norm.like[1])
+      model <- model.insert(model, pos=which(names(model)=="fup"), x=norm.like)
     }
 
-    # Remove residual deviance calculations
-    # Drop resdev, dev and totresdev
-    model <- subset(model, !grepl("dev", model))
   }
 
   # Add linear predictor
@@ -723,32 +730,32 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
 
     }
 
-  } else if (cor.prior=="rho") {
-    addcode <- jagsrho
-
-    # Insert multivariate normal dist (rho)
-    model <- model.insert(model, pos=which(names(model)=="trt.prior"),
-                          x=paste0("mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])"))
-
-    if (cor=="estimate") {
-      addcode <- append(addcode, c(
-        "for (m in 1:(mat.size-1)) {",
-        "rho[m] ~ dunif(0,1)",
-        "}"
-      ))
-
-    } else if (is.numeric(cor)) {
-      # Add values for rho assigned by user
-      if (length(cor)!=(mat.size)-1) {
-        stop("Length of numeric vector assigned to `cor` must equal the size of the correlation matrix - 1")
-      }
-      for (m in seq_along(cor)) {
-        # Insert fixed value for rho
-        model <- model.insert(model, pos=which(names(model)=="start"),
-                              x=paste0("rho[", m, "] <- ", cor[m]))
-      }
-    }
-  }
+  } #else if (cor.prior=="rho") {
+  #   addcode <- jagsrho
+  #
+  #   # Insert multivariate normal dist (rho)
+  #   model <- model.insert(model, pos=which(names(model)=="trt.prior"),
+  #                         x=paste0("mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])"))
+  #
+  #   if (cor=="estimate") {
+  #     addcode <- append(addcode, c(
+  #       "for (m in 1:(mat.size-1)) {",
+  #       "rho[m] ~ dunif(0,1)",
+  #       "}"
+  #     ))
+  #
+  #   } else if (is.numeric(cor)) {
+  #     # Add values for rho assigned by user
+  #     if (length(cor)!=(mat.size)-1) {
+  #       stop("Length of numeric vector assigned to `cor` must equal the size of the correlation matrix - 1")
+  #     }
+  #     for (m in seq_along(cor)) {
+  #       # Insert fixed value for rho
+  #       model <- model.insert(model, pos=which(names(model)=="start"),
+  #                             x=paste0("rho[", m, "] <- ", cor[m]))
+  #     }
+  #   }
+  # }
 
   addcode <- gsub("mat\\.size", mat.size, addcode)
 
