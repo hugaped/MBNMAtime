@@ -31,7 +31,7 @@
 #' # Write an exponential time-course MBNMA that accounts for correlation between time points
 #' model <- mb.write(fun="exponential",
 #'   alpha="arm", beta.1="rel.common",
-#'   rho="estimate", covar="AR1")
+#'   rho="dunif(0,1)", covar="AR1")
 #' cat(model)
 #'
 #' # Define a user-defined time-course relationship for the MBNMA JAGS model
@@ -131,9 +131,9 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=N
   }
 
   if (!is.null(rho)) {
-    if (is.character(rho) & rho!="estimate") {
-      stop("`rho` must either be assigned the value `estimate` to be estimated from the data or must be assigned a single numeric value")
-    }
+    # if (is.character(rho) & rho!="estimate") {
+    #   stop("`rho` must either be assigned the value `estimate` to be estimated from the data or must be assigned a single numeric value")
+    # }
     if (is.numeric(rho) & (rho < -1 | rho > 1)) {
       stop("Numeric values for `rho` cannot be outside the bounds of c(-1, 1)")
     }
@@ -329,9 +329,7 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
 
   # Write rho prior and multivariate code sections
   if (!is.null(rho)) {
-    if (rho=="estimate") {
-      rho.prior <- "rho ~ dunif(0,1)"
-    } else if (is.numeric(rho)) {
+    if (is.numeric(rho)) {
       rho.prior <- paste0("rho <- ", rho)
     }
   }
@@ -684,11 +682,15 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     )
 
     # Add correlation for mu
-    model <- gsub(paste0("mu\\.", sufparams[i], "\\[i\\]"),
-                  paste0("mu\\[i,", sufparams[i], "\\]"),
+    # model <- gsub(paste0("mu\\.", sufparams[i], "\\[i\\]"),
+    #               paste0("mu\\[i,", sufparams[i], "\\]"),
+    #               model
+    # )
+    # model <- model[-grep(paste0("^mu\\[i,", sufparams[i], "\\]"), model)]
+    model <- gsub(paste0("^mu\\.", sufparams[i], "\\[i\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
+                  paste0("mu.", sufparams[i], "[i] <- mumult[i,", i, "]"),
                   model
     )
-    model <- model[-grep(paste0("^mu\\[i,", sufparams[i], "\\]"), model)]
   }
 
   if (cor.prior=="wishart") {
@@ -700,9 +702,12 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
 
     # Insert multivariate normal dist for mu (Wishart)
     model <- model.insert(model, pos=which(names(model)=="study"),
-                          x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], inv.Rmu[1:", mat.size, ", 1:", mat.size, "])"))
+                          x=paste0("mumult[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
+    # model <- model.insert(model, pos=which(names(model)=="study"),
+    #                       x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
+
     model <- model.insert(model, pos=which(names(model)=="end"),
-                          x=paste0("inv.Rmu ~ dwish(Omega[,], ", mat.size, ")"))
+                          x=paste0("muinv.R ~ dwish(Omega[,], ", mat.size, ")"))
 
     # Check that var.scale has correct length and add omega to code
     if (is.null(var.scale)) {

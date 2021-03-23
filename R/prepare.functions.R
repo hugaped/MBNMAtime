@@ -310,7 +310,7 @@ add_index <- function(data.ab, reference=1) {
 #'
 #' # Get JAGS data that allows for modelling correlation between time points
 #' painnet <- mb.network(osteopain)
-#' jagsdat <- getjagsdata(painnet$data.ab, rho="estimate", covstruct="AR1")
+#' jagsdat <- getjagsdata(painnet$data.ab, rho="dunif(0,1)", covstruct="AR1")
 #'
 #' @export
 getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity") {

@@ -46,10 +46,9 @@
 #'
 #' @param rho The correlation coefficient when modelling correlation between time points. If left
 #'   as `NULL` (the default) then this implies modelling no correlation between time points.
-#'   Can either be assigned the string `"estimate"` to indicate that rho should be estimated
-#'   from the data, or assigned a numeric value, which fixes `rho` in the model to the assigned
-#'   value, either for when `rho` is calculated externally or for use in deterministic sensitivity
-#'   analyses.
+#'   Can either be specified as a string representing a prior distribtuion for it to be estimated from the data
+#'   (e.g. `rho="dunif(0,1)"`) or can be assigned a numeric value (e.g. `rho=0.7`), which fixes `rho` in the model
+#'   to the assigned value (e.g. for use in a deterministic sensitivity analysis).
 #' @param covar A character specifying the covariance structure to use for the
 #'   multivariate normal likelihood. Can currently take either `"CS"` (compound
 #'   symmetry) or `"AR1"` (autoregressive AR1).
@@ -636,7 +635,7 @@ gen.parameters.to.save <- function(fun, model) {
 #'   emax=list(pool="rel", method="random"),
 #'   et50=list(pool="rel", method="common"),
 #'   hill=list(pool="const", method="common"),
-#'   rho="estimate", covar="AR1",
+#'   rho="dunif(0,1)", covar="AR1",
 #'   priors=list("rho"="dunif(0,1)"),
 #'   class.effect=list("et50"="random")
 #'   )
@@ -741,7 +740,7 @@ mb.emax.hill <- function(network, fun="emax.hill",
 #'   parameters.to.save=c("d.emax", "d.et50", "rho"),
 #'   emax=list(pool="rel", method="random"),
 #'   et50=list(pool="rel", method="common"),
-#'   rho="estimate", covar="CS"
+#'   rho="dunif(0,1)", covar="CS"
 #'   )
 #' }
 #' @export
@@ -1408,7 +1407,7 @@ mb.quadratic <- function(network, beta.1=list(pool="rel", method="common"),
 #'   slope.1=list(pool="rel", method="random"),
 #'   slope.2=list(pool="rel", method="common"),
 #'   knot=list(pool="const", method=1),
-#'   rho="estimate", covar="CS",
+#'   rho="dunif(0,1)", covar="CS",
 #'   UME="slope.1"
 #'   )
 #' }

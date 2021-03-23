@@ -295,7 +295,7 @@ print.cor.str <- function(mbnma, digits=4) {
 
     if (is.numeric(mbnma$model.arg$rho)) {
       cat(paste("Rho assigned a numeric value:", mbnma$model.arg$rho, sep=" "))
-    } else if (mbnma$model.arg$rho=="estimate") {
+    } else if (is.character(mbnma$model.arg$rho)) {
       if ("rho" %in% mbnma$parameters.to.save) {
         cat("Rho estimated from the data:")
         rho <- mbnma$BUGSoutput$summary["rho",]
