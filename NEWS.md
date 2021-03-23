@@ -1,13 +1,16 @@
-# MBNMAtime 0.1.4
+# MBNMAtime 0.2.0
 
 ## Additions/changes
+- Added variance adjustment (`covar="varadj"`) for correlation between time-points - this is now the default in `mb.run()`
 - Added spline functions (piecewise linear splines, B-splines, restricted cubic splines, natural splines)
 - Modelling can now incorporate Standardised Mean Differences (`link="smd"`) or Ratios of Means (`link="log"`) to allow modelling of studies with different scales
 - `lower_better` argument used instead of `decreasing` for rankings
-- Functions given to `mb.run()` are now given as `class("timefun")` and time-course parameters are specified within these functions
+- Time-course functions given to `mb.run()` are now given as `class("timefun")` and time-course parameters are specified within these functions
 - Predictions from `predict.mbnma()` can now be ranked
 - Forest plots now also plot posterior densities using `ggdist::stat_halfeye()`
 - Neater outputs when using `print()` or `summary()`
+- Wishart prior used to model correlations between within-study baseline effects on different time-course parameters, in addition
+to relative effects on different time-course parameters.
 
 
 ## Bug fixes
