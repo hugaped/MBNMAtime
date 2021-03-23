@@ -2,6 +2,7 @@
 
 ## Additions/changes
 - Added variance adjustment (`covar="varadj"`) for correlation between time-points - this is now the default in `mb.run()`
+- Added log linear time-course function (`tloglin()`)
 - Added spline functions (piecewise linear splines, B-splines, restricted cubic splines, natural splines)
 - Modelling can now incorporate Standardised Mean Differences (`link="smd"`) or Ratios of Means (`link="log"`) to allow modelling of studies with different scales
 - `lower_better` argument used instead of `decreasing` for rankings
