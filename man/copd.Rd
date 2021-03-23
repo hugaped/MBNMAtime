@@ -12,6 +12,7 @@ A data frame in long format (one row per arm and study), with 80 rows and 6 vari
 \item \code{y} Numeric data indicating the mean change from baseline in FEV1 (litres) in a study arm
 \item \code{se} Numeric data indicating the standard error for the mean change from baseline in FEV1 in a study arm
 \item \code{treatment} Factor data indicating the treatment to which participants were randomised
+\item \code{n} Numeric data indicating the number of participants randomised to each arm
 }
 }
 \usage{
@@ -20,14 +21,15 @@ copd
 \description{
 A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic
 obstructure pulmonary disease (COPD) \insertCite{karabis2013}{MBNMAtime}. Data are extracted from \insertCite{tallarita2019}{MBNMAtime}.
-SEs were imputed for three studies in which they were missing using the median standard deviation calculated from other studies in the
+SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing,
+using the median standard deviation calculated from other studies in the
 dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean
 change from baseline to follow-up. The dataset includes 13 Randomised-Controlled Trials (RCTs), comparing 2 treatments (Tiotropium and
 Aclidinium) and placebo.
 }
 \details{
 \code{copd} is a data frame in long format (one row per observation, arm and study),
-with the variables \code{studyID}, \code{time}, \code{y}, \code{se}, \code{nrand}, and \code{treatment}.
+with the variables \code{studyID}, \code{time}, \code{y}, \code{se}, \code{treatment}, and \code{n}.
 }
 \references{
 \insertAllCited{}

@@ -11,8 +11,8 @@ mb.run(
   intercept = TRUE,
   link = "identity",
   parameters.to.save = NULL,
-  rho = NULL,
-  covar = NULL,
+  rho = "dunif(0,1)",
+  covar = "varadj",
   var.scale = NULL,
   class.effect = list(),
   UME = FALSE,
@@ -48,16 +48,19 @@ removes the intercept, \code{alpha}, from the model).}
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
 
-\item{rho}{The correlation coefficient when modelling correlation between time points. If left
-as \code{NULL} (the default) then this implies modelling no correlation between time points.
-Can either be assigned the string \code{"estimate"} to indicate that rho should be estimated
-from the data, or assigned a numeric value, which fixes \code{rho} in the model to the assigned
-value, either for when \code{rho} is calculated externally or for use in deterministic sensitivity
-analyses.}
+\item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
+prior distribution indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If left
+as \code{NULL} then this implies modelling no correlation between time points. Can also be assigned a numeric value
+(e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
 
-\item{covar}{A character specifying the covariance structure to use for the
-multivariate normal likelihood. Can currently take either \code{"CS"} (compound
-symmetry) or \code{"AR1"} (autoregressive AR1).}
+\item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
+be done by specifying one of the following:
+\itemize{
+\item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
+time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
+\item \code{"CS"} - a multivariate normal likelihood with a compound symmetry structure
+\item \code{"AR1"} - a multivariate normal likelihood with an autogregressive AR1 structure
+}}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated time-course parameters when relative effects are modelled on more than
@@ -109,9 +112,6 @@ to overwrite the JAGS model that is automatically written based on the
 specified options. Useful when amending priors using replace.prior()}
 
 \item{...}{Arguments to be sent to R2jags.}
-
-\item{user.fun}{A formula specifying any relationship including \code{time} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{alpha}{Refers to the baseline mean response and is a character object
 that can take either:
@@ -259,10 +259,7 @@ pieces are joined)
 \section{Correlation between observations}{
 
 When modelling correlation between observations using \code{rho}, values for \code{rho} must imply a
-positive semidefinite covariance matrix. If estimating \code{rho} from the data (by assigning it
-\code{"estimate"}), the default prior distribution (\code{dunif(-1,1)}) may include values that exclude
-a positive semidefinite covariance matrix. This prior can be restricted (e.g. to \code{dunif(0,1)})
-using the \code{priors} argument (see \code{\link{get.prior}})
+positive semidefinite covariance matrix.
 }
 
 \examples{
@@ -316,7 +313,7 @@ mb.run(network, fun="linear",
   rho="estimate", covar="CS")
 
 # Define a user-defined time-course relationship for use in mb.run
-time.fun <- ~alpha + exp(beta.1 * time) + (time^beta.2)
+time.fun <- ~exp(beta.1 * time) + (time^beta.2)
 
 # Run model using Kullback-Liebler divergence to calculate pD
 mb.run(network, fun="user", user.fun=time.fun,

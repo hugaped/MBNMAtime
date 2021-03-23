@@ -2,6 +2,46 @@
 # Author: Hugo Pedder
 # Date created: 2021-01-04
 
+
+
+#' Exponential time-course function
+#'
+#' \deqn{rate\times{(1-exp(-x))}}
+#'
+#' @param pool.rate Pooling for exponential rate parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.rate Method for synthesis of exponential rate parameter. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' texp(pool.rate="rel", method.rate="random")
+#' texp(pool.rate="abs")
+#'
+#' @export
 texp <- function(pool.rate="rel", method.rate="common") {
 
   # Run checks
@@ -55,19 +95,58 @@ texp <- function(pool.rate="rel", method.rate="common") {
 
 
 
-tloglin <- function(pool.rate="rel", method.rate="common", off=.1) {
+
+
+#' Log-linear (exponential) time-course function
+#'
+#' \deqn{rate\times{log(x + 1)}}
+#'
+#' @inheritParams texp
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' tloglin(pool.rate="rel", method.rate="random")
+#' tloglin(pool.rate="abs")
+#'
+#' @export
+tloglin <- function(pool.rate="rel", method.rate="common") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(pool.rate, choices=c("rel", "abs"), add=argcheck)
   checkmate::assertChoice(method.rate, choices=c("common", "random"), add=argcheck)
-  checkmate::assertNumeric(off, len=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Define time-course function
-  fun <- ~ rate * log(time + off)
-  latex <- "\beta_1 * log(x_m + off)"
-  jags <- paste0("beta.1 * log(time[i,m] + ", off, ")")
+  fun <- ~ rate * log(time + 1)
+  latex <- "\beta_1 * log(x_m + 1)"
+  jags <- paste0("beta.1 * log(time[i,m] + 1)")
 
   if (pool.rate=="rel") {
     jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
@@ -75,8 +154,8 @@ tloglin <- function(pool.rate="rel", method.rate="common", off=.1) {
     jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
   }
 
-  f <- function(time, beta.1, beta.2, off) {
-    y <- beta.1 * log(time + off)
+  f <- function(time, beta.1, beta.2) {
+    y <- beta.1 * log(time + 1)
     return(y)
   }
 
@@ -96,7 +175,7 @@ tloglin <- function(pool.rate="rel", method.rate="common", off=.1) {
   bmethod <- paste0("method.", 1:nparam)
   names(bmethod) <- paramnames
 
-  out <- list(name="loglin", fun=fun, f=f, latex=latex, off=off,
+  out <- list(name="loglin", fun=fun, f=f, latex=latex,
               params=paramnames, nparam=nparam, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
@@ -110,6 +189,66 @@ tloglin <- function(pool.rate="rel", method.rate="common", off=.1) {
 
 
 
+
+#' Emax time-course function
+#'
+#' Emax represents the maximum response.
+#' exp(ET50) represents the time at which 50% of the maximum response is achieved.
+#' exp(Hill) is the Hill parameter, which allows for a sigmoidal function.
+#'
+#' Without Hill parameter:
+#' \deqn{\frac{E_{max}\times{x}}{e^{ET_{50}}+x}}
+#'
+#' With Hill parameter:
+#' \deqn{\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}}
+#'
+#' @param pool.emax Pooling for Emax parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.emax Method for synthesis of Emax parameter. Can take `"common` or `"random"` (see details).
+#' @param pool.et50 Pooling for ET50 parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.et50 Method for synthesis of ET50 parameter. Can take `"common` or `"random"` (see details).
+#' @param pool.hill Pooling for Hill parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.hill Method for synthesis of Hill parameter. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single absolute value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#' When relative effects are modelled on more than one time-course parameter,
+#' correlation between the time-course parameters is automatically
+#' estimated using a vague Wishart prior. This prior can be made slightly more informative
+#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
+#' `var.scale`.
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' # Model without a Hill parameter
+#' temax(pool.emax="rel", method.rate="random", pool.et50="abs", method.et50="common")
+#'
+#' # Model including a Hill parameter and defaults for Emax and ET50 parameters
+#' temax(pool.hill="abs", method.hill="common")
+#'
+#' @export
 temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method.et50="common",
                  pool.hill=NULL, method.hill=NULL) {
 
@@ -212,8 +351,76 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 
 
 
+#' Polynomial time-course function
 #'
-#' @param degree the degree of the polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic,
+#' \eqn{\beta_1} represents the 1st coefficient.
+#' \eqn{\beta_2} represents the 2nd coefficient.
+#' \eqn{\beta_3} represents the 3rd coefficient.
+#' \eqn{\beta_4} represents the 4th coefficient.
+#'
+#' Linear model:
+#' \deqn{\beta_1{x}}
+#'
+#' Quadratic model:
+#' \deqn{\beta_1{x} + \beta_2{x^2}}
+#'
+#' Cubic model:
+#' \deqn{\beta_1{x} + \beta_2{x^2} + \beta_3{x^3}}
+#'
+#' Quartic model:
+#' \deqn{\beta_1{x} + \beta_2{x^2} + \beta_3{x^3} + \beta_4{x^4}}
+#'
+#'
+#' @param degree The degree of the polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
+#' @param pool.1 Pooling for the 1st polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.1 Method for synthesis of the 1st polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.2 Pooling for the 2nd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.2 Method for synthesis of the 2nd polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.3 Pooling for the 3rd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.3 Method for synthesis of the 3rd polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.4 Pooling for the 4th polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.4 Method for synthesis of the 4th polynomial coefficient. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single absolute value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#' When relative effects are modelled on more than one time-course parameter,
+#' correlation between the time-course parameters is automatically
+#' estimated using a vague Wishart prior. This prior can be made slightly more informative
+#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
+#' `var.scale`.
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' # Linear model with random effects
+#' tpoly(pool.1="rel", method.1="random")
+#'
+#' # Quadratic model with a single absolute parameter estimated for the 2nd coefficient
+#' tpoly(pool.1="rel", method.1="common", pool.2="abs", method.2="random")
+#'
+#' @export
 tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",
                   pool.3="rel", method.3="common", pool.4="rel", method.4="common") {
 
@@ -279,7 +486,76 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 
 
 
-#' @param degree the degree of the fractional polynomial
+#' Fractional polynomial time-course function
+#'
+#' As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}
+#'
+#' \eqn{\beta_1} represents the 1st coefficient.
+#' \eqn{\beta_2} represents the 2nd coefficient.
+#' \eqn{\beta_3} represents the 3rd coefficient.
+#' \eqn{\beta_4} represents the 4th coefficient.
+#'
+#' \deqn{\boldsymbol{\beta}x^{(p_1,p_2,...,p_m)}}
+#' for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
+#' \eqn(x^{(p)}) is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
+#' If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}
+#'
+#' So for a second degree polynomial \eqn{\boldsymbol{\beta}x^{(0,0)}}:
+#' \deqn{\boldsymbol{\beta}x^{(0,0)}=\beta_1ln(x)+\beta_2ln(x)^2}
+#'
+#'
+#'
+#' @param degree The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAtime}
+#' @param pool.1 Pooling for the 1st fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.1 Method for synthesis of the 1st fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.2 Method for synthesis of the 2nd fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.3 Pooling for the 3rd fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.3 Method for synthesis of the 3rd fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.4 Pooling for the 4th fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.4 Method for synthesis of the 4th fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single absolute value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#' When relative effects are modelled on more than one time-course parameter,
+#' correlation between the time-course parameters is automatically
+#' estimated using a vague Wishart prior. This prior can be made slightly more informative
+#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
+#' `var.scale`.
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' # 1st order fractional polynomial with random effects
+#' tfpoly(pool.1="rel", method.1="random")
+#'
+#' # 2nd order fractional polynomial
+#' # with a single absolute parameter estimated for the 2nd coefficient
+#' tfpoly(pool.1="rel", method.1="common", pool.2="abs", method.2="random")
+#'
+#' @export
 tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",
                    method.power1="common", method.power2="common") {
   # Run checks
@@ -422,10 +698,83 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+#' Spline time-course functions
 #'
+#' Used to fit B-splines, natural cubic splines, restricted cubic splines and
+#' piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}.
 #'
+#' @param type The type of spline. Can take `"bs"` (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
+#'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}), `"rcs"` (restricted cubic spline)
+#'   or `"ls"` (piecewise linear spline)
 #' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
 #'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
+#' @param degree The degree of the piecewise B-spline polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
+#' @param pool.1 Pooling for the 1st coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.1 Method for synthesis of the 1st coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.2 Pooling for the 2nd coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.2 Method for synthesis of the 2nd coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.3 Pooling for the 3rd coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.3 Method for synthesis of the 3rd coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.4 Pooling for the 4th coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.4 Method for synthesis of the 4th coefficient. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single absolute value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#' When relative effects are modelled on more than one time-course parameter,
+#' correlation between the time-course parameters is automatically
+#' estimated using a vague Wishart prior. This prior can be made slightly more informative
+#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
+#' `var.scale`.
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' # Second order B spline with 2 knots and random effects on the 2nd coefficient
+#' tspline(type="bs", knots=3, degree=2,
+#'   pool.1="rel", method.1="common",
+#'   pool.2="rel", method.2="random")
+#'
+#' # Piecewise linear spline with knots at 0.1 and 0.5 quantiles
+#' # Single parameter independent of treatment estimated for 1st coefficient
+#' #with random effects
+#' tspline(type="ls, knots=c(0.1,0.5),
+#'   pool.1="abs", method.1="random",
+#'   pool.2="rel", method.2="common")
+#'
+#' @export
 tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common") {
@@ -572,7 +921,59 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 
 
 
-
+#' User-defined time-course function
+#'
+#' @param fun A formula specifying any relationship including `time` and
+#'   one/several of: `beta.1`, `beta.2`, `beta.3`, `beta.4`.
+#' @param pool.1 Pooling for `beta.1`. Can take `"rel"` or `"abs"` (see details).
+#' @param method.1 Method for synthesis of `beta.1`. Can take `"common` or `"random"` (see details).
+#' @param pool.2 Pooling for `beta.2`. Can take `"rel"` or `"abs"` (see details).
+#' @param method.2 Method for synthesis of `beta.2. Can take `"common` or `"random"` (see details).
+#' @param pool.3 Pooling for `beta.3. Can take `"rel"` or `"abs"` (see details).
+#' @param method.3 Method for synthesis of `beta.3. Can take `"common` or `"random"` (see details).
+#' @param pool.4 Pooling for `beta.4. Can take `"rel"` or `"abs"` (see details).
+#' @param method.4 Method for synthesis of `beta.4`. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take either:
+#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
+#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
+#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
+#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
+#' * `"abs"` indicates that study arms should be pooled across the whole network for this
+#' time-course parameter  *independently of assigned treatment*.
+#' This implies estimating a single absolute value across the network for this time-course parameter,
+#' and may therefore be making strong assumptions of similarity.
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#' * `"common"` implies that all studies estimate the same true effect
+#' (akin to a "fixed effects" meta-analysis)
+#' * `"random"` implies that all studies estimate a separate true effect, but that each
+#' of these true effects vary randomly around a true mean effect. This approach allows
+#' for modelling of between-study heterogeneity.
+#'
+#' When relative effects are modelled on more than one time-course parameter,
+#' correlation between the time-course parameters is automatically
+#' estimated using a vague Wishart prior. This prior can be made slightly more informative
+#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
+#' `var.scale`.
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#'
+#' timecourse <- ~ beta.1 * (1/(time+1)) + beta.2 * time^2
+#' tuser(fun=timecourse,
+#'   pool.1="abs", method.1="common",
+#'   pool.2="rel", method.2="common")
+#'
+#' @export
 tuser <- function(fun, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common") {

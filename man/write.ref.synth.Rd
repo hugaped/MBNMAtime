@@ -32,16 +32,19 @@ be included in the model. Can be used to imply whether mean responses in
 data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
-\item{rho}{The correlation coefficient when modelling correlation between time points. If left
-as \code{NULL} (the default) then this implies modelling no correlation between time points.
-Can either be assigned the string \code{"estimate"} to indicate that rho should be estimated
-from the data, or assigned a numeric value, which fixes \code{rho} in the model to the assigned
-value, either for when \code{rho} is calculated externally or for use in deterministic sensitivity
-analyses.}
+\item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
+prior distribution indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If left
+as \code{NULL} then this implies modelling no correlation between time points. Can also be assigned a numeric value
+(e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
 
-\item{covar}{A character specifying the covariance structure to use for the
-multivariate normal likelihood. Can currently take either \code{"CS"} (compound
-symmetry) or \code{"AR1"} (autoregressive AR1).}
+\item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
+be done by specifying one of the following:
+\itemize{
+\item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
+time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
+\item \code{"CS"} - a multivariate normal likelihood with a compound symmetry structure
+\item \code{"AR1"} - a multivariate normal likelihood with an autogregressive AR1 structure
+}}
 
 \item{mu.synth}{A string that takes the value \code{fixed} or \code{random}, indicating
 the type of synthesis model to use}

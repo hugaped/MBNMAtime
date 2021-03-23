@@ -13,7 +13,7 @@
 results grouped by time-course parameter (the default) or \code{"comparison"} to present
 results grouped by treatment comparison.}
 
-\item{...}{further arguments passed to or from other methods}
+\item{...}{arguments to be sent to \code{knitr::kable()}}
 }
 \description{
 Prints basic results from a node-split to the console

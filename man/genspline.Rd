@@ -9,13 +9,18 @@
 jagstonetwork <- function(mbnma) {
 checkmate::assertClass(mbnma, "mbnma")}
 \usage{
-genspline(x, spline = "rcs", knots = 3, degree = 2, max.time = max(x))
+genspline(x, spline = "bs", knots = 1, degree = 1, max.time = max(x))
 }
 \arguments{
 \item{x}{A numeric vector indicating all time points available in the dataset}
 
-\item{spline}{Indicates the type of spline function. Can be either natural cubic spline (\code{"ns"}), restricted cubic
-spline (\code{"rcs"}) or B-spline (\code{"bs"}).}
+\item{spline}{Indicates the type of spline function. Can be either a piecewise linear spline (\code{"ls"}),
+natural cubic spline (\code{"ns"}), restricted cubic spline (\code{"rcs"}) or B-spline (\code{"bs"}).}
+
+\item{knots}{The number/location of knots. If a single integer is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the quantiles of the knots as
+a proportion of the maximum study follow-up in the dataset. For example, if the maximum follow-up time in the dataset
+is 10 months, \code{knots=c(0.1,0.5)} would indicate knots should be fitted at 1 and 5 months follow-up.}
 
 \item{degree}{a positive integer giving the degree of the polynomial from which the spline function is composed
 (e.g. \code{degree=3} represents a cubic spline).}
