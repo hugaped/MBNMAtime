@@ -1016,16 +1016,15 @@ tuser <- function(fun, pool.1="rel", method.1="common",
 
   # Define parameters
   for (i in 1:nparam) {
-    if (get(paste0("pool."),i)=="rel") {
+    if (get(paste0("pool.",i))=="rel") {
       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
-    } else if (get(paste0("pool."),i)=="abs" & get(paste0("method."),i)=="random") {
+    } else if (get(paste0("pool.",i))=="abs" & get(paste0("method."),i)=="random") {
       jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
     }
   }
 
   # Generate output values
-  paramnames <- paste0("beta.", 1:degree)
-  nparam <- degree
+  paramnames <- paste0("beta.", 1:nparam)
 
   apool <- vector()
   amethod <- vector()
