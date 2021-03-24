@@ -10,8 +10,8 @@ write.timecourse(model, fun, intercept, positive.scale)
 \arguments{
 \item{model}{A character string representing the MBNMA model in JAGS code}
 
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{intercept}{A boolean object that indicates whether an intercept is to
 be included in the model. Can be used to imply whether mean responses in
@@ -20,7 +20,7 @@ removes the intercept, \code{alpha}, from the model).}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response
-should be given a prior that constrains it to be positive.}
+should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).}
 
 \item{timecourse}{A character object that contains JAGS code for the
 time-course component of the model}

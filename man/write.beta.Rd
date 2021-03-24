@@ -12,8 +12,8 @@ write.beta(model, timecourse, fun, UME, class.effect)
 
 \item{timecourse}{A character object representing the time-course used in the MBNMA model}
 
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{UME}{Can take either \code{TRUE} or \code{FALSE} (for an unrelated mean effects
 model on all or no time-course parameters respectively) or can be a vector
@@ -21,7 +21,7 @@ of parameter name strings to model as UME. For example: \code{c("beta.1", "beta.
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="common", "beta.3"="random")}.}
+(\code{"common"} or \code{"random"}). For example: \code{list(emax="common", et50="random")}.}
 }
 \value{
 A character vector of JAGS MBNMA model code that includes beta

@@ -9,12 +9,6 @@ write.piecelinear(model, beta.1, beta.3)
 }
 \arguments{
 \item{model}{A character object of JAGS MBNMA model code}
-
-\item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.3}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
 }
 \value{
 A character object of JAGS MBNMA model code that includes piecewise

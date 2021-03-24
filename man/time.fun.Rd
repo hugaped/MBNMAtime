@@ -17,29 +17,16 @@ models}
 )
 }
 \arguments{
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{alpha}{Refers to the baseline mean response and is a character object
 that can take either:
 \itemize{
 \item \code{"study"} to constrain baseline to be equal for all
-arms within a study (\code{i} index is added))
-\item \code{"arm"} to allow baseline to
-vary between arms within a study (\verb{i,k} index is added)).
+arms within a study - reasonable assumption under randomisation
+\item \code{"arm"} to allow baseline to vary between arms within a study
 }}
-
-\item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.2}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.3}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.4}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
 }
 \value{
 A single character string containing JAGS model representing the

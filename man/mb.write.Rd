@@ -17,15 +17,16 @@ mb.write(
 )
 }
 \arguments{
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
-\item{link}{Can take either \code{"identity"}, \code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
-\code{"smd"} (for modelling Standardised Mean Differences).}
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response
-should be given a prior that constrains it to be positive.}
+should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).}
 
 \item{intercept}{A boolean object that indicates whether an intercept is to
 be included in the model. Can be used to imply whether mean responses in
@@ -33,8 +34,8 @@ data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If left
-as \code{NULL} then this implies modelling no correlation between time points. Can also be assigned a numeric value
+prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
+then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
 (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
 
 \item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
@@ -42,19 +43,21 @@ be done by specifying one of the following:
 \itemize{
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
-\item \code{"CS"} - a multivariate normal likelihood with a compound symmetry structure
-\item \code{"AR1"} - a multivariate normal likelihood with an autogregressive AR1 structure
+\item \code{"CS"} - a multivariate normal likelihood with a
+\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{compound symmetry} structure
+\item \code{"AR1"} - a multivariate normal likelihood with an
+\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
 }}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated time-course parameters when relative effects are modelled on more than
-one time-course parameter(see Details LINK). Each element of
+one time-course parameter(see Details). Each element of
 the vector refers to the relative scale of each of the time-course parameters that is
 modelled using relative effects.}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="common", "beta.3"="random")}.}
+(\code{"common"} or \code{"random"}). For example: \code{list(emax="common", et50="random")}.}
 
 \item{UME}{Can take either \code{TRUE} or \code{FALSE} (for an unrelated mean effects
 model on all or no time-course parameters respectively) or can be a vector

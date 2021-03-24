@@ -27,15 +27,15 @@ identifier must also have the same class identifier.
 response at a given observation (required if modelling using Standardised Mean Differences)
 }}
 
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{class}{A boolean object indicating whether or not \code{data.ab} contains
 information on different classes of treatments}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If left
-as \code{NULL} then this implies modelling no correlation between time points. Can also be assigned a numeric value
+prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
+then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
 (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
 
 \item{covstruct}{A character to indicate the covariance structure required for modelling correlation between
@@ -43,8 +43,9 @@ time points (if any), since
 this determines some of the data. Can be either \code{"CS"} (compound symmetry), \code{"AR1"} (autoregressive AR1) or
 \code{"varadj"} (variance-adjustment).}
 
-\item{link}{Can take either \code{"identity"}, \code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
-\code{"smd"} (for modelling Standardised Mean Differences).}
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

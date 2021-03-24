@@ -28,29 +28,30 @@ mb.run(
 )
 }
 \arguments{
-\item{network}{An object of class \code{mb.network}.}
+\item{network}{An object of class \code{"mb.network"}.}
 
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response
-should be given a prior that constrains it to be positive.}
+should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).}
 
 \item{intercept}{A boolean object that indicates whether an intercept is to
 be included in the model. Can be used to imply whether mean responses in
 data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
-\item{link}{Can take either \code{"identity"}, \code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
-\code{"smd"} (for modelling Standardised Mean Differences).}
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If left
-as \code{NULL} then this implies modelling no correlation between time points. Can also be assigned a numeric value
+prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
+then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
 (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
 
 \item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
@@ -58,19 +59,21 @@ be done by specifying one of the following:
 \itemize{
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
-\item \code{"CS"} - a multivariate normal likelihood with a compound symmetry structure
-\item \code{"AR1"} - a multivariate normal likelihood with an autogregressive AR1 structure
+\item \code{"CS"} - a multivariate normal likelihood with a
+\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{compound symmetry} structure
+\item \code{"AR1"} - a multivariate normal likelihood with an
+\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
 }}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated time-course parameters when relative effects are modelled on more than
-one time-course parameter(see Details LINK). Each element of
+one time-course parameter(see Details). Each element of
 the vector refers to the relative scale of each of the time-course parameters that is
 modelled using relative effects.}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="common", "beta.3"="random")}.}
+(\code{"common"} or \code{"random"}). For example: \code{list(emax="common", et50="random")}.}
 
 \item{UME}{Can take either \code{TRUE} or \code{FALSE} (for an unrelated mean effects
 model on all or no time-course parameters respectively) or can be a vector
@@ -82,16 +85,17 @@ of parameter name strings to model as UME. For example: \code{c("beta.1", "beta.
 \item \code{plugin} calculates pD by the plug-in
 method \insertCite{spiegelhalter2002}{MBNMAtime}. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
-\item \code{pd.kl} calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAtime}. This
+\item \code{pd.kl} (the default) calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAtime}. This
 will require running the model for additional iterations but
-will always produce a positive result.
+will always produce a sensical result.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
 of the penalized expected deviance \insertCite{plummer2008}{MBNMAtime}
 }}
 
 \item{parallel}{A boolean value that indicates whether JAGS should be run in
 parallel (\code{TRUE}) or not (\code{FALSE}). If \code{TRUE} then the number of cores to
-use is automatically calculated.}
+use is automatically calculated. Functions that involve updating the model (e.g. \code{devplot()}, \code{fitplot()})
+cannot be used with models implemented in parallel.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
@@ -117,59 +121,12 @@ specified options. Useful when amending priors using replace.prior()}
 that can take either:
 \itemize{
 \item \code{"study"} to constrain baseline to be equal for all
-arms within a study (\code{i} index is added))
-\item \code{"arm"} to allow baseline to
-vary between arms within a study (\verb{i,k} index is added)).
+arms within a study - reasonable assumption under randomisation
+\item \code{"arm"} to allow baseline to vary between arms within a study
 }}
-
-\item{beta.1}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.2}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.3}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{beta.4}{A list with named elements \code{pool} and \code{method} that refers to
-time-course parameter(s) specified within the time-course function (see details).}
-
-\item{arg.params}{Contains a list of arguments sent to \code{mb.run()} by time-course
-specific wrapper functions}
 }
 \value{
-An object of S3 class \verb{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\verb{and can check traceplots using}R2jags::traceplot()\verb{or various functions from the package}mcmcplots`.
-
-Nodes that are automatically monitored (if present in the model) have the
-following interpretation. They will have an additional suffix that relates
-to the name/number of the time-course parameter to which they correspond
-(e.g. \code{d.et50} or \code{d.1}):
-\itemize{
-\item \code{d} The pooled relative effect for a given
-treatment compared to the network reference treatment for a particular
-time-course parameter, reported if \code{pool="rel"}
-\item \code{sd.d} The between-study SD (heterogeneity) for relative effects,
-reported if \code{pool="rel"} and \code{method="random"}
-\item \code{D} The class effect for a given class compared to the
-network reference class for a particular time-course parameter
-\item \code{sd.D} The standard deviation for the pooled relative effects of treatments within a
-given class from a model with a random class effect.
-\item \code{beta} If \code{pool="const"} then only a single node will be present in the
-output, which corresponds to the absolute value of a particular time-course
-parameter across the network, If \code{pool="arm"}
-then for the relevant time-course parameter there will be one node for
-each treatment, which represents the absolute value of the time-course
-parameter for each treatment
-\item \code{sd.beta} Reported if \code{method="random"} and \code{pool} is either \code{"const"} or \code{"arm"}.
-If \code{pool="const"} this represents the between-study SD for the absolute value of a particular
-time-course parameter exchangeable across the network. If \code{pool="arm"}
-this represents the between-study SD for the absolute value of a
-particular time-course parameter exchangeable by treatment
-\item \code{rho} The correlation coefficient for correlation between time-points. Its
-interpretation will differ depending on the covariance structure used
-\item \code{totresdev} The residual deviance of the model
-\item \code{deviance} The deviance of the model
-}
+An object of S3 class \verb{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\verb{and can check traceplots using}R2jags::traceplot()\verb{or various functions from the package}mcmcplots`.#'
 
 If there are errors in the JAGS model code then the object will be a list
 consisting of two elements - an error message from JAGS that can help with
@@ -184,75 +141,62 @@ applying a desired time-course function. Follows the methods of \insertCite{pedd
 }
 \section{Time-course parameters}{
 
-Time-course parameters in the model must be provided as a list with named elements
-\code{pool} and \code{method}.
+Nodes that are automatically monitored (if present in the model) have the
+same name as in the time-course function for named time-course parameters (e.g. \code{emax}).
+However, for named only as \code{beta.1}, \code{beta.2}, \code{beta.3} or \code{beta.4} parameters
+may have an alternative interpretation.
 
-\code{pool} is used to define the approach used for pooling of a given time-course parameter and
-can take any of the following values:
+Details of the interpretation and model specification of different parameters can be shown by using the
+\code{summary()} method on an \code{"mbnma"} object generated by \code{mb.run()}.
+
+\emph{Parameters modelled using relative effects}
 \itemize{
-\item \code{"rel"} indicates that relative effects should be pooled for this time-course parameter.
-This preserves randomisation
-within included studies, are likely to vary less between studies (only due to effect modification),
-and allow for testing of consistency between direct and indirect evidence. Pooling follows the
-general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-\item \code{"arm"} indicates that study arms should be pooled within each treatment in the network
-for this time-course parameter.
-This allows estimation of absolute time-course parameter values, but makes stronger assumptions
-regarding similarity of studies.
-\item \code{"const"} indicates that study arms should be pooled across the whole network for this
-time-course parameter  \emph{independently of assigned treatment}.
-This implies using a single value across the network for this time-course parameter,
-and may therefore be making very strong assumptions of similarity.
+\item If pooling is relative (e.g. \code{pool.1="rel"}) for a given parameter then the named parameter (e.g. \code{emax}) or a
+numbered \code{d} parameter (e.g. \code{d.1}) corresponds to the pooled relative effect for a given
+treatment compared to the network reference treatment for this time-course parameter.
+\item \code{sd.} followed by a named (e.g. \code{emax}) parameter or number (e.g. \code{1}) is the between-study SD (heterogeneity)
+for relative effects, reported if pooling for a time-course parameter is relative (e.g. \code{pool.1="rel"}) \emph{and} the
+method for synthesis is random (e.g. \verb{method.1="random}).
+\item If class effects are modelled, parameters for classes are represented by the upper case name of the time-course
+parameter they correspond to. For example if \code{class.effect=list(emax="random")}, relative class effects will be
+represented by \code{EMAX}. The SD of the class effect (e.g. \code{sd.EMAX}) is the SD of treatments within a class for the
+time-course parameter they correspond to.
 }
 
-\code{method} is used to define the model used for meta-analysis for a given time-course parameter
-and can take any of the following values:
+\emph{Parameters modelled using absolute effects}
 \itemize{
-\item \code{"common"} implies that all studies estimate the same true effect
-(akin to a "fixed effects" meta-analysis)
-\item \code{"random"} implies that all studies estimate a separate true effect, but that each
-of these true effects vary randomly around a true mean effect. This approach allows
-for modelling of between-study heterogeneity.
-\item \code{numeric()} Assigned a numeric value - this can only be used if \code{pool="const"}. It indicates that
-this time-course parameter should not be estimated from the data but should be assigned
-the numeric value determined by the user. This can be useful for fixing specific time-course
-parameters (e.g. Hill parameters in Emax functions or knot location in piecewise functions).
+\item If pooling is absolute (e.g. \code{pool.1="abs"}) for a given parameter then the named parameter (e.g. \code{emax}) or a
+numbered \code{beta} parameter (e.g. \code{beta.1}) corresponds to the estimated absolute effect for this time-course parameter.
+\item For an absolute time-course parameter if the corresponding method is common (e.g. \code{method.1="common"}) the parameter
+corresponds to a single common parameter estimated across all studies and treatments. If the corresponding method is
+random (e.g. \code{method.1="random"}) then parameter is a mean effect around which the study-level absolute effects vary
+with SD corresponding to \code{sd.} followed by the named (e.g. \code{emax}) parameter or number (e.g. \code{1}).
 }
 
-When relative effects are modelled on more than one time-course parameter,
-correlation between the time-course parameters is automatically
-estimated using a vague Wishart prior. This prior can be made slightly more informative
-by specifying the relative scale of variances between the time-course parameters using
-\code{var.scale}.
+\emph{Other model parameters}
+\itemize{
+\item \code{rho} The correlation coefficient for correlation between time-points. Its
+interpretation will differ depending on the covariance structure specified in \code{covar}
+\item \code{totresdev} The residual deviance of the model
+\item \code{deviance} The deviance of the model
+}
 }
 
 \section{Time-course function}{
 
-Several general time-course functions are provided, but a
-user-defined time-course relationship can instead be used.
+Several general time-course functions with up to 4 time-course parameters are provided, but a
+user-defined time-course relationship can instead be used. Details can be found in the respective
+help files for each function.
 
-Built-in time-course functions are:
+Available time-course functions are:
 \itemize{
-\item \code{"linear"}: \code{beta.1} refers to the gradient
-\item \code{"quadratic"}: \code{beta.1} refers to the gradient, \code{beta.2} refers
-to the change in gradient
-\item \code{"exponential"}: \code{beta.1} refers to the rate of gain/decay
-\item \code{"emax"} (emax without a Hill parameter): \code{beta.1} refers to
-Emax parameter, \code{beta.2} refers to ET50 parameter
-\item \code{"emax.hill"} (emax with a Hill parameter): \code{beta.1} refers to Emax parameter, \code{beta.2} refers
-to ET50 parameter, \code{beta.3} refers to Hill parameter
-\item \code{"rcs"} restricted cubic splines with knot number/location defined by \code{knot}.\code{beta.1} refers to the
-first spline coeffficient, \code{beta.2} to the second coefficient, etc.
-\item \code{"fract.poly.first"} (first-order fractional polynomial): \code{beta.1} refers to the slope
-parameter, \code{beta.3} refers to the power parameter
-\item \code{"fract.poly.second"} (second-order fractional polynomial): \code{beta.1} refers to the first slope
-parameter, \code{beta.2} refers to the first power parameter, \code{beta.3} refers to
-the first power parameter, \code{beta.4} refers to the second power parameter
-\item \code{"piecelinear"} piecewise linear: \code{beta.1} refers to the gradient of the
-first linear piece, \code{beta.2} refers to the gradient of the second linear
-piece, \code{beta.3} refers to the knot location (the time at which the two
-pieces are joined)
-\item \code{"user"} (user-defined function: \code{user.fun} must be specified in arguments)
+\item Log-linear: \code{tloglin()}
+\item Polynomial: \code{tpoly()}
+\item Exponential: \code{texp()}
+\item Emax: \code{temax()}
+\item Fractional polynomial: \code{tfpoly()}
+\item Splines (various spline types can be used): \code{tspline()}
+\item User-defined: \code{tuser()}
 }
 }
 
@@ -267,32 +211,41 @@ positive semidefinite covariance matrix.
 # Create mb.network object
 network <- mb.network(osteopain)
 
-# Fit a linear time-course MBNMA with random consistency treatment effects on beta.1 (slope)
-#and equal baselines
-#in study arms
-mb.run(network, fun="linear",
-  alpha="study", beta.1=list(pool="rel", method="random"))
+# Fit a linear time-course MBNMA with:
+# random relative treatment effects on the slope
+mb.run(network, fun=tpoly(degree=1, pool.1="rel", method.1="random"))
 
-# Fit an emax time-course MBNMA with fixed consistency treatment effects on beta.1 (emax),
-#a common parameter estimated across the network for beta.2 (et50) and a Hill parameter of 0.5
-#across the network on data reported as change from baseline
-result <- mb.run(network, fun="emax.hill",
-  beta.1=list(pool="rel", method="common"),
-  beta.2=list(pool="const", method="common"),
-  beta.3=list(pool="const", method=0.5),
-  intercept=TRUE)
+# Fit an emax time-course MBNMA with:
+# fixed relative treatment effects on emax
+# a common parameter estimated independently of treatment
+# a common Hill parameter estimated independently of treatment
+# a prior for the Hill parameter (normal with mean 0 and precision 0.1)
+# data reported as change from baseline
+result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                    pool.et50="abs", method.et50="common",
+                                    pool.hill="abs", method.hill="common"),
+                 priors=list(hill="dnorm(0, 0.1)"),
+                 intercept=TRUE)
+
+
+# Fit a log-linear MBNMA with:
+# random relative treatment effects on the rate
+# an autoregressive AR1 covariance structure
+# modelled as standardised mean differences
+result <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="random"),
+                 covar="AR1", link="smd")
 
 
 ####### Examine MCMC diagnostics (using mcmcplots package) #######
 
 # Density plots
-mcmcplots::denplot(result, c("beta.2", "deviance", "totresdev"))
+mcmcplots::denplot(result, c("rate", "sd.rate", "deviance"))
 
 # Traceplots
 mcmcplots::traplot(result)
 
 # Caterpillar plots
-mcmcplots::caterplot(result, "d.1")
+mcmcplots::caterplot(result, "rate")
 
 
 ########## Output ###########
@@ -307,19 +260,20 @@ plot(result)
 
 ###### Additional model arguments ######
 
-# Fit a linear time-course MBNMA that accounts for correlation between time points
-mb.run(network, fun="linear",
-  beta.1=list(pool="rel", method="common"),
-  rho="estimate", covar="CS")
+# Use gout dataset
+goutnet <- mb.network(goutSUA_CFBcomb)
 
 # Define a user-defined time-course relationship for use in mb.run
-time.fun <- ~exp(beta.1 * time) + (time^beta.2)
+timecourse <- ~ exp(beta.1 * time) + (time^beta.2)
 
-# Run model using Kullback-Liebler divergence to calculate pD
-mb.run(network, fun="user", user.fun=time.fun,
-  beta.1=list(pool="rel", method="random"),
-  beta.2=list(pool="rel", method="common"),
-  pd="pd.kl")
+# Run model with:
+# user-defined time-course function
+# random relative effects on beta.1
+# default common effects on beta.2
+# default relative pooling on beta.1 and beta.2
+# common class effect on beta.2
+mb.run(goutnet, fun=tuser(fun=timecourse, method.1="random"),
+       class.effect=list(beta.1="common"))
 }
 }
 \references{

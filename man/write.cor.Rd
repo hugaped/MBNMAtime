@@ -15,18 +15,18 @@ write.cor(
 \arguments{
 \item{model}{A character object of JAGS MBNMA model code}
 
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated time-course parameters when relative effects are modelled on more than
-one time-course parameter(see Details LINK). Each element of
+one time-course parameter(see Details). Each element of
 the vector refers to the relative scale of each of the time-course parameters that is
 modelled using relative effects.}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="common", "beta.3"="random")}.}
+(\code{"common"} or \code{"random"}). For example: \code{list(emax="common", et50="random")}.}
 }
 \description{
 This uses a Wishart prior as default for modelling the correlation

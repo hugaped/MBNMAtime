@@ -7,7 +7,7 @@
 mb.nodesplit.comparisons(network)
 }
 \arguments{
-\item{network}{An object of class \code{mb.network}.}
+\item{network}{An object of class \code{"mb.network"}.}
 }
 \value{
 A data frame of comparisons that are informed by direct and indirect

@@ -19,8 +19,8 @@ write.likelihood(
 \item{timecourse}{A character object representing the time-course used in the MBNMA model}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If left
-as \code{NULL} then this implies modelling no correlation between time points. Can also be assigned a numeric value
+prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
+then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
 (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
 
 \item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
@@ -28,12 +28,15 @@ be done by specifying one of the following:
 \itemize{
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
-\item \code{"CS"} - a multivariate normal likelihood with a compound symmetry structure
-\item \code{"AR1"} - a multivariate normal likelihood with an autogregressive AR1 structure
+\item \code{"CS"} - a multivariate normal likelihood with a
+\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{compound symmetry} structure
+\item \code{"AR1"} - a multivariate normal likelihood with an
+\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
 }}
 
-\item{link}{Can take either \code{"identity"}, \code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
-\code{"smd"} (for modelling Standardised Mean Differences).}
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 }
 \value{
 A character vector of JAGS MBNMA model code that includes likelihood

@@ -16,7 +16,7 @@ mb.nodesplit(
 \method{plot}{mb.nodesplit}(x, plot.type = NULL, params = NULL, ...)
 }
 \arguments{
-\item{network}{An object of class \code{mb.network}.}
+\item{network}{An object of class \code{"mb.network"}.}
 
 \item{comparisons}{A data frame specifying the comparisons to be split (one row per comparison).
 The frame has two columns indicating each treatment for each comparison: \code{t1} and \code{t2}.}
@@ -24,8 +24,8 @@ The frame has two columns indicating each treatment for each comparison: \code{t
 \item{nodesplit.parameters}{A character vector of named time-course parameters on which to
 node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.}
 
-\item{fun}{is a character specifying a functional form to be assigned to the
-time-course. Options are given in \code{details}.}
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{...}{Arguments to be sent to \code{ggplot2::ggplot()} or \code{ggdist::stat_halfeye()}}
 
