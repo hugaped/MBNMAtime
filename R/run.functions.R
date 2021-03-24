@@ -9,59 +9,50 @@
 #' (MBNMA) that can account for repeated measures over time within studies by
 #' applying a desired time-course function. Follows the methods of \insertCite{pedder2019;textual}{MBNMAtime}.
 #'
-#' @param network An object of class `mb.network`.
+#' @param network An object of class `"mb.network"`.
 #' @param parameters.to.save A character vector containing names of parameters
 #'   to monitor in JAGS
-#' @param fun is a character specifying a functional form to be assigned to the
-#'   time-course. Options are given in `details`.
-#' @param model.file A JAGS model written as a character object that can be used
-#'   to overwrite the JAGS model that is automatically written based on the
-#'   specified options. Useful when amending priors using replace.prior()
+#' @param fun An object of class `"timefun"` generated (see Details) using any of
+#'   `tloglin()`, `tpoly()`, `texp()`, `temax()`, `tfpoly()`, `tspline()` or `tuser()`
 #'
 #' @param alpha Refers to the baseline mean response and is a character object
 #'   that can take either:
 #'   * `"study"` to constrain baseline to be equal for all
-#'   arms within a study (`i` index is added))
-#'   * `"arm"` to allow baseline to
-#'   vary between arms within a study (`i,k` index is added)).
-#' @param beta.1 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param beta.2 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param beta.3 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param beta.4 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
+#'   arms within a study - reasonable assumption under randomisation
+#'   * `"arm"` to allow baseline to vary between arms within a study
 #' @param positive.scale A boolean object that indicates whether all continuous
 #'   mean responses (y) are positive and therefore whether the baseline response
-#'   should be given a prior that constrains it to be positive.
+#'   should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).
 #' @param intercept A boolean object that indicates whether an intercept is to
 #'   be included in the model. Can be used to imply whether mean responses in
 #'   data are change from baseline (`FALSE`) or not (setting it to `FALSE`
 #'   removes the intercept, `alpha`, from the model).
-#' @param link Can take either `"identity"`, `"log"` (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
-#'   `"smd"` (for modelling Standardised Mean Differences).
+#' @param link Can take either `"identity"` (the default),
+#'   `"log"` (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+#'   `"smd"` (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).
 #'
 #' @param rho The correlation coefficient when modelling correlation between time points. The default is a string representing a
-#'   prior distribution indicating that it be estimated from the data (default: `rho="dunif(0,1)"`). If left
-#'   as `NULL` then this implies modelling no correlation between time points. Can also be assigned a numeric value
+#'   prior distribution in JAGS, indicating that it be estimated from the data (default: `rho="dunif(0,1)"`). If set to `NULL`
+#'   then this implies modelling no correlation between time points. `rho` also be assigned a numeric value
 #'   (e.g. `rho=0.7`), which fixes `rho` in the model to this value (e.g. for use in a deterministic sensitivity analysis).
 #' @param covar A character specifying the covariance structure to use for modelling correlation between time-points. This can
 #'   be done by specifying one of the following:
 #'   * `"varadj"` - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 #'   time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
-#'   * `"CS"` - a multivariate normal likelihood with a compound symmetry structure
-#'   * `"AR1"` - a multivariate normal likelihood with an autogregressive AR1 structure
+#'   * `"CS"` - a multivariate normal likelihood with a
+#'     \href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{compound symmetry} structure
+#'   * `"AR1"` - a multivariate normal likelihood with an
+#'     \href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
 #'
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated time-course parameters when relative effects are modelled on more than
-#' one time-course parameter(see Details LINK). Each element of
+#' one time-course parameter(see Details). Each element of
 #' the vector refers to the relative scale of each of the time-course parameters that is
 #' modelled using relative effects.
 #'
 #' @param class.effect A list of named strings that determines which time-course
 #'   parameters to model with a class effect and what that effect should be
-#'   (`"common"` or `"random"`). For example: `list("beta.2"="common", "beta.3"="random")`.
+#'   (`"common"` or `"random"`). For example: `list(emax="common", et50="random")`.
 #' @param UME Can take either `TRUE` or `FALSE` (for an unrelated mean effects
 #'   model on all or no time-course parameters respectively) or can be a vector
 #'   of parameter name strings to model as UME. For example: `c("beta.1", "beta.2")`.
@@ -71,14 +62,15 @@
 #'   * `plugin` calculates pD by the plug-in
 #'   method \insertCite{spiegelhalter2002}{MBNMAtime}. It is faster, but may output negative
 #'   non-sensical values, due to skewed deviances that can arise with non-linear models.
-#'   * `pd.kl` calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAtime}. This
+#'   * `pd.kl` (the default) calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAtime}. This
 #'   will require running the model for additional iterations but
-#'   will always produce a positive result.
+#'   will always produce a sensical result.
 #'   * `popt` calculates pD using an optimism adjustment which allows for calculation
 #'   of the penalized expected deviance \insertCite{plummer2008}{MBNMAtime}
 #' @param parallel A boolean value that indicates whether JAGS should be run in
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
-#'   use is automatically calculated.
+#'   use is automatically calculated. Functions that involve updating the model (e.g. `devplot()`, `fitplot()`)
+#'   cannot be used with models implemented in parallel.
 #'
 #' @param n.iter number of total iterations per chain (including burn in; default: 20000)
 #' @param n.thin thinning rate. Must be a positive integer. Set `n.thin > 1`` to save memory
@@ -90,45 +82,16 @@
 #' beginning. Default is `n.iter/2``, that is, discarding the first half of the
 #' simulations. If `n.burnin` is 0, jags() will run 100 iterations for adaption.
 #'
-#' @param arg.params Contains a list of arguments sent to `mb.run()` by time-course
-#' specific wrapper functions
+#' @param model.file A JAGS model written as a character object that can be used
+#'   to overwrite the JAGS model that is automatically written based on the
+#'   specified options. Useful when amending priors using replace.prior()
 #' @param ... Arguments to be sent to R2jags.
 #'
 #' @inheritParams replace.prior
 #'
 #' @return An object of S3 class `c("mbnma", "rjags")`` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
-#'   traceplots using `R2jags::traceplot()` or various functions from the package `mcmcplots`.
-#'
-#'   Nodes that are automatically monitored (if present in the model) have the
-#'   following interpretation. They will have an additional suffix that relates
-#'   to the name/number of the time-course parameter to which they correspond
-#'   (e.g. `d.et50` or `d.1`):
-#'   * `d` The pooled relative effect for a given
-#'   treatment compared to the network reference treatment for a particular
-#'   time-course parameter, reported if `pool="rel"`
-#'   * `sd.d` The between-study SD (heterogeneity) for relative effects,
-#'   reported if `pool="rel"` and `method="random"`
-#'   * `D` The class effect for a given class compared to the
-#'   network reference class for a particular time-course parameter
-#'   * `sd.D` The standard deviation for the pooled relative effects of treatments within a
-#'   given class from a model with a random class effect.
-#'   * `beta` If `pool="const"` then only a single node will be present in the
-#'   output, which corresponds to the absolute value of a particular time-course
-#'   parameter across the network, If `pool="arm"`
-#'   then for the relevant time-course parameter there will be one node for
-#'   each treatment, which represents the absolute value of the time-course
-#'   parameter for each treatment
-#'   * `sd.beta` Reported if `method="random"` and `pool` is either `"const"` or `"arm"`.
-#'   If `pool="const"` this represents the between-study SD for the absolute value of a particular
-#'   time-course parameter exchangeable across the network. If `pool="arm"`
-#'   this represents the between-study SD for the absolute value of a
-#'   particular time-course parameter exchangeable by treatment
-#'   * `rho` The correlation coefficient for correlation between time-points. Its
-#'   interpretation will differ depending on the covariance structure used
-#'   * `totresdev` The residual deviance of the model
-#'   * `deviance` The deviance of the model
-#'
+#'   traceplots using `R2jags::traceplot()` or various functions from the package `mcmcplots`.#'
 #'
 #'   If there are errors in the JAGS model code then the object will be a list
 #'   consisting of two elements - an error message from JAGS that can help with
@@ -137,69 +100,56 @@
 #'   users identify the source of the error.
 #'
 #' @section Time-course parameters:
-#' Time-course parameters in the model must be provided as a list with named elements
-#' `pool` and `method`.
+#'   Nodes that are automatically monitored (if present in the model) have the
+#'   same name as in the time-course function for named time-course parameters (e.g. `emax`).
+#'   However, for named only as `beta.1`, `beta.2`, `beta.3` or `beta.4` parameters
+#'   may have an alternative interpretation.
 #'
-#' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take any of the following values:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation
-#' within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence. Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"arm"` indicates that study arms should be pooled within each treatment in the network
-#' for this time-course parameter.
-#' This allows estimation of absolute time-course parameter values, but makes stronger assumptions
-#' regarding similarity of studies.
-#' * `"const"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies using a single value across the network for this time-course parameter,
-#' and may therefore be making very strong assumptions of similarity.
+#'   Details of the interpretation and model specification of different parameters can be shown by using the
+#'   `summary()` method on an `"mbnma"` object generated by `mb.run()`.
 #'
-#' `method` is used to define the model used for meta-analysis for a given time-course parameter
-#' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
-#' * `numeric()` Assigned a numeric value - this can only be used if `pool="const"`. It indicates that
-#' this time-course parameter should not be estimated from the data but should be assigned
-#' the numeric value determined by the user. This can be useful for fixing specific time-course
-#' parameters (e.g. Hill parameters in Emax functions or knot location in piecewise functions).
+#'   *Parameters modelled using relative effects*
+#'   * If pooling is relative (e.g. `pool.1="rel"`) for a given parameter then the named parameter (e.g. `emax`) or a
+#'   numbered `d` parameter (e.g. `d.1`) corresponds to the pooled relative effect for a given
+#'   treatment compared to the network reference treatment for this time-course parameter.
+#'   * `sd.` followed by a named (e.g. `emax`) parameter or number (e.g. `1`) is the between-study SD (heterogeneity)
+#'   for relative effects, reported if pooling for a time-course parameter is relative (e.g. `pool.1="rel"`) *and* the
+#'   method for synthesis is random (e.g. `method.1="random`).
+#'   * If class effects are modelled, parameters for classes are represented by the upper case name of the time-course
+#'   parameter they correspond to. For example if `class.effect=list(emax="random")`, relative class effects will be
+#'   represented by `EMAX`. The SD of the class effect (e.g. `sd.EMAX`) is the SD of treatments within a class for the
+#'   time-course parameter they correspond to.
 #'
-#' When relative effects are modelled on more than one time-course parameter,
-#' correlation between the time-course parameters is automatically
-#' estimated using a vague Wishart prior. This prior can be made slightly more informative
-#' by specifying the relative scale of variances between the time-course parameters using
-#' `var.scale`.
+#'   *Parameters modelled using absolute effects*
+#'   * If pooling is absolute (e.g. `pool.1="abs"`) for a given parameter then the named parameter (e.g. `emax`) or a
+#'   numbered `beta` parameter (e.g. `beta.1`) corresponds to the estimated absolute effect for this time-course parameter.
+#'   * For an absolute time-course parameter if the corresponding method is common (e.g. `method.1="common"`) the parameter
+#'   corresponds to a single common parameter estimated across all studies and treatments. If the corresponding method is
+#'   random (e.g. `method.1="random"`) then parameter is a mean effect around which the study-level absolute effects vary
+#'   with SD corresponding to `sd.` followed by the named (e.g. `emax`) parameter or number (e.g. `1`).
+#'
+#'   *Other model parameters*
+#'   * `rho` The correlation coefficient for correlation between time-points. Its
+#'   interpretation will differ depending on the covariance structure specified in `covar`
+#'   * `totresdev` The residual deviance of the model
+#'   * `deviance` The deviance of the model
+#'
 #'
 #'
 #' @section Time-course function:
-#'   Several general time-course functions are provided, but a
-#'   user-defined time-course relationship can instead be used.
+#'   Several general time-course functions with up to 4 time-course parameters are provided, but a
+#'   user-defined time-course relationship can instead be used. Details can be found in the respective
+#'   help files for each function.
 #'
-#'   Built-in time-course functions are:
-#'   * `"linear"`: `beta.1` refers to the gradient
-#'   * `"quadratic"`: `beta.1` refers to the gradient, `beta.2` refers
-#'   to the change in gradient
-#'   * `"exponential"`: `beta.1` refers to the rate of gain/decay
-#'   * `"emax"` (emax without a Hill parameter): `beta.1` refers to
-#'   Emax parameter, `beta.2` refers to ET50 parameter
-#'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
-#'   to ET50 parameter, `beta.3` refers to Hill parameter
-#'   * `"rcs"` restricted cubic splines with knot number/location defined by `knot`.`beta.1` refers to the
-#'   first spline coeffficient, `beta.2` to the second coefficient, etc.
-#'   * `"fract.poly.first"` (first-order fractional polynomial): `beta.1` refers to the slope
-#'   parameter, `beta.3` refers to the power parameter
-#'   * `"fract.poly.second"` (second-order fractional polynomial): `beta.1` refers to the first slope
-#'   parameter, `beta.2` refers to the first power parameter, `beta.3` refers to
-#'   the first power parameter, `beta.4` refers to the second power parameter
-#'   * `"piecelinear"` piecewise linear: `beta.1` refers to the gradient of the
-#'   first linear piece, `beta.2` refers to the gradient of the second linear
-#'   piece, `beta.3` refers to the knot location (the time at which the two
-#'   pieces are joined)
-#'   * `"user"` (user-defined function: `user.fun` must be specified in arguments)
+#'   Available time-course functions are:
+#'   * Log-linear: `tloglin()`
+#'   * Polynomial: `tpoly()`
+#'   * Exponential: `texp()`
+#'   * Emax: `temax()`
+#'   * Fractional polynomial: `tfpoly()`
+#'   * Splines (various spline types can be used): `tspline()`
+#'   * User-defined: `tuser()`
+#'
 #'
 #' @section Correlation between observations:
 #'   When modelling correlation between observations using `rho`, values for `rho` must imply a
@@ -218,32 +168,41 @@
 #' # Create mb.network object
 #' network <- mb.network(osteopain)
 #'
-#' # Fit a linear time-course MBNMA with random consistency treatment effects on beta.1 (slope)
-#' #and equal baselines
-#' #in study arms
-#' mb.run(network, fun="linear",
-#'   alpha="study", beta.1=list(pool="rel", method="random"))
+#' # Fit a linear time-course MBNMA with:
+#' # random relative treatment effects on the slope
+#' mb.run(network, fun=tpoly(degree=1, pool.1="rel", method.1="random"))
 #'
-#' # Fit an emax time-course MBNMA with fixed consistency treatment effects on beta.1 (emax),
-#' #a common parameter estimated across the network for beta.2 (et50) and a Hill parameter of 0.5
-#' #across the network on data reported as change from baseline
-#' result <- mb.run(network, fun="emax.hill",
-#'   beta.1=list(pool="rel", method="common"),
-#'   beta.2=list(pool="const", method="common"),
-#'   beta.3=list(pool="const", method=0.5),
-#'   intercept=TRUE)
+#' # Fit an emax time-course MBNMA with:
+#' # fixed relative treatment effects on emax
+#' # a common parameter estimated independently of treatment
+#' # a common Hill parameter estimated independently of treatment
+#' # a prior for the Hill parameter (normal with mean 0 and precision 0.1)
+#' # data reported as change from baseline
+#' result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+#'                                     pool.et50="abs", method.et50="common",
+#'                                     pool.hill="abs", method.hill="common"),
+#'                  priors=list(hill="dnorm(0, 0.1)"),
+#'                  intercept=TRUE)
+#'
+#'
+#' # Fit a log-linear MBNMA with:
+#' # random relative treatment effects on the rate
+#' # an autoregressive AR1 covariance structure
+#' # modelled as standardised mean differences
+#' result <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="random"),
+#'                  covar="AR1", link="smd")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
 #'
 #' # Density plots
-#' mcmcplots::denplot(result, c("beta.2", "deviance", "totresdev"))
+#' mcmcplots::denplot(result, c("rate", "sd.rate", "deviance"))
 #'
 #' # Traceplots
 #' mcmcplots::traplot(result)
 #'
 #' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.1")
+#' mcmcplots::caterplot(result, "rate")
 #'
 #'
 #' ########## Output ###########
@@ -258,19 +217,20 @@
 #'
 #' ###### Additional model arguments ######
 #'
-#' # Fit a linear time-course MBNMA that accounts for correlation between time points
-#' mb.run(network, fun="linear",
-#'   beta.1=list(pool="rel", method="common"),
-#'   rho="estimate", covar="CS")
+#' # Use gout dataset
+#' goutnet <- mb.network(goutSUA_CFBcomb)
 #'
 #' # Define a user-defined time-course relationship for use in mb.run
-#' time.fun <- ~exp(beta.1 * time) + (time^beta.2)
+#' timecourse <- ~ exp(beta.1 * time) + (time^beta.2)
 #'
-#' # Run model using Kullback-Liebler divergence to calculate pD
-#' mb.run(network, fun="user", user.fun=time.fun,
-#'   beta.1=list(pool="rel", method="random"),
-#'   beta.2=list(pool="rel", method="common"),
-#'   pd="pd.kl")
+#' # Run model with:
+#' # user-defined time-course function
+#' # random relative effects on beta.1
+#' # default common effects on beta.2
+#' # default relative pooling on beta.1 and beta.2
+#' # common class effect on beta.2
+#' mb.run(goutnet, fun=tuser(fun=timecourse, method.1="random"),
+#'        class.effect=list(beta.1="common"))
 #' }
 #' @export
 mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=TRUE,
@@ -556,897 +516,6 @@ gen.parameters.to.save <- function(fun, model) {
   }
 
   return(unique(parameters.to.save))
-}
-
-
-
-
-#' Run MBNMA model with an Emax time-course function and a Hill parameter
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying an Emax time-course function with a Hill
-#' parameter. Follows the methods of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a
-#' wrapper for `mb.run()` that allows for more clearly defined parameter
-#' names.
-#'
-#' @inherit mb.run return references
-#' @param network An object of class `mb.network`.
-#' @param emax A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param et50 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param hill A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param ... Arguments to be sent to `mb.run()`
-#' @inheritParams mb.run
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#'   \insertAllCited
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit model with random consistency effects on emax, fixed consistency effects on et50, and a
-#' #Hill parameter of 0.2 across the network
-#' result <- mb.emax.hill(network,
-#'   emax=list(pool="rel", method="random"),
-#'   et50=list(pool="rel", method="common"),
-#'   hill=list(pool="const", method=0.2))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, c("d.et50[2]", "deviance", "sd.emax", "totresdev"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.emax")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Create mb.network object containing class variable
-#' network <- mb.network(goutSUA_CFB)
-#'
-#' # Fit model with class effects and correlation between time points and user-defined priors
-#' mb.emax.hill(network, alpha="study",
-#'   parameters.to.save=c("d.emax", "d.et50", "beta.hill"),
-#'   emax=list(pool="rel", method="random"),
-#'   et50=list(pool="rel", method="common"),
-#'   hill=list(pool="const", method="common"),
-#'   rho="dunif(0,1)", covar="AR1",
-#'   priors=list("rho"="dunif(0,1)"),
-#'   class.effect=list("et50"="random")
-#'   )
-#' }
-#' @export
-mb.emax.hill <- function(network, fun="emax.hill",
-                            emax=list(pool="rel", method="common"),
-                            et50=list(pool="rel", method="common"),
-                            hill=list(pool="const", method="common"),
-                            alpha="study",
-                            positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                            var.scale=NULL,
-                            class.effect=list(), UME=FALSE,
-                            pd="pv", parallel=TRUE,
-                            priors=NULL,
-                            ...)
-{
-  arg.params <- list(
-    wrap.params=c("emax", "et50", "hill"),
-    run.params=c("beta.1", "beta.2", "beta.3")
-  )
-
-  # index <- which(sapply(list(emax, et50, hill), is.character))
-  #
-  # wrap.params=c("emax", "et50", "hill")
-  # run.params=c("beta.1", "beta.2", "beta.3")
-
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-  result <- mb.run(network=network, fun="emax.hill", user.fun=NULL, model.file=NULL,
-                      beta.1=emax, beta.2=et50, beta.3=hill, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-                      )
-
-  return(result)
-}
-
-
-
-#' Run MBNMA model with an Emax time-course function (without a Hill parameter)
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying an Emax time-course function. Follows the methods
-#' of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a wrapper for `mb.run()` that
-#' allows for more clearly defined parameter names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#'   \insertAllCited
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' result <- mb.emax(network,
-#'   emax=list(pool="rel", method="random"),
-#'   et50=list(pool="const", method="common"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms=c("deviance", "sd.emax", "d.emax[2]", "d.emax[3]"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.emax")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with correlation between time points
-#' mb.emax(network, alpha="study",
-#'   parameters.to.save=c("d.emax", "d.et50", "rho"),
-#'   emax=list(pool="rel", method="random"),
-#'   et50=list(pool="rel", method="common"),
-#'   rho="dunif(0,1)", covar="CS"
-#'   )
-#' }
-#' @export
-mb.emax <- function(network,
-                       emax=list(pool="rel", method="common"),
-                       et50=list(pool="rel", method="common"),
-                       alpha="study",
-                       positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                       var.scale=NULL,
-                       class.effect=list(), UME=FALSE,
-                       pd="pv", parallel=TRUE,
-                       priors=NULL,
-                       ...)
-{
-
-  #index <- which(sapply(list(emax, et50), is.character))
-
-  # wrap.params=c("emax", "et50")
-  # run.params=c("beta.1", "beta.2")
-
-  arg.params <- list(
-    wrap.params=c("emax", "et50"),
-    run.params=c("beta.1", "beta.2")
-  )
-
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-
-  result <- mb.run(network=network, fun="emax", user.fun=NULL, model.file=NULL,
-                      beta.1=emax, beta.2=et50, beta.3=NULL, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-  )
-
-  return(result)
-}
-
-
-
-
-#' Run MBNMA model with an exponential time-course function
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying an exponential time-course function. Follows the
-#' methods of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a wrapper for `mb.run()`
-#' that allows for more clearly defined parameter names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#' @param lambda A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#'   \insertAllCited
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit exponential time-course with random consistency treatment effects
-#' result <- mb.exponential(network,
-#'   lambda=list(pool="rel", method="random"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms=c("sd.lambda", "d.lambda[2]"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.lambda")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with unrelated mean effects that saves residual deviance contributions
-#' mb.exponential(network, alpha="study",
-#'   parameters.to.save=c("d.lambda", "resdev"),
-#'   lambda=list(pool="rel", method="random"),
-#'   UME=TRUE
-#'   )
-#' }
-#' @export
-mb.exponential <- function(network, lambda=list(pool="rel", method="common"),
-                              alpha="study",
-                              positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                              var.scale=NULL,
-                              class.effect=list(), UME=FALSE,
-                              pd="pv", parallel=TRUE,
-                              priors=NULL,
-                              ...)
-{
-  arg.params <- list(
-    wrap.params=c("lambda"),
-    run.params=c("beta.1")
-  )
-
-  # index <- which(sapply(list(lambda), is.character))
-  #
-  # wrap.params=c("lambda")
-  # run.params=c("beta.1")
-  #
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-
-  result <- mb.run(network=network, fun="exponential", user.fun=NULL, model.file=NULL,
-                      beta.1=lambda, beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-  )
-
-  return(result)
-}
-
-
-
-
-
-#' Run MBNMA model with a first-order fractional polynomial time-course function
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying a first-order fractional polynomial time-course
-#' function \insertCite{jansen2015}{MBNMAtime}. Follows the methods of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a
-#' wrapper for `mb.run()` that allows for more clearly defined parameter
-#' names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#' @param slope list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param power A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' For this parameter, `pool` must be set to `"arm"` or `"const"` (i.e. it cannot
-#' be `"rel"`).
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#' \insertAllCited{}
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit 1st order fractional polynomial time-course with random consistency treatment effects
-#' #on the slope and a common parameter for power estimated across the network
-#' result <- mb.fract.first(network,
-#'   slope=list(pool="rel", method="random"),
-#'   power=list(pool="const", method="common"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms=c("sd.slope", "deviance", "beta.power"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.slope")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with unrelated mean effects and correlation between time points
-#' mb.fract.first(network, alpha="study",
-#'   slope=list(pool="rel", method="random"),
-#'   power=list(pool="const", method="common"),
-#'   rho=0.5, covar="AR1",
-#'   UME="slope"
-#'   )
-#' }
-#' @export
-mb.fract.first <- function(network, slope=list(pool="rel", method="common"),
-                              power=list(pool="const", method="common"),
-                              alpha="study",
-                              positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                              var.scale=NULL,
-                              class.effect=list(), UME=FALSE,
-                              pd="pv", parallel=TRUE,
-                              priors=NULL,
-                              ...)
-{
-  # Checks- TO ADD
-
-  arg.params <- list(
-    wrap.params=c("slope", "power"),
-    run.params=c("beta.1", "beta.3")
-  )
-
-  # index <- which(sapply(list(slope, power), is.character))
-  #
-  # wrap.params=c("slope", "power")
-  # run.params=c("beta.1", "beta.3")
-  #
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-  result <- mb.run(network=network, fun="fract.poly.first", user.fun=NULL, model.file=NULL,
-                      beta.1=slope, beta.2=NULL, beta.3=power, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-  )
-
-  return(result)
-}
-
-
-
-
-
-
-
-
-
-#' Run MBNMA model with a second-order fractional polynomial time-course
-#' function
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying a second-order fractional polynomial time-course
-#' function \insertCite{jansen2015}{MBNMAtime}. Follows the methods of
-#' \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a wrapper for
-#' `mb.run()` that allows for more clearly defined parameter names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#' @param slope.1 A list with named elements `pool` and `method` that refers to
-#'   time-course parameter(s) specified within the time-course function (see
-#'   details).
-#' @param slope.2 A list with named elements `pool` and `method` that refers to
-#'   time-course parameter(s) specified within the time-course function (see
-#'   details).
-#' @param power.1 A list with named elements `pool` and `method` that refers to
-#'   time-course parameter(s) specified within the time-course function (see
-#'   details). For this parameter, `pool` must be set to `"arm"` or `"const"`
-#'   (i.e. it cannot be `"rel"`).
-#' @param power.2 A list with named elements `pool` and `method` that refers to
-#'   time-course parameter(s) specified within the time-course function (see
-#'   details). For this parameter, `pool` must be set to `"arm"` or `"const"`
-#'   (i.e. it cannot be `"rel"`).
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references \insertAllCited{}
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit 2nd order fractional polynomial time-course with fixed consistency treatment effects on
-#' #beta.1 and beta.2, absolute time-course parameters estimated by treatment for power.1,
-#' #and an exchangeable parameter for power estimated across the network
-#' result <- mb.fract.second(network,
-#'   slope.1=list(pool="rel", method="common"),
-#'   slope.2=list(pool="rel", method="common"),
-#'   power.1=list(pool="arm", method="common"),
-#'   power.2=list(pool="arm", method="random"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms=c("beta.power.1", "beta.power.2"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "beta.power.1")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with correlation between time points
-#' mb.fract.second(network, alpha="study",
-#'   slope.1=list(pool="rel", method="common"),
-#'   slope.2=list(pool="rel", method="common"),
-#'   power.1=list(pool="const", method="common"),
-#'   power.2=list(pool="const", method="common"),
-#'   rho=0.5, covar="AR1"
-#'   )
-#' }
-#' @export
-mb.fract.second <- function(network, slope.1=list(pool="rel", method="common"),
-                               slope.2=list(pool="rel", method="common"),
-                               power.1=list(pool="const", method="common"),
-                               power.2=list(pool="const", method="common"),
-                               alpha="study",
-                               positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                               var.scale=NULL,
-                               class.effect=list(), UME=FALSE,
-                               pd="pv", parallel=TRUE,
-                               priors=NULL,
-                               ...)
-{
-  # Checks - TO ADD
-
-  arg.params <- list(
-    wrap.params=c("slope.1", "slope.2", "power.1", "power.2"),
-    run.params=c("beta.1", "beta.2", "beta.3", "beta.4")
-  )
-
-  # index <- which(sapply(list(power.1, power.2), is.character))
-  #
-  # wrap.params=c("power.1", "power.2")
-  # run.params=c("beta.3", "beta.4")
-  #
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-
-  result <- mb.run(network=network, fun="fract.poly.second", user.fun=NULL, model.file=NULL,
-                      beta.1=slope.1, beta.2=slope.2, beta.3=power.1, beta.4=power.2,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-  )
-
-  return(result)
-}
-
-
-
-
-
-#' Run MBNMA model with a linear time-course function
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying a linear time-course function. Follows the methods
-#' of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a wrapper for `mb.run()` that
-#' allows for more clearly defined parameter names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#' @param slope A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#'   \insertAllCited
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit linear time-course with random consistency treatment effects on the slope
-#' result <- mb.linear(network,
-#'   slope=list(pool="rel", method="random"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms="sd.slope")
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.slope")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with unrelated mean effects and correlation between time points
-#' mb.linear(network, alpha="study",
-#'   slope=list(pool="rel", method="random"),
-#'   rho=0.5, covar="AR1",
-#'   UME=TRUE
-#'   )
-#' }
-#' @export
-mb.linear <- function(network, slope=list(pool="rel", method="common"),
-                         alpha="study",
-                         positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                         var.scale=NULL,
-                         class.effect=list(), UME=FALSE,
-                         pd="pv", parallel=TRUE,
-                         priors=NULL,
-                         ...)
-{
-
-  arg.params <- list(
-    wrap.params=c("slope"),
-    run.params=c("beta.1")
-  )
-
-  # index <- which(sapply(list(slope), is.character))
-  #
-  # wrap.params=c("slope")
-  # run.params=c("beta.1")
-  #
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-  result <- mb.run(network=network, fun="linear", user.fun=NULL, model.file=NULL,
-                      beta.1=slope, beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-  )
-
-  return(result)
-}
-
-
-
-
-
-
-#' Run MBNMA model with a quadratic time-course function
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying a quadratic time-course function. Follows the
-#' methods of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a wrapper for `mb.run()`
-#' that allows for more clearly defined parameter names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#' @param beta.1 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param beta.2 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#'   \insertAllCited
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit quadratic time-course with fixed consistency treatment effects on beta.1 and
-#' #random consistency treatment effects on beta.2
-#' result <- mb.quadratic(network,
-#'   beta.1=list(pool="rel", method="common"),
-#'   beta.2=list(pool="rel", method="random"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms=c("sd.2", "d.1[3]", "d.2[3]", "totresdev"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "d.2")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with unrelated mean effects on beta.1
-#' mb.quadratic(network, alpha="study",
-#'   beta.1=list(pool="rel", method="random"),
-#'   beta.2=list(pool="const", method="common"),
-#'   UME="beta.1"
-#'   )
-#' }
-#' @export
-mb.quadratic <- function(network, beta.1=list(pool="rel", method="common"),
-                            beta.2=list(pool="rel", method="common"),
-                            alpha="study",
-                            positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                            var.scale=NULL,
-                            class.effect=list(), UME=FALSE,
-                            pd="pv", parallel=TRUE,
-                            priors=NULL,
-                            ...)
-{
-  result <- mb.run(network=network, fun="quadratic", user.fun=NULL, model.file=NULL,
-                      beta.1=beta.1, beta.2=beta.2, beta.3=NULL, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      ...
-  )
-
-  return(result)
-}
-
-
-
-
-
-
-#' Run MBNMA model with a piecewise linear time-course function
-#'
-#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
-#' time-course function. This function accounts for repeated measures over time
-#' within studies by applying a piecewise linear time-course function. Follows
-#' the methods of \insertCite{pedder2019;textual}{MBNMAtime}. This function acts as a wrapper for
-#' `mb.run()` that allows for more clearly defined parameter names.
-#'
-#' @inheritParams mb.emax.hill
-#' @inherit mb.run return references
-#' @param slope.1 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param slope.2 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param knot A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' For this parameter, `pool` must be set to `"arm"` or `"const"` (i.e. it cannot
-#' be `"rel"`).
-#'
-#' @inheritSection mb.run Time-course parameters
-#' @inheritSection mb.run Correlation between observations
-#'
-#' @references
-#'   \insertAllCited
-#'
-#' @examples
-#' \donttest{
-#' # Create mb.network object
-#' network <- mb.network(osteopain)
-#'
-#' # Fit piecewise linear time-course with random consistency treatment effects on slope.1,
-#' #absolute time-course parameters by treatment on slope.2, and an exchangeable parameter
-#' #for knot estimated across the network
-#' result <- mb.piecelinear(network,
-#'   slope.1=list(pool="rel", method="random"),
-#'   slope.2=list(pool="arm", method="common"),
-#'   knot=list(pool="const", method="common"))
-#'
-#'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
-#'
-#' # Density plots
-#' mcmcplots::denplot(result, parms=c("beta.slope.2", "beta.knot"))
-#'
-#' # Traceplots
-#' mcmcplots::traplot(result)
-#'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "beta.slope.2")
-#'
-#'
-#' ########## Output ###########
-#'
-#' # Print R2jags output and summary
-#' print(result)
-#' summary(result)
-#'
-#' # Plot forest plot of results
-#' plot(result)
-#'
-#'
-#' ###### Additional model arguments ######
-#'
-#' # Fit model with unrelated mean effects on beta.1 and correlation between time points
-#' mb.piecelinear(network, alpha="study",
-#'   slope.1=list(pool="rel", method="random"),
-#'   slope.2=list(pool="rel", method="common"),
-#'   knot=list(pool="const", method=1),
-#'   rho="dunif(0,1)", covar="CS",
-#'   UME="slope.1"
-#'   )
-#' }
-#' @export
-mb.piecelinear <- function(network, slope.1=list(pool="rel", method="common"), slope.2=list(pool="rel", method="common"), knot=list(pool="const", method="common"),
-                              alpha="study",
-                              positive.scale=FALSE, intercept=TRUE, rho=NULL, covar=NULL,
-                              var.scale=NULL,
-                              class.effect=list(), UME=FALSE,
-                              pd="pv", parallel=TRUE,
-                              priors=NULL,
-                              ...)
-{
-
-  arg.params <- list(
-    wrap.params=c("slope.1", "slope.2", "knot"),
-    run.params=c("beta.1", "beta.2", "beta.3")
-  )
-
-  # index <- which(sapply(list(slope.1, slope.2, knot), is.character))
-  #
-  # wrap.params=c("slope.1", "slope.2", "knot")
-  # run.params=c("beta.1", "beta.2", "beta.3")
-  #
-  # arg.params <- list(
-  #   wrap.params=wrap.params[index],
-  #   run.params=run.params[index]
-  # )
-
-  result <- mb.run(network=network, fun="piecelinear", user.fun=NULL, model.file=NULL,
-                      beta.1=slope.1, beta.2=slope.2, beta.3=knot, beta.4=NULL,
-                      alpha=alpha,
-                      positive.scale=positive.scale, intercept=intercept, rho=rho, covar=covar,
-                      var.scale=var.scale,
-                      class.effect=class.effect, UME=UME,
-                      pd=pd, parallel=parallel,
-                      priors=priors,
-                      arg.params=arg.params, ...
-  )
-
-  return(result)
 }
 
 
