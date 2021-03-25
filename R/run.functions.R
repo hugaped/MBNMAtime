@@ -32,9 +32,9 @@
 #'   `"smd"` (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).
 #'
 #' @param rho The correlation coefficient when modelling correlation between time points. The default is a string representing a
-#'   prior distribution in JAGS, indicating that it be estimated from the data (default: `rho="dunif(0,1)"`). If set to `NULL`
-#'   then this implies modelling no correlation between time points. `rho` also be assigned a numeric value
-#'   (e.g. `rho=0.7`), which fixes `rho` in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+#'   prior distribution in JAGS, indicating that it be estimated from the data (e.g. `rho="dunif(0,1)"`). `rho` also be assigned a
+#'   numeric value (e.g. `rho=0.7`), which fixes `rho` in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+#'   If set to `rho=0` (the default) then this implies modelling no correlation between time points.
 #' @param covar A character specifying the covariance structure to use for modelling correlation between time-points. This can
 #'   be done by specifying one of the following:
 #'   * `"varadj"` - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
@@ -232,15 +232,16 @@
 #' mb.run(goutnet, fun=tuser(fun=timecourse, method.1="random"),
 #'        class.effect=list(beta.1="common"))
 #'
-#' # Fit a log-linear MBNMA with no correlation between time-points
+#' # Fit a log-linear MBNMA
+#' # with variance adjustment for correlation between time-points
 #' result <- mb.run(network, fun=tloglin(),
-#'                  rho=0)
+#'                  rho="dunif(0,1)", covar="varadj")
 #' }
 #' @export
 mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=TRUE,
                       link="identity",
                       parameters.to.save=NULL,
-                      rho="dunif(0,1)", covar="varadj",
+                      rho=0, covar="varadj",
                       var.scale=NULL,
                       class.effect=list(), UME=FALSE,
                       pd="pd.kl", parallel=FALSE,
@@ -325,9 +326,9 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   if (!("error" %in% names(result))) {
     if (pd == "pd.kl" | pd == "popt") {
       if (pd=="pd.kl") {
-        temp <- rjags::dic.samples(result$model, n.iter=2000, type="pD")
+        temp <- rjags::dic.samples(result$model, n.iter=n.iter/10, type="pD")
       } else if (pd=="popt") {
-        temp <- rjags::dic.samples(result$model, n.iter=2000, type="popt")
+        temp <- rjags::dic.samples(result$model, n.iter=n.iter/10, type="popt")
       }
       result$BUGSoutput$pD <- sum(temp$penalty)
 

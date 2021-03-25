@@ -41,7 +41,7 @@
 #' cat(model)
 #' @export
 mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
-                     rho=NULL, covar=NULL, var.scale=NULL,
+                     rho=0, covar="varadj", var.scale=NULL,
                      class.effect=list(), UME=FALSE) {
 
 
@@ -51,7 +51,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   checkmate::assertChoice(link, choices=c("identity", "log", "smd"), add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertChoice(covar, choices=c("varadj", "CS", "AR1"), null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(covar, choices=c("varadj", "CS", "AR1"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -113,7 +113,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 #'   will return an object that indicates whether the arguments imply modelling a
 #'   correlation between time points if it passes.
 #'
-write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
+write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=0, covar=NULL,
                         var.scale=NULL, link="identity",
                         class.effect=list(), UME=c()) {
 
@@ -126,10 +126,6 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=N
   checkmate::reportAssertions(argcheck)
 
 
-  if (!is.null(rho) & is.null(covar)) {
-    stop("Arguments for `rho` imply modelling correlation betwen time points, which requires a covariance structure to be specified using `covar`.")
-  }
-
   if (!is.null(rho)) {
     # if (is.character(rho) & rho!="estimate") {
     #   stop("`rho` must either be assigned the value `estimate` to be estimated from the data or must be assigned a single numeric value")
@@ -137,10 +133,13 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=N
     if (is.numeric(rho) & (rho < -1 | rho > 1)) {
       stop("Numeric values for `rho` cannot be outside the bounds of c(-1, 1)")
     }
-    if (is.null(covar)) {
-      stop("`rho` has been assigned a value. Must therefore also define `covar`")
-    }
+    # if (is.null(covar)) {
+    #   stop("`rho` has been assigned a value. Must therefore also define `covar`")
+    # }
+  } else {
+    stop("`rho` cannot be NULL. To model no correlation between time-points set rho=0")
   }
+
 
   if (!all(names(class.effect) %in% fun$params)) {
     stop(paste0("The following list element names in `class.effect` do not match time-course parameter names in 'fun':\n",
@@ -298,7 +297,7 @@ model.insert <- function(a, pos, x){
 #' @return A character vector of JAGS MBNMA model code that includes likelihood
 #'   components of the model
 #'
-write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="identity") {
+write.likelihood <- function(model, timecourse, rho=0, covar="varadj", link="identity") {
 
   # Likelihoods
   norm.like <- c(
@@ -398,8 +397,10 @@ write.likelihood <- function(model, timecourse, rho=NULL, covar=NULL, link="iden
       model <- subset(model, !grepl("dev", model))
     }
     if (covar %in% c("varadj")) {
-      norm.like[1] <- gsub("(prec\\[i\\,k\\,m\\])", "\\1*rho", norm.like[1])
+      norm.like[1] <- gsub("(prec\\[i\\,k\\,m\\])", "\\1*(1-rho2)", norm.like[1])
       model <- model.insert(model, pos=which(names(model)=="fup"), x=norm.like)
+
+      model <- model.insert(model, pos=which(names(model)=="start"), x="rho2 <- rho*rho")
     }
 
   }
@@ -989,7 +990,7 @@ add.funparams <- function(model, fun) {
 #'
 #' @export
 write.ref.synth <- function(fun=tpoly(degree = 1), link="identity",
-                            positive.scale=TRUE, intercept=TRUE, rho=NULL, covar=NULL,
+                            positive.scale=TRUE, intercept=TRUE, rho=0, covar="varadj",
                             mu.synth="random",
                             priors=NULL) {
 
