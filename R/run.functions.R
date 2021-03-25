@@ -112,12 +112,12 @@
 #'   * If pooling is relative (e.g. `pool.1="rel"`) for a given parameter then the named parameter (e.g. `emax`) or a
 #'   numbered `d` parameter (e.g. `d.1`) corresponds to the pooled relative effect for a given
 #'   treatment compared to the network reference treatment for this time-course parameter.
-#'   * `sd.` followed by a named (e.g. `emax`) parameter or number (e.g. `1`) is the between-study SD (heterogeneity)
+#'   * `sd.` followed by a named (e.g. `emax`, `beta.1`) is the between-study SD (heterogeneity)
 #'   for relative effects, reported if pooling for a time-course parameter is relative (e.g. `pool.1="rel"`) *and* the
 #'   method for synthesis is random (e.g. `method.1="random`).
 #'   * If class effects are modelled, parameters for classes are represented by the upper case name of the time-course
 #'   parameter they correspond to. For example if `class.effect=list(emax="random")`, relative class effects will be
-#'   represented by `EMAX`. The SD of the class effect (e.g. `sd.EMAX`) is the SD of treatments within a class for the
+#'   represented by `EMAX`. The SD of the class effect (e.g. `sd.EMAX`, `sd.BETA.1`) is the SD of treatments within a class for the
 #'   time-course parameter they correspond to.
 #'
 #'   *Parameters modelled using absolute effects*
@@ -126,7 +126,7 @@
 #'   * For an absolute time-course parameter if the corresponding method is common (e.g. `method.1="common"`) the parameter
 #'   corresponds to a single common parameter estimated across all studies and treatments. If the corresponding method is
 #'   random (e.g. `method.1="random"`) then parameter is a mean effect around which the study-level absolute effects vary
-#'   with SD corresponding to `sd.` followed by the named (e.g. `emax`) parameter or number (e.g. `1`).
+#'   with SD corresponding to `sd.` followed by the named parameter (e.g. `sd.emax`, `sd.beta.1`) .
 #'
 #'   *Other model parameters*
 #'   * `rho` The correlation coefficient for correlation between time-points. Its
@@ -231,6 +231,10 @@
 #' # common class effect on beta.2
 #' mb.run(goutnet, fun=tuser(fun=timecourse, method.1="random"),
 #'        class.effect=list(beta.1="common"))
+#'
+#' # Fit a log-linear MBNMA with no correlation between time-points
+#' result <- mb.run(network, fun=tloglin(),
+#'                  rho=0)
 #' }
 #' @export
 mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=TRUE,
