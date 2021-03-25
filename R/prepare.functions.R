@@ -1147,7 +1147,24 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #'   a proportion of the maximum study follow-up in the dataset. For example, if the maximum follow-up time in the dataset
 #'   is 10 months, `knots=c(0.1,0.5)` would indicate knots should be fitted at 1 and 5 months follow-up.
 #'
+#' @return A spline basis matrix with number of rows equal to `length(x)` and the number of columns equal to the number
+#' of coefficients in the spline.
 #'
+#' @examples
+#' x <- 0:100
+#'
+#' genspline(x)
+#'
+#' # Generate a quadratic B-spline with 1 equally spaced internal knot
+#' genspline(x, spline="bs", knots=2, degree=2)
+#'
+#' # Generate a restricted cubic spline with 3 knots at selected quantiles
+#' genspline(x, spline="rcs", knots=c(0.1, 0.5, 0.7))
+#'
+#' # Generate a piecewise linear spline with 3 equally spaced knots
+#' genspline(x, spline="ls", knots=3)
+#'
+#' @export
 genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
 
   # Run Checks
