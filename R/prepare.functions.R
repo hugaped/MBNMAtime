@@ -210,7 +210,7 @@ add_index <- function(data.ab, reference=1) {
   if (length(check$duplicate) != sum(check$duplicate)) {
     duplicateID <- unique(as.character(check$studyID[check$duplicate>1]))
     duplicateID <- paste(duplicateID, collapse="\n")
-    msg <- paste0("Studies have multiple arms of the same treatment - multiple arms of the same treatment must be pooled into a single arm for studyID:\n",
+    msg <- paste0("Studies have multiple arms of the same treatment. MBNMAtime cannot differentiate between\nstudy arms at different follow-up measurements if arms have the same treatment code.\nMultiple arms of the same treatment must be pooled into a single arm for studyID:\n",
                   duplicateID)
     stop(msg)
   }
@@ -364,7 +364,9 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   # Prepare list variables at each level
   datavars.ikm <- c("y", "se")
   datavars.ik <- c("treat")
-  if (link=="smd") {datavars.ik <- append(datavars.ik, "n")}
+  if (link=="smd") {
+    datavars.ik <- append(datavars.ik, "n")
+  }
   datavars.im <- c("time")
   if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
     datavars.im <- append(datavars.im, "spline")
