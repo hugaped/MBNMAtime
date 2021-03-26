@@ -84,10 +84,9 @@
 #' network <- mb.network(osteopain)
 #'
 #' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="const", method="common"),
-#'   positive.scale=TRUE)
+#' emax <- mb.run(network,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="common"))
 #'
 #' # Predict responses using a stochastic baseline (E0) and a distribution for the
 #' #network reference treatment
@@ -266,7 +265,10 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
     } else if (any(class(ref.resp) %in% c("data.frame", "tibble"))) {
 
       ### PLACEBO SYNTHESIS MODEL ###
-      synth.result <- ref.synth(data.ab=ref.resp, mbnma=object, synth=synth)
+      args <- list(...)
+      synth.result <- do.call(ref.synth, args=c(list(data.ab=ref.resp, mbnma=object, synth=synth), args))
+
+      # synth.result <- ref.synth(data.ab=ref.resp, mbnma=object, synth=synth, ...)
 
       synth.result <- synth.result$BUGSoutput$median
       synth.result[["deviance"]] <- NULL
@@ -644,16 +646,15 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 #' network <- mb.network(osteopain)
 #'
 #' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="rel", method="random"),
-#'   positive.scale=TRUE)
+#' emax <- mb.run(network,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="random"))
 #'
 #' # Generate a set of studies with which to estimate the network reference treatment response
 #' paindata.ref <- osteopain[osteopain$treatname=="Placebo_0",]
 #'
 #' # Estimate the network reference treatment effect using fixed effects meta-analysis
-#' ref.synth(data.ab=paindata.ref, mbnma=emax, synth="fixed")
+#' ref.synth(data.ab=paindata.ref, mbnma=emax, synth="common")
 #'
 #' # Estimate the network reference treatment effect using random effects meta-analysis
 #' ref.synth(data.ab=paindata.ref, mbnma=emax, synth="random")
