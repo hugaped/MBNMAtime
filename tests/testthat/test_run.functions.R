@@ -50,7 +50,7 @@ testthat::test_that("emax time-course function works correctly", {
 
 
   result <- mb.run(copdnet, fun=temax(),
-                   rho="estimate", covar="CS", n.iter=500, n.burnin=200, pd="pv")
+                   rho="dunif(0,1)", covar="CS", n.iter=500, n.burnin=200, pd="pv")
   test <- all(c("emax", "et50", "rho") %in% result$parameters.to.save)
   testthat::expect_equal(test, TRUE)
 
@@ -87,6 +87,12 @@ testthat::test_that("emax time-course function works correctly", {
   testthat::expect_equal(all(c("hill") %in% mb.result$parameters.to.save), TRUE)
 
 })
+
+
+
+
+
+
 
 
 testthat::test_that("polynomial time-course function works correctly", {
