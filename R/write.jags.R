@@ -576,13 +576,8 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
       if (is.character(fun$amethod[i])) {
         # Insert prior for absolute effect
-        if (fun$name=="piecelinear") {
-          model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=paste0("beta.", i, " ~ dunif(0,maxtime)"))
-        } else {
-          model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=paste0("beta.", i, " ~ dnorm(0,0.0001)"))
-        }
+        model <- model.insert(model, pos=which(names(model)=="end"),
+                              x=paste0("beta.", i, " ~ dnorm(0,0.0001)"))
 
 
         if (fun$amethod[i]=="random") {
@@ -1056,6 +1051,24 @@ write.beta.ref <- function(model, timecourse, fun,
                               x=paste0("sd.mu.", i, " ~ dnorm(0,0.0025) T(0,)"))
         model <- model.insert(model, pos=which(names(model)=="end"),
                               x=paste0("tau.mu.", i, " <- pow(sd.mu.", i, ", -2)"))
+      }
+    } else if ("abs" %in% fun$apool[i]) {
+      # Insert prior for absolute effect
+      model <- model.insert(model, pos=which(names(model)=="end"),
+                            x=paste0("beta.", i, " ~ dnorm(0,0.0001)"))
+
+
+      if (fun$amethod[i]=="random") {
+        # Insert distribution for random absolute effect
+        model <- model.insert(model, pos=which(names(model)=="arm"),
+                              x=paste0("i.beta.", i, "[i,k] ~ dnorm(beta.", i, ", prec.beta.", i, ")"))
+
+        # Insert sd prior for random absolute effect
+        model <- model.insert(model, pos=which(names(model)=="end"),
+                              x=c(paste0("prec.beta.", i, " <- pow(sd.beta.", i, ", -2)"),
+                                  paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)")
+                              )
+        )
       }
     }
   }
