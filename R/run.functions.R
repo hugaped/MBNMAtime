@@ -292,8 +292,8 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 
   # Add nodes to monitor to calculate plugin pd
   if (pd=="plugin") {
-    if (!is.null(rho)) {
-      stop("pD cannot be calculated via the plugin method if modelling correlation between time points - is.null(rho)==FALSE")
+    if (covar!="varadj") {
+      stop("pD cannot be calculated via the plugin method if modelling a multivariate normal likelihood - covar!='varadj'")
     }
 
     pluginvars <- c("theta", "resdev")
