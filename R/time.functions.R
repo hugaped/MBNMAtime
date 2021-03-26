@@ -1020,7 +1020,7 @@ tuser <- function(fun, pool.1="rel", method.1="common",
   for (i in 1:nparam) {
     if (get(paste0("pool.",i))=="rel") {
       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
-    } else if (get(paste0("pool.",i))=="abs" & get(paste0("method."),i)=="random") {
+    } else if (get(paste0("pool.",i))=="abs" & get(paste0("method.",i))=="random") {
       jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
     }
   }
