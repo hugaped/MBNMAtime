@@ -514,9 +514,9 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 
       # If class effects are present
       if (params[i] %in% names(mbnma$model.arg$class.effect)) {
+        findd <- ifelse(grepl("beta", params[i]), paste0("^D\\.", i), paste0("^", toupper(params[i])))
 
         if (level=="treatments") {
-          findd <- ifelse(grepl("beta", params[i]), paste0("^D\\.", i), paste0("^", toupper(params[i])))
 
           tperc <- table(mbnma$network$classkey$class)
           mat <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
@@ -534,7 +534,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
             # Store matrix of beta values generated from random distribution determined by model parameters
             mcmcarray <- array(dim=c(n, ncol(mcmcmat), 2))
             mcmcarray[,,1] <- mcmcmat
-            mcmcarray[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", toupper(params[i])), colnames(sims.matrix))]
+            mcmcarray[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", substr(findd, 2, nchar(findd))), colnames(sims.matrix))]
             mcmcarray[,2:ncol(mcmcmat),] <-
               apply(mcmcarray[,2:ncol(mcmcmat),], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
@@ -546,7 +546,6 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
         }
 
         if (level=="classes") {
-          findd <- ifelse(grepl("beta", params[i]), paste0("^D\\.", i), paste0("^", toupper(params[i])))
 
           if ("common" %in% mbnma$model.arg$class.effect[[params[i]]]) {
             # Store MCMC results for relevant parameters
@@ -556,7 +555,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
             len <- sum(grepl(findd, colnames(sims.matrix)))
             mat <- array(dim=c(n, len, 2))
             mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
-            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", toupper(params[i])), colnames(sims.matrix))]
+            mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", substr(findd, 2, nchar(findd))), colnames(sims.matrix))]
             mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
             model.vals[[paste0("d.", i)]] <- mat[,,1]
@@ -579,7 +578,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
           len <- sum(grepl(findd, colnames(sims.matrix)))
           mat <- array(dim=c(n, len, 2))
           mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
-          mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))]
+          mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", toupper(params[i])), colnames(sims.matrix))]
           mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
           model.vals[[paste0("d.", i)]] <- mat[,,1]
