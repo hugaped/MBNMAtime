@@ -299,7 +299,9 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
   }
 
   if (ehill) {
-    if (pool.hill=="abs" & method.et50=="random") {
+    if (pool.hill=="rel") {
+      jags <- gsub("beta\\.3", "beta.3[i,k]", jags)
+    } else if (pool.hill=="abs" & method.hill=="random") {
       jags <- gsub("beta\\.3", "i.beta.3[i,k]", jags)
     }
   }
