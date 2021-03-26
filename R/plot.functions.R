@@ -841,7 +841,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
     subset(ndistinct>1)
 
   # Create forest plot
-  g <- ggplot(plotdata, aes(x = value, y = Var2)) +
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(x = value, y = Var2)) +
     ggdist::stat_halfeye() +
     ggplot2::facet_wrap(~timeparam, scales="free")
 
@@ -1147,7 +1147,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Check if !is.null(rho) (in which case cannot monitor deviances)
   # if (!is.null(mbnma$model.arg$rho)) {
-  if (!is.null(mbnma$model.arg$rho)) {
+  if (mbnma$model.arg$covar %in% c("AR1", "CS")) {
     stop("Correlation between time points has been modelled using a multivariate likelihood.
          Deviances cannot be calculated for this model.")
   }
