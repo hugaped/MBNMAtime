@@ -666,25 +666,21 @@ summary.mb.predict <- function(object, ...) {
 #' @export
 print.mb.rank <- function(x, ...) {
 
-  output <- "========================================\nTreatment rankings\n========================================"
+  output <- crayon::bold("\n========================================\nTreatment rankings\n========================================")
+  cat(output, "\n\n")
 
   for (param in seq_along(names(x))) {
-    head <- paste("####", names(x)[param], "####", sep=" ")
+
+    head <- crayon::bold(crayon::underline(paste0(names(x)[param], " ranking")))
 
     sumtab <- x[[names(x)[param]]]$summary
-    data.str <- "Treatment\tMedian rank (95% CrI)"
+    sumtab <- sumtab[,c(1,2,6,4,8)]
 
-    for (i in 1:nrow(sumtab)) {
-      row <- paste(sumtab[i,1], neatCrI(sumtab[i, c(4,6,8)]), sep="\t\t")
-      data.str <- paste(data.str, row, sep="\n")
-    }
+    cat(head)
 
-    sect <- paste(head, data.str, sep="\n")
-
-    output <- paste(output, sect, sep="\n\n")
-
+    print(knitr::kable(sumtab, col.names = c("Treatment", "Mean", "Median", "2.5%", "97.5%"), digits = 2))
+    cat("\n\n")
   }
-  return(cat(output, ...))
 }
 
 
