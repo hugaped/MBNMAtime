@@ -68,14 +68,14 @@ rank <- function (x, ...) {
 #' network <- mb.network(alog_pcfb)
 #'
 #' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="rel", method="random"))
+#' emax <- mb.run(network,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'             pool.et50="rel", method.et50="random"))
 #'
 #' # Rank treatments by time-course parameter from the model with lower scores being better
-#' rank(emax, params=c("d.emax", "d.et50"), lower_better=TRUE)
+#' rank(emax, params=c("emax", "et50"), lower_better=TRUE)
 #'
-#' # Rank treatments by AUC
+#' # Rank treatments 1-3 by AUC
 #' rank(emax, params="auc", treats=c(1:3), lower_better=TRUE,
 #'   int.range=c(0,20))
 #' }
@@ -167,7 +167,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
     } else if (params[i]=="auc") {
       rank.result[["auc"]] <- rankauc(x, lower_better=lower_better,
                                        treats=treats, level=level,
-                                       int.range=int.range, n.iter=n.iter, ...)
+                                       int.range=int.range, n.iter=n.iter)#, ...)
     } else {
       stop(paste0(params[i],
                   " is not a valid paramter saved from the MBNMA model"))
@@ -220,6 +220,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
 
   # Create vector of parameters in expanded time-course function
   timecourse <- model.vals[["timecourse"]]
+  timecourse <- gsub("i\\.", "", timecourse)
   time.params <- model.vals[["time.params"]]
 
   # Switch spline in timecourse and generate spline matrix
@@ -228,7 +229,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
 
     seg <- seq(from=int.range[1], to=int.range[2], length.out=subdivisions)
     spline <- genspline(seg,
-                        spline=mbnma$model.arg$fun$name, knots=mbnma$model.arg$fun$knots)
+                        spline=mbnma$model.arg$fun$name, knots=mbnma$model.arg$fun$knots, degree=mbnma$model.arg$fun$degree)
   }
 
   # Replace mu with 0
@@ -260,8 +261,9 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
         # Replace parameter in time-course with value for given treat and MCMC
         #timecourse <- gsub(names(params)[i], params[[i]][mcmc], timecourse)
         temp <- model.vals[[time.params[i]]]
+        if (is.vector(temp)) {temp <- matrix(temp, ncol=1)}
         time.mcmc <- gsub(time.params[i],
-                          ifelse(is.matrix(temp), temp[mcmc,treatsnum[treat]], temp[mcmc]),
+                          ifelse(is.matrix(temp) & ncol(temp)>1, temp[mcmc,treatsnum[treat]], temp[mcmc]),
                           time.mcmc)
       }
 
@@ -377,6 +379,8 @@ calcprob <- function(rank.mat, treats=NULL) {
 #' @param lower_better Indicates whether negative responses are better (`lower_better=TRUE`) or
 #'
 #' @inheritParams rank.mbnma
+#'
+#' @export
 rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE,
                                         treats=names(x$summary)) {
 
