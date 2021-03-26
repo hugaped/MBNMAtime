@@ -34,7 +34,7 @@ rank <- function (x, ...) {
 #' @param int.range A numeric vector with two elements that indicates the range
 #'   over which to calculate AUC. Takes the form c(lower bound, upper bound). If left
 #'   as `NULL` (the default) then the range will be between zero and the maximum follow-up
-#'   time in the data for the treatments specified in `treats`.
+#'   time in the dataset.
 #' @param level A character object to indicate whether the parameters to be ranked are at the treatment
 #'   level (`"treatment"`) or class level (`"class"`).
 #' @param n.iter The number of iterations for which to calculate AUC (if `"auc"` is included in `params`).
@@ -132,11 +132,13 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
   if ("auc" %in% params) {
 
     if (is.null(int.range)) {
-      treatsnum <- which(x$network$treatments %in% treats)
+
+      treatsnum <- which(x$network[[level]] %in% treats)
       fupdata <- x$model.arg$jagsdata
 
-      int.max <- max(fupdata$time[which(apply(fupdata$treat, MARGIN=1, FUN=function(x) any(x %in% treatsnum))),],
+      int.max <- max(fupdata$time,
                      na.rm = TRUE)
+
       int.range <- c(0, int.max)
     }
   }
@@ -167,7 +169,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
     } else if (params[i]=="auc") {
       rank.result[["auc"]] <- rankauc(x, lower_better=lower_better,
                                        treats=treats, level=level,
-                                       int.range=int.range, n.iter=n.iter)#, ...)
+                                       int.range=int.range, n.iter=n.iter, ...)
     } else {
       stop(paste0(params[i],
                   " is not a valid paramter saved from the MBNMA model"))
