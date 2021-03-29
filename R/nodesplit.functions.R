@@ -328,22 +328,21 @@ mb.nodesplit.comparisons <- function(network)
 #' @examples
 #' \donttest{
 #' # Create mb.network object
-#' network <- mb.network(osteopain)
+#' painnet <- mb.network(osteopain)
 #'
 #' # Identify comparisons informed by direct and indirect evidence
-#' splits <- mb.nodesplit.comparisons(network)
+#' splits <- mb.nodesplit.comparisons(painnet)
 #'
-#' # Fit an exponential time-course MBNMA
-#' result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="all",
-#'   fun="exponential",
-#'   beta.1=list(pool="rel", method="common"))
+#' # Fit a log-linear time-course MBNMA (takes a while to run)
+#' result <- mb.nodesplit(painnet, comparisons=splits, nodesplit.parameters="all",
+#'   fun=tloglin(pool.rate="rel", method.rate="common"),
+#'   rho="dunif(0,1)", covar="varadj"
+#'   )
 #'
 #' # Fit an emax time-course MBNMA with a node-split on emax parameters only
-#' result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="beta.1",
-#'   fun="emax",
-#'   beta.1=list(pool="rel", method="random"),
-#'   beta.2=list(pool="rel", method="common")
-#'   )
+#' result <- mb.nodesplit(painnet, comparisons=splits, nodesplit.parameters="emax",
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="rel", method.et50="common"))
 #'
 #' # Inspect results
 #' print(result)
@@ -621,57 +620,6 @@ drop.comp <- function(df, comp) {
   return(df)
 }
 
-
-
-
-# FUNCTION IS DEPRACATED!!!
-# check.path <- function(data, dropdata,
-#                        comparisons=c(comparisons[i,1], comparisons[i,2]),
-#                        path, graph) {
-#   # Identify if there is still an indirect pathway not involving direct evidence studies
-#
-#   # Comparisons is a numeric vector of length 2 indicating the treatment comparison on which to be split
-#
-#   # Then check for new paths...
-#
-#   path.fail <- TRUE
-#
-#   while(as.logical(is.finite(igraph::shortest.paths(
-#     graph, comparisons[1], comparisons[2]))) == TRUE) {
-#
-#     # Delete current path from graph to check for next shortest path
-#     for (edge in 1:length(path)-1) {
-#       del.index <- which(apply(igraph::as_edgelist(graph), 1,
-#                                function(x) identical(x, as.character(path[edge:(edge+1)]))))
-#       graph <- igraph::as.undirected(igraph::delete_edges(graph, del.index))
-#     }
-#
-#     # Check if the indirect path is not included in any study that has been dropped (for node-splitting)
-#     # And if so break from the function with a pass
-#     if (any(apply(dropdata,1, function(x) all(path %in% x[["design"]]))) == FALSE) {
-#       path.fail <- FALSE
-#       break()
-#       #} else {
-#       #  path <- as.numeric(igraph::shortest_paths(igraph::as.undirected(graph),
-#       #                                            comparisons[1], comparisons[2],
-#       #                                            weights=NA
-#       #  )[["vpath"]][[1]])
-#       #}
-#
-#       # ADD THIS SECTION IF GETTING WARNINGS FROM IGRAPH
-#     } else if (as.logical(is.finite(igraph::shortest.paths(
-#       graph, comparisons[1], comparisons[2], weights=NULL))) == TRUE){
-#
-#       path <- as.numeric(igraph::shortest_paths(igraph::as.undirected(graph),
-#                                                 comparisons[1], comparisons[2],
-#                                                 weights=NA
-#       )[["vpath"]][[1]])
-#     } else {break()}
-#
-#   }
-#
-#   return(list("path.fail"=path.fail, "path"=path))
-# }
 
 
 
