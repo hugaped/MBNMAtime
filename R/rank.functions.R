@@ -227,7 +227,7 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
 
   # Switch spline in timecourse and generate spline matrix
   if (any(c("rcs", "ns", "bs", "ls") %in% mbnma$model.arg$fun$name)) {
-    timecourse <- gsub("\\[m\\,", "[,", timecourse)
+    timecourse <- gsub("\\[i,m\\,", "[,", timecourse)
 
     seg <- seq(from=int.range[1], to=int.range[2], length.out=subdivisions)
     spline <- genspline(seg,
