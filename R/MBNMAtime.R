@@ -34,7 +34,7 @@
 #' @examples
 #' \donttest{
 #' # Generate an "mb.network" object that stores data in the correct format
-#' network <- mb.network(alog_pcfb)
+#' network <- mb.network(osteopain)
 #'
 #' # Generate a network plot
 #' plot(network, label.distance=3)
@@ -56,14 +56,14 @@
 #' plot(result)
 #'
 #' # Predict responses
-#' pred <- predict(result, time=c(0:10), baseline=10,
-#'   ref.data=list("emax"="rnorm(nsims,-2,0.5)"))
+#' pred <- predict(result, time=c(0:10), E0=8,
+#'   ref.resp=subset(osteopain, treatment=="Pl_0"))
 #'
 #' # Plot predicted response
 #' plot(pred, disp.obs=TRUE)
 #'
 #' # Rank by Area Under the time-course Curve
-#' ranks <- rank(result, param="auc", direction=-1, n.iter=500)
+#' ranks <- rank(result, param="auc", lower_better=TRUE, n.iter=500)
 #'
 #' # Plot histogram of rankings
 #' plot(ranks)
