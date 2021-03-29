@@ -49,13 +49,13 @@
 #'   These are given as a list, in which each named element corresponds to a time-course
 #'   parameter modelled in `mbnma`. Their values can be either of the following:
 #'   * `numeric()` A numeric value representing the deterministic value of the time-course parameter in
-#'   question in individuals given the reference treatment. `0` is used as the default, though this may produce
-#'   nonsensical predictions as this typically assumes no effect of time on the reference treatment.
+#'   question in individuals given the reference treatment. `0` is used as the default, which assumes no
+#'   effect of time on the reference treatment.
 #'   * `formula()` A formula representing a stochastic distribution for the value of the time-course
 #'   parameter in question. This is specified as a random number generator (RNG) given as a formula,
 #'   and can take any RNG distribution for which a function exists in R. For example: `~rnorm(n, -3, 0.2)`.
 
-#' @param synth A character object that can take the value `"fixed"` or `"random"` that
+#' @param synth A character object that can take the value `"common"` or `"random"` that
 #'   specifies the the type of pooling to use for synthesis of `ref.resp`. Using `"random"` rather
 #'   than `"common"` for `synth` will result in wider 95\\% CrI for predictions.
 #' @param ... Arguments to be sent to R2jags for synthesis of the network
@@ -113,7 +113,7 @@
 #' }
 #'
 #' @export
-predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, na.rm=TRUE)),
+predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$time, na.rm=TRUE), length.out=20),
                           E0=0,
                           treats = NULL, level="treatment",
                           ref.resp=NULL, synth="common",
@@ -133,10 +133,13 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   # Check if level="class" that class effect model was fitted
   if (level=="class") {
     if (length(object[["model.arg"]][["class.effect"]])==0) {
-      stop(crayon::red("`level` has been set to `class` but no class effect models were not used"))
+      stop(crayon::red(crayon::bold("`level` has been set to `class` but no class effect models were not used")))
     }
-    if (!all.equal(object$model.arg$fun$params, names(object$model.arg$class.effect))) {
-      stop(crayon::red("To predict level='class' all relative effects must be modelled with class effects"))
+    if (!isTRUE(all.equal(
+      object$model.arg$fun$params[object$model.arg$fun$apool %in% "rel"],
+      names(object$model.arg$class.effect)
+    ))) {
+      stop(crayon::red(crayon::bold("To predict level='class' all relative effects must be modelled with class effects")))
     }
     level <- "classes"
   } else if (level=="treatment") {
@@ -145,7 +148,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
   # Check whether UME has been used and stop if so
   if (object[["model.arg"]][["UME"]]!=FALSE) {
-    stop(crayon::red("UME model cannot be used for prediction"))
+    stop(crayon::red(crayon::bold("UME model cannot be used for prediction")))
   }
 
   # Check ref.resp has been specified correctly if any mbnma parameters are "rel"
@@ -163,9 +166,9 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
       # If ref.resp is given ensure it is of the correct class
       if (!(any(class(ref.resp) %in% c("data.frame", "tibble", "list")))) {
-        stop(crayon::red("`object` includes time-course parameters modelled using relative effects (pool=`rel`).
+        stop(crayon::red(crayon::bold("`object` includes time-course parameters modelled using relative effects (pool=`rel`).
       The reference treatment response for them must be provided to `ref.resp` as a list,
-      or estimated from a dataset of reference treatment studies by providing a data frame."))
+      or estimated from a dataset of reference treatment studies by providing a data frame.")))
       }
     }
   } else if (!"rel" %in% object$model.arg$fun$apool) {
@@ -174,41 +177,41 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
 
   # If treats have not been specified then select all of them
+  NT <- ifelse(level=="treatments", object$model.arg$jagsdata$NT, object$model.arg$jagsdata$Nclass)
   if (is.null(treats)) {
     #treats <- c(1:object[["model"]][["data"]]()[["NT"]])
     treats <- object$network[[level]]
-    NT <- ifelse(level=="treatments", object$model.arg$jagsdata$NT, object$model.arg$jagsdata$Nclass)
   } else if (!is.null(treats)) {
     if (is.numeric(treats)) {
       if (any(treats > NT | any(treats<1))) {
-        stop(crayon::red("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `object`"))
+        stop(crayon::red(crayon::bold("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `object`")))
       }
       treats <- object$network[[level]][treats]
     }
     if (is.character(treats)) {
       if (!all(treats %in% object$network[[level]])) {
-        stop(crayon::red("`treats` includes treatments/classes not included in `object`"))
+        stop(crayon::red(crayon::bold("`treats` includes treatments/classes not included in `object`")))
       }
     }
   }
 
   #### Check E0 ####
   if (is.null(E0)) {
-    stop(crayon::red("E0 has not been defined"))
+    stop(crayon::red(crayon::bold("E0 has not been defined")))
   }
 
   # Check that distribution for E0 is of the correct format
   if (class(E0)=="formula") {
     E0 <- as.character(E0)[2]
     if (grepl("r[A-z]+\\(n,.+\\)", E0)==FALSE) {
-      stop(crayon::red("Stochastic distribution for E0 must be expressed as a string in the form of a supported R distribution (e.g. '~rnorm(n, 5,2)')"))
+      stop(crayon::red(crayon::bold("Stochastic distribution for E0 must be expressed as a string in the form of a supported R distribution (e.g. '~rnorm(n, 5,2)')")))
     }
   } else if (is.numeric(E0)) {
     if (length(E0)!=1) {
-      stop(crayon::red("`E0` can only take a single numeric value if not expressed as a stochastic distribution"))
+      stop(crayon::red(crayon::bold("`E0` can only take a single numeric value if not expressed as a stochastic distribution")))
     }
   } else {
-    stop(crayon::red("'E0' has been incorrectly specified"))
+    stop(crayon::red(crayon::bold("'E0' has been incorrectly specified")))
   }
 
 
@@ -292,6 +295,7 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 
   # Convert predicted times to splines
   if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun)) {
+    timecourse <- gsub("\\[i\\,", "[", timecourse)
     spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots)
   }
 
@@ -307,6 +311,10 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
   for (i in seq_along(beta.params)) {
     if (!is.matrix(model.vals[[beta.params[i]]])) {
       assign(beta.params[i], model.vals[[beta.params[i]]])
+    } else if (is.matrix(model.vals[[beta.params[i]]])) {
+      if (ncol(model.vals[[beta.params[i]]])==1) {
+        assign(beta.params[i], model.vals[[beta.params[i]]])
+      }
     }
   }
 
@@ -454,6 +462,12 @@ predict.mbnma <- function(object, times=c(0:max(object$model.arg$jagsdata$time, 
 #'   @noRd
 get.model.vals <- function(mbnma, E0=0, level="treatments") {
 
+  # Check that correct parameters are monitored
+  genparams <- gen.parameters.to.save(fun=mbnma$model.arg$fun, model=mbnma$model.arg$jagscode)
+  if (!all(genparams %in% mbnma$parameters.to.save)) {
+    stop(crayon::red(crayon::bold("Parameters required for estimation of time-course relationship not monitored in model.\nMust include time-course parameters in 'parameters.to.save'")))
+  }
+
   model.vals <- list()
   time.params <- "alpha"
   #mu.prior <- vector()
@@ -470,7 +484,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 
   # Remove indices from timecourse for betas and time
   timecourse <- gsub("\\[i\\,[a-z]\\]", "", mbnma$model.arg$fun$jags) # Remove [i,k] from betas and [i,m] from time
-  timecourse <- gsub("i\\,", "", timecourse) # Remove i from time and spline
+  timecourse <- gsub("i\\.", "", timecourse) # Remove i from time and spline
   timecourse <- paste0("alpha + ", timecourse)
 
 
@@ -502,7 +516,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
         time.params <- append(time.params, fun$bname[i])
 
       } else if (is.numeric(fun$amethod[i])) {
-        stop(paste0("Fixed time-course parameter for", params[i], " currently not supported for prediction"))
+        stop(paste0("Common time-course parameter for", params[i], " currently not supported for prediction"))
       }
     } else if ("rel" %in% fun$apool[i]) {
 
@@ -580,7 +594,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
           len <- sum(grepl(findd, colnames(sims.matrix)))
           mat <- array(dim=c(n, len, 2))
           mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
-          mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", toupper(params[i])), colnames(sims.matrix))]
+          mat[,,2] <- sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))]
           mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
           model.vals[[paste0("d.", i)]] <- mat[,,1]
@@ -653,7 +667,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 #' # Generate a set of studies with which to estimate the network reference treatment response
 #' paindata.ref <- osteopain[osteopain$treatname=="Placebo_0",]
 #'
-#' # Estimate the network reference treatment effect using fixed effects meta-analysis
+#' # Estimate the network reference treatment effect using common effects meta-analysis
 #' ref.synth(data.ab=paindata.ref, mbnma=emax, synth="common")
 #'
 #' # Estimate the network reference treatment effect using random effects meta-analysis
