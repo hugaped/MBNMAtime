@@ -20,7 +20,7 @@
 #' # Write a linear time-course MBNMA:
 #' # random treatment effects on beta.1
 #' # equal baselines in study arms
-#' model <- mb.write(fun=tpoly(degree=1, pool.1="rel", method.1="random"), alpha="study")
+#' model <- mb.write(fun=tpoly(degree=1, pool.1="rel", method.1="random"))
 #' cat(model) # Concatenates model representations making code more easily readable
 #'
 #' # Write an emax time-course MBNMA with:

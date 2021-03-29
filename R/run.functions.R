@@ -15,11 +15,6 @@
 #' @param fun An object of class `"timefun"` generated (see Details) using any of
 #'   `tloglin()`, `tpoly()`, `texp()`, `temax()`, `tfpoly()`, `tspline()` or `tuser()`
 #'
-#' @param alpha Refers to the baseline mean response and is a character object
-#'   that can take either:
-#'   * `"study"` to constrain baseline to be equal for all
-#'   arms within a study - reasonable assumption under randomisation
-#'   * `"arm"` to allow baseline to vary between arms within a study
 #' @param positive.scale A boolean object that indicates whether all continuous
 #'   mean responses (y) are positive and therefore whether the baseline response
 #'   should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).
