@@ -400,6 +400,10 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     UME <- nodesplit.parameters
   }
 
+  if (length(nodesplit.parameters)==0) {
+    stop("Parameter specified for nodesplit.parameters must be a parameter modelled using relative effects specified\nwithin the model")
+  }
+
 
   ########### CHECKS OF DATASET FOR VALIDITY OF NODE-SPLITTING (possibly use Val Valkenhoef automation) ############
   message("running checks")
