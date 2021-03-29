@@ -17,27 +17,31 @@
 #' @inherit mb.run details
 #'
 #' @examples
-#' # Write a linear time-course MBNMA with random treatment effects on beta.1 and equal baselines
-#' #in study arms
-#' model <- mb.write(fun="linear", alpha="study", beta.1="rel.random")
+#' # Write a linear time-course MBNMA:
+#' # random treatment effects on beta.1
+#' # equal baselines in study arms
+#' model <- mb.write(fun=tpoly(degree=1, pool.1="rel", method.1="random"), alpha="study")
 #' cat(model) # Concatenates model representations making code more easily readable
 #'
-#' # Write an emax time-course MBNMA with a Hill parameter of 0.5 with no intercept
-#' model <- mb.write(fun="emax.hill",
-#'   beta.1="rel.common", beta.2="const.common", beta.3=0.5,
+#' # Write an emax time-course MBNMA with:
+#' # a Hill parameter
+#' # no intercept
+#' model <- mb.write(fun=temax(pool.1="rel", method.1="common",
+#'     pool.2="abs", method.2="common", pool.3="abs", method.3="common),
 #'   intercept=TRUE)
 #' cat(model) # Concatenates model representations making code more easily readable
 #'
-#' # Write an exponential time-course MBNMA that accounts for correlation between time points
-#' model <- mb.write(fun="exponential",
-#'   alpha="arm", beta.1="rel.common",
+#' # Write a log-linear time-course MBNMA with:
+#' # AR1 correlation between time points
+#' model <- mb.write(fun=tloglin(),
 #'   rho="dunif(0,1)", covar="AR1")
 #' cat(model)
 #'
 #' # Define a user-defined time-course relationship for the MBNMA JAGS model
-#' time.fun <- ~ alpha + (exp(beta.1 * time) / (beta.2 * time))
-#' model <- mb.write(fun="user", user.fun=time.fun,
-#'   beta.1="rel.random", beta.2="rel.common")
+#' userfun <- ~ (exp(beta.1 * time) / (beta.2 * time))
+#' model <- mb.write(fun=tuser(fun=userfun,
+#'     pool.1="rel", method.1="random",
+#'     pool.2="rel", method.2="common"))
 #' cat(model)
 #' @export
 mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
@@ -726,33 +730,7 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
 
     }
 
-  } #else if (cor.prior=="rho") {
-  #   addcode <- jagsrho
-  #
-  #   # Insert multivariate normal dist (rho)
-  #   model <- model.insert(model, pos=which(names(model)=="trt.prior"),
-  #                         x=paste0("mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])"))
-  #
-  #   if (cor=="estimate") {
-  #     addcode <- append(addcode, c(
-  #       "for (m in 1:(mat.size-1)) {",
-  #       "rho[m] ~ dunif(0,1)",
-  #       "}"
-  #     ))
-  #
-  #   } else if (is.numeric(cor)) {
-  #     # Add values for rho assigned by user
-  #     if (length(cor)!=(mat.size)-1) {
-  #       stop("Length of numeric vector assigned to `cor` must equal the size of the correlation matrix - 1")
-  #     }
-  #     for (m in seq_along(cor)) {
-  #       # Insert fixed value for rho
-  #       model <- model.insert(model, pos=which(names(model)=="start"),
-  #                             x=paste0("rho[", m, "] <- ", cor[m]))
-  #     }
-  #   }
-  # }
-
+  }
   addcode <- gsub("mat\\.size", mat.size, addcode)
 
   # Insert covariance matrix
@@ -825,8 +803,8 @@ remove.loops <- function(model) {
 #' # Create mb.network object using an MBNMAdose dataset
 #'
 #' # Run linear MBNMA
-#' result <- mb.linear(network,
-#'   slope=list(pool="rel", method="random"))
+#' result <- mb.run(network, fun=tpoly(degree=1,
+#'     pool.1="rel", method.1="random"))
 #'
 #' # Obtain model prior values
 #' get.prior(result$model.arg$jagscode)
@@ -978,9 +956,12 @@ add.funparams <- function(model, fun) {
 #'   parameter components of the model
 #'
 #' @examples
-#' # Write an exponential time-course MBNMA synthesis model
-#' model <- write.ref.synth(fun="exponential",
-#'   alpha="arm", beta.1="rel.common", mu.synth="fixed")
+#' # Write a log-linear time-course MBNMA synthesis model with:
+#' # Common effects for synthesis of mu
+#' # Modelled as ratio of means
+#' model <- write.ref.synth(fun=tloglin(pool.1="rel", method.1="common"),
+#'   mu.synth="common", link="log")
+#'
 #' cat(model) # Concatenates model representations making code more easily readable
 #'
 #' @export
