@@ -267,17 +267,17 @@ radian.rescale <- function(x, start=0, direction=1) {
 #' @examples
 #' \donttest{
 #' # Create an mb.network object from a dataset
-#' network <- mb.network(alog_pcfb)
+#' copdnet <- mb.network(copd)
 #'
-#' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="rel", method="common"))
+#' # Run an MBNMA model with a log-linear time-course
+#' loglin <- mb.run(copdnet,
+#'   fun=tloglin(pool.rate="rel", method.rate="common"),
+#'   rho="dunif(0,1)", covar="varadj")
 #'
 #' # Predict responses using the original dataset to estimate the network reference
 #' #treatment response
-#' df.ref <- alog_pcfb[alog_pcfb$treatment=="placebo",]
-#' predict <- predict(emax, times=c(0:15), baseline=10, ref.estimate=df.ref)
+#' df.ref <- copd[copd$treatment=="Placebo",]
+#' predict <- predict(loglin, times=c(0:20), E0=0, ref.resp=df.ref)
 #'
 #' # Plot the predicted responses with observations displayed on plot as green shading
 #' plot(predict, disp.obs=TRUE, overlay.ref=FALSE, col="green")
@@ -595,25 +595,24 @@ alpha.scale <- function(n.cut, col="blue") {
 #' @examples
 #' \donttest{
 #' # Create an mb.network object from a dataset
-#' network <- mb.network(osteopain)
+#' painnet <- mb.network(osteopain)
 #'
 #' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="arm", method="common"),
+#' emax <- mb.run(painnet,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="random"),
 #'   positive.scale=TRUE)
 #'
-#' # Calculate treatment rankings
+#' # Calculate treatment rankings for AUC and emax
 #' ranks <- rank(emax,
-#'   param=c("auc", "d.emax", "beta.et50"),
-#'   int.range=c(0,15),
-#'   treats=c(1:10), n.iter=500)
+#'   param=c("auc", "emax"),
+#'   int.range=c(0,15), n.iter=500)
 #'
 #' # Plot histograms for ranking by AUC
 #' plot(ranks, param="auc")
 #'
-#' # Plot histograms for ranking by d.emax
-#' plot(ranks, param="d.emax")
+#' # Plot histograms for ranking by emax
+#' plot(ranks, param="emax")
 #' }
 #'
 #' @export
@@ -703,18 +702,18 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 #' @examples
 #'\donttest{
 #' # Create an mb.network object from a dataset
-#' network <- mb.network(alog_pcfb)
+#' alognet <- mb.network(alog_pcfb)
 #'
 #' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="rel", method="common"))
+#' emax <- mb.run(alognet,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="rel", method.et50="common"))
 #'
 #' # Generate forest plot
 #' plot(emax)
 #'
 #' # Plot results for only one time-course parameter
-#' plot(emax, params="d.emax")
+#' plot(emax, params="emax")
 #' }
 #' @export
 plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
@@ -945,16 +944,20 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #'
 #' @examples
 #' # Make network
-#' network <- mb.network(goutSUA_CFB)
+#' goutnet <- mb.network(goutSUA_CFB)
 #'
 #' # Use timeplot to plot responses grouped by treatment
-#' timeplot(network)
+#' timeplot(goutnet)
 #'
 #' # Use timeplot ot plot resposes grouped by class
-#' timeplot(network, level="class")
+#' timeplot(goutnet, level="class")
 #'
 #' # Plot matrix of relative effects
-#' timeplot(network, level="class", plotby="rel")
+#' timeplot(goutnet, level="class", plotby="rel")
+#'
+#' # Plot using Standardised Mean Differences
+#' copdnet <- mb.network(copd)
+#' timeplot(copdnet, plotby="rel", link="smd")
 #'
 #' @export
 timeplot <- function(network, level="treatment", plotby="arm", link="identity", ...) {
@@ -1117,10 +1120,10 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #' @examples
 #' \donttest{
 #' # Make network
-#' network <- mb.network(alog_pcfb)
+#' alognet <- mb.network(alog_pcfb)
 #'
 #' # Run MBNMA
-#' mbnma <- mb.quadratic(network)
+#' mbnma <- mb.run(alognet, fun=tpoly(degree=2))
 #'
 #' # Plot residual deviance contributions in a scatterplot
 #' devplot(mbnma)
@@ -1223,16 +1226,16 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 #' @examples
 #' \donttest{
 #' # Make network
-#' network <- mb.network(osteopain)
+#' painnet <- mb.network(osteopain)
 #'
 #' # Run MBNMA
-#' mbnma <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="const", method="common"))
+#' mbnma <- mb.run(painnet,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="random"))
 #'
-#' # Plot fitted values from the model with treatment labels
+#' # Plot fitted values from the model
 #' # Monitor fitted values for 500 additional iterations
-#' fitplot(mbnma, treat.labs=network$treatments, n.iter=500)
+#' fitplot(mbnma, n.iter=500)
 #' }
 #'
 #' @export
@@ -1516,7 +1519,7 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 
 
 
-#' Plot illustrative time-course functions
+#' Plot illustrative time-course functions (CURRENTLY NOT FUNCTIONAL FOR ALL TIME_COURSE FUNCTIONS)
 #'
 #' Can be used to plot potential time-course functions to identify if they may
 #' be a suitable fit for the data.
@@ -1528,7 +1531,11 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 #' in `beta.1`, `beta.2`, `beta.3` and `beta.4`
 #'
 #'
-#' @export
+#' @examples
+#' plot(temax(), beta.1=5, beta.2=0.1)
+#'
+#' plot(tspline(type="ls", knots=2), beta.1=2, beta.2=-2, beta.3=0)
+#'
 plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
                          beta.3=0, beta.4=0) {
 
