@@ -70,7 +70,8 @@ rank <- function (x, ...) {
 #' # Run an MBNMA model with an Emax time-course
 #' emax <- mb.run(network,
 #'   fun=temax(pool.emax="rel", method.emax="common",
-#'             pool.et50="rel", method.et50="random"))
+#'             pool.et50="rel", method.et50="random"),
+#'   intercept=FALSE)
 #'
 #' # Rank treatments by time-course parameter from the model with lower scores being better
 #' rank(emax, params=c("emax", "et50"), lower_better=TRUE)

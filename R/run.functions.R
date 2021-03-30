@@ -577,7 +577,7 @@ gen.parameters.to.save <- function(fun, model) {
 #' network <- mb.network(alog_pcfb)
 #'
 #' # Run Emax model saving predicted means and residual deviance contributions
-#' emax <- mb.emax(network, parameters.to.save=c("theta", "resdev"))
+#' emax <- mb.emax(network, parameters.to.save=c("theta", "resdev"), intercept=FALSE)
 #'
 #' # Get matrices of observed data
 #' jagsdat <- getjagsdata(network$data.ab)
@@ -767,7 +767,7 @@ check.beta.arg <- function(beta.1) {
 #' network <- mb.network(alog_pcfb)
 #'
 #' # Run Emax model
-#' emax <- mb.emax(network)
+#' emax <- mb.emax(network, intercept=FALSE)
 #'
 #' # Update model for 500 iterations to monitor fitted values
 #' mb.update(emax, param="theta", n.iter=500)

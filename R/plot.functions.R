@@ -272,7 +272,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 #' # Run an MBNMA model with a log-linear time-course
 #' loglin <- mb.run(copdnet,
 #'   fun=tloglin(pool.rate="rel", method.rate="common"),
-#'   rho="dunif(0,1)", covar="varadj")
+#'   rho="dunif(0,1)", covar="varadj", intecept=FALSE)
 #'
 #' # Predict responses using the original dataset to estimate the network reference
 #' #treatment response
@@ -707,7 +707,8 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 #' # Run an MBNMA model with an Emax time-course
 #' emax <- mb.run(alognet,
 #'   fun=temax(pool.emax="rel", method.emax="common",
-#'     pool.et50="rel", method.et50="common"))
+#'     pool.et50="rel", method.et50="common"),
+#'   intercept=FALSE)
 #'
 #' # Generate forest plot
 #' plot(emax)
@@ -1123,7 +1124,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #' alognet <- mb.network(alog_pcfb)
 #'
 #' # Run MBNMA
-#' mbnma <- mb.run(alognet, fun=tpoly(degree=2))
+#' mbnma <- mb.run(alognet, fun=tpoly(degree=2), intercept=FALSE)
 #'
 #' # Plot residual deviance contributions in a scatterplot
 #' devplot(mbnma)
@@ -1423,7 +1424,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' `plot.type=NULL`) of `class(c("gg", "ggplot"))`, which can be edited using `ggplot` commands.
 #'
 #' @export
-plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
+plot.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1477,15 +1478,11 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
                                                  linetype=Source, shape=Source, color=Source)) +
       ggdist::stat_halfeye(.width=0.95) +
       ggplot2::ylab("") + ggplot2::xlab("Treatment effect (95% CrI)") +
-      ggplot2::theme(axis.text = ggplot2::element_text(size=15),
-                     axis.title = ggplot2::element_text(size=18),
-                     legend.text = ggplot2::element_text(size=15),
-                     title=ggplot2::element_text(size=18),
-                     legend.key.size = unit(1, "cm")) +
       ggplot2::scale_color_manual(values=cols) +
       ggplot2::facet_wrap(Parameter~Comparison, scales = "free_x")
 
-    gg <- do.call(ggdist::stat_halfeye, args=list(...)) + theme_mbnma()
+    gg <- gg + theme_mbnma()
+    #gg <- do.call(ggdist::stat_halfeye, args=list(...))
 
     graphics::plot(gg)
     plotlist[[length(plotlist)+1]] <- gg
@@ -1498,11 +1495,8 @@ plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 
     dens <- ggplot2::ggplot(dens.df, ggplot2::aes(x=value, linetype=Source, fill=Source), ...) +
       ggplot2::geom_density(alpha=0.2, size=1) +
-      ggplot2::xlab(title) +
+      ggplot2::xlab("Treatment effect") +
       ggplot2::ylab("Posterior density") +
-      ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
-      ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                     axis.title = ggplot2::element_text(size=14)) +
       ggplot2::scale_fill_manual(values=cols) +
       ggplot2::facet_wrap(Parameter~Comparison, scales = "free_x") +
       theme_mbnma()
