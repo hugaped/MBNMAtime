@@ -1170,14 +1170,14 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Changes fup to time if xaxis=time
   if (xaxis=="time") {
-    dev.df$fup <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model$data()$time[x[1], x[3]])
+    dev.df$fup <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model.arg$jagsdata$time[x[1], x[3]])
     xlab <- "Time"
   } else if (xaxis=="fup") {
     xlab <- "Follow-up count"
   }
 
   if (facet==TRUE) {
-    dev.df$facet <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model$data()$treat[x[1], x[2]])
+    dev.df$facet <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model.arg$jagsdata$treat[x[1], x[2]])
   }
 
   # Plots the residual deviances over time grouped by study and arm
