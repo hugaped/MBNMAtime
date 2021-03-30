@@ -144,6 +144,15 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
     }
   }
 
+  # Change beta to d (if present) so that it is identified in mcmc output
+  for (i in 1:4) {
+    if (paste0("beta.",i) %in% params) {
+      if (!paste0("beta.",i) %in% x[["parameters.to.save"]]) {
+        params[which(params==paste0("beta.",i))] <- paste0("d.",i)
+      }
+    }
+  }
+
   rank.result <- list()
   for (i in seq_along(params)) {
     if (params[i] %in% x[["parameters.to.save"]]) {

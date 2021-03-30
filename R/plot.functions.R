@@ -727,6 +727,15 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
   checkmate::assertCharacter(class.labs, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Change beta to d (if present) so that it is identified in mcmc output
+  for (i in 1:4) {
+    if (paste0("beta.",i) %in% params) {
+      if (!paste0("beta.",i) %in% x[["parameters.to.save"]]) {
+        params[which(params==paste0("beta.",i))] <- paste0("d.",i)
+      }
+    }
+  }
+
   # Check that specified params are monitored in model
   if (!all(params %in% x[["parameters.to.save"]])) {
     stop(paste0("Variable 'params': Must contain elements of set {", paste(x[["parameters.to.save"]], collapse = ", "), "}"))
