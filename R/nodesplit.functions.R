@@ -304,7 +304,6 @@ mb.nodesplit.comparisons <- function(network)
 #' @param nodesplit.parameters A character vector of named time-course parameters on which to
 #' node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.
 #' @param ... Arguments to be sent to `mb.run()`
-#' @inheritParams mb.emax.hill
 #' @inheritParams mb.run
 #'
 #' @inherit mb.run details

@@ -33,8 +33,8 @@ network <- mb.network(osteopain)
 # Create mb.network object using an MBNMAdose dataset
 
 # Run linear MBNMA
-result <- mb.linear(network,
-  slope=list(pool="rel", method="random"))
+result <- mb.run(network, fun=tpoly(degree=1,
+    pool.1="rel", method.1="random"))
 
 # Obtain model prior values
 get.prior(result$model.arg$jagscode)

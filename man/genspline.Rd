@@ -27,9 +27,28 @@ is 10 months, \code{knots=c(0.1,0.5)} would indicate knots should be fitted at 1
 
 \item{max.time}{A number indicating the maximum time between which to calculate the spline function.}
 }
+\value{
+A spline basis matrix with number of rows equal to \code{length(x)} and the number of columns equal to the number
+of coefficients in the spline.
+}
 \description{
 jagsdat <- mbnma$model$data()
 }
 \details{
+
+}
+\examples{
+x <- 0:100
+
+genspline(x)
+
+# Generate a quadratic B-spline with 1 equally spaced internal knot
+genspline(x, spline="bs", knots=2, degree=2)
+
+# Generate a restricted cubic spline with 3 knots at selected quantiles
+genspline(x, spline="rcs", knots=c(0.1, 0.5, 0.7))
+
+# Generate a piecewise linear spline with 3 equally spaced knots
+genspline(x, spline="ls", knots=3)
 
 }

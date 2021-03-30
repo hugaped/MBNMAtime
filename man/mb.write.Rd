@@ -9,8 +9,8 @@ mb.write(
   link = "identity",
   positive.scale = TRUE,
   intercept = TRUE,
-  rho = NULL,
-  covar = NULL,
+  rho = 0,
+  covar = "varadj",
   var.scale = NULL,
   class.effect = list(),
   UME = FALSE
@@ -34,9 +34,9 @@ data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
-then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
-(e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
+prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
+numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
 \item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
 be done by specifying one of the following:
@@ -72,26 +72,27 @@ Writes JAGS code for a Bayesian time-course model for model-based network
 meta-analysis (MBNMA).
 }
 \examples{
-# Write a linear time-course MBNMA with random treatment effects on beta.1 and equal baselines
-#in study arms
-model <- mb.write(fun="linear", alpha="study", beta.1="rel.random")
-cat(model) # Concatenates model representations making code more easily readable
+# Write a linear time-course MBNMA:
+# random treatment effects on beta.1
+# equal baselines in study arms
+model <- mb.write(fun=tpoly(degree=1, pool.1="rel", method.1="random"))
 
-# Write an emax time-course MBNMA with a Hill parameter of 0.5 with no intercept
-model <- mb.write(fun="emax.hill",
-  beta.1="rel.common", beta.2="const.common", beta.3=0.5,
+# Write an emax time-course MBNMA with:
+# a Hill parameter
+# no intercept
+model <- mb.write(fun=temax(pool.1="rel", method.1="common",
+    pool.2="abs", method.2="common", pool.3="abs", method.3="common"),
   intercept=TRUE)
-cat(model) # Concatenates model representations making code more easily readable
 
-# Write an exponential time-course MBNMA that accounts for correlation between time points
-model <- mb.write(fun="exponential",
-  alpha="arm", beta.1="rel.common",
+# Write a log-linear time-course MBNMA with:
+# AR1 correlation between time points
+model <- mb.write(fun=tloglin(),
   rho="dunif(0,1)", covar="AR1")
-cat(model)
 
 # Define a user-defined time-course relationship for the MBNMA JAGS model
-time.fun <- ~ alpha + (exp(beta.1 * time) / (beta.2 * time))
-model <- mb.write(fun="user", user.fun=time.fun,
-  beta.1="rel.random", beta.2="rel.common")
-cat(model)
+userfun <- ~ (exp(beta.1 * time) / (beta.2 * time))
+model <- mb.write(fun=tuser(fun=userfun,
+    pool.1="rel", method.1="random",
+    pool.2="rel", method.2="common"))
+
 }

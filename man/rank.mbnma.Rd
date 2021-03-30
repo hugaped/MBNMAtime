@@ -35,7 +35,7 @@ then rankings will be calculated for all treatments/classes.}
 \item{int.range}{A numeric vector with two elements that indicates the range
 over which to calculate AUC. Takes the form c(lower bound, upper bound). If left
 as \code{NULL} (the default) then the range will be between zero and the maximum follow-up
-time in the data for the treatments specified in \code{treats}.}
+time in the dataset.}
 
 \item{level}{A character object to indicate whether the parameters to be ranked are at the treatment
 level (\code{"treatment"}) or class level (\code{"class"}).}
@@ -80,14 +80,15 @@ one parameter may have substantial impact on rankings.
 network <- mb.network(alog_pcfb)
 
 # Run an MBNMA model with an Emax time-course
-emax <- mb.emax(network,
-  emax=list(pool="rel", method="common"),
-  et50=list(pool="rel", method="random"))
+emax <- mb.run(network,
+  fun=temax(pool.emax="rel", method.emax="common",
+            pool.et50="rel", method.et50="random"),
+  intercept=FALSE)
 
 # Rank treatments by time-course parameter from the model with lower scores being better
-rank(emax, params=c("d.emax", "d.et50"), lower_better=TRUE)
+rank(emax, params=c("emax", "et50"), lower_better=TRUE)
 
-# Rank treatments by AUC
+# Rank treatments 1-3 by AUC
 rank(emax, params="auc", treats=c(1:3), lower_better=TRUE,
   int.range=c(0,20))
 }

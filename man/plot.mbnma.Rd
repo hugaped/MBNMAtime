@@ -32,17 +32,18 @@ Posterior densities are plotted above each result using \code{ggdist:stat_:halfe
 \examples{
 \donttest{
 # Create an mb.network object from a dataset
-network <- mb.network(alog_pcfb)
+alognet <- mb.network(alog_pcfb)
 
 # Run an MBNMA model with an Emax time-course
-emax <- mb.emax(network,
-  emax=list(pool="rel", method="common"),
-  et50=list(pool="rel", method="common"))
+emax <- mb.run(alognet,
+  fun=temax(pool.emax="rel", method.emax="common",
+    pool.et50="rel", method.et50="common"),
+  intercept=FALSE)
 
 # Generate forest plot
 plot(emax)
 
 # Plot results for only one time-course parameter
-plot(emax, params="d.emax")
+plot(emax, params="emax")
 }
 }

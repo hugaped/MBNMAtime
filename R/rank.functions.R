@@ -388,8 +388,6 @@ calcprob <- function(rank.mat, treats=NULL) {
 #' be one of the time points for which predictions in `x` are available.
 #' @param treats A character vector of treatment/class names for which responses have been predicted
 #'   in `x` As default, rankings will be calculated for all treatments/classes in `x`.
-#' @param lower_better Indicates whether negative responses are better (`lower_better=TRUE`) or
-#'
 #' @inheritParams rank.mbnma
 #'
 #' @export

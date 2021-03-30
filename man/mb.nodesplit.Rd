@@ -2,7 +2,7 @@
 % Please edit documentation in R/nodesplit.functions.R, R/plot.functions.R
 \name{mb.nodesplit}
 \alias{mb.nodesplit}
-\alias{plot.mb.nodesplit}
+\alias{plot.nodesplit}
 \title{Perform node-splitting on a MBNMA time-course network}
 \usage{
 mb.nodesplit(
@@ -13,7 +13,7 @@ mb.nodesplit(
   ...
 )
 
-\method{plot}{mb.nodesplit}(x, plot.type = NULL, params = NULL, ...)
+\method{plot}{nodesplit}(x, plot.type = NULL, params = NULL, ...)
 }
 \arguments{
 \item{network}{An object of class \code{"mb.network"}.}
@@ -75,22 +75,21 @@ of posterior densities for direct and indirect evidence.
 \examples{
 \donttest{
 # Create mb.network object
-network <- mb.network(osteopain)
+painnet <- mb.network(osteopain)
 
 # Identify comparisons informed by direct and indirect evidence
-splits <- mb.nodesplit.comparisons(network)
+splits <- mb.nodesplit.comparisons(painnet)
 
-# Fit an exponential time-course MBNMA
-result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="all",
-  fun="exponential",
-  beta.1=list(pool="rel", method="common"))
+# Fit a log-linear time-course MBNMA (takes a while to run)
+result <- mb.nodesplit(painnet, comparisons=splits, nodesplit.parameters="all",
+  fun=tloglin(pool.rate="rel", method.rate="common"),
+  rho="dunif(0,1)", covar="varadj"
+  )
 
 # Fit an emax time-course MBNMA with a node-split on emax parameters only
-result <- mb.nodesplit(network, comparisons=splits, nodesplit.parameters="beta.1",
-  fun="emax",
-  beta.1=list(pool="rel", method="random"),
-  beta.2=list(pool="rel", method="common")
-  )
+result <- mb.nodesplit(painnet, comparisons=splits, nodesplit.parameters="emax",
+  fun=temax(pool.emax="rel", method.emax="common",
+    pool.et50="rel", method.et50="common"))
 
 # Inspect results
 print(result)

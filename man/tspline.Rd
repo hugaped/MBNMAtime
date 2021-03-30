@@ -83,6 +83,20 @@ estimated using a vague Wishart prior. This prior can be made slightly more info
 by specifying the relative scale of variances between the time-course parameters in \code{mb.run()} using
 \code{var.scale}.
 }
+\examples{
+# Second order B spline with 2 knots and random effects on the 2nd coefficient
+tspline(type="bs", knots=3, degree=2,
+  pool.1="rel", method.1="common",
+  pool.2="rel", method.2="random")
+
+# Piecewise linear spline with knots at 0.1 and 0.5 quantiles
+# Single parameter independent of treatment estimated for 1st coefficient
+#with random effects
+tspline(type="ls", knots=c(0.1,0.5),
+  pool.1="abs", method.1="random",
+  pool.2="rel", method.2="common")
+
+}
 \references{
 \insertAllCited
 }

@@ -31,7 +31,7 @@ which case \code{object} must be a class effect model).}
 \item{int.range}{A numeric vector with two elements that indicates the range
 over which to calculate AUC. Takes the form c(lower bound, upper bound). If left
 as \code{NULL} (the default) then the range will be between zero and the maximum follow-up
-time in the data for the treatments specified in \code{treats}.}
+time in the dataset.}
 
 \item{n.iter}{The number of iterations for which to calculate AUC (if \code{"auc"} is included in \code{params}).
 Must be a positive integer. Default is the value used in \code{mbnma}.}

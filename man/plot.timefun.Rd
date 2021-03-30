@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.functions.R
 \name{plot.timefun}
 \alias{plot.timefun}
-\title{Plot illustrative time-course functions}
+\title{Plot illustrative time-course functions (CURRENTLY NOT FUNCTIONAL FOR ALL TIME_COURSE FUNCTIONS)}
 \usage{
 \method{plot}{timefun}(x = tpoly(degree = 1), beta.1 = 0, beta.2 = 0, beta.3 = 0, beta.4 = 0)
 }
@@ -16,4 +16,10 @@ in \code{beta.1}, \code{beta.2}, \code{beta.3} and \code{beta.4}
 \description{
 Can be used to plot potential time-course functions to identify if they may
 be a suitable fit for the data.
+}
+\examples{
+plot(temax(), beta.1=5, beta.2=0.1)
+
+plot(tspline(type="ls", knots=2), beta.1=2, beta.2=-2, beta.3=0)
+
 }

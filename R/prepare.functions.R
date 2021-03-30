@@ -3,9 +3,9 @@
 # Date created: 2018-09-10
 
 
-#' Create an mb.network object
+#' Create an `mb.network` object
 #'
-#' Creates an object of class `mb.network`. Various MBNMA functions can subsequently be applied
+#' Creates an object of `class("mb.network")`. Various MBNMA functions can subsequently be applied
 #' to this object.
 #'
 #' @param data.ab A data frame of arm-level data in "long" format containing the columns:
@@ -27,7 +27,8 @@
 #' measurement and more than a single follow-up time (unless change from baseline data are being used).
 #' Data must be present for all arms within a study at each follow-up time.
 #'
-#' @return An object of class `mb.network` which is a list containing:
+#' @return An object of `class("mb.network")` which is a list containing:
+#'
 #' * `description` A short description of the network
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)

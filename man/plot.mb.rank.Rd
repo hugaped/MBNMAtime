@@ -31,25 +31,24 @@ Plot histograms of rankings from MBNMA models
 \examples{
 \donttest{
 # Create an mb.network object from a dataset
-network <- mb.network(osteopain)
+painnet <- mb.network(osteopain)
 
 # Run an MBNMA model with an Emax time-course
-emax <- mb.emax(network,
-  emax=list(pool="rel", method="common"),
-  et50=list(pool="arm", method="common"),
+emax <- mb.run(painnet,
+  fun=temax(pool.emax="rel", method.emax="common",
+    pool.et50="abs", method.et50="random"),
   positive.scale=TRUE)
 
-# Calculate treatment rankings
+# Calculate treatment rankings for AUC and emax
 ranks <- rank(emax,
-  param=c("auc", "d.emax", "beta.et50"),
-  int.range=c(0,15),
-  treats=c(1:10), n.iter=500)
+  param=c("auc", "emax"),
+  int.range=c(0,15), n.iter=500)
 
 # Plot histograms for ranking by AUC
 plot(ranks, param="auc")
 
-# Plot histograms for ranking by d.emax
-plot(ranks, param="d.emax")
+# Plot histograms for ranking by emax
+plot(ranks, param="emax")
 }
 
 }

@@ -11,7 +11,7 @@ mb.run(
   intercept = TRUE,
   link = "identity",
   parameters.to.save = NULL,
-  rho = "dunif(0,1)",
+  rho = 0,
   covar = "varadj",
   var.scale = NULL,
   class.effect = list(),
@@ -50,9 +50,9 @@ removes the intercept, \code{alpha}, from the model).}
 to monitor in JAGS}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
-then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
-(e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
+prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
+numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
 \item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
 be done by specifying one of the following:
@@ -116,14 +116,6 @@ to overwrite the JAGS model that is automatically written based on the
 specified options. Useful when amending priors using replace.prior()}
 
 \item{...}{Arguments to be sent to R2jags.}
-
-\item{alpha}{Refers to the baseline mean response and is a character object
-that can take either:
-\itemize{
-\item \code{"study"} to constrain baseline to be equal for all
-arms within a study - reasonable assumption under randomisation
-\item \code{"arm"} to allow baseline to vary between arms within a study
-}}
 }
 \value{
 An object of S3 class \verb{c("mbnma", "rjags")`` containing parameter results from the model. Can be summarized by }print()\verb{and can check traceplots using}R2jags::traceplot()\verb{or various functions from the package}mcmcplots`.#'
@@ -154,12 +146,12 @@ Details of the interpretation and model specification of different parameters ca
 \item If pooling is relative (e.g. \code{pool.1="rel"}) for a given parameter then the named parameter (e.g. \code{emax}) or a
 numbered \code{d} parameter (e.g. \code{d.1}) corresponds to the pooled relative effect for a given
 treatment compared to the network reference treatment for this time-course parameter.
-\item \code{sd.} followed by a named (e.g. \code{emax}) parameter or number (e.g. \code{1}) is the between-study SD (heterogeneity)
+\item \code{sd.} followed by a named (e.g. \code{emax}, \code{beta.1}) is the between-study SD (heterogeneity)
 for relative effects, reported if pooling for a time-course parameter is relative (e.g. \code{pool.1="rel"}) \emph{and} the
 method for synthesis is random (e.g. \verb{method.1="random}).
 \item If class effects are modelled, parameters for classes are represented by the upper case name of the time-course
 parameter they correspond to. For example if \code{class.effect=list(emax="random")}, relative class effects will be
-represented by \code{EMAX}. The SD of the class effect (e.g. \code{sd.EMAX}) is the SD of treatments within a class for the
+represented by \code{EMAX}. The SD of the class effect (e.g. \code{sd.EMAX}, \code{sd.BETA.1}) is the SD of treatments within a class for the
 time-course parameter they correspond to.
 }
 
@@ -170,7 +162,7 @@ numbered \code{beta} parameter (e.g. \code{beta.1}) corresponds to the estimated
 \item For an absolute time-course parameter if the corresponding method is common (e.g. \code{method.1="common"}) the parameter
 corresponds to a single common parameter estimated across all studies and treatments. If the corresponding method is
 random (e.g. \code{method.1="random"}) then parameter is a mean effect around which the study-level absolute effects vary
-with SD corresponding to \code{sd.} followed by the named (e.g. \code{emax}) parameter or number (e.g. \code{1}).
+with SD corresponding to \code{sd.} followed by the named parameter (e.g. \code{sd.emax}, \code{sd.beta.1}) .
 }
 
 \emph{Other model parameters}
@@ -274,6 +266,11 @@ timecourse <- ~ exp(beta.1 * time) + (time^beta.2)
 # common class effect on beta.2
 mb.run(goutnet, fun=tuser(fun=timecourse, method.1="random"),
        class.effect=list(beta.1="common"))
+
+# Fit a log-linear MBNMA
+# with variance adjustment for correlation between time-points
+result <- mb.run(network, fun=tloglin(),
+                 rho="dunif(0,1)", covar="varadj")
 }
 }
 \references{

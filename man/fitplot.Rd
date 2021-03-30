@@ -50,16 +50,16 @@ then additional iterations will have to be run to get results for these.
 \examples{
 \donttest{
 # Make network
-network <- mb.network(osteopain)
+painnet <- mb.network(osteopain)
 
 # Run MBNMA
-mbnma <- mb.emax(network,
-  emax=list(pool="rel", method="common"),
-  et50=list(pool="const", method="common"))
+mbnma <- mb.run(painnet,
+  fun=temax(pool.emax="rel", method.emax="common",
+    pool.et50="abs", method.et50="random"))
 
-# Plot fitted values from the model with treatment labels
+# Plot fitted values from the model
 # Monitor fitted values for 500 additional iterations
-fitplot(mbnma, treat.labs=network$treatments, n.iter=500)
+fitplot(mbnma, n.iter=500)
 }
 
 }

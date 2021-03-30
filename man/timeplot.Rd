@@ -4,10 +4,10 @@
 \alias{timeplot}
 \title{Plot raw responses over time by treatment or class}
 \usage{
-timeplot(network, level = "treatment", plotby = "arm", ...)
+timeplot(network, level = "treatment", plotby = "arm", link = "identity", ...)
 }
 \arguments{
-\item{network}{An object of class \code{mb.network}.}
+\item{network}{An object of class \code{"mb.network"}.}
 
 \item{level}{A string indicating whether nodes/facets should represent \code{treatment}
 or \code{class} in the plot. Can be used to examine the expected impact of modelling
@@ -17,6 +17,10 @@ class/agent effects.}
 should be plotted separately for each study arm, or \code{"rel"} to indicate that the relative
 effects within each study should be plotted. In this way the time-course of both the absolute
 effects and the relative effects can be examined.}
+
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
 \item{...}{Arguments to be sent to \code{ggplot()}}
 }
@@ -38,12 +42,19 @@ same study and arm.
 }
 \examples{
 # Make network
-network <- mb.network(goutSUA_CFB)
+goutnet <- mb.network(goutSUA_CFB)
 
 # Use timeplot to plot responses grouped by treatment
-timeplot(network)
+timeplot(goutnet)
 
 # Use timeplot ot plot resposes grouped by class
-timeplot(network, level="class")
+timeplot(goutnet, level="class")
+
+# Plot matrix of relative effects
+timeplot(goutnet, level="class", plotby="rel")
+
+# Plot using Standardised Mean Differences
+copdnet <- mb.network(copd)
+timeplot(copdnet, plotby="rel", link="smd")
 
 }

@@ -772,7 +772,7 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #' # Piecewise linear spline with knots at 0.1 and 0.5 quantiles
 #' # Single parameter independent of treatment estimated for 1st coefficient
 #' #with random effects
-#' tspline(type="ls, knots=c(0.1,0.5),
+#' tspline(type="ls", knots=c(0.1,0.5),
 #'   pool.1="abs", method.1="random",
 #'   pool.2="rel", method.2="common")
 #'

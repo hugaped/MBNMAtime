@@ -57,17 +57,17 @@ set to \code{TRUE}.
 \examples{
 \donttest{
 # Create an mb.network object from a dataset
-network <- mb.network(alog_pcfb)
+copdnet <- mb.network(copd)
 
-# Run an MBNMA model with an Emax time-course
-emax <- mb.emax(network,
-  emax=list(pool="rel", method="common"),
-  et50=list(pool="rel", method="common"))
+# Run an MBNMA model with a log-linear time-course
+loglin <- mb.run(copdnet,
+  fun=tloglin(pool.rate="rel", method.rate="common"),
+  rho="dunif(0,1)", covar="varadj", intercept=FALSE)
 
 # Predict responses using the original dataset to estimate the network reference
 #treatment response
-df.ref <- alog_pcfb[alog_pcfb$treatment=="placebo",]
-predict <- predict(emax, times=c(0:15), baseline=10, ref.estimate=df.ref)
+df.ref <- copd[copd$treatment=="Placebo",]
+predict <- predict(loglin, times=c(0:20), E0=0, ref.resp=df.ref)
 
 # Plot the predicted responses with observations displayed on plot as green shading
 plot(predict, disp.obs=TRUE, overlay.ref=FALSE, col="green")

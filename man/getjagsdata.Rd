@@ -34,9 +34,9 @@ response at a given observation (required if modelling using Standardised Mean D
 information on different classes of treatments}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
-then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
-(e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
+prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
+numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
 \item{covstruct}{A character to indicate the covariance structure required for modelling correlation between
 time points (if any), since

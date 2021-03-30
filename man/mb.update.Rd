@@ -37,7 +37,7 @@ Update MBNMA to obtain deviance contributions or fitted values
 network <- mb.network(alog_pcfb)
 
 # Run Emax model
-emax <- mb.emax(network)
+emax <- mb.emax(network, intercept=FALSE)
 
 # Update model for 500 iterations to monitor fitted values
 mb.update(emax, param="theta", n.iter=500)

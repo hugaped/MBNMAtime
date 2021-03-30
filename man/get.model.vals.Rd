@@ -23,11 +23,10 @@ a time-course MBNMA model}
 
 \item{E0}{An object to indicate the value(s) to use for the response at time = 0
 in the prediction. This can take a number of different formats depending
-on how it will be used/calculated. The default is \code{0} but this may lead
+on how it will be used/calculated. The default is 0 but this may lead
 to non-sensical predictions.
 \itemize{
-\item \code{numeric()} A single numeric value representing the deterministic response at time = 0,
-given.
+\item \code{numeric()} A single numeric value representing the deterministic response at time = 0
 \item \code{formula()} A formula representing a stochastic distribution for the response
 at time = 0. This is specified as a random number generator
 (RNG) given as a string, and can take any RNG distribution for which a function exists

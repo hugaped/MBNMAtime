@@ -8,7 +8,7 @@ write.check(
   fun = linear(),
   positive.scale = TRUE,
   intercept = TRUE,
-  rho = NULL,
+  rho = 0,
   covar = NULL,
   var.scale = NULL,
   link = "identity",
@@ -30,9 +30,9 @@ data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
 \item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
-prior distribution in JAGS, indicating that it be estimated from the data (default: \code{rho="dunif(0,1)"}). If set to \code{NULL}
-then this implies modelling no correlation between time points. \code{rho} also be assigned a numeric value
-(e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).}
+prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
+numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
 \item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
 be done by specifying one of the following:

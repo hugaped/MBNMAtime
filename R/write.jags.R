@@ -21,28 +21,25 @@
 #' # random treatment effects on beta.1
 #' # equal baselines in study arms
 #' model <- mb.write(fun=tpoly(degree=1, pool.1="rel", method.1="random"))
-#' cat(model) # Concatenates model representations making code more easily readable
 #'
 #' # Write an emax time-course MBNMA with:
 #' # a Hill parameter
 #' # no intercept
 #' model <- mb.write(fun=temax(pool.1="rel", method.1="common",
-#'     pool.2="abs", method.2="common", pool.3="abs", method.3="common),
+#'     pool.2="abs", method.2="common", pool.3="abs", method.3="common"),
 #'   intercept=TRUE)
-#' cat(model) # Concatenates model representations making code more easily readable
 #'
 #' # Write a log-linear time-course MBNMA with:
 #' # AR1 correlation between time points
 #' model <- mb.write(fun=tloglin(),
 #'   rho="dunif(0,1)", covar="AR1")
-#' cat(model)
 #'
 #' # Define a user-defined time-course relationship for the MBNMA JAGS model
 #' userfun <- ~ (exp(beta.1 * time) / (beta.2 * time))
 #' model <- mb.write(fun=tuser(fun=userfun,
 #'     pool.1="rel", method.1="random",
 #'     pool.2="rel", method.2="common"))
-#' cat(model)
+#'
 #' @export
 mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
                      rho=0, covar="varadj", var.scale=NULL,

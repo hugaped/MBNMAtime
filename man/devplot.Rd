@@ -57,10 +57,10 @@ models is treated as unknown (if \code{rho="estimate"}) and deviance contributio
 \examples{
 \donttest{
 # Make network
-network <- mb.network(alog_pcfb)
+alognet <- mb.network(alog_pcfb)
 
 # Run MBNMA
-mbnma <- mb.quadratic(network)
+mbnma <- mb.run(alognet, fun=tpoly(degree=2), intercept=FALSE)
 
 # Plot residual deviance contributions in a scatterplot
 devplot(mbnma)

@@ -17,7 +17,8 @@
 \item{time}{a number indicating the time point at which predictions should be ranked. It must
 be one of the time points for which predictions in \code{x} are available.}
 
-\item{lower_better}{Indicates whether negative responses are better (\code{lower_better=TRUE}) or}
+\item{lower_better}{Indicates whether negative responses are better (\code{lower_better=TRUE}) or
+positive responses are better (\code{lower_better=FALSE})}
 
 \item{treats}{A character vector of treatment/class names for which responses have been predicted
 in \code{x} As default, rankings will be calculated for all treatments/classes in \code{x}.}

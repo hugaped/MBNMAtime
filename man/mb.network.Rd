@@ -3,7 +3,7 @@
 \name{plot.mb.network}
 \alias{plot.mb.network}
 \alias{mb.network}
-\title{Create an mb.network object}
+\title{Create an \code{mb.network} object}
 \usage{
 \method{plot}{mb.network}(
   x,
@@ -79,7 +79,7 @@ effects estimated by the model will be compared to).}
 \item{description}{Optional. Short description of the network.}
 }
 \value{
-An object of class \code{mb.network} which is a list containing:
+An object of \code{class("mb.network")} which is a list containing:
 \itemize{
 \item \code{description} A short description of the network
 \item \code{data.ab} A data frame containing the arm-level network data (treatment identifiers will have
@@ -91,7 +91,7 @@ that correspond to the new class codes.
 }
 }
 \description{
-Creates an object of class \code{mb.network}. Various MBNMA functions can subsequently be applied
+Creates an object of \code{class("mb.network")}. Various MBNMA functions can subsequently be applied
 to this object.
 }
 \details{
