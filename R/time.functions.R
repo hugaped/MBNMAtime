@@ -860,68 +860,6 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 
 
 
-# tpiece <- function(knots, pool.1="rel", method.1="common",
-#                    pool.2="rel", method.2="common", pool.3="rel", method.3="common",
-#                    pool.4="rel", method.4="common") {
-#
-#   # Run checks
-#   argcheck <- checkmate::makeAssertCollection()
-#   checkmate::assertNumeric(knots, min.len=1, max.len=3, null.ok = FALSE, add=argcheck)
-#   for (i in 1:4) {
-#     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
-#     checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
-#   }
-#   checkmate::reportAssertions(argcheck)
-#
-#
-#   # Define time-course function
-#   # Diffiulty of including alpha...
-#   latex <- "TO BE WRITTEN"
-#
-#   "((time < beta.3) * alpha) + ((time < beta.3) * (beta.1 * time)) + ((time >= beta.3) * (alpha + (beta.1 * beta.3))) + ((time >= beta.3) * (beta.2 * time))"
-#
-#
-#
-#   # Define parameters
-#   for (i in 1:degree) {
-#     if (get(paste0("pool."),i)=="rel") {
-#       jags <- gsub(paste0("beta\\.", i), paste0("beta.", i, "[i,k]"), jags)
-#     } else if (get(paste0("pool."),i)=="abs" & get(paste0("method."),i)=="random") {
-#       jags <- gsub(paste0("beta\\.", i), paste0("i.beta.", i, "[i,k]"), jags)
-#     }
-#   }
-#
-#
-#   # Generate output values
-#   paramnames <- paste0("beta.", 1:degree)
-#   nparam <- degree
-#
-#   apool <- vector()
-#   amethod <- vector()
-#   for (i in 1:nparam) {
-#     apool <- append(get(paste0("pool.",i)))
-#     amethod <- append(get(paste0("method.",i)))
-#   }
-#
-#   names(apool) <- paramnames
-#   names(amethod) <- paramnames
-#
-#   bpool <- paste0("pool.", 1:nparam)
-#   bmethod <- paste0("method.", 1:nparam)
-#   names(bpool) <- paramnames
-#   names(bmethod) <- paramnames
-#
-#   out <- list(name=type, fun=fun, latex=latex, params=paramnames, nparam=nparam, jags=jags,
-#               apool=apool, amethod=amethod,
-#               bpool=bpool, bmethod=bmethod)
-#   class(out) <- "timefun"
-#
-#   return(out)
-# }
-
-
-
-
 
 #' User-defined time-course function
 #'
