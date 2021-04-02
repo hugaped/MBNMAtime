@@ -376,62 +376,8 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
 
 
 
-#' #' Check if any relative effects are specified within time-course parameters in an mbnma model
-#' #'
-#' #' @inheritParams predict.mbnma
-#' #'
-#' #' @return A boolean object that takes `TRUE` if any time-course parameters specify relative effects and `FALSE` if not
-#' #'
-#' #' @noRd
-#' check.betas <- function(mbnma) {
-#'   mbnma.betas <- vector()
-#'   for (i in 1:4) {
-#'     mbnma.betas <- append(mbnma.betas, mbnma[["model.arg"]][[paste0("beta.", i)]]$pool)
-#'     }
-#'
-#'   if (any(mbnma.betas == "rel")) {
-#'     return(TRUE)
-#'   } else {return(FALSE)}
-#' }
 
 
-
-#' #' Get code parameter values from previous MBNMA result
-#' #'
-#' #' @inheritParams predict.mbnma
-#' #'
-#' #' @return A list with two elements:
-#' #' * `timecourse` A character object that specifies the time-course used in `mbnma` (in terms of alpha, beta, and time)
-#' #' * `beta.incl` A numeric vector that indicates the time-course parameters that were included in `mbnma`
-#' #'
-#' #' @noRd
-#' init.predict <- function(mbnma) {
-#'
-#'   # Check betas are specified correctly and prepare format for subsequent functions
-#'   for (i in 1:4) {
-#'     betaname <- paste0("beta.", i)
-#'     if (!is.null(mbnma$model.arg[[betaname]])) {
-#'       assign(paste0(betaname, ".str"), compound.beta(mbnma$model.arg[[betaname]]))
-#'     } else if (is.null(mbnma$model.arg[[betaname]])) {
-#'       assign(paste0(betaname, ".str"), NULL)
-#'     }
-#'   }
-#'
-#'   timecourse <- time.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
-#'                          alpha=mbnma$model.arg$alpha, beta.1=beta.1.str, beta.2=beta.2.str,
-#'                          beta.3=beta.3.str, beta.4=beta.4.str)[["relationship"]]
-#'
-#'
-#'   # Generate vector with indices of betas included in model
-#'   beta.incl <- vector()
-#'   for (i in 1:4) {
-#'     if (grepl(paste0("beta.", i), timecourse)) {
-#'       beta.incl <- append(beta.incl, i)
-#'     }
-#'   }
-#'
-#'   return(list("timecourse"=timecourse, "beta.incl"=beta.incl))
-#' }
 
 
 
