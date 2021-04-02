@@ -23,7 +23,7 @@
 #'   data are change from baseline (`FALSE`) or not (setting it to `FALSE`
 #'   removes the intercept, `alpha`, from the model).
 #' @param link Can take either `"identity"` (the default),
-#'   `"log"` (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+#'   `"log"` (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 #'   `"smd"` (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).
 #'
 #' @param rho The correlation coefficient when modelling correlation between time points. The default is a string representing a
