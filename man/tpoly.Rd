@@ -39,12 +39,16 @@ tpoly(
 An object of \code{class("timefun")}
 }
 \description{
-\eqn{\beta_1} represents the 1st coefficient.
-\eqn{\beta_2} represents the 2nd coefficient.
-\eqn{\beta_3} represents the 3rd coefficient.
-\eqn{\beta_4} represents the 4th coefficient.
+Polynomial time-course function
 }
 \details{
+\itemize{
+\item \eqn{\beta_1} represents the 1st coefficient.
+\item \eqn{\beta_2} represents the 2nd coefficient.
+\item \eqn{\beta_3} represents the 3rd coefficient.
+\item \eqn{\beta_4} represents the 4th coefficient.
+}
+
 Linear model:
 \deqn{\beta_1{x}}
 

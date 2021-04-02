@@ -15,7 +15,7 @@ texp(pool.rate = "rel", method.rate = "common")
 An object of \code{class("timefun")}
 }
 \description{
-\deqn{rate\times{(1-exp(-x))}}
+\eqn{rate\times{(1-exp(-x))}}
 }
 \details{
 Time-course parameters in the model must be specified using a \code{pool} and a \code{method} prefix.

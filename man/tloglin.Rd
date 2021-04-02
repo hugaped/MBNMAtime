@@ -15,7 +15,7 @@ tloglin(pool.rate = "rel", method.rate = "common")
 An object of \code{class("timefun")}
 }
 \description{
-\deqn{rate\times{log(x + 1)}}
+\eqn{rate\times{log(x + 1)}}
 }
 \details{
 Time-course parameters in the model must be specified using a \code{pool} and a \code{method} prefix.

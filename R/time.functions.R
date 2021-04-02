@@ -6,7 +6,7 @@
 
 #' Exponential time-course function
 #'
-#' \deqn{rate\times{(1-exp(-x))}}
+#' \eqn{rate\times{(1-exp(-x))}}
 #'
 #' @param pool.rate Pooling for exponential rate parameter. Can take `"rel"` or `"abs"` (see details).
 #' @param method.rate Method for synthesis of exponential rate parameter. Can take `"common` or `"random"` (see details).
@@ -99,7 +99,7 @@ texp <- function(pool.rate="rel", method.rate="common") {
 
 #' Log-linear (exponential) time-course function
 #'
-#' \deqn{rate\times{log(x + 1)}}
+#' \eqn{rate\times{log(x + 1)}}
 #'
 #' @inheritParams texp
 #'
@@ -192,6 +192,16 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 
 #' Emax time-course function
 #'
+#' @param pool.emax Pooling for Emax parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.emax Method for synthesis of Emax parameter. Can take `"common` or `"random"` (see details).
+#' @param pool.et50 Pooling for ET50 parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.et50 Method for synthesis of ET50 parameter. Can take `"common` or `"random"` (see details).
+#' @param pool.hill Pooling for Hill parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.hill Method for synthesis of Hill parameter. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details
 #' Emax represents the maximum response.
 #' exp(ET50) represents the time at which 50% of the maximum response is achieved.
 #' exp(Hill) is the Hill parameter, which allows for a sigmoidal function.
@@ -202,16 +212,8 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #' With Hill parameter:
 #' \deqn{\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}}
 #'
-#' @param pool.emax Pooling for Emax parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.emax Method for synthesis of Emax parameter. Can take `"common` or `"random"` (see details).
-#' @param pool.et50 Pooling for ET50 parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.et50 Method for synthesis of ET50 parameter. Can take `"common` or `"random"` (see details).
-#' @param pool.hill Pooling for Hill parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.hill Method for synthesis of Hill parameter. Can take `"common` or `"random"` (see details).
 #'
-#' @return An object of `class("timefun")`
-#'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
 #' can take either:
@@ -355,10 +357,23 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 
 #' Polynomial time-course function
 #'
-#' \eqn{\beta_1} represents the 1st coefficient.
-#' \eqn{\beta_2} represents the 2nd coefficient.
-#' \eqn{\beta_3} represents the 3rd coefficient.
-#' \eqn{\beta_4} represents the 4th coefficient.
+#' @param degree The degree of the polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
+#' @param pool.1 Pooling for the 1st polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.1 Method for synthesis of the 1st polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.2 Pooling for the 2nd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.2 Method for synthesis of the 2nd polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.3 Pooling for the 3rd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.3 Method for synthesis of the 3rd polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param pool.4 Pooling for the 4th polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.4 Method for synthesis of the 4th polynomial coefficient. Can take `"common` or `"random"` (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @details
+#' * \eqn{\beta_1} represents the 1st coefficient.
+#' * \eqn{\beta_2} represents the 2nd coefficient.
+#' * \eqn{\beta_3} represents the 3rd coefficient.
+#' * \eqn{\beta_4} represents the 4th coefficient.
 #'
 #' Linear model:
 #' \deqn{\beta_1{x}}
@@ -373,19 +388,8 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 #' \deqn{\beta_1{x} + \beta_2{x^2} + \beta_3{x^3} + \beta_4{x^4}}
 #'
 #'
-#' @param degree The degree of the polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
-#' @param pool.1 Pooling for the 1st polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.1 Method for synthesis of the 1st polynomial coefficient. Can take `"common` or `"random"` (see details).
-#' @param pool.2 Pooling for the 2nd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.2 Method for synthesis of the 2nd polynomial coefficient. Can take `"common` or `"random"` (see details).
-#' @param pool.3 Pooling for the 3rd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.3 Method for synthesis of the 3rd polynomial coefficient. Can take `"common` or `"random"` (see details).
-#' @param pool.4 Pooling for the 4th polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.4 Method for synthesis of the 4th polynomial coefficient. Can take `"common` or `"random"` (see details).
 #'
-#' @return An object of `class("timefun")`
-#'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
 #' can take either:
@@ -490,22 +494,7 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 
 #' Fractional polynomial time-course function
 #'
-#' As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}
-#'
-#' \eqn{\beta_1} represents the 1st coefficient.
-#' \eqn{\beta_2} represents the 2nd coefficient.
-#' \eqn{\beta_3} represents the 3rd coefficient.
-#' \eqn{\beta_4} represents the 4th coefficient.
-#'
-#' \deqn{\boldsymbol{\beta}x^{(p_1,p_2,...,p_m)}}
-#' for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
-#' \eqn(x^{(p)}) is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
-#' If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}
-#'
-#' So for a second degree polynomial \eqn{\boldsymbol{\beta}x^{(0,0)}}:
-#' \deqn{\boldsymbol{\beta}x^{(0,0)}=\beta_1ln(x)+\beta_2ln(x)^2}
-#'
-#'
+#' As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}.
 #'
 #' @param degree The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAtime}
 #' @param pool.1 Pooling for the 1st fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
@@ -519,7 +508,19 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #'
 #' @return An object of `class("timefun")`
 #'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#' @details
+#' * \eqn{\beta_1} represents the 1st coefficient.
+#' * \eqn{\beta_2} represents the 2nd coefficient.
+#' * \eqn{\beta_3} represents the 3rd coefficient.
+#' * \eqn{\beta_4} represents the 4th coefficient.
+#'
+#' \deqn{\boldsymbol{\beta}x^{(p_1,p_2,...,p_m)}}
+#' for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
+#' \eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
+#' If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
+#'
+#'
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
 #' can take either:

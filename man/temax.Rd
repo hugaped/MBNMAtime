@@ -30,11 +30,13 @@ temax(
 An object of \code{class("timefun")}
 }
 \description{
+Emax time-course function
+}
+\details{
 Emax represents the maximum response.
 exp(ET50) represents the time at which 50\% of the maximum response is achieved.
 exp(Hill) is the Hill parameter, which allows for a sigmoidal function.
-}
-\details{
+
 Without Hill parameter:
 \deqn{\frac{E_{max}\times{x}}{e^{ET_{50}}+x}}
 

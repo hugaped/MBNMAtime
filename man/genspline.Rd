@@ -2,12 +2,7 @@
 % Please edit documentation in R/prepare.functions.R
 \name{genspline}
 \alias{genspline}
-\title{#' Converts JAGS data held in \code{class("mbnma")} object to a data.frame
-#'
-#' @return A data frame similar in format to the data frame in an \code{"mb.network"} object.
-#' @noRd
-jagstonetwork <- function(mbnma) {
-checkmate::assertClass(mbnma, "mbnma")}
+\title{Generates spline basis matrices for fitting to time-course function}
 \usage{
 genspline(x, spline = "bs", knots = 1, degree = 1, max.time = max(x))
 }
@@ -32,10 +27,7 @@ A spline basis matrix with number of rows equal to \code{length(x)} and the numb
 of coefficients in the spline.
 }
 \description{
-jagsdat <- mbnma$model$data()
-}
-\details{
-
+Generates spline basis matrices for fitting to time-course function
 }
 \examples{
 x <- 0:100

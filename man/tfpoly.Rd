@@ -37,21 +37,20 @@ tfpoly(
 An object of \code{class("timefun")}
 }
 \description{
-As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}
+As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}.
 }
 \details{
-\eqn{\beta_1} represents the 1st coefficient.
-\eqn{\beta_2} represents the 2nd coefficient.
-\eqn{\beta_3} represents the 3rd coefficient.
-\eqn{\beta_4} represents the 4th coefficient.
+\itemize{
+\item \eqn{\beta_1} represents the 1st coefficient.
+\item \eqn{\beta_2} represents the 2nd coefficient.
+\item \eqn{\beta_3} represents the 3rd coefficient.
+\item \eqn{\beta_4} represents the 4th coefficient.
+}
 
 \deqn{\boldsymbol{\beta}x^{(p_1,p_2,...,p_m)}}
 for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
-\eqn(x^{(p)}) is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
-If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}
-
-So for a second degree polynomial \eqn{\boldsymbol{\beta}x^{(0,0)}}:
-\deqn{\boldsymbol{\beta}x^{(0,0)}=\beta_1ln(x)+\beta_2ln(x)^2}
+\eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
+If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
 
 Time-course parameters in the model must be specified using a \code{pool} and a \code{method} prefix.
 
