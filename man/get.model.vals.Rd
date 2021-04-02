@@ -2,18 +2,7 @@
 % Please edit documentation in R/predict.functions.R
 \name{get.model.vals}
 \alias{get.model.vals}
-\title{#' Check if any relative effects are specified within time-course parameters in an mbnma model
-#'
-#' @inheritParams predict.mbnma
-#'
-#' @return A boolean object that takes \code{TRUE} if any time-course parameters specify relative effects and \code{FALSE} if not
-#'
-#' @noRd
-check.betas <- function(mbnma) {
-mbnma.betas <- vector()
-for (i in 1:4) {
-mbnma.betas <- append(mbnma.betas, mbnma[\link{"model.arg"}][\link{paste0("beta.", i)}]$pool)
-}}
+\title{Get MBNMA model values}
 \usage{
 get.model.vals(mbnma, E0 = 0, level = "treatments")
 }
@@ -56,37 +45,6 @@ the prediction
 @noRd
 }
 \description{
-if (any(mbnma.betas == "rel")) {
-return(TRUE)
-} else {return(FALSE)}
+Extracts specific information required for prediction from a time-course
+MBNMA model
 }
-#' Get code parameter values from previous MBNMA result
-#'
-#' @inheritParams predict.mbnma
-#'
-#' @return A list with two elements:
-#' * \code{timecourse} A character object that specifies the time-course used in \code{mbnma} (in terms of alpha, beta, and time)
-#' * \code{beta.incl} A numeric vector that indicates the time-course parameters that were included in \code{mbnma}
-#'
-#' @noRd
-init.predict <- function(mbnma) {
-}
-\section{Check betas are specified correctly and prepare format for subsequent functions}{
-for (i in 1:4) {
-betaname <- paste0("beta.", i)
-if (!is.null(mbnma$model.arg[\link{betaname}])) {
-assign(paste0(betaname, ".str"), compound.beta(mbnma$model.arg[\link{betaname}]))
-} else if (is.null(mbnma$model.arg[\link{betaname}])) {
-assign(paste0(betaname, ".str"), NULL)
-}
-}
-
-timecourse <- time.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
-alpha=mbnma$model.arg$alpha, beta.1=beta.1.str, beta.2=beta.2.str,
-beta.3=beta.3.str, beta.4=beta.4.str)[\link{"relationship"}]
-}
-
-\section{Generate vector with indices of betas included in model}{
-
-}
-

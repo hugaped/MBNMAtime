@@ -19,7 +19,7 @@ effects within each study should be plotted. In this way the time-course of both
 effects and the relative effects can be examined.}
 
 \item{link}{Can take either \code{"identity"} (the default),
-\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
 \item{...}{Arguments to be sent to \code{ggplot()}}

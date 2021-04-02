@@ -21,7 +21,7 @@ write.ref.synth(
 \code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{link}{Can take either \code{"identity"} (the default),
-\code{"log"} (for modelling Ratios of Means \insertCite{friedrichROM}{MBNMAtime}) or
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
