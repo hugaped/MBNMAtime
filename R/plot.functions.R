@@ -1020,16 +1020,8 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 
   } else if (plotby=="rel") {
 
-    if (level=="treatment") {
-
-      diffs <- plotdata %>%
-        dplyr::mutate(Rx.Name = factor(network$treatments[.data$treatment], levels=network$treatments))
-
-    } else if (level=="class") {
-
-      diffs <- plotdata %>%
-        dplyr::mutate(Rx.Name = factor(network$classes[.data$class], levels=network$classes))
-    }
+    diffs <- plotdata %>%
+      dplyr::mutate(Rx.Name = factor(network$treatments[.data$treatment], levels=network$treatments))
 
     if (link=="identity") {
       diffs <- diffs %>%
@@ -1064,16 +1056,26 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
                          dplyr::slice(1) %>%
                          dplyr::mutate(time=0, pairDiff=0))
 
-    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID)) +
+    if (level=="class") {
+
+      diffs <- diffs %>%
+        dplyr::mutate(Rx.Name.x = network$classkey$class[match(Rx.Name.x, network$classkey$treatment)],
+                      Rx.Name.y = network$classkey$class[match(Rx.Name.y, network$classkey$treatment)]
+                      )
+    }
+
+    # g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID)) +
+    #   ggplot2::geom_line() +
+    #   ggplot2::geom_point() +
+    #   ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
+
+    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff,
+                                                  # group=.data$studyID),
+                                                  group=paste(.data$studyID, .data$arm.x, .data$arm.y, sep="_")),
+                         ...) +
       ggplot2::geom_line() +
       ggplot2::geom_point() +
       ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
-
-    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID), ...) +
-      ggplot2::geom_line() +
-      ggplot2::geom_point() +
-      ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x)) +
-      theme_mbnma()
 
     if (link=="identity") {
       g <- g + ggplot2::ylab("Response")
@@ -1084,7 +1086,8 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
     }
   }
 
-  g <- g + ggplot2::xlab("Time")
+  g <- g + ggplot2::xlab("Time") +
+    theme_mbnma()
 
   graphics::plot(g)
   return(invisible(g))
