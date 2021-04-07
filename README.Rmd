@@ -49,7 +49,7 @@ install.packages("MBNMAtime")
 Functions within `MBNMAtime` follow a clear pattern of use:
 
 1. Load your data into the correct format using `mb.network()`
-2. Analyse your data using `mb.run()`, or any of the available wrapper time-course functions
+2. Specify a suitable time-course function and analyse your data using `mb.run()`
 3. Test for consistency using functions like `mb.nodesplit()`
 4. Examine model results using forest plots and treatment rankings
 5. Use your model to predict responses using `predict()`

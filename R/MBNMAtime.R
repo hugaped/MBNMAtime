@@ -21,7 +21,7 @@
 #' Functions within `MBNMAtime` follow a clear pattern of use:
 #'
 #' 1. Load your data into the correct format using \code{\link{mb.network}}
-#' 2. Specifying a suitable time-course function and analyse your data using \code{\link{mb.run}}
+#' 2. Specify a suitable time-course function and analyse your data using \code{\link{mb.run}}
 #' 3. Test for consistency using \code{\link{mb.nodesplit}} or by fitting Unrelated Mean Effects models
 #' 4. Examine model results using forest plots and treatment rankings
 #' 5. Use your model to predict responses using \code{\link{predict.mbnma}}

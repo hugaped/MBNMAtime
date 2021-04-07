@@ -1,5 +1,5 @@
 ---
-title: "MBNMAtime for Model-Based (Network) Meta-Analysis"
+title: "MBNMAtime for Time-Course Model-Based (Network) Meta-Analysis"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -29,9 +29,9 @@ load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = 
 
 ## Introduction
 
-This vignette demonstrates how to use `MBNMAtime` to perform meta-analysis of studies with multiple follow-up measurements in order to account for time-course relationships within a single or multiple treatment comparisons. This can either be performed by conducting Model-Based Network Meta-Analysis (MBNMA) to pool relative treatment effects, by conducting Model-Based Meta-Analysis (MBMA) to pool study arms, or a combination of the two methods within the same analysis.
+This vignette demonstrates how to use `MBNMAtime` to perform meta-analysis of studies with multiple follow-up measurements in order to account for time-course relationships within a single or multiple treatment comparisons. This can be performed by conducting Model-Based Network Meta-Analysis (MBNMA) to pool relative treatment effects.
 
-Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments and explains how the response of the treatment changes over time, thus explaining heterogeneity and inconsistency that may be present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS *(version 4.3.0 or later is required)* [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019].
+Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments and explains how the response of the treatment changes over time, thus accounting for heterogeneity and inconsistency that may be present from "lumping" together different time points in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS *(version 4.3.0 or later is required)* [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019], and a simulation study exploring the statistical properties of the method is reported in Pedder et al. [-@pedder2020].
 
 This package has been developed alongside `MBNMAdose`, a package that allows users to perform dose-response MBNMA to allow for modelling of dose-response relationships between different agents within a network. However, *they should not be loaded into R at the same time* as there are a number of functions with shared names that perform similar tasks yet are specific to dealing with either time-course *or* dose-response data.
 
@@ -42,12 +42,12 @@ Within the vignette, some models have not been evaluated, or have been run with 
 Functions within `MBNMAtime` follow a clear pattern of use:
 
 1. Load your data into the correct format using `mb.network()`
-2. Analyse your data using `mb.run()`, or any of the available wrapper time-course functions
+2. Specify a suitable time-course function and analyse your data using `mb.run()`
 3. Test for consistency using functions like `mb.nodesplit()`
 4. Examine model results using forest plots and treatment rankings
 5. Use your model to predict responses using `predict()`
 
-At each of these stages there are a number of informative graphs that can be generated to help understand the data and to make decisions regarding model fitting.
+At each of these stages there are a number of informative graphs that can be generated to help understand the data and make decisions regarding model fitting.
 
 
 ## Datasets Included in the Package
@@ -70,11 +70,20 @@ kable(head(alog_pcfb), digits=2)
 ```
 
 
+### Tiotropium, Aclidinium and Placebo for maintenance treatment of moderate to severe chronic obstructive pulmonary disease
+
+A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic obstructure pulmonary disease (COPD) [@karabis2013]. Data are extracted from [@tallarita2019]. SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing, using the median standard deviation calculated from other studies in the dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean change from baseline to follow-up. The dataset includes 13 RCTs, comparing 2 treatments (Tiotropium and Aclidinium) and placebo. `copd` is a data frame in long format (one row per observation, arm and study), with the variables `studyID`, `time`, `y`, `se`, `treatment`, and `n`.
+
+```{r, echo=FALSE}
+kable(head(copd), digits=2) 
+```
+
+
 ### Body weight reduction in obesity patients
 
-`obesityBW_CFB` is from a systematic review of pharmacological treatments for obesity. The outcome measured is change from baseline in body weight (kg) at different follow-up times. 35 RCTs are included that investigate 26 different treatments (16 agents/agent combinations compared at different doses). `obesityBW_CFB` is a dataset in long format (one row per time point, arm and study), with the variables `studyID`, `time`, `y`, `se`, `N`, `treatment`, `arm`, `treatname`, `agent` and `agentclass`. 
+`obesityBW_CFB` is from a systematic review of pharmacological treatments for obesity. The outcome measured is change from baseline in body weight (kg) at different follow-up times. 35 RCTs are included that investigate 26 different treatments (16 agents/agent combinations compared at different doses). `obesityBW_CFB` is a dataset in long format (one row per time point, arm and study), with the variables `studyID`, `time`, `y`, `se`, `N`, `treatment`, `arm`, `treatname`, `agent` and `class`. 
 
-`agentclass` is the class of a particular `agent` (e.g. Lipase inhibitor)
+`class` is the class of a particular `agent` (e.g. Lipase inhibitor)
 
 ```{r, echo=FALSE}
 kable(head(obesityBW_CFB), digits=2) 
@@ -92,7 +101,7 @@ kable(head(goutSUA_CFB), digits=2)
 
 ## Inspecting the data
 
-Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and time-course relationship) are particularly important for MBNMA/MBMA. For this we want to get our dataset into the right format for the package. We can do this using `mb.network()`. This requires specifying the desired treatment to use for the network reference treatment. 
+Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and time-course relationship) are particularly important for MBNMA. To investigate these we must first get our dataset into the right format for the package. We can do this using `mb.network()`. This requires specifying the desired treatment to use for the network reference treatment, though one will automatically be specified if not given. 
 
 ```{r network.pain}
 # Using the pain dataset
@@ -125,7 +134,7 @@ And finally it converts the data into an object of `class("mb.network")`, which 
 
 ### Network connectivity
 
-Looking at how the evidence in the network is connected and identifying which studies compare which treatments helps to understand which treatment effects can be estimated and what information will be helping to inform those estimates. Network plots can be plotted which shows how treatments have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment (provided `N` is included as a variable in the original dataset for `mb.network()`). 
+Looking at how the evidence in the network is connected and identifying which studies compare which treatments helps to understand which treatment effects can be estimated and what information will be helping to inform those estimates. A network plot can be generated which shows which treatments have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment (provided `N` is included as a variable in the original dataset for `mb.network()`). 
 
 In `MBNMAtime` these plots are generated using `igraph`, and can be plotted by calling `plot()`. The generated plots are objects of `class("igraph")` meaning that, in addition to the options specified in `plot()`, various `igraph` functions can be used to make more detailed edits to them.
 
@@ -148,10 +157,10 @@ plot(network.gout, label.distance = 5)
 ```{r, error = TRUE, purl = FALSE, warning=FALSE, echo=FALSE}
 # Draw network plot in a star layout using the gout dataset
 network.gout <- mb.network(goutSUA_CFB, reference = "Plac")
-suppressWarnings(plot(network.gout, layout=igraph::as_star(), label.distance = 5))
+plot(network.gout, layout=igraph::as_star(), label.distance = 5)
 ```
 
-This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail further on in the vignette, but one approach is to assume some sort of common effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.
+This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail later, but one approach is to assume a shared effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.
 
 ```{r, eval=FALSE}
 plot(network.gout, level = "class", remove.loops = TRUE, label.distance = 5)
@@ -169,13 +178,6 @@ plot(network.gout, level = "treatment", v.color = "class", label.distance = 5)
 suppressWarnings(plot(network.gout, level = "treatment", v.color = "class", label.distance = 5))
 ```
 
-For other analyses on the Gout dataset in this vignette we have taken the approach of combining several very similar doses to generate a network that is more completely connected:
-
-```{r}
-network.gout <- mb.network(goutSUA_CFBcomb, reference="Plac")
-plot(network.gout, label.distance = 5)
-```
-
 
 ### Examining the time-course relationship
 
@@ -189,152 +191,111 @@ network.pain <- mb.network(osteopain, reference="Pl_0")
 timeplot(network.pain)
 ```
 
-As the mean response for all treatments shows a rapid reduction in pain score followed by a leveling out after 2-5 weeks, an exponential decay time-course function might be a reasonable fit for this dataset. More complex alternatives could be Emax models (with or without a Hill parameter), fractional polynomials or a linear piecewise function.
+As the mean response for all treatments shows a rapid reduction in pain score followed by a leveling out after 2-5 weeks, an exponential decay time-course function might be a reasonable fit for this dataset. More complex alternatives could be Emax models (with or without a Hill parameter), fractional polynomials or a spline function.
 
-Responses can also be plotted grouped by some sort of class group rather than by treatment, which may give an indication of whether there are any similarities within a class:
+Responses can also be plotted grouped by class rather than by treatment, and the relative effects between each treatment/class can be plotted instead of the absolute treatment responses. Since the MBNMA framework models the time-course on relative effects [@pedder2019] this can in fact make interpretation of the plots easier with regards to identifying a best-fitting time-course function. 
 
 ```{r obese.time, message=FALSE}
-# Draw plot of raw study responses over time grouped by agent class in the obesity dataset
-network.obese <- mb.network(obesityBW_CFB)
-timeplot(network.obese, level="class")
+# Draw plot of within-study relative effects over time grouped by class
+network.gout <- mb.network(goutSUA_CFBcomb)
+timeplot(network.gout, level="class", plotby="rel")
 ```
 
-In this example many of the profiles are quite different within the same class, which would suggest modelling class effects may be inappropriate.
+In this example many of the profiles appear to be quite different within the same class, which would suggest modelling class effects may be inappropriate.
 
 
 ## Analysis using `mb.run()`
 
-MBNMA/MBMA is performed in the `MBNMAtime` by applying `mb.run()`. This can just as easily be performed on datasets with many different treatments (network meta-analysis) as it can on datasets comparing only two treatments (pairwise meta-analysis) - the syntax is the same.
+MBNMA models are fitted using `mb.run()`. This can just as easily be performed on datasets with many different treatments (network meta-analysis) as it can on datasets comparing only two treatments (pairwise meta-analysis) - the syntax is the same.
 
 An object or `class("mb.network")` must be provided as the data for `mb.run()`. The key arguments within `mb.run()` involve specifying the functional form used to model the time-course, and the time-course parameters that comprise that functional form.
 
 
 #### Time-course functions
 
-Several different functional forms are implemented within `MBNMAtime`, that allow a wide variety of parameterizations and time-course shapes. These are provided to the `fun` argument in `mb.run()`:
+A number of different time-course functions can be fitted within `MBNMAtime` and the specific forms of the time-course parameters are defined by arguments within these functions, and this allows for a wide variety of parameterizations and time-course shapes. For further details check the help files for each function (e.g. `?tloglin()`). These functions, are then used as inputs for the `fun` argument in `mb.run()`.
 
-* `"linear"`
-* `"quadratic"`
-* `"exponential"`
-* `"emax"` - Emax without a Hill parameter
-* `"emax.hill"` - Emax with a Hill parameter
-* `"fract.poly.first"` - first-order fractional polynomial
-* `"fract.poly.second"` - second-order fractional polynomial
-* `"piecelinear"` - piecewise linear with a knot joining the two linear pieces
-* `"user"` - A function that can be specified by the user within `user.fun` (see `?mb.run()`)
+* `tloglin()` - Log-linear function
+* `texp()` - Exponential function
+* `temax()` - Emax function
+* `tpoly()` - Polynomial function (e.g. linear, quadratic)
+* `tfpoly()` - Fractional polynomial function, as proposed previously for time-course NMA by Jansen [-@jansen2015].
+* `tspline()` - Spline functions (includes B-splines, restricted cubic splines, natural splines and piecewise linear splines)
+* `tuser()` - A time-course function that can be explicitly defined by the user
 
+Time-course parameters within time-course functions are each defined by two arguments:
 
-#### Time-course parameters
-
-In `mb.run()` it is possible to specify up to four different time-course parameters, depending on the time-course function used. These are named `beta.1`, `beta.2`, `beta.3` and `beta.4`, and their interpretation varies depending on the time-course function used (see `?mb.run()`). 
-
-For simplification and interpretability, both in the way in which time-course parameters are defined and in how they are reported in the output, there are wrapper functions for `mb.run()` for each of the provided time-course functions. For example, `mb.emax()` is equivalent to `mb.run(fun="emax")`, but with a different naming of time-course parameters (`emax` instead of `beta.1` and `et50` instead of `beta.2`) . A number of these wrapper functions will be shown in other examples in this vignette.
-
-Time-course parameters can be assigned several different specifications, which define the key parameters estimated by the model. These are defined within a list that contains two named elements, `pool` and `method`.
-
-`pool` is used to define the approach used for the pooling of a given time-course parameter and can take any of the following values:
+`pool` is used to define the approach used for the pooling of a given time-course parameter and can either of:
 
 * `"rel"` indicates that relative effects should be pooled for this time-course parameter. This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by Lu and Ades [-@lu2004].
-* `"arm"` indicates that study arms should be pooled within each treatment in the network
-for this time-course parameter. This allows estimation of absolute time-course parameter values, but makes stronger assumptions regarding similarity of studies.
-* `"const"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single value across the network for this time-course parameter, and may therefore be making very strong assumptions of similarity.
+* `"abs"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single absolute value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity.
 
-`method` is used to define the model used for meta-analysis for a given time-course parameter and can take any of the following values:
+`method` is used to define the model used for meta-analysis for a given time-course parameter and can take either of:
 
 * `"common"` implies that all studies estimate the same true effect (akin to a "fixed effects" meta-analysis)
 * `"random"` implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.
-* `numeric()` Assigned a numeric value - this can only be used if `pool="const"`. It indicates that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions or knot location in piecewise functions).
 
-Specifying pooling relative effects (`pool="rel"`) on all time-course parameters would imply performing a contrast-based MBNMA, whereas specifying pooling arm effects (`pool="arm"`) on all of them would imply performing an arm-based MBMA. There has been substantial discussion in the literature regarding the strengths and limitations of both these approaches [@dias2016; @hong2016; @karahalios2017].
+Specifying pooling relative effects on all time-course parameters would imply performing a contrast-based synthesis, whereas specifying pooling absolute effects on all of them would imply performing an arm-based synthesis. There has been substantial discussion in the literature regarding the strengths and limitations of both these approaches [@dias2016; @hong2016; @karahalios2017].
+
+Additional arguments within the function may also be used to specify the degree (e.g. for polynomials) or the number of knots or knot placement for splines.
+
 
 ### Output
 
-`mb.run()` returns an object of `class(c("mbnma", "rjags"))`. `summary()` provides posterior medians and 95% credible intervals for different parameters in the model, with some explanation regarding the way in which the model has been defined. `print()` can also be used to give summary statistics of the posterior distributions for monitored nodes in the JAGS model. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`)
+`mb.run()` returns an object of `class(c("mbnma", "rjags"))`. `summary()` provides summary estimates of posterior densities for different parameters in the model, with some explanation regarding the way in which the model has been defined. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`). Nodes that are automatically monitored (if present in the model) have the following interpretation:
 
-Nodes that are automatically monitored (if present in the model) have the following interpretation. They will have an additional suffix that relates to the name/number of the time-course parameter to which they correspond (e.g. `d.et50` or `beta.1`):
 
-* `d` The pooled relative effect for a given treatment compared to the network reference treatment for a particular time-course parameter, reported if `pool="rel"`
-* `sd.d` The between-study standard deviation (SD) or heterogeneity for relative effects, reported if `pool="rel"` and `method="random"`
-* `D` The class effect for a given class relative to the network reference class for a particular time-course parameter. This will be reported if class effects are applied to a parameter for which `method="rel"`.
-* `sd.D` The standard deviation for the pooled relative effects of treatments within a given class from a model with a random class effect.
-* `beta` If `pool="const"` then only a single node will be present in the output, which corresponds to the absolute value of a particular time-course parameter across the network, If `pool="arm"` then for the relevant time-course parameter there will be one node for each treatment, which represents the absolute value of the time-course parameter for each treatment
-* `sd.beta` Reported if `method="random"` and `pool` is either `"const"` or `"arm"`. If `pool="const"` this represents the between-study SD for the absolute value of a particular time-course parameter exchangeable across the network. If `pool="arm"` this represents the between-study SD for the absolute value of a particular time-course parameter exchangeable by treatment
-* `BETA` The class effect for a given class for a particular time-course parameter, reported as an absolute value. This will be reported if class effects are applied to a parameter for which `method="arm"`.
-* `sd.BETA` The standard deviation for the pooled absolute effects of treatments within a given class from a model with a random class effect.
-* `rho` The correlation coefficient for correlation between time-points. Its interpretation will differ depending on the covariance structure used
-* `totresdev` The residual deviance of the model
-* `deviance` The deviance of the model
+#### Parameters modelled using relative effects
 
-Model fit statistics for `pD` (effective number of parameters) and `DIC` (Deviance Information Criterion) are also reported, with an explanation as to how they have been calculated.
+If pooling is relative (e.g. `pool.1="rel"`) for a given parameter then the named parameter (e.g. `emax`) or a numbered `d` parameter (e.g. `d.1`) corresponds to the pooled relative effect for a given treatment compared to the network reference treatment for this time-course parameter.
+
+`sd.` followed by a named (e.g. `emax`, `beta.1`) is the between-study SD (heterogeneity) for relative effects, reported if pooling for a time-course parameter is relative (e.g. `pool.1="rel"`) *and* the method for synthesis is random (e.g. `method.1="random`).
+
+If class effects are modelled, parameters for classes are represented by the upper case name of the time-course parameter they correspond to. For example if `class.effect=list(emax="random")`, relative class effects will be represented by `EMAX`. The SD of the class effect (e.g. `sd.EMAX`, `sd.BETA.1`) is the SD of treatments within a class for the time-course parameter they correspond to.
+
+
+#### Parameters modelled using absolute effects
+
+If pooling is absolute (e.g. `pool.1="abs"`) for a given parameter then the named parameter (e.g. `emax`) or a numbered `beta` parameter (e.g. `beta.1`) corresponds to the estimated absolute effect for this time-course parameter.
+
+For an absolute time-course parameter if the corresponding method is common (e.g. `method.1="common"`) the parameter corresponds to a single common parameter estimated across all studies and treatments. If the corresponding method is random (e.g. `method.1="random"`) then parameter is a mean effect around which the study-level absolute effects vary with SD corresponding to `sd.` followed by the named parameter (e.g. `sd.emax`, `sd.beta.1`).
+
+
+#### Other model parameters
+
+`rho` is the correlation coefficient for correlation between time-points. Its interpretation will differ depending on the covariance structure specified in `covar`.
+
+`totresdev` is residual deviance of the model and `deviance` is the deviance of the model. Model fit statistics for `pD` (effective number of parameters) and `DIC` (Deviance Information Criterion) are also reported, with an explanation as to how they have been calculated.
 
 
 #### Examples
 
-An example MBNMA of the pain dataset using an exponential time-course function and fixed treatment effects that pool relative effects and assumes consistency between direct and indirect evidence can be performed as follows:
+An example MBNMA of the pain dataset using a linear time-course function and common treatment effects that pool relative effects and assumes consistency between direct and indirect evidence can be performed as follows:
 
 ```{r, results="hide"}
 # Run a linear time-course MBNMA
-mbnma <- mb.run(network.pain, fun="linear", 
-                   beta.1=list(pool="rel", method="common"))
+mbnma <- mb.run(network.pain, fun=tpoly(degree=1, pool.1="rel", method.1="common"))
 ```
 ```{r}
 summary(mbnma)
 ```
-```{r, eval=FALSE}
-# An alternative would be to use a linear wrapper for mb.run() which would give the same result
-mb.linear(network.pain, 
-                  slope=list(pool="rel", method="common"))
-```
 
-In this case the `d.1` (or `d.slope` when using the wrapper function) parameters correspond to the relative effects for each treatment versus the network reference treatment for the time-course parameter `beta.1`, which corresponds to the linear slope/gradient.
+For this model, the `d.1` parameters correspond to the 1st polynomial coefficient, and therefore are the linear gradient of the response over time for each treatment versus `Pl_0` (Placebo). However, note that the residual deviance of the model is very high, suggesting that this time-course function is a poor fit.
 
-
-Instead of pooling relative effects, a different approach could be to use MBMA to pool absolute time-course parameter affects within the same treatment. The following is an example MBMA of the gout dataset which uses an Emax time-course function, with random effects for pooling absolute Emax (`beta.1`) within different treatments and modelling a single common parameter for ET50 (`beta.2`) estimated across all treatments within the network. As the gout data is reported as change from baseline, we do not include an intercept in the model, forcing the response to be zero at `time = 0`.
-
-```{r, results="hide", message=FALSE}
-# Run an emax time-course MBNMA pooling absolute effects
-mbnma <- mb.run(network.gout, fun="emax", 
-                   beta.1=list(pool="arm", method="random"), 
-                   beta.2=list(pool="const", method="common"), 
-                   intercept=FALSE)
-```
-```{r}
-summary(mbnma)
-```
-```{r, eval=FALSE}
-# An alternative would be to use an emax wrapper for mb.run() which would give the same result
-mb.emax(network.gout, 
-           emax=list(pool="arm", method="random"), 
-           et50=list(pool="const", method="common"), 
-           intercept=FALSE)
-```
-
-In this case the `beta.1` parameters in the output correspond to the absolute effect for each treatment for the time-course parameter `beta.1`, which corresponds to Emax. `beta.2` corresponds to the overall absolute effect for the time-course parameter `beta.2`, which corresponds to ET50. `sd.beta.1` is the between-study SD for the absolute effect of `beta.1`.
-
-
-
-Finally, we could perform an analysis that combines both relative and absolute pooling approaches on different time-course parameters. For example an analysis of the pain dataset that models a piecewise linear time-course with fixed pooling of relative treatment effects on the slope of the first linear piece (`beta.1`) and fixed pooling of absolute treatment effects on the slope of the second linear piece (`beta.2`), with a knot (`beta.3`) at 1 week follow-up defined in the model (rather than estimated from the data.
+We may want to fit a more complex time-course function with two time-course parameters, such as an Emax function, yet limitations in the data might require that we make an assumption that one of the parameters does not vary by treatment. We can specify this by setting `pool` to be equal to `"abs"`.
 
 ```{r, results="hide"}
-# Run a piecewise linear time-course MBNMA
-mbnma <- mb.run(network.pain, fun="piecelinear", 
-                   beta.1=list(pool="rel", method="common"), 
-                   beta.2=list(pool="arm", method="common"), 
-                   beta.3=list(pool="const", method=1))
+# Run an Emax time-course MBNMA with two parameters
+mbnma <- mb.run(network.pain, fun=temax(
+  pool.emax = "rel", method.emax="common",
+  pool.et50 = "abs", method.et50="common"
+))
 ```
 ```{r}
 summary(mbnma)
 ```
-```{r, eval=FALSE}
-# An alternative would be to use a piecewise linear wrapper for mb.run() which would give the same result
-mb.piecelinear(network.pain, 
-                  slope.1=list(pool="rel", method="common"), 
-                  slope.2=list(pool="arm", method="common"), 
-                  knot=list(pool="const", method=1), 
-                  n.iter=5000)
-```
 
-This automatically monitors `d.1`, the relative effect for each treatment versus the network reference treatment of the slope of the first linear piece, and `beta.1`, the absolute value of the slope of the second linear piece for each treatment. `beta.3` is not shown in the output as this is defined in the model as taking the value of 1 and has not been estimated from the data.
+In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum relative effect for each treatment versus `Pl_0` (Placebo), whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias.
 
 
 ### Additional model specification with `mb.run()`

@@ -87,7 +87,7 @@
 #' deviations have been imputed for 421 observations.
 #'
 #' `obesityBW_CFB` is a data frame in long format (one row per observation, arm and study),
-#' with the variables `studyID`, `time`, `y`, `se`, `N`, `treatment`, `treatname`, `agent` and `agentclass`.
+#' with the variables `studyID`, `time`, `y`, `se`, `N`, `treatment`, `treatname`, `agent` and `class`.
 #'
 #' @format A data frame with 710 rows and 7 variables:
 #' * `studyID` Study identifiers
@@ -98,7 +98,7 @@
 #' * `treatment` Treatment identifiers as factors. Labels are shortened treatment names.
 #' * `treatname` Character data giving the full names of each treatment in the format agent_dose
 #' * `agent` Agent (drug) names stored as characters
-#' * `agentclass` The drug class of the agent (a broader category than `agent`) stored as characters
+#' * `class` The drug class of the agent (a broader category than `agent`) stored as characters
 #'
 #' @source Pfizer Ltd.
 "obesityBW_CFB"
