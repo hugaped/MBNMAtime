@@ -206,7 +206,7 @@ print.class.str <- function(mbnma, digits=4, ...) {
 
       # Select summary rows that correspond to parameter of interest
       index <- grepl(paste0("^", toupper(names(classes)[i])), rownames(treat.df)) |
-        grepl(paste0("^D\\.", i), rownames(treat.df))
+        grepl(paste0("^D\\.", which(object$model.arg$fun$params==names(classes)[i])), rownames(treat.df))
 
       param.df <- data.frame(treat=mbnma$network$classes,
                              param=rownames(treat.df)[index],
@@ -222,7 +222,7 @@ print.class.str <- function(mbnma, digits=4, ...) {
         cat("\nWithin-class SD modelled for this parameter:")
 
         index <- grepl(paste0("^sd\\.", toupper(names(classes)[i])), rownames(treat.df)) |
-          grepl(paste0("^sd\\.D\\.", i), rownames(treat.df))
+          grepl(paste0("^sd\\.D\\.", which(object$model.arg$fun$params==names(classes)[i])), rownames(treat.df))
 
         param.df <- data.frame(param=rownames(treat.df)[index],
                                median=treat.df[index,'50%'],
