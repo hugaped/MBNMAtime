@@ -1,5 +1,5 @@
 ---
-title: "MBNMAtime for Time-Course Model-Based (Network) Meta-Analysis"
+title: "MBNMAtime for Time-Course Model-Based (Network) Meta-Analysis (Version 0.2.0)"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -311,7 +311,7 @@ However, in addition to this, it's also necessary to specify a value for `rho`, 
 * Given as a single numeric value, which indicates that the correlation should be fixed to that value. For example, this value could be estimated externally from another study using Individual Participant Data. This could also be used to run a deterministic sensitivity analysis using different fixed values of `rho`.
 
 
-```{r, eval=FALSE}
+```{r, results="hide"}
 # Using the COPD dataset
 network.copd <- mb.network(copd)
 
@@ -333,7 +333,7 @@ Class effects can only be applied to time-course parameters which vary by treatm
 
 In `mb.run()` class effects are specified as a list, in which each element is named by the time-course parameter on which it should be modelled. The class effect for each time-course parameter can be either `"common"`, in which the effects for each treatment within the same class are constrained to a common class effect, or `"random"`, in which the effects for each treatment within the same class are assumed to be randomly distributed around a shared class mean.
 
-```{r, results="hide", eval=TRUE}
+```{r, results="hide", message=FALSE, warning=FALSE, eval=TRUE}
 # Run a B-spline time-course MBNMA with a knot at 0.2 times the max follow-up
 # Common class effect on beta.2, the 2nd spline coefficient
 mbnma <- mb.run(network.gout, 
@@ -372,7 +372,15 @@ $$
 \end{aligned}
 $$
 
-$\mu_i$ is the study reference effect (modelled as a nuisance parameter) in study $i$, $\alpha_i$ is the response at time=0 in study $i$, $\boldsymbol{d}_{t}$ is a vector of pooled relative effects for treatment $t$ whose length is the number of time-course parameters in the model, $\beta_{\phi}$ is the absolute effect for time-course parameter $\phi$ modelled independently of treatment, $D_{\phi,c}$ is the class relative effect for time-course parameter $\phi$ in class $c$, $\tau_{\phi}$ is the between-study SD for time-course parameter $\phi$, $\tau^D_{\phi}$ is the within-class SD for time-course parameter $\phi$, $\Omega$ is a diagonal scale matrix specified in `var.scale`, and `k` is the degrees of freedom for the inverse-Wishart distribution, equal to the number of time-course parameters.
+* $\mu_i$ is the study reference effect (modelled as a nuisance parameter) in study $i$
+* $\alpha_i$ is the response at time=0 in study $i$
+* $\boldsymbol{d}_{t}$ is a vector of pooled relative effects for treatment $t$ whose length is the number of time-course parameters in the model
+* $\beta_{\phi}$ is the absolute effect for time-course parameter $\phi$ modelled independently of treatment
+* $D_{\phi,c}$ is the class relative effect for time-course parameter $\phi$ in class $c$
+* $\tau_{\phi}$ is the between-study SD for time-course parameter $\phi$
+* $\tau^D_{\phi}$ is the within-class SD for time-course parameter $\phi$
+* $\Omega$ is a diagonal scale matrix specified in `var.scale`
+* $k$ is the degrees of freedom for the inverse-Wishart distribution, equal to the number of time-course parameters
 
 Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
 
@@ -530,7 +538,7 @@ Rankings can be calculated for different time-course parameters from MBNMA model
 
 In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
 
-```{r, eval=FALSE, results="hide"}
+```{r, eval=TRUE, results="hide"}
 # Identify quantile for knot at 1 week
 timequant <- 1/max(network.pain$data.ab$time)
 
@@ -577,7 +585,7 @@ mbnma <- mb.run(network.pain,
                 rho="dunif(0,1)", covar="varadj")
 
 # Specify placebo time-course parameters
-ref.params <- list(emax=-2, et50=-0.7)
+ref.params <- list(emax=-2)
 
 # Predict responses for a selection of treatments using a stochastic E0 and
 # placebo parameters defined in ref.params to estimate the network reference treatment effect
@@ -592,7 +600,7 @@ print(pred)
 The second is to assign `ref.resp` a data frame composed of single-arm studies of the network reference treatment. A separate synthesis model for the reference treatment effect will then be run, and the values from this used as the prediction reference treatment effect. This dataset could be a series of obesrvational studies measured at multiple follow-up times that closely match the population of interest for the prediction. Alternatively it could be a subset of data from the original RCT dataset used for the MBNMA model (though this may be less generalisable to the population of interest).
 
 ```{r, results="hide", message=FALSE}
-# Generate a dataset that is made up only of network reference treatment responses over time (in this case placebo)
+# Generate a dataset of network reference treatment responses over time
 placebo.df <- network.pain$data.ab[network.pain$data.ab$treatment==1,]
 
 # Predict responses for a selection of treatments using a deterministic E0 and 
@@ -621,6 +629,8 @@ To illustrate a situation in which this could be very informative, we can look a
 
 ```{r, fig.height=3, results="hide"}
 # Fit a quadratic time-course MBNMA to the Obesity dataset
+network.obese <- mb.network(obesityBW_CFB, reference = "plac")
+
 mbnma <- mb.run(network.obese,
                 fun=tpoly(degree=2,
                           pool.1 = "rel", method.1="common",
@@ -702,7 +712,7 @@ ume.slope.2 <- mb.run(network.pain,
                             ),
               UME="beta.2")
 ```
-```{r, echo=FALSE, eval=FALSE, include=FALSE}
+```{r, echo=FALSE, eval=TRUE, include=FALSE}
 umelist.1 <- list(paste("Deviance for mbnma:", 
                         round(mbnma$BUGSoutput$median$deviance,2), sep=" "),
                 paste("Deviance for ume on slope.1 and slope.2:", 
@@ -712,7 +722,7 @@ umelist.1 <- list(paste("Deviance for mbnma:",
                 paste("Deviance for ume on slope.2:", 
                       round(ume.slope.2$BUGSoutput$median$deviance,2), sep=" ")
                 )
-save(umelist.1, file="umelist.1.Rdata")
+#save(umelist.1, file="umelist.1.Rdata")
 ```
 ```{r, echo=FALSE}
 for (i in seq_along(umelist.1)) {
@@ -735,7 +745,7 @@ Another approach for consistency checking is node-splitting. This splits contrib
 
 As up to two models will need to be run for each treatment comparison to split, this function can take some time to run.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # Nodesplit using an Emax MBNMA
 nodesplit <- mb.nodesplit(network.pain,
                           fun=temax(pool.emax="rel", method.emax = "random",
@@ -758,7 +768,7 @@ for (i in seq_along(nodesplit)) {
     nodesplit[[i]][[k]]$density.plot <- list(data=ggdat)
   }
 }
-save(nodesplit, file="nodesplit.1.RData")
+#save(nodesplit, file="nodesplit.1.RData")
 ```
 ```{r}
 print(nodesplit)

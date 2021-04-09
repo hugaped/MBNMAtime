@@ -288,7 +288,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 #' }
 #'
 #' @export
-plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
+plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE, overlay.nma=NULL,
                            col="blue", max.col.scale=NULL, treat.labs=NULL, ...) {
 
   # Run checks
@@ -571,6 +571,16 @@ alpha.scale <- function(n.cut, col="blue") {
   }
 
   return(hexcol)
+}
+
+
+
+
+
+overlay.nma <- function(incl.range) {
+
+  nmanet <- network$data.ab[network$data.ab$time>]
+
 }
 
 
