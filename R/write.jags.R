@@ -42,7 +42,7 @@
 #'
 #' @export
 mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
-                     rho=0, covar="varadj", var.scale=NULL,
+                     rho=0, covar="varadj", omega=NULL,
                      class.effect=list(), UME=FALSE) {
 
 
@@ -71,7 +71,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   }
 
   write.check(fun=fun, positive.scale=positive.scale, intercept=intercept, link=link,
-              rho=rho, covar=covar, var.scale=var.scale,
+              rho=rho, covar=covar, omega=omega,
               class.effect=class.effect, UME=UME)
 
   model <- write.model()
@@ -88,7 +88,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 
 
 
-  model <- write.cor(model=model, fun=fun, cor=cor, var.scale=var.scale, class.effect = class.effect)
+  model <- write.cor(model=model, fun=fun, cor=cor, omega=omega, class.effect = class.effect)
 
   model <- add.funparams(model=model, fun=fun)
 
@@ -115,14 +115,14 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 #'   correlation between time points if it passes.
 #'
 write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=0, covar=NULL,
-                        var.scale=NULL, link="identity",
+                        omega=NULL, link="identity",
                         class.effect=list(), UME=c()) {
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(link, choices=c("identity", "log", "smd"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
-  checkmate::assertNumeric(var.scale, null.ok = TRUE, add=argcheck)
+  checkmate::assertMatrix(omega, null.ok = TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", add = argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -162,6 +162,25 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=0
 
   if (any(fun$apool[which(fun$params %in% names(class.effect))] == "abs")) {
     stop("Class effects can only be specified for time-course parameters in 'fun' that have been modelled as pool='rel'")
+  }
+
+  # Check omega is symmetric positive definite matrix with correct dimensions
+  if (!is.null(omega)) {
+    err <- FALSE
+
+    nrel <- sum(fun$apool %in% "rel")
+    if (!all(dim(omega)==nrel)) {
+      err <- TRUE
+    }
+    if (!isSymmetric(omega)) {
+      err <- TRUE
+    }
+    if (any(eigen(omega)$values <= 0)) {
+      err <- TRUE
+    }
+    if (err==TRUE) {
+      stop("omega must be a symmetric positive definite matrix with dimensions equal to the number of\ntime-course parameters modelled as pool='rel'")
+    }
   }
 
 }
@@ -616,7 +635,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 #'
 #' @inheritParams mb.run
 #' @inheritParams write.beta
-write.cor <- function(model, fun, cor="estimate", var.scale=NULL, class.effect=list()) {
+write.cor <- function(model, fun, cor="estimate", omega=NULL, class.effect=list()) {
 
   if (length(class.effect)>0) {
     message("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
@@ -629,7 +648,7 @@ write.cor <- function(model, fun, cor="estimate", var.scale=NULL, class.effect=l
     if (mat.size>=2) {
       model <- write.cov.mat(model, sufparams=sufparams,
                              cor=cor, cor.prior="wishart",
-                             var.scale=var.scale)
+                             omega=omega)
     }
   }
   return(model)
@@ -646,21 +665,14 @@ write.cor <- function(model, fun, cor="estimate", var.scale=NULL, class.effect=l
 #'  matrix size).
 #' @noRd
 write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
-                          var.scale=NULL) {
+                          omega=NULL) {
 
   jagswish <- c(
     "for (r in 1:mat.size) {",
     "d.prior[r] <- 0",
     "}",
     "",
-    "inv.R ~ dwish(Omega[,], mat.size)",
-    "",
-    "for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles",
-    "for (c in (r+1):mat.size) {",
-    "Omega[r,c] <- 0   # Lower triangle",
-    "Omega[c,r] <- 0   # Upper triangle",
-    "}",
-    "}"
+    "inv.R ~ dwish(omega[,], mat.size)"
   )
 
   jagsrho <- c(
@@ -711,21 +723,21 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     #                       x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
 
     model <- model.insert(model, pos=which(names(model)=="end"),
-                          x=paste0("muinv.R ~ dwish(Omega[,], ", mat.size, ")"))
+                          x=paste0("muinv.R ~ dwish(omega[,], ", mat.size, ")"))
 
-    # Check that var.scale has correct length and add omega to code
-    if (is.null(var.scale)) {
-      var.scale <- rep(1,mat.size)
-    } else if (length(var.scale)!=mat.size) {
-      stop(paste0("`var.scale` must be a numeric vector whose length is the size of the covariance matrix for dose-response parameters.\nCovariance matrix size = ", mat.size))
-    }
-    for (i in seq_along(var.scale)) {
-
-      # Insert Omega
-      model <- model.insert(model, pos=which(names(model)=="end"),
-                            x=paste0("Omega[", i, ",", i, "] <- ", var.scale[i]))
-
-    }
+    # # Check that var.scale has correct length and add omega to code
+    # if (is.null(var.scale)) {
+    #   var.scale <- rep(1,mat.size)
+    # } else if (length(var.scale)!=mat.size) {
+    #   stop(paste0("`var.scale` must be a numeric vector whose length is the size of the covariance matrix for dose-response parameters.\nCovariance matrix size = ", mat.size))
+    # }
+    # for (i in seq_along(var.scale)) {
+    #
+    #   # Insert omega
+    #   model <- model.insert(model, pos=which(names(model)=="end"),
+    #                         x=paste0("omega[", i, ",", i, "] <- ", var.scale[i]))
+    #
+    # }
 
   }
   addcode <- gsub("mat\\.size", mat.size, addcode)
@@ -820,7 +832,7 @@ get.prior <- function(model) {
   }
 
   priorcode <- model[c(grep("^.+~ [A-z]+\\([-?0-9]", model),
-                       grep("^.+~ [A-z]+\\(Omega", model))]
+                       grep("^.+~ [A-z]+\\(omega", model))]
 
   priorlist <- strsplit(priorcode, split=" +?~ +?")
   priors <- list()

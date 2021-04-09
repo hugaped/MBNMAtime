@@ -26,11 +26,11 @@
 #'   `"log"` (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 #'   `"smd"` (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).
 #'
-#' @param rho The correlation coefficient when modelling correlation between time points. The default is a string representing a
+#' @param rho The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 #'   prior distribution in JAGS, indicating that it be estimated from the data (e.g. `rho="dunif(0,1)"`). `rho` also be assigned a
 #'   numeric value (e.g. `rho=0.7`), which fixes `rho` in the model to this value (e.g. for use in a deterministic sensitivity analysis).
 #'   If set to `rho=0` (the default) then this implies modelling no correlation between time points.
-#' @param covar A character specifying the covariance structure to use for modelling correlation between time-points. This can
+#' @param covar A character specifying the covariance structure to use for modelling within-study correlation between time-points. This can
 #'   be done by specifying one of the following:
 #'   * `"varadj"` - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 #'   time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
@@ -39,11 +39,11 @@
 #'   * `"AR1"` - a multivariate normal likelihood with an
 #'     \href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
 #'
-#' @param var.scale A numeric vector indicating the relative scale of variances between
-#' correlated time-course parameters when relative effects are modelled on more than
-#' one time-course parameter(see Details). Each element of
-#' the vector refers to the relative scale of each of the time-course parameters that is
-#' modelled using relative effects.
+#' @param omega A scale matrix for the inverse-Wishart prior for the covariance matrix used
+#' to model the correlation between time-course parameters (see Details for time-course functions). `omega` must
+#' be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
+#' relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
+#' is used.
 #'
 #' @param class.effect A list of named strings that determines which time-course
 #'   parameters to model with a class effect and what that effect should be
@@ -237,7 +237,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       link="identity",
                       parameters.to.save=NULL,
                       rho=0, covar="varadj",
-                      var.scale=NULL,
+                      omega=NULL,
                       class.effect=list(), UME=FALSE,
                       pd="pd.kl", parallel=FALSE,
                       priors=NULL,
@@ -267,7 +267,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       positive.scale=positive.scale, intercept=intercept,
                       rho=rho, covar=covar,
                       class.effect=class.effect, UME=UME,
-                      var.scale=var.scale
+                      omega=omega
     )
 
     if (!is.null(priors)) {
@@ -310,7 +310,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 
   data.ab <- network[["data.ab"]]
   result.jags <- mb.jags(data.ab, model, fun=fun, link=link,
-                       class=class, rho=rho, covar=covar,
+                       class=class, rho=rho, covar=covar, omega=omega,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
                        n.burnin=n.burnin, n.thin=n.thin,
@@ -347,7 +347,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
-                    "var.scale"=var.scale,
+                    "omega"=omega,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
@@ -370,7 +370,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                        class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
-                       likelihood=NULL,
+                       likelihood=NULL, omega=NULL,
                        warn.rhat=FALSE, ...) {
 
   # Run checks
@@ -387,10 +387,10 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   if (is.null(likelihood)) {
     # For MBNMAtime
     jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
-  } else if (is.null(rho) & is.null(covar)) {
-    # For MBNMAdose
-    # jagsdata <- getjagsdata(data.ab, class=class,
-    #                         likelihood=likelihood, link=link) # get data into jags correct format
+  }
+
+  if (!is.null(omega)) {
+    jagsdata[["omega"]] <- omega
   }
 
 

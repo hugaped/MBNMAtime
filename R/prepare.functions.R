@@ -502,6 +502,12 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
     }
   }
 
+  # If multiple time-course parameters are relative effects then add omega default
+  relparam <- fun$apool %in% "rel"
+  if (sum(relparam)>1) {
+    datalist[["omega"]] <- diag(as.numeric(relparam))
+  }
+
   # mat.triangle <- vector()
   # p <- 1
   # for (i in 2:max(datalist$fups)) {
