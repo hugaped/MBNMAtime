@@ -548,7 +548,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
           model <- model.insert(model, pos=which(names(model)=="te"),
                                 x=paste0("delta.", i, "[i,k] <- d.", i, "[treat[i,1],treat[i,k]]"))
 
-        } else if (fun$amethod=="random") {
+        } else if (fun$amethod[i]=="random") {
           # Insert UME random effect
           model <- model.insert(model, pos=which(names(model)=="te"),
                                 x=paste0("delta.", i, "[i,k] ~ dnorm(d.", i, "[treat[i,1],treat[i,k]], tau.", i, ")"))
