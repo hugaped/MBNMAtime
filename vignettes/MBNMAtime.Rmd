@@ -23,7 +23,7 @@ library(MBNMAtime)
 library(rmarkdown)
 library(knitr)
 library(dplyr)
-load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
+#load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
 
@@ -395,11 +395,11 @@ mbnma <- mb.run(network.copd,
 
 #### pD (effective number of parameters)
 
-The default value for `pd` in `mb.run()` is `pd="pd.kl"`, which uses the Kullback-Leibler divergence [@plummer2008]. This is more reliable than the default method used in `R2jags` for calculating the effective number of parameters from non-linear models. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
+The default value for `pd` in `mb.run()` is `pd="pv"`, which uses the rapid approach automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to the effective number of parameters, and may be numerically unstable [@gelman2003]. However, it has been shown to be reliable for model comparison in time-course MBNMA models in a simulation study [@pedder2020].
 
-A more rapid approach is to use the value automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to the effective number of parameters, and may be numerically unstable [@gelman2003]. However, it has been shown to be reliable for model comparison in time-course MBNMA models in a simulation study [@pedder2020].
+A more reliable method for estimating `pd` is `pd="pd.kl"`, which uses the Kullback-Leibler divergence [@plummer2008]. This is more reliable than the default method used in `R2jags` for calculating the effective number of parameters from non-linear models. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
 
-A commonly-used approach for calculating pD is the plug-in method (`pd="plugin"`) [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models.
+A commonly-used approach in Bayesian models for calculating pD is the plug-in method (`pd="plugin"`) [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models.
 
 Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  which allows for calculation of the penalized expected deviance [@plummer2008]. This adjustment allows for the fact that data used to estimate the model is the same as that used to assess its parsimony. As for `pd="pd.kl"`, it also requires running additional MCMC iterations.
 
@@ -657,7 +657,7 @@ print(splits.alog)
 ```
 
 
-### Unrelated Mean Effects (UME) model
+### Unrelated Mean Effects (UME) models
 
 To check for consistency using UME we fit a model that does not assume consistency relationships, and that only models the direct relative effects between each arm in a study and the study reference treatment. If the consistency assumption holds true then the results from the UME model and the MBNMA will be very similar. However, if there is a discrepancy between direct and indirect evidence in the network, then the consistency assumption may not be valid, and the UME results are likely differ in several ways:
 
@@ -667,35 +667,40 @@ To check for consistency using UME we fit a model that does not assume consisten
 
 UME can be fitted to any time-course parameter which has been modelled using relative effects (`pool="rel"`). UME can be specified for each time-course parameter in separate analyses, or can be modelled all at once in a single analysis.
 
-```{r, eval=FALSE}
-# Fit a piecewise linear MBNMA with fixed relative effects on slope.1 and slope.2
-mbnma <- mb.piecelinear(network.pain, 
-                           slope.1=list(pool="rel", method="common"), 
-                           slope.2=list(pool="rel", method="common"), 
-                           knot=list(pool="const", method=0.5),
-                           pd="pd.kl")
+```{r, eval=TRUE, results="hide"}
+# Identify quantile for knot at 0.5 weeks
+timequant <- 0.5/max(network.pain$data.ab$time)
 
-# Fit a UME model on both slope parameters simultaneously in a piecewise linear MBNMA
-ume <- mb.piecelinear(network.pain, 
-                         slope.1=list(pool="rel", method="common"),
-                         slope.2=list(pool="rel", method="common"), 
-                         knot=list(pool="const", method=0.5),
-                         UME=TRUE, pd="pd.kl")
+# Fit a B-spline MBNMA with common relative effects on slope.1 and slope.2
+mbnma <- mb.run(network.pain,
+                fun=tspline(type="bs", knots=timequant,
+                            pool.1 = "rel", method.1="common",
+                            pool.2 = "rel", method.2="common"
+                            ))
 
-# Fit a UME model on slope.1 only in a piecewise linear MBNMA
-ume.slope.1 <- mb.piecelinear(network.pain, 
-                         slope.1=list(pool="rel", method="common"),
-                         slope.2=list(pool="rel", method="common"), 
-                         knot=list(pool="const", method=0.5),
-                         UME="slope.1", pd="pd.kl")
+# Fit a UME model on both spline coefficients simultaneously
+ume <- mb.run(network.pain,
+                fun=tspline(type="bs", knots=timequant,
+                            pool.1 = "rel", method.1="common",
+                            pool.2 = "rel", method.2="common"
+                            ),
+              UME=TRUE)
 
-# Fit a UME model on slope.2 only in a piecewise linear MBNMA
-ume.slope.2 <- mb.piecelinear(network.pain, 
-                         slope.1=list(pool="rel", method="common"),
-                         slope.2=list(pool="rel", method="common"), 
-                         knot=list(pool="const", method=0.5),
-                         UME="slope.2", pd="pd.kl")
+# Fit a UME model on the 1nd coefficient only
+ume.slope.1 <- mb.run(network.pain,
+                fun=tspline(type="bs", knots=timequant,
+                            pool.1 = "rel", method.1="common",
+                            pool.2 = "rel", method.2="common"
+                            ),
+              UME="beta.1")
 
+# Fit a UME model on the 2nd coefficient only
+ume.slope.2 <- mb.run(network.pain,
+                fun=tspline(type="bs", knots=timequant,
+                            pool.1 = "rel", method.1="common",
+                            pool.2 = "rel", method.2="common"
+                            ),
+              UME="beta.2")
 ```
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
 umelist.1 <- list(paste("Deviance for mbnma:", 
@@ -715,59 +720,16 @@ for (i in seq_along(umelist.1)) {
 }
 ```
 
-
-By comparing the deviance (or residual deviance) of models with UME fitted on different time-course parameters and the MBNMA model, we can see that there is some reduction in deviance in the different UME models. Given that deviance is lowest when UME is modelled only on `slope.1` this is suggestive of inconsistency between direct and indirect evidence on `slope.1`, but perhaps also on `slope.2` given that modelling UME on this also leads to a reduction in deviance.
-
-```{r, eval=FALSE}
-# Run an Emax MBNMA with random relative effects on emax
-mbnma <- mb.emax(network.gout, 
-                    emax=list(pool="rel", method="random"), 
-                    et50=list(pool="const", method="common"), 
-                    n.iter=10000, n.thin=10,
-                    intercept=FALSE)
-
-# Fit a UME model on Emax parameters
-ume <- mb.emax(network.gout, 
-                  emax=list(pool="rel", method="random"), 
-                  et50=list(pool="const", method="common"), 
-                  n.iter=10000, n.thin=10,
-                  intercept=FALSE, UME=TRUE)
-```
-
-```{r, echo=FALSE, eval=FALSE, include=FALSE}
-umelist.2 <- list(paste("Deviance for mbnma:", round(mbnma$BUGSoutput$median$deviance,2), sep=" "),
-                paste("Deviance for UME:", round(ume$BUGSoutput$median$deviance,2), sep=" ")
-                )
-umelist.sd <- list(paste("SD for mbnma:", round(mbnma$BUGSoutput$median$sd.emax,2), sep=" "),
-                   paste("SD for UME:", round(ume$BUGSoutput$median$sd.emax,2), sep=" "))
-save(umelist.2, umelist.sd, file="umelist2.RData")
-```
-```{r, echo=FALSE}
-for (i in seq_along(umelist.2)) {
-  print(umelist.2[[i]])
-}
-```
-
-
-In the gout dataset, the deviances for MBNMA and UME models are very similar when modelling an Emax time-course, suggesting that the consistency assumption is likely to be reasonable. 
-
-As these model random relative treatment effects, we can also compare the between-study SDs. The SD for the UME model is slightly higher, suggesting that assuming consistency in the MBNMA model is not leading to higher between-study SD. This is further evidence to support the consistency assumption.
-
-```{r, echo=FALSE}
-# Compare between-study SD between models
-for (i in seq_along(umelist.sd)) {
-  print(umelist.sd[[i]])
-}
-```
+By comparing the deviance (or residual deviance) of models with UME fitted on different time-course parameters and the MBNMA model, we can see that there is some reduction in deviance in the different UME models. Given that deviance is lowest when UME is modelled only on `beta.1` this is suggestive of inconsistency between direct and indirect evidence on `beta.1`, but perhaps also on `beta.2` given that modelling UME on this also leads to a reduction in deviance.
 
 Direct estimates from UME and MBNMA models can also be compared to examine in greater detail how inconsistency may be affecting results. However, it is important to note that whilst a discrepancy between UME and MBNMA results may be seen for a particular relative effect, the inconsistency is not exclusively applicable to that particular treatment comparison and may originate from other comparisons in the network. This is why consistency checking is so important, as a violation of the consistency assumption raises concerns about estimates for all treatments within the network.
 
 
 ### Node-splitting
 
-Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity. `mb.nodesplit()` takes similar arguments to `mb.run()` that define the underlying MBNMA model in which to test for consistency, and returns an object of `class("mb.nodesplit")`. Currently node-splitting does not work with any of the wrapper function for `mb.run()`. There are two additional arguments required:
+Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity. `mb.nodesplit()` takes similar arguments to `mb.run()` that define the underlying MBNMA model in which to test for consistency, and returns an object of `class("mb.nodesplit")`. There are two additional arguments required:
 
-`comparisons` indicates on which treatment comparisons to perform a node-split. The default value for this is to automatically identify these using `mb.nodesplit.comparisons()`.
+`comparisons` indicates on which treatment comparisons to perform a node-split. The default value for this is to automatically identify all comparisons for which both direct and indirect evidence contributions are available using `mb.nodesplit.comparisons()`.
 
 `nodesplit.parameters` indicates on which time-course parameters to perform a node-split. This can only take time-course parameters that have been assigned relative effects in the model (`pool="rel"`). Alternatively the default `"all"` can be used to split on all available time-course parameters in the model that have been pooled using relative effects.
 
@@ -775,11 +737,11 @@ As up to two models will need to be run for each treatment comparison to split, 
 
 ```{r, eval=FALSE}
 # Nodesplit using an Emax MBNMA
-nodesplit <- mb.nodesplit(network.pain, fun="emax", 
-                             beta.1=list(pool="rel", method="random"), 
-                             beta.2=list(pool="const", method="common"), 
-                             nodesplit.parameters="all")
-
+nodesplit <- mb.nodesplit(network.pain,
+                          fun=temax(pool.emax="rel", method.emax = "random",
+                                    pool.et50="abs", method.et50 = "common"),
+                          nodesplit.parameters="all"
+                          )
 ```
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
 for (i in seq_along(nodesplit)) {
@@ -804,13 +766,6 @@ print(nodesplit)
 
 Performing the `print()` method on an object of `class("mb.nodesplit")` prints a summary of the node-split results to the console, whilst the `summary()` method will return a data frame of posterior summaries for direct and indirect estimates for each split treatment comparison and each time-course parameter. 
 
-The node-split object itself is a list with results for each time-course parameter, for each treatment comparison that has been split. There is a lot of information within the results, but the most useful (and easily interpretable) elements are:
-
-* `p.values` the Bayesian p-value for the posterior overlap between direct and indirect estimates
-* `quantiles` the median and 95%CrI of the posterior distributions for direct and indirect evidence, and for the difference between them, as well as the pooled (MBNMA) result.
-* `forest.plot` a forest plot that shows the median and 95% CrI for direct and indirect estimates
-* `density.plot` a plot that shows the posterior distributions for direct and indirect estimates
-
 It is possible to generate different plots of each node-split comparison using `plot()`:
 
 ```{r, fig.height=2.5, fig.show="hold"}
@@ -821,40 +776,21 @@ plot(nodesplit, plot.type="forest")
 plot(nodesplit, plot.type="density")
 ```
 
-As a further example, if we use a different time-course function (piecewise linear - as in the section on UME models) that is a less good fit for the data, and perform a node-split on both `beta.1` and `beta.2` time-course parameters, we find that there seems to be a strong discrepancy between direct and indirect estimates for `beta.1` and a smaller, yet still potentially important discrepancy for `beta.2`. This is in agreement with the results from the UME models, that were suggestive of inconsistency in this MBNMA model. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain why this might be the case.
+As a further example, if we use a different time-course function (exponential) that is a less good fit for the data, and perform a node-split on the `rate` time-course parameter, we find that there seems to be a strong discrepancy between direct and indirect estimates. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain whether differences in studies making different comparisons may be causing this.
 
-This highlights the importance of testing for consistency *after* identifying an appropriate time-course and common/random effects model.
+This highlights the importance of testing for consistency *after* identifying an appropriate time-course and common/random treatment effects model.
 
-```{r, eval=FALSE}
-# Nodesplit on beta.1 and beta.2 using a piecewise linear MBNM
-ns.plin <- mb.nodesplit(network.pain, fun="piecelinear", 
-                             beta.1=list(pool="rel", method="common"), 
-                             beta.2=list(pool="rel", method="common"), 
-                             beta.3=list(pool="const", method=0.5),
-                             nodesplit.parameters="all")
-```
-```{r, echo=FALSE, eval=FALSE, include=FALSE}
-for (i in seq_along(ns.plin)) {
-  for (k in seq_along(ns.plin[[i]])) {
-    ns.plin[[i]][[k]]$direct <- NULL
-    ns.plin[[i]][[k]]$indirect <- NULL
-    
-    ggdat <- ns.plin[[i]][[k]]$forest.plot$data
-    ns.plin[[i]][[k]]$forest.plot <- NULL
-    ns.plin[[i]][[k]]$forest.plot <- list(data=ggdat)
-    
-    ggdat <- ns.plin[[i]][[k]]$density.plot$data
-    ns.plin[[i]][[k]]$density.plot <- NULL
-    ns.plin[[i]][[k]]$density.plot <- list(data=ggdat)
-  }
-}
-save(ns.plin, file="nodesplit.2.RData")
+```{r, results="hide"}
+# Nodesplit on rate using an exponential MBNMA
+ns.exp <- mb.nodesplit(network.pain,
+                       fun=texp(pool.rate = "rel", method.rate="common"),
+                       nodesplit.parameters="all")
 ```
 
 ```{r, fig.height=2.5}
-print(ns.plin)
+print(ns.exp)
 
-plot(ns.plin, plot.type="forest")
+plot(ns.exp, plot.type="forest")
 ```
 
 
