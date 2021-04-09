@@ -295,95 +295,64 @@ mbnma <- mb.run(network.pain, fun=temax(
 summary(mbnma)
 ```
 
-In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum relative effect for each treatment versus `Pl_0` (Placebo), whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias.
+In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum relative effect for each treatment versus `Pl_0` (Placebo), whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias. Further exploration of information required for reliable estimation of time-course parameters is given in Pedder et al. [-@pedder2020].
 
 
 ### Additional model specification with `mb.run()`
 
 #### Correlation between time points
 
-Correlation between time points can easily be modelled using `mb.run()`, though this requires some additional considerations . The simplest approach is to set `rho = "estimate"` in `mb.run()`, which will estimate `rho` from the data, and then define a covariance structure using `covar`. A simple compound symmetry (`"CS"`) covariance structure can be used, which assumes the same correlation between responses at any two time points. Alternatively, an autoregressive AR1 structure (`"AR1"`), allows for responses at closer time points to be more strongly correlated.
+Within-study correlation between time points can easily be modelled using `mb.run()`, though this requires some additional considerations. The simplest approach is to incorporate correlation by using a variance adjustment [@jansen2015]. This avoids the need to use a multivariate normal likelihood (which is slow to run), and it assumes a common correlation between neighbouring time-points. This is achieved by using the argument `covar="varadj"`, which is the default in `mb.run()`. 
 
-As with `beta` time-course parameters in the model, we can also assign `rho` a numeric value if we do not want to estimate it within the model. For example this could be estimated from external data, or one might wish to run a deterministic sensitivity analysis with different value of `rho`.
+There are two alternative covariance structures can be modelled, though these require fitting a multivariate normal likelihood and therefore take longer to run. `covar="CS"` specifies fitting a Compound Symmetry covariance structure, whilst `covar="AR1"` specifies fitting an autoregressive AR1 covariance structure to the multivariate normal likelihood used for modelling the correlation between multiple time points within a study [@covstruct].
 
-As these models account for correlation by using a multivariate likelihood, the analysis is much slower to run, and it is therefore not shown for the purposes of this vignette.
+However, in addition to this, it's also necessary to specify a value for `rho`, and this can be assigned in one of two ways:
+* Given as string representing a JAGS prior distribution [@jagsmanual], which indicates that the correlation should be estimated from the data. For example, to specify a prior that the correlation between time-points will be between 0 and 1 with equal probability you could set `rho="dunif(0,1)"`.
+* Given as a single numeric value, which indicates that the correlation should be fixed to that value. For example, this value could be estimated externally from another study using Individual Participant Data. This could also be used to run a deterministic sensitivity analysis using different fixed values of `rho`.
+
 
 ```{r, eval=FALSE}
-# Run an emax time-course MBNMA that accounts for correlation between time points using a wrapper for mb.run()
-mbnma <- mb.emax(network.pain, 
-                    emax=list(pool="rel", method="common"), 
-                    et50=list(pool="const", method="common"), 
-                    rho="estimate", covar="CS")
+# Using the COPD dataset
+network.copd <- mb.network(copd)
+
+# Run an log-linear time-course MBNMA 
+# that accounts for correlation between time points using variance adjustment
+mbnma <- mb.run(network.copd, 
+                fun=tloglin(pool.rate="rel", method.rate="random"),
+                rho="dunif(0,1)", covar="varadj")
 ```
 
-Since `rho` is estimated from the data in this model, we will also have summary statistics for it in the output.
-
-It is important to note that the covariance matrix must be positive semi-definite. This may mean that in order to satisfy this requirement for particular covariance matrix structures, the values that `rho` can take are limited. In some instances the default prior distribution for `rho` (`dunif(-1,1)`) can lead to an error in the evaluation of the multivariate likelihood, in which case it may be necessary to restrict the prior distribution. This can be done using the `priors` argument (see `?mb.run()` and the section below on priors).
+It is important to note that the covariance matrix must be positive semi-definite. This may mean that in order to satisfy this requirement for particular covariance matrix structures, the values that `rho` can take are limited. `rho` must always be bounded by -1 and 1, but even within this range some negative values for `rho` can result in a non positive matrix, which can lead to an error in the evaluation of the multivariate likelihood. If so, it may be necessary to further restrict the prior distribution.
 
 
 ### Class effects
 
-Shared effects between treatments within the network can be modelled using class effects. This requires assuming that different treatments have some sort of common class effect, perhaps due to different (yet similar) doses of the same agent or different treatments with a similar mechanism of action. One advantage of this is that class effects can be used to connect relative effects between treatments in a network that are connected at the class level but that might otherwise be disconnected at the treatment level. However, it is important to ensure that such an effect is clinically justifiable, as making such a strong assumption when there is not true similarity may introduce heterogeneity/inconsistency.
+Shared effects between treatments within the network can be modelled using class effects. This requires assuming that different treatments have some sort of shared class effect, perhaps due to different (yet clinically similar) doses of the same agent or different treatments with a similar mechanism of action. One advantage of this is that class effects can be used to connect relative effects between treatments in a network that would be disconnected at the treatment level, but can be connected via classes at the class level. However, it is important to ensure that such an effect is clinically justifiable, as making these assumptions risks introducing heterogeneity/inconsistency.
 
-Class effects can only be applied to time-course parameters which vary by treatment (either `pool="rel"` or `pool="arm"`).
+Class effects can only be applied to time-course parameters which vary by treatment (`pool="rel"`), and class effects are modelled separately for each time-course parameter.
 
-In `mb.run()` class effects are supplied as a list, in which each element is named following the name of the corresponding time-course parameter as defined in the function. The names will therefore differ when using wrapper functions for `mb.run()`. The class effect for each time-course parameter can be either `"common"`, in which the effects for each treatment within the same class are constrained to a common class effect, or `"random"`, in which the effects for each treatment within the same class are assumed to be randomly distributed around a shared class mean.
+In `mb.run()` class effects are specified as a list, in which each element is named by the time-course parameter on which it should be modelled. The class effect for each time-course parameter can be either `"common"`, in which the effects for each treatment within the same class are constrained to a common class effect, or `"random"`, in which the effects for each treatment within the same class are assumed to be randomly distributed around a shared class mean.
 
-```{r, results="hide", eval=FALSE}
-# Run an emax time-course MBNMA with a random class effects on beta.1 (Emax parameters)
-# Additional iterations run to ensure MCMC chain convergence
-mbnma <- mb.run(network.gout, fun="emax", 
-                   beta.1=list(pool="rel", method="random"), 
-                   beta.2=list(pool="const", method="common"), 
-                   intercept=FALSE, n.iter=20000,
-                   class.effect=list(beta.1="random"))
-```
-```{r, results="hide", echo=FALSE}
-# Run an emax time-course MBNMA with a random class effects on beta.1 (Emax parameters)
-# Additional iterations run to ensure MCMC chain convergence
-mbnma <- suppressWarnings(mb.run(network.gout, fun="emax", 
-                   beta.1=list(pool="rel", method="random"), 
-                   beta.2=list(pool="const", method="common"), 
-                   intercept=FALSE, n.iter=20000,
-                   class.effect=list(beta.1="random")))
+```{r, results="hide", eval=TRUE}
+# Run a B-spline time-course MBNMA with a knot at 0.2 times the max follow-up
+# Common class effect on beta.2, the 2nd spline coefficient
+mbnma <- mb.run(network.gout, 
+                fun=tspline(type="bs", knots=c(0.2),
+                            pool.1 = "rel", method.1="common",
+                            pool.2="rel", method.2="random"),
+                class.effect = list(beta.2="common"))
+
 ```
 ```{r}
 summary(mbnma)
 ```
 
-Mean class effects are given in the output as `D.1` parameters. These can be interpreted as the relative effect of each class versus the network reference class, for Emax parameters (`beta.1`). Note the number of `D.1` parameters is therefore equal to the number of classes defined in the dataset.
-
-As we have specified that the class effects are `"random"`, each treatment effect for Emax (`beta.1`) is randomly distributed around its class mean with SD given in the output as `sd.D.1`.
-
-Alternatively if we apply class effects to a time-course parameter pooled using `"arm"` then the outputs are in terms of absolute class effects (`BETA` and `sd.BETA`).
+Mean class effects are given in the output as `D.2` parameters. These can be interpreted as the relative effect of each class versus the `Plac` (Placebo), for the 2nd spline coefficient (`beta.2`). Note the number of `D.2` parameters is therefore equal to the number of classes defined in the dataset.
 
 
 ### Additional arguments
 
 Several additional arguments can be given to `mb.run()` that require further explanation.
-
-
-#### Absolute or change from baseline data
-
-`intercept` can be used to specify whether or not the time-course function should include baseline (`alpha`) parameters. These are nuisance parameters in the model, and are not important to monitor, but if we are using change from baseline (CFB) data then we can set `intercept = FALSE` to define that the baseline will be zero (no change from baseline at time = 0), which reduces the number of parameters that need to be estimated within the model. We have done this for analyses of the gout, obesity and alogliptin datasets.
-
-
-#### User-specified time-course function
-
-If users want to write their own time-course function rather than using one of the ones specified in `mb.run()` they can do this by specifying `fun = "user"` in the arguments. A function can then be provided to `user.fun`, which specifies a new time course in terms of `alpha`, `beta` and `time` parameters. This allows a huge amount of additional flexibility when defining the time-course function.
-
-The function assigned to `user.fun` needs to fulfill a few criteria to be valid:
-* `alpha` must be specified within the function. If modelling change from baseline data `alpha` still needs to be included, but users can set `intercept = FALSE` (see above).
-* At least one `beta` time-course parameter must be specified, up to a maximum of four. These are always named `beta.1`, `beta.2`, `beta.3` and `beta.4` (even if only one is specified), and must be included sequentially (i.e. don't include `beta.3` if `beta.1` is not included)
-* `time` must be included in the function. It can be included as multiple instances as is necessary
-* Indices used by JAGS should not be added to the function (e.g. use `alpha` rather than `alpha[i]`)
-* Any mathematical/logical operators that can be implemented in JAGS can be added to the function
-
-An example user-specified time-course function could be the following:
-```{r, eval=FALSE}
-~ alpha + (beta.1*time) * ((time/24)^beta.2)
-```
-
 
 
 #### Priors
@@ -392,95 +361,73 @@ Default vague priors for the model are as follows:
 
 $$
 \begin{aligned}
-  &d_{\phi,t} \sim N(0,10000)\\
-  &beta_{\phi,t} \sim N(0,10000)\\
+  &\mu_{i} \sim N(0,10000)\\
+  &\alpha_{i} \sim N(0,10000)\\
+  &\boldsymbol{d}_{t} \sim MVN(0,\Sigma_{t})\\
+  &beta_{\phi} \sim N(0,10000)\\
   &D_{\phi,c} \sim N(0,1000)\\
-  &BETA_{\phi,c} \sim N(0,1000)\\
-  &rho \sim U(-1,1)\\
-  &\sigma_{\phi,d} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
-  &\sigma_{beta_\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
-  &\sigma_{D_\phi} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
-  &\sigma_{BETA_\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &\tau_{\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &\tau^D_{\phi} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
+  &\Sigma_{t} \sim Wish^{-1}(\Omega,k)\\
 \end{aligned}
 $$
 
-...where $\phi$ is an index for the time-course parameter, $t$ a treatment index and $c$ a class index.
+$\mu_i$ is the study reference effect (modelled as a nuisance parameter) in study $i$, $\alpha_i$ is the response at time=0 in study $i$, $\boldsymbol{d}_{t}$ is a vector of pooled relative effects for treatment $t$ whose length is the number of time-course parameters in the model, $\beta_{\phi}$ is the absolute effect for time-course parameter $\phi$ modelled independently of treatment, $D_{\phi,c}$ is the class relative effect for time-course parameter $\phi$ in class $c$, $\tau_{\phi}$ is the between-study SD for time-course parameter $\phi$, $\tau^D_{\phi}$ is the within-class SD for time-course parameter $\phi$, $\Omega$ is a diagonal scale matrix specified in `var.scale`, and `k` is the degrees of freedom for the inverse-Wishart distribution, equal to the number of time-course parameters.
 
 Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
 
-This can be more likely for certain types of models. For example for multivariate models, the covariance matrix must be positive semi-definite, and some values of the correlation coefficient, `rho`, will not fulfil this. Another example might be when using values that might generate results that are too extreme for JAGS to computer, such as for time-course parameters that are powers (e.g. Emax functions with a Hill parameter or power parameters in fractional polynomials).
+This can be more likely for certain types of models. For example some prior distributions may generate results that are too extreme for JAGS to compute, such as for time-course parameters that are powers (e.g. Emax functions with a Hill parameter or power parameters in fractional polynomials).
 
 If the model fails during compilation/updating (i.e. due to a problem in JAGS), `mb.run()` will generate an error and return a list of arguments that `mb.run()` used to generate the model. Within this (as within a model that has run successfully), the priors used by the model (in JAGS syntax) are stored within `"model.arg"`.
 
-In this way a model can first be run with vague priors and then rerun with different priors, perhaps to allow successful computation, perhaps to provide more informative priors, or perhaps to run a sensitivity analysis with different priors. Increasing the precision of prior distributions only a little can also often improve convergence considerably.
+In this way a model can first be run with vague priors and then rerun with different priors, perhaps to allow successful computation, perhaps to provide more informative priors, or perhaps to run a sensitivity analysis with different priors.
 
-To change priors within a model, a list of replacements can be provided to `priors` in `mb.run()`. The name of each element is the name of the parameter to change (without indices) and the value of the element is the JAGS distribution to use for the prior. This can include censoring or truncation if desired. Only the priors to be changed need to be specified - priors for parameters that aren't specified will take default values.
+To change priors within a model, a list of replacements can be provided to `priors` in `mb.run()`. The name of each element is the name of the parameter to change (without indices) and the value of the element is the JAGS distribution to use for the prior. See the JAGS Manual [-@jagsmanual] for syntax details regarding specifying distributions. This can include censoring or truncation if desired. Only the priors to be changed need to be specified - priors for parameters that aren't specified will take default values. Note that in JAGS, normal distributions are specified using precision (1/variance) rather than SD.
 
-For example, previously in the vignette we were showing how correlation between time points could be modelled using a multivariate likelihood. However, if we use an autoregressive AR1 covariance structure with the default prior for `rho` this can result in a covariance matrix that is non-positive semidefinite, causing an error:
+For example, we may wish to specify a tighter prior for the between-study SD:
 
-```{r, eval=FALSE}
-# Run an MBNMA that accounts for correlation between time points using AR1 covariance structure
-mbnma <- mb.emax(network.pain, 
-                    emax=list(pool="rel", method="common"), 
-                    et50=list(pool="const", method="common"), 
-                    rho="estimate", covar="AR1")
-
-print(mbnma$model.arg$priors)
-```
-```{r, results="hide", error=TRUE, echo=FALSE}
-# Run an MBNMA that accounts for correlation between time points using AR1 covariance structure
-mbnma <- suppressWarnings(mb.emax(network.pain, 
-                    emax=list(pool="rel", method="common"), 
-                    et50=list(pool="const", method="common"), 
-                    rho="estimate", covar="AR1"))
-
-print(mbnma$model.arg$priors)
+```{r, results="hide"}
+mbnma <- mb.run(network.copd, 
+                fun=tloglin(pool.rate="rel", method.rate="random"),
+                priors=list(rate="dnorm(0,2) T(0,)"))
 ```
 
-We can solve this issue by defining a new prior within the model for `rho` that is limited to take only positive values:
-
-```{r, eval=FALSE}
-# Define prior for rho which permits evaluation
-new.priors <- list(
-  "rho" = "dunif(0, 1)"
-  )
-
-# Run an MBNMA model with new priors
-mbnma <- mb.emax(network.pain, 
-                    emax=list(pool="rel", method="common"), 
-                    et50=list(pool="const", method="common"), 
-                    rho="estimate", covar="AR1",
-                    priors=new.priors)
-```
 
 #### pD (effective number of parameters)
 
-The default value for `pd` in `mb.run()` is `"pv"`, which uses the value automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to the effective number of parameters, and may be numerically unstable [@gelman2003].
+The default value for `pd` in `mb.run()` is `pd="pd.kl"`, which uses the Kullback-Leibler divergence [@plummer2008]. This is more reliable than the default method used in `R2jags` for calculating the effective number of parameters from non-linear models. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
+
+A more rapid approach is to use the value automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to the effective number of parameters, and may be numerically unstable [@gelman2003]. However, it has been shown to be reliable for model comparison in time-course MBNMA models in a simulation study [@pedder2020].
 
 A commonly-used approach for calculating pD is the plug-in method (`pd="plugin"`) [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models.
 
-Another exact approach that is more reliable than the plug-in method when modelling non-linear effects is using the Kullback-Leibler divergence (`pd="pd.kl"`) [@plummer2008]. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
-
-Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  which allows for calculation of the penalized expected deviance [@plummer2008]. This adjustment allows for the fact that data used to estimate the model is the same as that used to assess its parsimony. It also requires running additional MCMC iterations.
+Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  which allows for calculation of the penalized expected deviance [@plummer2008]. This adjustment allows for the fact that data used to estimate the model is the same as that used to assess its parsimony. As for `pd="pd.kl"`, it also requires running additional MCMC iterations.
 
 
 #### Correlation between time-course parameters
 
-`mb.run()` automatically models correlation between relative effect time-course parameters, as these are typically correlated and allows information on each parameter to help inform the other(s). The correlation is modelled using a vague Wishart prior, but this can be made more informative by indicating the relative magnitude of scales of the parameters that are modelled using relative effects. 
+`mb.run()` automatically models correlation between time-course parameters modelled using relative effects. Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modelled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the relative magnitude of scales of the parameters that are modelled using relative effects, and by increasing the degrees of freedom of the Wishart prior $\Sigma_t$. 
 
-`var.scale` can be used for this - it takes a numeric vector the same length as the number of relative effect time-course parameters (those modelled using `pool="rel"`), and the relative magnitude of the numbers indicates the relative magnitude of the scales. Each element of `var.scale` corresponds to the relevant time-course parameter (i.e. `var.scale[1]` will correspond to the first time-course parameter modelled using relative effects)
+`var.scale` can be used for this - it takes a numeric vector the same length as the number of relative effect time-course parameters (those modelled using `pool="rel"`), and the elements indicate the relative magnitude of the scales. Each element of `var.scale` corresponds to the relevant time-course parameter (i.e. `var.scale[1]` will correspond to the first time-course parameter modelled using relative effects). In the model, `var.scale` is used to construct a diagonal scale matrix represented in the JAGS code by `Omega[,]`. The degrees of freedom can then be changed within the `priors` argument of `mb.run()`.
 
-For example, with the osteoarthritis dataset we might expect that for a piecewise linear time-course function, the parameter values (in this model the relative different in gradient vs placebo) for the first linear piece might be 10 times larger than for the second linear piece:
+A numeric vector indicating the relative scale of variances between
+#' correlated time-course parameters when relative effects are modelled on more than
+#' one time-course parameter(see Details for time-course functions). Each element of
+#' the vector refers to the relative scale of each of the time-course parameters that is
+#' modelled using relative effects. This vector is then used to construct a diagonal
+#' scale matrix represented in the JAGS code by `Omega`.
+
+For example, with the osteoarthritis dataset we might expect that for a piecewise linear time-course function, the parameter values (in this model the relative different in gradient vs placebo) for the first coefficient might be 10 times larger than for the second coefficient:
 
 ```{r, eval=FALSE}
 # Define relative magnitudes of slope.1 and slope.2
 rel.size <- c(10,1)
 
-mbnma <- mb.piecelinear(network.pain, 
-                        slope.1=list(pool="rel", method="random"),
-                        slope.2=list(pool="rel", method="common"), 
-                        knot=list(pool="const", method=1), 
-                        var.scale = rel.size)
+mbnma <- mb.run(network.pain,
+                fun=tspline(type="ls", knots=1,
+                            pool.1="rel", method.1="random",
+                            pool.2="rel", method.2="common"),
+                var.scale=rel.size)
 ```
 
 #### Arguments to be sent to JAGS
@@ -491,6 +438,9 @@ In addition to the arguments specific to `mb.run()` it is also possible to use a
 * `n.iter` The total number of iterations per MCMC chain
 * `n.burnin` The number of iterations that are discarded to ensure iterations are only saved once chains have converged 
 * `n.thin` The thinning rate which ensures that results are only saved for 1 in every `n.thin` iterations per chain. This can be increased to reduce autocorrelation
+
+
+DISCUSS HERE ABOUT CONVERGENCE AND PROVIDE SOME REFERENCES...PERHAPS A TUTORIAL ON JAGS? ALSO MENTION MCMCPLOTS HERE
 
 
 ## Post-Estimation
@@ -878,8 +828,8 @@ plot(ns.plin, plot.type="forest")
 
 ## Conclusions
 
-`MBNMAtime` provides a complete set of functions that allow for meta-analysis of longitudinal time-course data and plotting of a number of informative graphics. Functions are also provided for prediction, and for assessing consistency when modelling using relative effects. By accounting for time-course in meta-analysis this can help to explain heterogeneity/inconsistency that may arise when using conventional NMA. 
+`MBNMAtime` provides a complete set of functions that allow for meta-analysis of longitudinal time-course data and plotting of a number of informative graphics. Functions are provided for ranking, prediction, and for assessing consistency when modelling using relative effects. By accounting for time-course in meta-analysis this can help to explain heterogeneity/inconsistency that may arise when lumping together different time-points using conventional NMA. 
 
-The package allows for modelling of either relative or arm-based absolute effects interchangeably on different time-course parameters within the same analysis, whilst allows users wishing to perform MBNMA/MBMA a great deal of flexibility in their modelling decisions, whilst providing a straightforward syntax with which to define these models.
+The package allows for flexible modelling of either relative or absolute effects interchangeably on different time-course parameters within the same analysis, whilst providing a straightforward syntax with which to define these models.
 
 ## References
