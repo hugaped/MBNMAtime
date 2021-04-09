@@ -285,6 +285,14 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
       gen.parameters.to.save(fun=fun, model=model)
   }
 
+  # If multiple time-course parameters are relative effects then add omega default
+  if (is.null(omega)) {
+    relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
+    if (sum(relparam)>1) {
+      omega <- diag(as.numeric(relparam))
+    }
+  }
+
   # Add nodes to monitor to calculate plugin pd
   if (pd=="plugin") {
     if (covar!="varadj") {

@@ -168,7 +168,7 @@ write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=0
   if (!is.null(omega)) {
     err <- FALSE
 
-    nrel <- sum(fun$apool %in% "rel")
+    nrel <- sum(fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect))
     if (!all(dim(omega)==nrel)) {
       err <- TRUE
     }
