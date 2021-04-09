@@ -239,7 +239,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       rho=0, covar="varadj",
                       omega=NULL,
                       class.effect=list(), UME=FALSE,
-                      pd="pd.kl", parallel=FALSE,
+                      pd="pv", parallel=FALSE,
                       priors=NULL,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
