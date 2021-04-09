@@ -406,41 +406,67 @@ Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  w
 
 #### Correlation between time-course parameters
 
-`mb.run()` automatically models correlation between time-course parameters modelled using relative effects. Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modelled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the relative magnitude of scales of the parameters that are modelled using relative effects, and by increasing the degrees of freedom of the Wishart prior $\Sigma_t$. 
+`mb.run()` automatically models correlation between time-course parameters modelled using relative effects. Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modelled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the scale matrix for the parameters that are modelled using relative effects, and by increasing the degrees of freedom of the inverse-Wishart prior $\Sigma_t$. 
 
-`var.scale` can be used for this - it takes a numeric vector the same length as the number of relative effect time-course parameters (those modelled using `pool="rel"`), and the elements indicate the relative magnitude of the scales. Each element of `var.scale` corresponds to the relevant time-course parameter (i.e. `var.scale[1]` will correspond to the first time-course parameter modelled using relative effects). In the model, `var.scale` is used to construct a diagonal scale matrix represented in the JAGS code by `Omega[,]`. The degrees of freedom can then be changed within the `priors` argument of `mb.run()`.
-
-A numeric vector indicating the relative scale of variances between
-#' correlated time-course parameters when relative effects are modelled on more than
-#' one time-course parameter(see Details for time-course functions). Each element of
-#' the vector refers to the relative scale of each of the time-course parameters that is
-#' modelled using relative effects. This vector is then used to construct a diagonal
-#' scale matrix represented in the JAGS code by `Omega`.
+`omega` can be used as an argument in `mb.run()` to represent this scale matrix. If specified, it must be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1 is used. The degrees of freedom can then be changed within the `priors` argument of `mb.run()` to make the prior more informative.
 
 For example, with the osteoarthritis dataset we might expect that for a piecewise linear time-course function, the parameter values (in this model the relative different in gradient vs placebo) for the first coefficient might be 10 times larger than for the second coefficient:
 
 ```{r, eval=FALSE}
-# Define relative magnitudes of slope.1 and slope.2
-rel.size <- c(10,1)
-
 mbnma <- mb.run(network.pain,
                 fun=tspline(type="ls", knots=1,
                             pool.1="rel", method.1="random",
                             pool.2="rel", method.2="common"),
-                var.scale=rel.size)
+                omega=matrix(c(10,3,3,1), nrow=2))
 ```
+
 
 #### Arguments to be sent to JAGS
 
-In addition to the arguments specific to `mb.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these are likely to relate to improving the performance of MCMC simulations in JAGS. Some of the key arguments that may be of interest are:
+In addition to the arguments specific to `mb.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these relate to improving the performance of MCMC simulations in JAGS. Some of the key arguments that may be of interest are:
 
 * `n.chains` The number of Markov chains to run (default is 3)
 * `n.iter` The total number of iterations per MCMC chain
 * `n.burnin` The number of iterations that are discarded to ensure iterations are only saved once chains have converged 
-* `n.thin` The thinning rate which ensures that results are only saved for 1 in every `n.thin` iterations per chain. This can be increased to reduce autocorrelation
+* `n.thin` The thinning rate which ensures that results are only saved for 1 in every `n.thin` iterations per chain. This can be increased to reduce autocorrelation in MCMC samples
 
 
-DISCUSS HERE ABOUT CONVERGENCE AND PROVIDE SOME REFERENCES...PERHAPS A TUTORIAL ON JAGS? ALSO MENTION MCMCPLOTS HERE
+## Model Convergence
+
+`MBNMAtime` is run using JAGS, which performs Bayesian inference using Gibbs sampling [@jags]. This samples from the posterior distribution to obtain posterior densities for monitored parameters of interest. However, convergence of the MCMC algorithm on the posterior density is therefore critical for obtaining robust results.
+
+Multiple MCMC chains should always be run (default in `MBNMAtime` is 3) as this allows for traces of each chain to be examined. Consistent overlap between the traces in different chains, as well as low autocorrelation in MCMC samples suggests that convergence is likely to have been successful.
+
+A simple output for assessing convergence is the Gelman-Rubin $\hat{R}$ statistic, which is the ratio of between- and within-chain standard deviations [@gelman2003]. Values of <1.05 are widely accepted as implying convergence for practical values, though some functions in `MBNMAtime` alerts users if $\hat{R}>1.02$. 
+
+`Rhat` values for each parameter are calculated automatically in `R2jags` and can be shown if `print()` is called on an object of `class("mbnma")`:
+
+```{r}
+print(mbnma)
+```
+
+
+Two useful packages for investigating convergence of monitored parameters are the `mcmcplots` and `coda` packages. These can be used to generate plots that can provide information on MCMC chain overlap and autocorrelation:
+
+```{r, eval=FALSE}
+# Traceplots
+mcmcplots::traplot(mbnma, "sd.beta.1")
+
+# Running mean plots
+mcmcplots::rmeanplot(mbnma, "sd.beta.1")
+
+# Posterior densities
+mcmcplots::denplot(mbnma, "sd.beta.1")
+
+# Autocorrelation plots
+coda::autocorr.plot(mbnma)
+```
+
+A single function (`mcmcplots::mcmcplot()`) can also be used to generate an HTLM with all these plots for all monitored parameters.
+
+If there are problems with convergence, the first solution may be to run the model for more iterations (see [Arguments to be sent to JAGS]), which give the chains a greater number of calculations over which to converge. However, for models with a large number of parameters and relatively limited data, information may be too limited to allow convergence within a computationally reasonable number of iterations. In these situations there is not enough information in the data to support such a highly parameterised model, suggesting that a simpler model should be fitted. Alternatively, more informative priors can be used, but given the lack of information in the data relative to the model's complexity, results are likely to be sensitive to these priors.
+
+For a detailed review of MCMC convergence assessment see Sinharay [-@sinharay].
 
 
 ## Post-Estimation
@@ -453,23 +479,18 @@ Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a ser
 
 ```{r, results="hide", fig.show="hold"}
 # Run a first-order fractional polynomial time-course MBNMA
-mbnma <- mb.fract.first(network.pain, 
-                           slope=list(pool="rel", method="random"),
-                           power=list(pool="const", method="common")
-                           )
+mbnma <- mb.run(network.pain, 
+                fun=tfpoly(degree=1,
+                          pool.1="rel", method.1="random",
+                          method.power1="common"))
 
-# Plot a scatter plot of residual deviance contributions (the default)
+# Plot a box-plot of deviance contributions (the default)
 devplot(mbnma, n.iter=1000)
 ```
 
-```{r, results="hide"}
-# Plot boxplots of deviance contributions
-devplot(mbnma, dev.type = "dev", plot.type = "box", n.iter=1000)
-```
+From these plots we can see that whilst the model fit is good at later time points, it frequently underestimates responses at earlier time points.
 
-From these plots we can see that whilst the model fit is good at later time points, it underestimates responses at earlier time points and can hugely overestimate that in the middle of the time-course function.
-
-A function that appropriately captures the time-course shape should not show a flat shape of deviance contributions (i.e. contributions should be similar across all time points).
+A function that appropriately captures the time-course shape should show a reasonably flat shape of deviance contributions (i.e. contributions should be similar across all time points).
 
 If saved to an object, the output of `devplot()` contains the results for individual deviance contributions, and this can be used to identify any extreme outliers.
 
@@ -492,10 +513,12 @@ Forest plots can be easily generated from MBNMA models using the `plot()` method
 
 ```{r, results="hide"}
 # Run a quadratic time-course MBNMA using the alogliptin dataset
-mbnma <- mb.quadratic(network.alog, 
-                    beta.1=list(pool="rel", method="random"), 
-                    beta.2=list(pool="rel", method="common"),
-                    intercept=FALSE)
+mbnma <- mb.run(network.alog, 
+                fun=tpoly(degree=2,
+                          pool.1="rel", method.1="random",
+                          pool.2="rel", method.2="common"
+                          )
+)
 
 plot(mbnma)
 ```
@@ -503,20 +526,24 @@ plot(mbnma)
 
 ### Ranking
 
-Rankings can be calculated for different time-course parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked. A vector of these is assigned to `params`. `direction` indicates whether negative scores should be ranked as "better" (`-1`) or "worse" (`1`)
+Rankings can be calculated for different time-course parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked. A vector of these is assigned to `params`. `lower_better` indicates whether negative scores should be ranked as "better" (`TRUE`) or "worse" (`FALSE`)
 
 In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
 
 ```{r, eval=FALSE, results="hide"}
+# Identify quantile for knot at 1 week
+timequant <- 1/max(network.pain$data.ab$time)
+
 # Run a piecewise linear time-course MBNMA with a knot at 1 week
-mbnma <- mb.piecelinear(network.pain, 
-                           slope.1=list(pool="rel", method="common"),
-                           slope.2=list(pool="rel", method="common"), 
-                           knot=list(pool="const", method=1))
+mbnma <- mb.run(network.pain,
+                fun=tspline(type="ls", knots = timequant,
+                            pool.1 = "rel", method.1="common",
+                            pool.2 = "rel", method.2="common"))
+
 
 # Rank results based on AUC (calculated 0-10 weeks), more negative slopes considered to be "better"
-ranks <- rank(mbnma, params=c("auc", "d.slope.2"), 
-                    int.range=c(0,10),  direction=-1, n.iter=1000)
+ranks <- rank(mbnma, params=c("auc", "d.2"), 
+                    int.range=c(0,10),  lower_better = TRUE, n.iter=1000)
 ```
 ```{r}
 print(ranks)
@@ -534,78 +561,83 @@ plot(ranks, params = "auc")
 
 ### Prediction
 
-After performing an MBNMA, responses can be predicted from the parameter estimates using `predict()` on an `"mbnma"` object. A number of important parameters need to be identified for this. Additionally, it is also necessary to specify the time points for which to predict responses (`times`), given as a vector of positive numbers. For further information the help file can be accessed using `?predict.mbnma`.
+After performing an MBNMA, responses can be predicted from the parameter estimates using `predict()` on an `"mbnma"` object. A number of important parameters need to be identified to make robust predictions, though defaults can be used to generate a plot that gives a good indication of the time-course relationship assuming a reference treatment response of zero. For further information the help file can be accessed using `?predict.mbnma`.
 
-The first parameter is `E0`, which defines what value(s) to use for E0 (time = 0) prediction. A single numeric value can be given for this to indicate a deterministic value, or a distribution can be given as a character to indicate a stochastic value. This should take the form of an R random number generated (RNG) distribution (e.g. `"rnorm(n, 7, 0.2)"`. `E0` could be identified for the population of interest from external data (e.g. observational/registry).
+One key parameter is `E0`, which defines what value(s) to use for the predicted response at time = 0. A single numeric value can be given for this to indicate a deterministic value, or a function representing a random number generator (RNG) distribution in R (stochastic) (e.g. `E0 = ~rnorm(n, 7, 0.2)`. These values can be identified for the population of interest from external data (e.g. observational/registry).
 
-The second are the values to use for the network reference treatment response. This is only necessary when predicting responses from an MBNMA that pools relative effects for any time-course parameters (`pool="rel"`), as in this case the network reference treatment response is treated as a nuisance parameter in the modelling. The network reference treatment response is given as `ref.resp` and can either be estimated from a separate dataset that contains a series of single-arm studies of the network reference treatment, measured at multiple follow-up times. To do this `ref.resp` is assigned a data frame of studies to synthesise. This could be a series of observational studies that closely match the population of interest, or it could be a selection of data corresponding to the network reference treatment from the same dataset of RCTs used for MBNMA.
+The more challenging parameter(s) to identify are those for the network reference treatment response, supplied to `predict()` in the `ref.resp` argument. Typically in an MBNMA, relative effects are estimated and the network reference effect is modelled as a nuisance parameter. Therefore we need to provide an input for this reference treatment effect for all time-course parameters modelled using `pool="rel"` so that we can apply the relative effects estimated in our model to it. There are two options for providing these values.
+
+The first approach is to give values for each time-course parameter modelled using relative effects to `ref.resp`. This is given as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a function representing a random number generator distribution in R (stochastic).
 
 ```{r, results="hide", message=FALSE}
-mbnma <- mb.emax(network.pain, 
-                    emax=list(pool="rel", method="common"), 
-                    et50=list(pool="const", method="common"))
+# Run an Emax time-course MBNMA using the osteoarthritis dataset
+mbnma <- mb.run(network.pain,
+                fun=temax(pool.emax="rel", method.emax="common",
+                          pool.et50="abs", method.et50="common"),
+                rho="dunif(0,1)", covar="varadj")
 
+# Specify placebo time-course parameters
+ref.params <- list(emax=-2, et50=-0.7)
+
+# Predict responses for a selection of treatments using a stochastic E0 and
+# placebo parameters defined in ref.params to estimate the network reference treatment effect
+pred <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60", 
+                                        "Lu_400", "Na_1000", "Ox_44", "Ro_25",
+                                        "Tr_300", "Va_20"),
+                        E0=~rnorm(n, 8, 0.5), ref.resp=ref.params)
+
+print(pred)
+```
+
+The second is to assign `ref.resp` a data frame composed of single-arm studies of the network reference treatment. A separate synthesis model for the reference treatment effect will then be run, and the values from this used as the prediction reference treatment effect. This dataset could be a series of obesrvational studies measured at multiple follow-up times that closely match the population of interest for the prediction. Alternatively it could be a subset of data from the original RCT dataset used for the MBNMA model (though this may be less generalisable to the population of interest).
+
+```{r, results="hide", message=FALSE}
 # Generate a dataset that is made up only of network reference treatment responses over time (in this case placebo)
-placebo.data <- network.pain$data.ab[network.pain$data.ab$treatname=="Placebo_0",]
+placebo.df <- network.pain$data.ab[network.pain$data.ab$treatment==1,]
 
-# Predict responses for a selection of treatments using a deterministic E0 and placebo.data to estimate the network reference treatment effect
-predict.data <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60", 
+# Predict responses for a selection of treatments using a deterministic E0 and 
+#placebo.df to model the network reference treatment effect
+pred <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60", 
                                         "Lu_400", "Na_1000", "Ox_44", "Ro_25",
                                         "Tr_300", "Va_20"),
-                        times=c(0:15), E0=10, 
-                        ref.resp=placebo.data)
-```
-```{r}
-# Summary of posterior median predictions
-summary(predict.data)
+                        E0=10, ref.resp=placebo.df)
+
+print(pred)
 ```
 
-
-Alternatively, values for each time-course parameter modelled using relative effects can be provided by the user as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a RNG distribution (stochastic).
-
-```{r, results="hide", eval=TRUE, message=FALSE}
-# Define stochastic values for network reference treatment effect on Emax
-ref.data <- list("emax"="rnorm(n, -2, 0.15)")
-
-# Predict responses for treatments 1-9 using a stochastic E0 and ref.resp to estimate the network reference treatment effect
-predict.resp <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60", 
-                                        "Lu_400", "Na_1000", "Ox_44", "Ro_25",
-                                        "Tr_300", "Va_20"),
-                        times=c(0:15), E0="rnorm(n, 9, 0.05)",
-                        ref.resp=ref.data)
-```
+It is also possible specify the time points for which to predict responses (`times`), given as a vector of positive numbers. If left as the default then the maximum follow-up in the dataset will be used as the upper limit for the range of predicted time-points.
 
 An object of class `"mb.predict"` is returned, which is a list of summary tables and MCMC prediction matrices for each treatment, in addition to the original `mbnma` object. The `summary()` method can be used to print mean posterior predictions at each time point for each treatment.
 
 Predicted responses can also be plotted using the `plot()` method on an object of `class("mb.predict")`. Within the default arguments, the median predicted network reference treatment response is overlaid on the predicted response for each treatment. Setting `overlay.ref = FALSE` prevents this and causes the network reference treatment predicted response to be plotted as a separate panel. Shaded counts of observations in the original dataset at each predicted time point can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`.
 
-```{r}
-plot(predict.resp, overlay.ref=TRUE, disp.obs=TRUE)
+```{r, message=FALSE}
+plot(pred, overlay.ref=TRUE, disp.obs=TRUE)
 ```
 
-This can be used to identify any extrapolation/interpretation of the time-course that might be ocuring for a particular treatment.
+This can be used to identify any extrapolation/interpretation of the time-course that might be occuring for a particular treatment, and where predictions might therefore be problematic.
 
 To illustrate a situation in which this could be very informative, we can look at predicted responses for a quadratic time-course function fitted to the Obesity dataset:
 
 ```{r, fig.height=3, results="hide"}
 # Fit a quadratic time-course MBNMA to the Obesity dataset
-mbnma <- mb.quadratic(network.obese, 
-                         beta.1 = list(pool="rel", method="common"),
-                         beta.2 = list(pool="rel", method="common")
-                         )
+mbnma <- mb.run(network.obese,
+                fun=tpoly(degree=2,
+                          pool.1 = "rel", method.1="common",
+                          pool.2="rel", method.2="common"))
 
 # Define stochastic values centred at zero for network reference treatment
-ref.data <- list(beta.1="rnorm(n, 0, 0.05)", beta.2="rnorm(n, 0, 0.0001)")
+ref.params <- list(beta.1=~rnorm(n, 0, 0.05), beta.2=~rnorm(n, 0, 0.0001))
 
 # Predict responses over the
-predict.resp <- predict(mbnma, times=c(0:50), E0="rnorm(n, 120,1)", treats = c(1,4,15),
-                        ref.resp=ref.data)
+pred <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
+                        ref.resp=ref.params)
 
 # Plot predictions
-plot(predict.resp, disp.obs = TRUE)
+plot(pred, disp.obs = TRUE)
 ```
 
-As you can see, within the limits of the observed data the predicted responses appear reasonable. However, extrapolation beyond this in treatment 4 leads to some rather strange results, suggesting a huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
+As you can see, within the limits of the observed data the predicted responses appear reasonable. However, extrapolation beyond this for `dexf_30MG` leads to some rather strange results, suggesting an unrealistically huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
 
 
 ## Consistency Testing
