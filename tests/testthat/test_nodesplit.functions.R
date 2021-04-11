@@ -147,7 +147,7 @@ testthat::test_that("mb.nodesplit is working", {
                                fun=tspline(type="bs", knots=2,
                                            pool.2="abs", method.2="random"),
                                positive.scale=TRUE, intercept=TRUE,
-                               class.effect=list(),
+                               class.effect=list(), omega=matrix(c(10,0,0,10), nrow=2),
                                parallel=TRUE,
                                n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
 
