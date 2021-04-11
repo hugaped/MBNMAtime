@@ -577,9 +577,23 @@ alpha.scale <- function(n.cut, col="blue") {
 
 
 
-overlay.nma <- function(incl.range) {
+overlay.nma <- function(incl.range, method="common") {
 
-  nmanet <- network$data.ab[network$data.ab$time>]
+  nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2]]
+
+  # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
+  nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
+    dplyr::mutate(dif=time-mean(incl.range)) %>%
+    dplyr::arrange(dif) %>%
+    dplyr::group_by(arm) %>%
+    dplyr::slice_head()
+
+  # Check network connectedness
+  # Drop studies not connected to network ref
+  # Write NMA model for common/random effects
+  # Run model
+  # Predict NMA results at speciic time point
+  # Overlay results
 
 }
 
@@ -1543,12 +1557,7 @@ plot.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 #' @return An illustrative plot of the time-course function with the parameters specified
 #' in `beta.1`, `beta.2`, `beta.3` and `beta.4`
 #'
-#'
-#' @examples
-#' plot(temax(), beta.1=5, beta.2=0.1)
-#'
-#' plot(tspline(type="ls", knots=2), beta.1=2, beta.2=-2, beta.3=0)
-#'
+#' @noRd
 plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
                          beta.3=0, beta.4=0) {
 

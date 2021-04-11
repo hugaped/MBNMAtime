@@ -736,3 +736,9 @@ ref.validate <- function(data.ab) {
 }
 
 
+
+
+
+predict.nma <- function(nma, times) {
+
+}

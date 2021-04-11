@@ -245,7 +245,7 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #'
 #' @examples
 #' # Model without a Hill parameter
-#' temax(pool.emax="rel", method.rate="random", pool.et50="abs", method.et50="common")
+#' temax(pool.emax="rel", method.emax="random", pool.et50="abs", method.et50="common")
 #'
 #' # Model including a Hill parameter and defaults for Emax and ET50 parameters
 #' temax(pool.hill="abs", method.hill="common")
@@ -766,7 +766,7 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #'
 #' @examples
 #' # Second order B spline with 2 knots and random effects on the 2nd coefficient
-#' tspline(type="bs", knots=3, degree=2,
+#' tspline(type="bs", knots=2, degree=2,
 #'   pool.1="rel", method.1="common",
 #'   pool.2="rel", method.2="random")
 #'

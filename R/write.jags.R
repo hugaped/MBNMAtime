@@ -25,8 +25,8 @@
 #' # Write an emax time-course MBNMA with:
 #' # a Hill parameter
 #' # no intercept
-#' model <- mb.write(fun=temax(pool.1="rel", method.1="common",
-#'     pool.2="abs", method.2="common", pool.3="abs", method.3="common"),
+#' model <- mb.write(fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="common", pool.hill="abs", method.hill="common"),
 #'   intercept=TRUE)
 #'
 #' # Write a log-linear time-course MBNMA with:
@@ -968,7 +968,7 @@ add.funparams <- function(model, fun) {
 #' # Write a log-linear time-course MBNMA synthesis model with:
 #' # Common effects for synthesis of mu
 #' # Modelled as ratio of means
-#' model <- write.ref.synth(fun=tloglin(pool.1="rel", method.1="common"),
+#' model <- write.ref.synth(fun=tloglin(pool.rate="rel", method.rate="common"),
 #'   mu.synth="common", link="log")
 #'
 #' cat(model) # Concatenates model representations making code more easily readable
