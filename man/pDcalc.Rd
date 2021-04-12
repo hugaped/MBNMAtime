@@ -76,7 +76,8 @@ pD calculated by Kullback–Leibler divergence (\code{pd.kl}) or using an optimi
 network <- mb.network(alog_pcfb)
 
 # Run Emax model saving predicted means and residual deviance contributions
-emax <- mb.emax(network, parameters.to.save=c("theta", "resdev"), intercept=FALSE)
+emax <- mb.run(network, fun=temax(),
+  parameters.to.save=c("theta", "resdev"), intercept=FALSE)
 
 # Get matrices of observed data
 jagsdat <- getjagsdata(network$data.ab)

@@ -29,7 +29,7 @@ methodology see \insertCite{pedder2019;textual}{MBNMAtime}.
 Functions within \code{MBNMAtime} follow a clear pattern of use:
 \enumerate{
 \item Load your data into the correct format using \code{\link{mb.network}}
-\item Specifying a suitable time-course function and analyse your data using \code{\link{mb.run}}
+\item Specify a suitable time-course function and analyse your data using \code{\link{mb.run}}
 \item Test for consistency using \code{\link{mb.nodesplit}} or by fitting Unrelated Mean Effects models
 \item Examine model results using forest plots and treatment rankings
 \item Use your model to predict responses using \code{\link{predict.mbnma}}

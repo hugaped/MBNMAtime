@@ -1,11 +1,10 @@
 testthat::context("Testing write.functions")
 network <- mb.network(osteopain)
 
-emax1 <- mb.emax(network,
-                    emax=list(pool="rel", method="random"),
-                    et50=list(pool="rel", method="common"),
-                    positive.scale=TRUE,
-                    n.chain=3, n.iter=200, n.burnin=100)
+emax1 <- mb.run(network,
+                fun=temax(pool.emax="rel", method.emax="random",
+                          pool.et50="rel", method.et50="common"),
+                n.chain=3, n.iter=200, n.burnin=100)
 
 
 ################### Testing time.fun ################

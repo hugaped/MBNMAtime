@@ -33,12 +33,12 @@ be included in the model. Can be used to imply whether mean responses in
 data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
-\item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
+\item{rho}{The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
 numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
 If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
-\item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
+\item{covar}{A character specifying the covariance structure to use for modelling within-study correlation between time-points. This can
 be done by specifying one of the following:
 \itemize{
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
@@ -70,7 +70,7 @@ relative effects.
 # Write a log-linear time-course MBNMA synthesis model with:
 # Common effects for synthesis of mu
 # Modelled as ratio of means
-model <- write.ref.synth(fun=tloglin(pool.1="rel", method.1="common"),
+model <- write.ref.synth(fun=tloglin(pool.rate="rel", method.rate="common"),
   mu.synth="common", link="log")
 
 cat(model) # Concatenates model representations making code more easily readable

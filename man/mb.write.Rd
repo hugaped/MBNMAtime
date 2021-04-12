@@ -11,7 +11,7 @@ mb.write(
   intercept = TRUE,
   rho = 0,
   covar = "varadj",
-  var.scale = NULL,
+  omega = NULL,
   class.effect = list(),
   UME = FALSE
 )
@@ -33,12 +33,12 @@ be included in the model. Can be used to imply whether mean responses in
 data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
 removes the intercept, \code{alpha}, from the model).}
 
-\item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
+\item{rho}{The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
 numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
 If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
-\item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
+\item{covar}{A character specifying the covariance structure to use for modelling within-study correlation between time-points. This can
 be done by specifying one of the following:
 \itemize{
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
@@ -49,11 +49,11 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
 }}
 
-\item{var.scale}{A numeric vector indicating the relative scale of variances between
-correlated time-course parameters when relative effects are modelled on more than
-one time-course parameter(see Details). Each element of
-the vector refers to the relative scale of each of the time-course parameters that is
-modelled using relative effects.}
+\item{omega}{A scale matrix for the inverse-Wishart prior for the covariance matrix used
+to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
+be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
+relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
+is used.}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
@@ -80,8 +80,8 @@ model <- mb.write(fun=tpoly(degree=1, pool.1="rel", method.1="random"))
 # Write an emax time-course MBNMA with:
 # a Hill parameter
 # no intercept
-model <- mb.write(fun=temax(pool.1="rel", method.1="common",
-    pool.2="abs", method.2="common", pool.3="abs", method.3="common"),
+model <- mb.write(fun=temax(pool.emax="rel", method.emax="common",
+    pool.et50="abs", method.et50="common", pool.hill="abs", method.hill="common"),
   intercept=TRUE)
 
 # Write a log-linear time-course MBNMA with:

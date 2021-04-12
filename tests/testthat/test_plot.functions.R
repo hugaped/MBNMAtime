@@ -12,7 +12,7 @@ bs <- mb.run(copdnet, fun=tspline(type="bs", knots=2,
                                   pool.1="abs", method.1="random",
                                   pool.2="rel", method.2="common",
                                   pool.3="rel", method.3="common"
-                                  ),
+                                  ), omega=matrix(c(10,0,0,10), nrow=2),
              n.chain=3, n.iter=1200, n.burnin=800, intercept = FALSE)
 
 loglin <- mb.run(alognet, fun=tloglin(pool.rate="rel", method.rate="random"),

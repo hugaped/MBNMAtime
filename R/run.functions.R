@@ -184,21 +184,18 @@
 #' # random relative treatment effects on the rate
 #' # an autoregressive AR1 covariance structure
 #' # modelled as standardised mean differences
-#' result <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="random"),
-#'                  covar="AR1", link="smd")
+#' copdnet <- mb.network(copd)
+#' result <- mb.run(copdnet, fun=tloglin(pool.rate="rel", method.rate="random"),
+#'                  covar="AR1", rho="dunif(0,1)", link="smd")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
 #'
-#' # Density plots
-#' mcmcplots::denplot(result, c("rate", "sd.rate", "deviance"))
-#'
 #' # Traceplots
 #' mcmcplots::traplot(result)
 #'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "rate")
-#'
+#' # Plots for assessing convergence
+#' mcmcplots::mcmcplot(result, c("rate", "sd.rate", "rho"))
 #'
 #' ########## Output ###########
 #'
@@ -289,7 +286,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   if (is.null(omega)) {
     relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
     if (sum(relparam)>1) {
-      omega <- diag(as.numeric(relparam))
+      omega <- diag(rep(1,sum(relparam)))
     }
   }
 
@@ -585,7 +582,8 @@ gen.parameters.to.save <- function(fun, model) {
 #' network <- mb.network(alog_pcfb)
 #'
 #' # Run Emax model saving predicted means and residual deviance contributions
-#' emax <- mb.emax(network, parameters.to.save=c("theta", "resdev"), intercept=FALSE)
+#' emax <- mb.run(network, fun=temax(),
+#'   parameters.to.save=c("theta", "resdev"), intercept=FALSE)
 #'
 #' # Get matrices of observed data
 #' jagsdat <- getjagsdata(network$data.ab)
@@ -775,7 +773,7 @@ check.beta.arg <- function(beta.1) {
 #' network <- mb.network(alog_pcfb)
 #'
 #' # Run Emax model
-#' emax <- mb.emax(network, intercept=FALSE)
+#' emax <- mb.run(network, fun=temax())
 #'
 #' # Update model for 500 iterations to monitor fitted values
 #' mb.update(emax, param="theta", n.iter=500)

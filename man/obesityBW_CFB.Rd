@@ -15,7 +15,7 @@ A data frame with 710 rows and 7 variables:
 \item \code{treatment} Treatment identifiers as factors. Labels are shortened treatment names.
 \item \code{treatname} Character data giving the full names of each treatment in the format agent_dose
 \item \code{agent} Agent (drug) names stored as characters
-\item \code{agentclass} The drug class of the agent (a broader category than \code{agent}) stored as characters
+\item \code{class} The drug class of the agent (a broader category than \code{agent}) stored as characters
 }
 }
 \source{
@@ -33,6 +33,6 @@ deviations have been imputed for 421 observations.
 }
 \details{
 \code{obesityBW_CFB} is a data frame in long format (one row per observation, arm and study),
-with the variables \code{studyID}, \code{time}, \code{y}, \code{se}, \code{N}, \code{treatment}, \code{treatname}, \code{agent} and \code{agentclass}.
+with the variables \code{studyID}, \code{time}, \code{y}, \code{se}, \code{N}, \code{treatment}, \code{treatname}, \code{agent} and \code{class}.
 }
 \keyword{datasets}

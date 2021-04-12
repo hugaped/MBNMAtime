@@ -76,7 +76,7 @@ by specifying the relative scale of variances between the time-course parameters
 }
 \examples{
 # Model without a Hill parameter
-temax(pool.emax="rel", method.rate="random", pool.et50="abs", method.et50="common")
+temax(pool.emax="rel", method.emax="random", pool.et50="abs", method.et50="common")
 
 # Model including a Hill parameter and defaults for Emax and ET50 parameters
 temax(pool.hill="abs", method.hill="common")

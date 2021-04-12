@@ -85,7 +85,7 @@ by specifying the relative scale of variances between the time-course parameters
 }
 \examples{
 # Second order B spline with 2 knots and random effects on the 2nd coefficient
-tspline(type="bs", knots=3, degree=2,
+tspline(type="bs", knots=2, degree=2,
   pool.1="rel", method.1="common",
   pool.2="rel", method.2="random")
 

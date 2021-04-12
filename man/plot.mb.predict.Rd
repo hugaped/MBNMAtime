@@ -8,6 +8,7 @@
   x,
   disp.obs = FALSE,
   overlay.ref = TRUE,
+  overlay.nma = NULL,
   col = "blue",
   max.col.scale = NULL,
   treat.labs = NULL,

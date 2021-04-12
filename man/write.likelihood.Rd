@@ -18,12 +18,12 @@ write.likelihood(
 
 \item{timecourse}{A character object representing the time-course used in the MBNMA model}
 
-\item{rho}{The correlation coefficient when modelling correlation between time points. The default is a string representing a
+\item{rho}{The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
 numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
 If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
-\item{covar}{A character specifying the covariance structure to use for modelling correlation between time-points. This can
+\item{covar}{A character specifying the covariance structure to use for modelling within-study correlation between time-points. This can
 be done by specifying one of the following:
 \itemize{
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
