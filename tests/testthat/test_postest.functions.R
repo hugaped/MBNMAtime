@@ -58,7 +58,6 @@ testthat::test_that("predict.mbnma functions correctly", {
     treats <- treats.list[[i]]
     times <- times.list[[i]]
     synth <- synth.list[[i]]
-    level <- level.list[[i]]
 
     # Tests using ref.resp
     pred <- predict(mbnma, times=times,

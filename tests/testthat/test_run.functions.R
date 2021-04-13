@@ -19,18 +19,18 @@ testthat::test_that("exponential time-course function works correctly", {
   # Class effects
   mb.result <- mb.run(classnetwork, fun=texp(pool.rate="rel", method.rate="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                              class.effect = list("rate"="random"))
+                      class.effect = list("rate"="random"))
   expect_equal(all(c("RATE", "rate", "sd.RATE") %in% mb.result$parameters.to.save), TRUE)
 
   mb.result <- mb.run(classnetwork, fun=texp(pool.rate="rel", method.rate="random"),
-                              positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                              class.effect = list("rate"="random"))
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
+                      class.effect = list("rate"="random"))
   testthat::expect_equal(all(c("RATE", "sd.RATE", "sd.rate") %in% mb.result$parameters.to.save), TRUE)
 
   # UME
   mb.result <- mb.run(copdnet, link="log", fun=texp(pool.rate="rel", method.rate="common"),
-                              positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                              UME = "rate")
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
+                      UME = "rate")
   testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("rate", colnames(mb.result$BUGSoutput$sims.matrix))]),
                          4)
 
@@ -38,9 +38,9 @@ testthat::test_that("exponential time-course function works correctly", {
 
 
 testthat::test_that("emax time-course function works correctly", {
-  mb.result <- mb.run(painnet, fun=temax(pool.emax="rel", method.emax="common",
+  mb.result <- suppressWarnings(mb.run(painnet, fun=temax(pool.emax="rel", method.emax="common",
                                          pool.et50="abs", method.et50="common"),
-                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200, pd="plugin")
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200, pd="plugin"))
   testthat::expect_equal(all(c("emax", "et50", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
   mb.result <- mb.run(copdnet, fun=temax(pool.emax="rel", method.emax="common",
@@ -56,9 +56,9 @@ testthat::test_that("emax time-course function works correctly", {
 
   # Class effects
   mb.result <- mb.run(classnetwork, fun=temax(pool.emax="rel", method.emax="common",
-                                               pool.et50="abs", method.et50="common"),
-                             positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                             class.effect = list("emax"="common"))
+                                              pool.et50="abs", method.et50="common"),
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
+                      class.effect = list("emax"="common"))
   testthat::expect_equal(all(c("EMAX") %in% mb.result$parameters.to.save), TRUE)
   testthat::expect_equal(all(c("sd.EMAX") %in% mb.result$parameters.to.save), FALSE)
 
@@ -66,13 +66,13 @@ testthat::test_that("emax time-course function works correctly", {
                                                         pool.et50="abs", method.et50="common"),
                                 class.effect = list("et50"="common")),
                          "Class effects can only"
-                         )
+  )
 
   # UME
   mb.result <- mb.run(copdnet, fun=temax(pool.emax="rel", method.emax="common",
-                                          pool.et50="rel", method.et50="common"),
-                       positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                       UME=TRUE)
+                                         pool.et50="rel", method.et50="common"),
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
+                      UME=TRUE)
   testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
                          4)
   testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("et50", colnames(mb.result$BUGSoutput$sims.matrix))]),
@@ -139,7 +139,7 @@ testthat::test_that("polynomial time-course function works correctly", {
 testthat::test_that("Fractional polynomial time-course function works correctly", {
 
   mb.result <- mb.run(painnet, fun=tfpoly(degree = 2, pool.1 = "rel", method.1="random",
-                                         pool.2="abs", method.2="common"),
+                                          pool.2="abs", method.2="common"),
                       n.chain=3, n.iter=500, n.burnin=200, pd="pv")
   testthat::expect_equal(all(c("beta.2", "d.1", "sd.beta.1", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
@@ -178,46 +178,46 @@ testthat::test_that("Fractional polynomial time-course function works correctly"
 
 
 testthat::test_that("mb.run function (+ tuser()) works correctly", {
-    testthat::expect_warning(mb.run(mb.network(alog_pcfb), pd="plugin",  n.chain=3, n.iter=500, n.burnin=200), "Plugin method only works")
+  testthat::expect_warning(mb.run(mb.network(alog_pcfb), pd="plugin",  n.chain=3, n.iter=500, n.burnin=200), "Plugin method only works")
 
-    testthat::expect_error(mb.run(mb.network(copd), pd="plugin", rho=0.5, covar="AR1",  n.chain=3, n.iter=500, n.burnin=200), "pD cannot be calculated")
+  testthat::expect_error(mb.run(mb.network(copd), pd="plugin", rho=0.5, covar="AR1",  n.chain=3, n.iter=500, n.burnin=200), "pD cannot be calculated")
 
-    alognet <- mb.network(alog_pcfb)
-    expect_error(mb.run(alognet, pd="pd.kl", n.chain=3, n.iter=500, n.burnin=200), NA)
+  alognet <- mb.network(alog_pcfb)
+  expect_error(mb.run(alognet, pd="pd.kl", n.chain=3, n.iter=500, n.burnin=200), NA)
 
-    # Class effects
-    user.fun <- ~exp(beta.1*time + beta.2 + time)
-    result <- mb.run(classnetwork, fun=tuser(fun=user.fun,
-                                             pool.1="rel", method.1="random",
-                                             pool.2="rel", method.2="common"),
-                     class.effect=list("beta.2"="random"),
-                     n.chain=3, n.iter=500, n.burnin=200)
-    testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
-    testthat::expect_equal(all(c("D.1") %in% result$parameters.to.save), FALSE)
+  # Class effects
+  user.fun <- ~exp(beta.1*time + beta.2 + time)
+  result <- mb.run(classnetwork, fun=tuser(fun=user.fun,
+                                           pool.1="rel", method.1="random",
+                                           pool.2="rel", method.2="common"),
+                   class.effect=list("beta.2"="random"),
+                   n.chain=3, n.iter=500, n.burnin=200)
+  testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
+  testthat::expect_equal(all(c("D.1") %in% result$parameters.to.save), FALSE)
 
-    result <- mb.run(classnetwork, fun=tuser(fun=user.fun,
-                                             pool.1="abs", method.1="random",
-                                             pool.2="rel", method.2="common"),
-                     class.effect=list("beta.2"="random"),
-                     n.chain=3, n.iter=500, n.burnin=200)
-    testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
-    testthat::expect_equal(all(c("BETA.1") %in% result$parameters.to.save), FALSE)
-    testthat::expect_equal(all(c("BETA.2") %in% result$parameters.to.save), FALSE)
+  result <- mb.run(classnetwork, fun=tuser(fun=user.fun,
+                                           pool.1="abs", method.1="random",
+                                           pool.2="rel", method.2="common"),
+                   class.effect=list("beta.2"="random"),
+                   n.chain=3, n.iter=500, n.burnin=200)
+  testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
+  testthat::expect_equal(all(c("BETA.1") %in% result$parameters.to.save), FALSE)
+  testthat::expect_equal(all(c("BETA.2") %in% result$parameters.to.save), FALSE)
 
-    testthat::expect_error(mb.run(classnetwork, fun=tuser(fun=user.fun,
-                                                          pool.1="abs", method.1="random",
-                                                          pool.2="rel", method.2="common"),
-                           class.effect=list("beta.1"="common"),
-                           n.chain=3, n.iter=500, n.burnin=200), "Class effects can only be specified")
+  testthat::expect_error(mb.run(classnetwork, fun=tuser(fun=user.fun,
+                                                        pool.1="abs", method.1="random",
+                                                        pool.2="rel", method.2="common"),
+                                class.effect=list("beta.1"="common"),
+                                n.chain=3, n.iter=500, n.burnin=200), "Class effects can only be specified")
 
-    # UME
-    user.fun <- ~exp(beta.1*time)
-    result <- mb.run(painnet, fun=tuser(fun=user.fun,
-                                     pool.1="rel", method.1="random"),
-                        UME=TRUE,
-                        n.chain=3, n.iter=500, n.burnin=200)
-    testthat::expect_equal("d.1[3,15]" %in% colnames(result$BUGSoutput$sims.matrix), TRUE)
-  })
+  # UME
+  user.fun <- ~exp(beta.1*time)
+  result <- mb.run(painnet, fun=tuser(fun=user.fun,
+                                      pool.1="rel", method.1="random"),
+                   UME=TRUE,
+                   n.chain=3, n.iter=500, n.burnin=200)
+  testthat::expect_equal("d.1[3,15]" %in% colnames(result$BUGSoutput$sims.matrix), TRUE)
+})
 
 
 
@@ -227,8 +227,8 @@ testthat::test_that("mb.run function (+ tuser()) works correctly", {
 test_that("mb.update function correctly", {
 
   result <- mb.run(copdnet, fun=tloglin(method.rate="random"),
-                     UME=TRUE,
-                     n.chain=3, n.iter=500, n.burnin=200)
+                   UME=TRUE,
+                   n.chain=3, n.iter=500, n.burnin=200)
 
   expect_error(mb.update(result, param="test"))
 
