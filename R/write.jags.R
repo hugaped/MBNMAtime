@@ -638,7 +638,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 write.cor <- function(model, fun, cor="estimate", omega=NULL, class.effect=list()) {
 
   if (length(class.effect)>0) {
-    message("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
+    message("Class effects cannot be modelled with correlation between time-course relative effect parameters - correlation will be ignored")
   } else {
 
     sufparams <- which(fun$apool=="rel")

@@ -673,8 +673,8 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
     amethod <- append(amethod, get(paste0("method.",i)))
   }
   for (i in 1:degree) {
-    apool <- append(apool, get(paste0("pool.power",degree)))
-    amethod <- append(amethod, get(paste0("method.power",degree)))
+    apool <- append(apool, get(paste0("pool.power",i)))
+    amethod <- append(amethod, get(paste0("method.power",i)))
   }
   bname <- paste0("beta.", 1:nparam)
 
