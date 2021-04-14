@@ -657,12 +657,15 @@ alpha.scale <- function(n.cut, col="blue") {
 #' @noRd
 overlay.nma <- function(pred, incl.range, method="common", link="identity", ...) {
 
+  # Declare global variable
+  cor <- NULL
+
   network <- pred$network
   nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2],]
 
   # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
   nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
-    dplyr::mutate(dif=time-mean(incl.range)) %>%
+    dplyr::mutate(nmanet$dif=time-mean(incl.range)) %>%
     dplyr::arrange(dif) %>%
     dplyr::group_by(studyID, arm) %>%
     dplyr::slice_head()
@@ -740,7 +743,7 @@ overlay.nma <- function(pred, incl.range, method="common", link="identity", ...)
   }
   colnames(predtrt) <- nodes[-1]
 
-  pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){quantile(x, probs = c(0.025,0.5,0.975))})))
+  pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){stats::quantile(x, probs = c(0.025,0.5,0.975))})))
   pred.df$time <- pred$times[timeindex]
   pred.df$treat <- rownames(pred.df)
 
@@ -816,6 +819,9 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(treat.labs, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Declare global variables
+  ranks <- NULL
 
   output <- list()
 
@@ -916,6 +922,12 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
   checkmate::assertCharacter(treat.labs, null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(class.labs, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Declare global variables
+  timeparam <- NULL
+  Var2 <- NULL
+  value <- NULL
+  ndistinct <- NULL
 
   # Change beta to d (if present) so that it is identified in mcmc output
   for (i in 1:4) {
@@ -1073,26 +1085,6 @@ check.network <- function(g, reference=1) {
   return(treats)
 }
 
-
-
-
-testfun <- function(x) {
-
-  et50 <- x$BUGSoutput$sims.matrix[,grepl("et50", colnames(x$BUGSoutput$sims.matrix))]
-  et50 <- reshape2::melt(et50)
-
-  et50 <- et50[,2:3]
-  et50$Var2 <- factor(et50$Var2, labels=x$network$treatments)
-
-  ggplot2::ggplot(et50, ggplot2::aes(y=Var2, x=value)) +
-    stat_halfeye() +
-    ggplot2::coord_flip()
-
-  subset(et50, Var2!="Pl_0") %>%
-    ggplot(aes(x = value, y = Var2)) +
-    stat_halfeye(width=0.95)
-
-}
 
 
 
@@ -1633,6 +1625,12 @@ plot.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Declare global variables
+  Parameter <- NULL
+  Comparison <- NULL
+  value <- NULL
+  Source <- NULL
+
   # Set colours
   cols <- RColorBrewer::brewer.pal(3, "Set1")
 
@@ -1757,7 +1755,7 @@ plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
 
   df <- data.frame("y"=NA, "time"=NA)
   y <- eval(parse(text=funstr))
-  df <- rbind(df, setNames(cbind(y,time), names(df)))
+  df <- rbind(df, stats::setNames(cbind(y,time), names(df)))
   df <- df[-1,]
 
   vals <- vector()
