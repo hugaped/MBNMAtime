@@ -131,6 +131,9 @@ testthat::test_that("predict.mbnma functions correctly", {
   # Expect no error even if ref.resp is NULL
   testthat::expect_error(predict(bs, ref.resp=NULL), NA)
 
+  # Expect no error even when only a single time point is predicted
+  testthat::expect_error(predict(bs, times=2), NA)
+
 })
 
 
