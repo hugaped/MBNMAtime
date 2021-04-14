@@ -31,7 +31,7 @@ time-points in \code{overlay.nma} have been lumped together to estimate the NMA.
 \item{...}{Options for plotting in \code{igraph}.}
 }
 \value{
-Returns an object of \code{class("rjags")}
+Returns an object of \code{class("nma", "rjags")}
 }
 \description{
 Run an NMA model
