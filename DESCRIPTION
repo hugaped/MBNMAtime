@@ -3,14 +3,14 @@ Type: Package
 Title: Run Time-Course MBNMA Models
 Version: 0.2.0
 Language: en-GB
-Date: 2020-03-04
+Date: 2020-04-14
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
   person("Tobias", "Saueressig", role = c("rev")),
   person("Nicky", "Welton", role = c("ctb", "rev")),
   person("Sofia", "Dias", role = c("ctb", "rev")),
   person("Meg", "Bennetts", role = c("ctb", "rev")),
   person("Martin", "Boucher", role = c("ctb", "rev")))
-Maintainer: Hugo Pedder <hugopedder@gmail.com>
+Maintainer: Hugo Pedder <hugo.pedder@bristol.ac.uk>
 URL: https://doi.org/10.1002/jrsm.1351
 Description: Fits Bayesian time-course models for model-based network meta-analysis (MBNMA) and model-based meta
   -analysis (MBMA) that account for repeated measures over time within studies by applying different time-course functions,
@@ -42,6 +42,8 @@ Suggests:
   ggdist (>= 2.4.0),
   igraph (>= 1.1.2),
   crayon (>= 1.3.4),
+  splines (>= 4.0.2),
+  Hmisc (>= 4.4-1),
   rmarkdown,
   zoo (>= 1.8-8),
   testthat (>= 1.0.2),
