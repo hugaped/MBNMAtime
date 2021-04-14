@@ -445,13 +445,19 @@ rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE
     stop("'time' is not a time point given in 'x'")
   }
 
+  # Subset x for treats
+  index <- which(names(x$summary) %in% treats)
+  x$summary <- x$summary[index]
+  x$pred.mat <- x$pred.mat[index]
+
 
   #### Compute rankings ####
 
   # Get time point of interest from x
   index <- which(x$summary[[1]]$time %in% time)
   rank.mat <- lapply(x$pred.mat, FUN=function(k) {k[,index]})
-  rank.mat <- t(do.call(rbind, rank.mat))
+  # rank.mat <- t(do.call(rbind, rank.mat))
+  rank.mat <- do.call(cbind, rank.mat)
 
   # Compute rankings for each iteration
   rank.mat <- t(apply(rank.mat, MARGIN=1, FUN=function(k) {
