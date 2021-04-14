@@ -361,20 +361,21 @@ Default vague priors for the model are as follows:
 
 $$
 \begin{aligned}
-  &\mu_{i} \sim N(0,10000)\\
   &\alpha_{i} \sim N(0,10000)\\
+  &\boldsymbol{\mu}_{i} \sim MVN(0,M_{i})\\
   &\boldsymbol{d}_{t} \sim MVN(0,\Sigma_{t})\\
   &beta_{\phi} \sim N(0,10000)\\
   &D_{\phi,c} \sim N(0,1000)\\
   &\tau_{\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
   &\tau^D_{\phi} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
+  &M_{i} \sim Wish^{-1}(\Omega,k)\\
   &\Sigma_{t} \sim Wish^{-1}(\Omega,k)\\
 \end{aligned}
 $$
 
-* $\mu_i$ is the study reference effect (modelled as a nuisance parameter) in study $i$
+* $\mu_i$ is the study reference effect (modelled as a nuisance parameter) in study $i$. Where only a single time-course parameter is modelled using relative effects the prior is defined as $\mu_{i} \sim N(0,10000)$.
 * $\alpha_i$ is the response at time=0 in study $i$
-* $\boldsymbol{d}_{t}$ is a vector of pooled relative effects for treatment $t$ whose length is the number of time-course parameters in the model
+* $\boldsymbol{d}_{t}$ is a vector of pooled relative effects for treatment $t$ whose length is the number of time-course parameters in the model. Where only a single time-course parameter is modelled using relative effects the prior is defined as $d_{t} \sim N(0,10000)$.
 * $\beta_{\phi}$ is the absolute effect for time-course parameter $\phi$ modelled independently of treatment
 * $D_{\phi,c}$ is the class relative effect for time-course parameter $\phi$ in class $c$
 * $\tau_{\phi}$ is the between-study SD for time-course parameter $\phi$
