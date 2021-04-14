@@ -5,7 +5,7 @@
 \title{Checks validity of arguments for mb.write}
 \usage{
 write.check(
-  fun = linear(),
+  fun = tpoly(degree = 1),
   positive.scale = TRUE,
   intercept = TRUE,
   rho = 0,

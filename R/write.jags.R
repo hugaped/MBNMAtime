@@ -88,7 +88,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 
 
 
-  model <- write.cor(model=model, fun=fun, cor=cor, omega=omega, class.effect = class.effect)
+  model <- write.cor(model=model, fun=fun, omega=omega, class.effect = class.effect)
 
   model <- add.funparams(model=model, fun=fun)
 
@@ -114,7 +114,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 #'   will return an object that indicates whether the arguments imply modelling a
 #'   correlation between time points if it passes.
 #'
-write.check <- function(fun=linear(), positive.scale=TRUE, intercept=TRUE, rho=0, covar=NULL,
+write.check <- function(fun=tpoly(degree=1), positive.scale=TRUE, intercept=TRUE, rho=0, covar=NULL,
                         omega=NULL, link="identity",
                         class.effect=list(), UME=c()) {
 
@@ -286,6 +286,7 @@ write.timecourse <- function(model, fun,
 
 #' Insert element into model vector at desired location
 #'
+#' @noRd
 model.insert <- function(a, pos, x){
   # dots <- list(...)
   # stopifnot(length(dots)==length(pos))
@@ -635,7 +636,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 #'
 #' @inheritParams mb.run
 #' @inheritParams write.beta
-write.cor <- function(model, fun, cor="estimate", omega=NULL, class.effect=list()) {
+write.cor <- function(model, fun, omega=NULL, class.effect=list()) {
 
   if (length(class.effect)>0) {
     message("Class effects cannot be modelled with correlation between time-course relative effect parameters - correlation will be ignored")
@@ -647,7 +648,7 @@ write.cor <- function(model, fun, cor="estimate", omega=NULL, class.effect=list(
     mat.size <- length(sufparams)
     if (mat.size>=2) {
       model <- write.cov.mat(model, sufparams=sufparams,
-                             cor=cor, cor.prior="wishart",
+                             cor="estimate", cor.prior="wishart",
                              omega=omega)
     }
   }
@@ -924,6 +925,7 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 
 
 #' Add named function parameters to the model
+#' @noRd
 add.funparams <- function(model, fun) {
   for (i in seq_along(fun$params)) {
     if (!grepl("beta", fun$params[i])) {

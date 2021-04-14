@@ -57,6 +57,14 @@ layout that determines the arrangement of the vertices (nodes). The default
 network plots are: \code{igraph::as_star()}, \code{igraph::with_fr()}. Others can be found
 in \code{\link[igraph]{layout_}}}
 
+\item{legend}{A boolean value indicating whether or not to plot a legend with class names if \code{v.color="class"}}
+
+\item{legend.x}{Can be either a string or a numerical x-coordinate indicating where the legend should be
+plotted (see \code{\link[graphics]{legend}}).}
+
+\item{legend.y}{A numerical y-coordinate indicating where the legend should be plotted - only required if \code{legend.x} is also
+a numeric co-ordinate.}
+
 \item{...}{Options for plotting in \code{igraph}.}
 
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:

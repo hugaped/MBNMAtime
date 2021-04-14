@@ -5,7 +5,7 @@
 \title{Predict responses over time in a given population based on MBNMA time-course
 models}
 \usage{
-predict.mbnma(
+\method{predict}{mbnma}(
   object,
   times = seq(0, max(object$model.arg$jagsdata$time, na.rm = TRUE), length.out = 20),
   E0 = 0,

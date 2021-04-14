@@ -1243,6 +1243,8 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
 #' # Construct a dataset with the latest time point in each study
 #' data.ab <- get.latest.time(network)
 #' getnmadata(data.ab)
+#'
+#' @export
 getnmadata <- function(data.ab, link="identity") {
 
   # Run Checks

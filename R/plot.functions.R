@@ -32,6 +32,11 @@
 #'   class/agent effects.
 #' @param remove.loops A boolean value indicating whether to include loops that
 #'   indicate comparisons within a node.
+#' @param legend A boolean value indicating whether or not to plot a legend with class names if `v.color="class"`
+#' @param legend.x Can be either a string or a numerical x-coordinate indicating where the legend should be
+#'   plotted (see \code{\link[graphics]{legend}}).
+#' @param legend.y A numerical y-coordinate indicating where the legend should be plotted - only required if `legend.x` is also
+#'   a numeric co-ordinate.
 #' @param ... Options for plotting in `igraph`.
 #'
 #' @details The S3 method `plot()` on an `mb.network` object generates a
@@ -659,13 +664,14 @@ overlay.nma <- function(pred, incl.range, method="common", link="identity", ...)
 
   # Declare global variable
   cor <- NULL
+  dif <- NULL
 
   network <- pred$network
   nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2],]
 
   # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
   nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
-    dplyr::mutate(nmanet$dif=time-mean(incl.range)) %>%
+    dplyr::mutate(dif=time-mean(incl.range)) %>%
     dplyr::arrange(dif) %>%
     dplyr::group_by(studyID, arm) %>%
     dplyr::slice_head()
@@ -1160,6 +1166,11 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
   checkmate::assertChoice(plotby, choices = c("arm", "rel"), add=argcheck)
   checkmate::assertChoice(link, choices = c("identity", "smd", "rom"), add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Define global variables
+  poolvar <- NULL
+  Rx.Name.x <- NULL
+  Rx.Name.y <- NULL
 
   if (level=="class" & !("classes" %in% names(network))) {
     stop("`level` cannot be set to class if there is no class variable included in the dataset/network")

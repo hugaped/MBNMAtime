@@ -449,7 +449,7 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
     }
   }
   jags <- gsub("time", "time[i,m]", fun)
-  fun <- as.formula(paste0("~", fun))
+  fun <- stats::as.formula(paste0("~", fun))
 
 
   for (i in 1:degree) {
@@ -501,10 +501,10 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #' @param method.1 Method for synthesis of the 1st fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
 #' @param pool.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
 #' @param method.2 Method for synthesis of the 2nd fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
-#' @param pool.3 Pooling for the 3rd fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.3 Method for synthesis of the 3rd fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
-#' @param pool.4 Pooling for the 4th fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.4 Method for synthesis of the 4th fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.power1 Method for synthesis of the 1st fractional polynomial power. Can take `"common` or `"random"` (see details).
+#'   `pool` for this parameter is set to `"abs"`.
+#' @param method.power2 Method for synthesis of the 2nd fractional polynomial power. Can take `"common` or `"random"` (see details).
+#'   `pool` for this parameter is set to `"abs"`.
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -612,53 +612,57 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 
 
   # Write function
-  if (degree==1) {
-    f <- function(time, beta.1, beta.2) {
-      if (time>0) {
-        if (beta.2==0) {
-          y <- log(time)
-        } else {
-          y <- time^beta.2
-        }
+  f1 <- function(time, beta.1, beta.2) {
+    if (time>0) {
+      if (beta.2==0) {
+        y <- log(time)
       } else {
-        y <- 0
+        y <- time^beta.2
       }
-      return(beta.1 * y)
+    } else {
+      y <- 0
     }
-  } else if (degree==2) {
-    f <- function(time, beta.1, beta.2, beta.3, beta.4) {
-      if (time>0) {
-        if (beta.3==0) {
-          y1 <- log(time)
-        } else {
-          y1 <- time^beta.3
-        }
-      } else {
-        y1 <- 0
-      }
-      y1 <- beta.1 * y1
+    return(beta.1 * y)
+  }
 
-      if (beta.4==beta.3) {
-        if (time>0) {
-          if (beta.4==0) {
-            y2 <- log(time)^2
-          } else {
-            y2 <- time^beta.4 * log(time)
-          }
+  f2 <- function(time, beta.1, beta.2, beta.3, beta.4) {
+    if (time>0) {
+      if (beta.3==0) {
+        y1 <- log(time)
+      } else {
+        y1 <- time^beta.3
+      }
+    } else {
+      y1 <- 0
+    }
+    y1 <- beta.1 * y1
+
+    if (beta.4==beta.3) {
+      if (time>0) {
+        if (beta.4==0) {
+          y2 <- log(time)^2
         } else {
-          if (time >0) {
-            if (beta.4==0) {
-              y2 <- log(time)
-            } else {
-              y2 <- time^beta.4
-            }
-          }
+          y2 <- time^beta.4 * log(time)
         }
       } else {
-        y2 <- 0
+        if (time >0) {
+          if (beta.4==0) {
+            y2 <- log(time)
+          } else {
+            y2 <- time^beta.4
+          }
+        }
       }
-      return(y1 + y2)
+    } else {
+      y2 <- 0
     }
+    return(y1 + y2)
+  }
+
+  if (degree==1) {
+    f <- f1
+  } else if (degree==2) {
+    f <- f2
   }
 
 
@@ -813,7 +817,7 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
       latex <- paste(latex, "+", temptex)
     }
   }
-  fun <- as.formula(paste("~", jags))
+  fun <- stats::as.formula(paste("~", jags))
   jags <- gsub("(spline)\\.([0-9])", "\\1[i,m,\\2]", jags)
 
 

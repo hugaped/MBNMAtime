@@ -202,6 +202,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
 #' @param treats A character vector of treatment/class names (depending on the value of `level`). If left `NULL``
 #'   then rankings will be calculated for all treatments/classes. Note that unlike `rank.mbnma()` this argument
 #'   cannot take a numeric vector.
+#' @param subdivisions The number of subdivisions over which to integrate (see \code{\link[stats]{integrate}})
 #'
 #' @inherit rank.mbnma return
 #' @inherit rank.mbnma details

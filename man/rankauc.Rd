@@ -36,6 +36,8 @@ time in the dataset.}
 \item{n.iter}{The number of iterations for which to calculate AUC (if \code{"auc"} is included in \code{params}).
 Must be a positive integer. Default is the value used in \code{mbnma}.}
 
+\item{subdivisions}{The number of subdivisions over which to integrate (see \code{\link[stats]{integrate}})}
+
 \item{...}{Arguments to be sent to R2jags for synthesis of the network
 reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 }

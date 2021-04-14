@@ -34,6 +34,10 @@ a time-course MBNMA model}
 specifies the the type of pooling to use for synthesis of \code{ref.resp}. Using \code{"random"} rather
 than \code{"common"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
 
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
 \item{n.iter}{number of total iterations per chain (including burn in;
     default: 2000)}
 

@@ -8,7 +8,8 @@
   x,
   time = max(x$summary[[1]]$time),
   lower_better = FALSE,
-  treats = names(x$summary)
+  treats = names(x$summary),
+  ...
 )
 }
 \arguments{
@@ -22,7 +23,46 @@ positive responses are better (\code{lower_better=FALSE})}
 
 \item{treats}{A character vector of treatment/class names for which responses have been predicted
 in \code{x} As default, rankings will be calculated for all treatments/classes in \code{x}.}
+
+\item{...}{Arguments to be passed to methods}
+}
+\value{
+Returns an object of \code{class("mb.rank")} containing ranked predictions
 }
 \description{
 Rank predictions at a specific time point
+}
+\examples{
+\donttest{
+# Create an mb.network object from a dataset
+network <- mb.network(osteopain)
+
+# Run an MBNMA model with an Emax time-course
+emax <- mb.run(network,
+  fun=temax(pool.emax="rel", method.emax="common",
+    pool.et50="abs", method.et50="common"))
+
+# Predict responses using a stochastic baseline (E0) and a distribution for the
+#network reference treatment
+preds <- predict(emax, E0=7,
+  ref.resp=list(emax=~rnorm(n, -0.5, 0.05)))
+
+# Rank predictions at latest predicted time-point
+rank(preds, lower_better=TRUE)
+
+
+#### Rank predictions at 5 weeks follow-up ####
+
+# First ensure responses are predicted at 5 weeks
+preds <- predict(emax, E0=7,
+  ref.resp=list(emax=~rnorm(n, -0.5, 0.05)),
+  times=c(0,5,10))
+
+# Rank predictions at 5 weeks follow-up
+ranks <- rank(preds, lower_better=TRUE, time=5)
+
+# Plot ranks
+plot(ranks)
+
+}
 }

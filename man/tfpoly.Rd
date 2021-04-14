@@ -25,13 +25,11 @@ tfpoly(
 
 \item{method.2}{Method for synthesis of the 2nd fractional polynomial coefficient. Can take \verb{"common} or \code{"random"} (see details).}
 
-\item{pool.3}{Pooling for the 3rd fractional polynomial coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
+\item{method.power1}{Method for synthesis of the 1st fractional polynomial power. Can take \verb{"common} or \code{"random"} (see details).
+\code{pool} for this parameter is set to \code{"abs"}.}
 
-\item{method.3}{Method for synthesis of the 3rd fractional polynomial coefficient. Can take \verb{"common} or \code{"random"} (see details).}
-
-\item{pool.4}{Pooling for the 4th fractional polynomial coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
-
-\item{method.4}{Method for synthesis of the 4th fractional polynomial coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.power2}{Method for synthesis of the 2nd fractional polynomial power. Can take \verb{"common} or \code{"random"} (see details).
+\code{pool} for this parameter is set to \code{"abs"}.}
 }
 \value{
 An object of \code{class("timefun")}

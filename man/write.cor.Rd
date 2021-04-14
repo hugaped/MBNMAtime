@@ -4,7 +4,7 @@
 \alias{write.cor}
 \title{Adds correlation between time-course relative effects}
 \usage{
-write.cor(model, fun, cor = "estimate", omega = NULL, class.effect = list())
+write.cor(model, fun, omega = NULL, class.effect = list())
 }
 \arguments{
 \item{model}{A character object of JAGS MBNMA model code}
