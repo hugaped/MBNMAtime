@@ -389,10 +389,46 @@ calcprob <- function(rank.mat, treats=NULL) {
 #' @param treats A character vector of treatment/class names for which responses have been predicted
 #'   in `x` As default, rankings will be calculated for all treatments/classes in `x`.
 #' @inheritParams rank.mbnma
+#' @param ... Arguments to be passed to methods
 #'
+#' @return Returns an object of `class("mb.rank")` containing ranked predictions
+#'
+#' @examples
+#' \donttest{
+#' # Create an mb.network object from a dataset
+#' network <- mb.network(osteopain)
+#'
+#' # Run an MBNMA model with an Emax time-course
+#' emax <- mb.run(network,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="common"))
+#'
+#' # Predict responses using a stochastic baseline (E0) and a distribution for the
+#' #network reference treatment
+#' preds <- predict(emax, E0=7,
+#'   ref.resp=list(emax=~rnorm(n, -0.5, 0.05)))
+#'
+#' # Rank predictions at latest predicted time-point
+#' rank(preds, lower_better=TRUE)
+#'
+#'
+#' #### Rank predictions at 5 weeks follow-up ####
+#'
+#' # First ensure responses are predicted at 5 weeks
+#' preds <- predict(emax, E0=7,
+#'   ref.resp=list(emax=~rnorm(n, -0.5, 0.05)),
+#'   times=c(0,5,10))
+#'
+#' # Rank predictions at 5 weeks follow-up
+#' ranks <- rank(preds, lower_better=TRUE, time=5)
+#'
+#' # Plot ranks
+#' plot(ranks)
+#'
+#' }
 #' @export
 rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE,
-                                        treats=names(x$summary)) {
+                                        treats=names(x$summary), ...) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -414,12 +450,12 @@ rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE
 
   # Get time point of interest from x
   index <- which(x$summary[[1]]$time %in% time)
-  rank.mat <- lapply(x$pred.mat, FUN=function(k) k[,index])
+  rank.mat <- lapply(x$pred.mat, FUN=function(k) {k[,index]})
   rank.mat <- t(do.call(rbind, rank.mat))
 
   # Compute rankings for each iteration
-  rank.mat <- t(apply(rank.mat, MARGIN=1, FUN=function(x) {
-    order(order(x, decreasing = !lower_better), decreasing=FALSE)
+  rank.mat <- t(apply(rank.mat, MARGIN=1, FUN=function(k) {
+    order(order(k, decreasing = !lower_better), decreasing=FALSE)
   }))
   colnames(rank.mat) <- treats
 
