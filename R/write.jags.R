@@ -1084,10 +1084,9 @@ write.beta.ref <- function(model, timecourse, fun,
 #' Write standard NMA model in JAGS
 #'
 #' @inheritParams mb.run
-#' @inheritParams write.synth
+#' @inheritParams plot.mb.predict
 #'
-#' @return
-#' @examples
+#' @noRd
 write.nma <- function(method="common", link="identity") {
   model <- c(
     start="model{ 			# Begin Model Code",
