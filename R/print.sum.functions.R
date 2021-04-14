@@ -792,8 +792,15 @@ print.mb.predict <- function(x, ...) {
 
   sumlist <- x[["summary"]]
 
-  if (!("1" %in% names(sumlist))) {
-    cat("Responses have not been predicted for the network reference treatment\n")
+  if (!(x$network$treatments[1] %in% names(sumlist))) {
+    err <- "Responses have not been predicted for the network reference treatment\n"
+    if ("classes" %in% names(x$network)) {
+      if (!x$network$classes[1] %in% names(sumlist)) {
+        cat(err)
+      }
+    } else {
+      cat(err)
+    }
   }
 
   msg <- paste0("Predicted responses at ", nrow(sum.df), " different follow-up times ",
