@@ -80,7 +80,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
   checkmate::reportAssertions(argcheck)
 
   # Generate comparisons (using get.latest.time and mb.contrast?
-  data <- get.latest.time(x)
+  df <- get.latest.time(x)
 
 
   # Check if level="class" that classes are present in dataset
@@ -91,7 +91,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
     nodes <- x[["classes"]]
 
     # Replace treatment column with class codes
-    data$treatment <- data$class
+    df$treatment <- df$class
 
   } else if (level=="treatment") {
     nodes <- x[["treatments"]]
@@ -99,7 +99,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
 
   # Calculate participant numbers (if v.scale not NULL)
   if (!is.null(v.scale)) {
-    if (!("N" %in% names(data))) {
+    if (!("N" %in% names(df))) {
       stop("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
     }
 
@@ -119,7 +119,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
     }
 
 
-  comparisons <- mb.comparisons(data)
+  comparisons <- mb.comparisons(df)
   #treatments <- x[["treatments"]]
 
   # Code to make graph.create as an MBNMA command if needed
@@ -247,6 +247,13 @@ radian.rescale <- function(x, start=0, direction=1) {
 #'   plot (`TRUE`) or not (`FALSE`). The network reference treatment (treatment
 #'   1) must be included in `predict` for this to display the network reference
 #'   treatment properly.
+#' @param overlay.nma Can be used to overlay the predicted results from a standard NMA model that
+#'   "lumps" time-points together within the range specified in `overlay.nma`. Must be a numeric vector of length 2, or
+#'   left as `NULL` (the default) to indicate no NMA should be performed. `overlay.nma` can only be speficied if
+#'   `overlay.ref==TRUE`. See Details for further information.
+#' @param method Can take `"common"` or `"random"` to indicate the type of NMA model used to synthesise data points
+#'   given in `overlay.nma`. The default is `"random"` since this assumes different
+#'   time-points in `overlay.nma` have been lumped together to estimate the NMA.
 #' @param col A character indicating the colour to use for shading if `disp.obs`
 #'   is set to `TRUE`. Can be either `"blue"`, `"green"`, or `"red"`
 #' @param max.col.scale Rarely requires adjustment. The maximum count of
@@ -264,6 +271,20 @@ radian.rescale <- function(x, start=0, direction=1) {
 #'   each panel rather than to the network reference treatment if `disp.obs` is
 #'   set to `TRUE`.
 #'
+#'   `overlay.nma` can be useful to assess if the MBNMA predictions are in agreement with predictions from an NMA model
+#'   for a specific range of time-points. This can be a general indicator of the fit of the time-course model. However, it
+#'   is important to note that the wider the range specified in `overlay.nma`, the more likely it is that different time-points
+#'   are included, and therefore that there is greater heterogeneity/inconsistency in the NMA model. If `overlay.nma` includes
+#'   several follow-up times for any study then only a single time-point will be taken (the one closest to `mean(overlay.nma)`).
+#'   The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line, with the 95%CrI shown by a grey
+#'   rectangle. The NMA predictions represent those for *any time-points within this range* since they lump together data at
+#'   all these time-points. Predictions for treatments that are disconnected from
+#'   the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
+#'
+#'   It is important to note that the NMA model is not necessarily the "correct" model, since it "lump" different time-points
+#'   together and ignores potential differences in treatment effects that may arise from this. The wider the range specified in
+#'   `overlay.nma`, the greater the effect of "lumping" and the stronger the assumption of similarity between studies.
+#'
 #' @examples
 #' \donttest{
 #' # Create an mb.network object from a dataset
@@ -272,7 +293,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 #' # Run an MBNMA model with a log-linear time-course
 #' loglin <- mb.run(copdnet,
 #'   fun=tloglin(pool.rate="rel", method.rate="common"),
-#'   rho="dunif(0,1)", covar="varadj", intercept=FALSE)
+#'   rho="dunif(0,1)", covar="varadj")
 #'
 #' # Predict responses using the original dataset to estimate the network reference
 #' #treatment response
@@ -285,10 +306,16 @@ radian.rescale <- function(x, start=0, direction=1) {
 #' # Plot the predicted responses with the median network reference treatment response overlayed
 #' #on the plot
 #' plot(predict, disp.obs=FALSE, overlay.ref=TRUE)
+#'
+#' # Plot predictions from an NMA calculated between different time-points
+#' plot(predict, overlay.nma=c(5,10), n.iter=20000)
+#' plot(predict, overlay.nma=c(15,20), n.iter=20000)
+#' # Time-course fit may be less good at 15-20 weeks follow-up
 #' }
 #'
 #' @export
-plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE, overlay.nma=NULL,
+plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
+                            overlay.nma=NULL, method="random",
                            col="blue", max.col.scale=NULL, treat.labs=NULL, ...) {
 
   # Run checks
@@ -296,6 +323,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE, overlay.nma=NUL
   checkmate::assertClass(x, "mb.predict", add=argcheck)
   checkmate::assertLogical(disp.obs, len=1, add=argcheck)
   checkmate::assertLogical(overlay.ref, len=1, add=argcheck)
+  checkmate::assertChoice(method, choices = c("common", "random"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   pred <- x[["summary"]]
@@ -350,24 +378,67 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE, overlay.nma=NUL
 
   # Overlay reference treatment effect
   if (overlay.ref==TRUE) {
-    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Reference Mean"), size=1)
+    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Predicted reference"), size=1)
     message(paste0("Reference treatment in plots is ", ref.treat))
   }
+  colorvals <- c("Reference MBNMA"="red")
 
   # Add overlayed lines and legends
-  g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted Mean")) +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% CrI"))
+  g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted MBNMA")) +
+    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% CrI"))
+
+
+  if (!is.null(overlay.nma)) {
+    # CHECKS
+    checkmate::assertNumeric(overlay.nma, lower=0.0001, upper = max(x$times), len=2, sorted = TRUE)
+
+    if (overlay.ref!=TRUE) {
+      stop("'overlay.ref' must be TRUE if overlay.nma is used, to ensure prediction of reference treatment response is correct")
+    }
+    if ("classes" %in% names(x$network)) {
+      if (sum(names(pred$summary) %in% x$network$classes)>2) {
+        stop("'overlay.nma' cannot be used with predictions at class level")
+      }
+    }
+
+    # Run split NMA
+    nma <- overlay.nma(x, incl.range=overlay.nma, method=method, link=x$link, ...)
+
+    predtrt <- nma$pred.df
+
+    # Write caption
+    capt <- paste0(" effects NMA model\nResDev = ", nma$totresdev,
+                   "; Ndat = ", nma$ndat,
+                   "; DIC = ", nma$dic)
+    if (method=="common") {
+      capt <- paste0("Common", capt)
+    } else if (method=="random") {
+      capt <- paste0("Random", capt, "\nBetween-study SD = ", nma$sd)
+    }
+
+    g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=overlay.nma[1], xmax=overlay.nma[2],
+                                             fill="NMA (95%CrI)"),
+                                alpha=0.8, data=predtrt) +
+      ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=overlay.nma[1], xend=overlay.nma[2], color="Predicted NMA"),
+                            data=predtrt, size=1) +
+      ggplot2::labs(caption=capt) +
+      ggplot2::scale_fill_manual(name="", values=c("NMA (95%CrI)"="grey"))
+
+    colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
+
+  }
 
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
     ggplot2::labs(y="Predicted response", x="Time")
 
+  linetypevals <- c("Predicted MBNMA"="solid",
+                    "MBNMA 95% CrI"="dashed")
   g <- g + ggplot2::scale_linetype_manual(name="",
-                                 values=c("Predicted Mean"="solid",
-                                          "95% CrI"="dashed"))
+                                 values=linetypevals)
 
   g <- g + ggplot2::scale_color_manual(name="",
-                              values=c("Reference Mean"="red")) +
+                              values=colorvals) +
     theme_mbnma()
 
   return(g)
@@ -576,26 +647,122 @@ alpha.scale <- function(n.cut, col="blue") {
 
 
 
+#' Predict "lumped" NMA predictions for plotting
+#'
+#' @param pred An object of `class("mb.predict")`
+#' @param incl.range A numeric vector of length 2 representing a range between which time-points should be synthesised
+#' @inheritParams plot.mb.predict
+#' @inheritParams mb.run
+#'
+#' @noRd
+overlay.nma <- function(pred, incl.range, method="common", link="identity", ...) {
 
-overlay.nma <- function(incl.range, method="common") {
-
-  nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2]]
+  network <- pred$network
+  nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2],]
 
   # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
   nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
     dplyr::mutate(dif=time-mean(incl.range)) %>%
     dplyr::arrange(dif) %>%
-    dplyr::group_by(arm) %>%
+    dplyr::group_by(studyID, arm) %>%
     dplyr::slice_head()
 
-  # Check network connectedness
-  # Drop studies not connected to network ref
-  # Write NMA model for common/random effects
-  # Run model
-  # Predict NMA results at speciic time point
-  # Overlay results
+  if (!1 %in% nmanet$treatment) {
+    stop("Network reference treatment (treatment=1) must be evaluated at a time-point within 'incl.range' to allow overlay.nma")
+  }
 
+  # Check network connectedness
+  comparisons <- mb.comparisons(nmanet)
+  nodes <- unique(sort(nmanet$treatment))
+  nodes <- network$treatments[nodes]
+  g <- igraph::graph.empty()
+  g <- g + igraph::vertex(nodes)
+  ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
+  ed <- factor(as.vector(ed), labels=nodes)
+  edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
+  g <- g + edges
+
+  discon <- check.network(g)
+
+  # Drop treatments disconnected to network reference
+  if (length(discon)>0) {
+    message(paste("The following treatments are disconnected from the network reference for studies in 'incl.range' and will be excluded from overlay.nma:",
+                  paste(discon, collapse = "\n"), sep="\n"))
+
+    drops <- which(network$treatments %in% drops)
+    nmanet <- nmanet[!nmanet$treatment %in% drops,]
+
+    nodes <- unique(sort(nmanet$treatment))
+    nodes <- network$treatments[nodes]
+  }
+
+  # Recode treatments from 1-X
+  nmanet$treatment <- as.numeric(factor(nmanet$treatment))
+
+  # Run model (incl write priors)
+  nma <- nma.run(data.ab=nmanet, method=method, link=link, ...)
+
+  if (any(nma$BUGSoutput$summary[,"Rhat"]>1.02)) {
+    warn <- rownames(nma$BUGSoutput$summary)[which(nma$BUGSoutput$summary[,"Rhat"]>1.02)]
+    warning(crayon::bold(crayon::red(paste0("Rhat values for the following parameters are >1.02 - suggests problems with NMA model convergence:\n",
+                  paste(warn, collapse="\n")))))
+  }
+
+  # Predict NMA results at specific time point
+  timedif <- abs(pred$times - mean(incl.range))
+  if (!any(timedif < (mean(incl.range) - incl.range[1]))) {
+    stop("No time-point in predicted values is within 'incl.range'.\nMust specify at least one of 'times' in 'predict()' to be within 'incl.range'")
+  }
+  timeindex <- order(timedif)[1]
+  predref <- pred$pred.mat[[1]][[timeindex]]
+
+  if (method=="common") {
+    predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
+  } else if (method=="random") {
+
+    if (is.vector(nma$BUGSoutput$sims.list$d[,-1])) {
+      cols <- 1
+    } else {
+      cols <- ncol(nma$BUGSoutput$sims.list$d[,-1])
+    }
+
+    mat <- array(dim=c(nma$BUGSoutput$n.sims,
+                       cols,
+                       2)
+                 )
+    mat[,,1] <- nma$BUGSoutput$sims.list$d[,-1]
+    mat[,,2] <- nma$BUGSoutput$sims.list$sd
+    predtrt <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+    predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + predtrt
+  }
+  if (is.vector(predtrt)) {
+    predtrt <- matrix(predtrt, ncol=1)
+  }
+  colnames(predtrt) <- nodes[-1]
+
+  pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){quantile(x, probs = c(0.025,0.5,0.975))})))
+  pred.df$time <- pred$times[timeindex]
+  pred.df$treat <- rownames(pred.df)
+
+  # Select only treatments included in pred
+  pred.df <- pred.df[pred.df$treat %in% names(pred$summary),]
+
+  if (method=="random") {
+    sd <- nma$BUGSoutput$summary[rownames(nma$BUGSoutput$summary)=="sd",]
+    sd <- round(sd, 3)
+    sd <- paste(sd[5], " (", sd[3], ", ", sd[7], ")", sep="")
+  } else {
+    sd <- NULL
+  }
+
+  return(list(pred.df=pred.df,
+              totresdev=round(nma$BUGSoutput$median$totresdev,1), ndat=nrow(nmanet),
+              dic=round(nma$BUGSoutput$median$totresdev+nma$BUGSoutput$pD,1),
+              sd=sd))
+
+  # DO BITS FOR RANDOM AND ADD ANNOTATIONS TO MODEL WITH RESIDUAL DEVIANCE AND N DATA POINTS AND SD (95%CRI)
 }
+
 
 
 

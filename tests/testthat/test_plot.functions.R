@@ -109,6 +109,21 @@ testthat::test_that("plot(mb.predict) functions correctly", {
             ref.resp=ref.estimate)
   )
 
+
+  # Test overlay.nma
+  expect_error(plot(pred.emax, overlay.nma=c(1,5), NA))
+
+  expect_error(plot(pred.bs, method="common", overlay.nma = c(10,20), disp.obs = TRUE), NA)
+
+  expect_error(plot(pred.loglin, overlay.nma=c(10,30)), NA)
+
+  expect_error(plot(pred.loglin, overlay.nma=c(1,1.5)), "Network reference treatment")
+
+  expect_error(plot(pred.bs, overlay.ref=FALSE, overlay.nma=c(10,20)), "must be TRUE")
+  expect_error(plot(pred.emax, overlay.nma=c(0,20)), "Assertion on")
+  expect_error(plot(pred.emax, overlay.nma=c(1,200)), "Assertion on")
+
+
   testthat::expect_error(plot(predict, disp.obs = FALSE, overlay.ref=TRUE,
                               max.col.scale = NULL), "must be included")
 })

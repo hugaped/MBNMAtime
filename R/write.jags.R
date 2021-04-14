@@ -1071,3 +1071,99 @@ write.beta.ref <- function(model, timecourse, fun,
 
   return(model)
 }
+
+
+
+
+
+
+
+
+
+
+#' Write standard NMA model in JAGS
+#'
+#' @inheritParams mb.run
+#' @inheritParams write.synth
+#'
+#' @return
+#' @examples
+write.nma <- function(method="common", link="identity") {
+  model <- c(
+    start="model{ 			# Begin Model Code",
+    "d[1] <- 0",
+    study="for(i in 1:NS){ # Run through all NS trials",
+    "mu[i] ~ dnorm(0,0.0001)",
+    "delta[i,1] <- 0",
+    arm="for (k in 1:narm[i]){ # Run through all arms within a study",
+    "resdev[i,k] <- pow((y[i,k] - theta[i,k]),2) * prec[i,k] # residual deviance for normal likelihood",
+    "}",
+    "resstudydev[i] <- sum(resdev[i, 1:narm[i]])",
+    te="for(k in 2:narm[i]){ # Treatment effects",
+    "}",
+    "}",
+    "",
+    trt.prior="for (k in 2:NT){ # Priors on relative treatment effects",
+    "d[k] ~ dnorm(0,0.0001)",
+    "}",
+    "totresdev <- sum(resstudydev[])",
+    "",
+    end="",
+    "# Model ends",
+    "}"
+  )
+
+  if (link=="identity") {
+    arm.insert <- c("y[i,k] ~ dnorm(theta[i,k], prec[i,k])",
+                    "prec[i,k] <- pow(se[i,k], -2)",
+                    "theta[i,k] <- mu[i] + delta[i,k]"
+    )
+  } else if (link=="rom") {
+    arm.insert <- c("y[i,k] ~ dnorm(theta[i,k], prec[i,k])",
+                    "prec[i,k] <- pow(se[i,k], -2)",
+                    "log(theta[i,k]) <- mu[i] + delta[i,k]"
+    )
+  } else if (link=="smd") {
+    arm.insert <- c("y[i,k] ~ dnorm(phi[i,k], prec[i,k])",
+                    "prec[i,k] <- pow(se[i,k], -2)",
+                    "phi[i,k] <- theta[i,k] * pool.sd[i]",
+                    "log(theta[i,k]) <- mu[i] + delta[i,k]",
+                    "sd[i,k] <- se[i,k] * pow(n[i,k],0.5)",
+                    "nvar[i,k] <- (n[i,k]-1) * pow(sd[i,k],2)"
+    )
+
+    insert <- c("df[i] <- sum(n[i,1:narm[i]]) - narm[i]",
+                "pool.var[i] <- sum(nvar[i,1:narm[i]])/df[i]",
+                "pool.sd[i] <- pow(pool.var[i], 0.5)")
+    model <- model.insert(model, pos=which(names(model)=="start"),
+                          x=insert)
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="arm"),
+                        x=arm.insert)
+
+  if (method=="common") {
+    te.insert <- c("delta[i,k] <- md[i,k]",
+                   "md[i,k] <- d[treat[i,k]] - d[treat[i,1]]")
+
+  } else if (method=="random") {
+    te.insert <- c("delta[i,k] ~ dnorm(md[i,k], taud[i,k])",
+                   "md[i,k] <- d[treat[i,k]] - d[treat[i,1]] + sw[i,k]",
+                   "taud[i,k] <- tau *2*(k-1)/k",
+                   "w[i,k] <- (delta[i,k] - d[treat[i,k]] + d[treat[i,1]])",
+                   "sw[i,k] <- sum(w[i,1:(k-1)])/(k-1)")
+
+    # Insert at start
+    model <- model.insert(model, pos=which(names(model)=="study"),
+                          x="w[i,1] <- 0")
+
+    #Insert at end
+    model <- model.insert(model, pos=which(names(model)=="end"),
+                          x=c("tau <- pow(sd,-2)",
+                              "sd ~ dnorm(0,0.0025) T(0,)"))
+  }
+  model <- model.insert(model, pos=which(names(model)=="te"),
+                        x=te.insert)
+
+  return(model)
+}

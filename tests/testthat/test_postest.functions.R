@@ -76,7 +76,7 @@ testthat::test_that("predict.mbnma functions correctly", {
       testthat::expect_equal(names(pred$pred.mat), treats)
     }
 
-    testthat::expect_identical(names(pred), c("summary", "pred.mat", "network"))
+    testthat::expect_identical(names(pred), c("summary", "pred.mat", "network", "times", "link"))
     testthat::expect_equal(nrow(pred$pred.mat[[1]]), mbnma$BUGSoutput$n.sims)
     testthat::expect_equal(nrow(pred$summary[[1]]), length(times))
     testthat::expect_equal(identical(pred$summary[[1]]$time, times), TRUE)

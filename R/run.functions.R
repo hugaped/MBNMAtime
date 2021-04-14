@@ -813,3 +813,74 @@ mb.update <- function(mbnma, param="theta",
 
   return(update.df)
 }
+
+
+
+
+
+#' Run an NMA model
+#'
+#' @inheritParams mb.network
+#' @inheritParams mb.run
+#' @inheritParams plot.mb.predict
+#'
+#' @return Returns an object of `class("rjags")`
+#'
+#' @examples
+#' network <- mb.network(osteopain)
+#'
+#' # Get the latest time point
+#' df <- get.latest.time(network)
+#'
+#' # Run NMA on the data
+#' nma.run(df, method="random")
+#'
+#' @export
+nma.run <- function(data.ab, method="common", link="identity", ...) {
+
+  # Write NMA model for common/random effects
+  model <- write.nma(method=method, link=link)
+
+  # Get jags data
+  tempjags <- getnmadata(data.ab, link=link)
+  tempjags[["studyID"]] <- NULL
+
+  parameters.to.save <- c("d", "totresdev")
+  if (method=="random") {
+    parameters.to.save <- append(parameters.to.save, "sd")
+  }
+
+  # Put data from jagsdata into separate R objects
+  for (i in seq_along(tempjags)) {
+    ##first extract the object value
+    temp <- tempjags[[i]]
+    ##now create a new variable with the original name of the list item
+    eval(parse(text=paste(names(tempjags)[[i]],"<- temp")))
+  }
+
+  # Take names of variables in tempjags for use in rjags
+  jagsvars <- list()
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
+  }
+
+  # Create a temporary model file
+  tmpf=tempfile()
+  tmps=file(tmpf,"w")
+  cat(paste(model, collapse="\n"),file=tmps)
+  close(tmps)
+
+  out <- tryCatch({
+    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+                           parameters.to.save=parameters.to.save,
+                           ...
+    )
+  },
+  error=function(cond) {
+    message(cond)
+    return(list("error"=cond))
+  }
+  )
+
+  return(out)
+}
