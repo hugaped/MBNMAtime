@@ -4,7 +4,7 @@ Title: Run Time-Course MBNMA Models
 Version: 0.2.0
 Language: en-GB
 Date: 2020-14-04
-Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
+Authors@R: c(person("Hugo", "Pedder", email = "hugo.pedder@bristol.ac.uk", role = c("aut", "cre")),
   person("Tobias", "Saueressig", role = c("rev")),
   person("Nicky", "Welton", role = c("ctb", "rev")),
   person("Sofia", "Dias", role = c("ctb", "rev")),
