@@ -640,14 +640,28 @@ mbnma <- mb.run(network.obese,
 ref.params <- list(beta.1=~rnorm(n, 0, 0.05), beta.2=~rnorm(n, 0, 0.0001))
 
 # Predict responses over the
-pred <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
+pred.obese <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
                         ref.resp=ref.params)
 
 # Plot predictions
-plot(pred, disp.obs = TRUE)
+plot(pred.obese, disp.obs = TRUE)
 ```
 
 As you can see, within the limits of the observed data the predicted responses appear reasonable. However, extrapolation beyond this for `dexf_30MG` leads to some rather strange results, suggesting an unrealistically huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
+
+
+#### Plotting "lumped" NMA results
+
+As a further addition to the plots of MBNMA predictions, it is possible to add predicted results from an NMA model. This is one in which time-points within an interval (specified in `overlay.nma`) are "lumped" together to allow for analysis using standard NMA approaches [@lu2004]. Either a `"random"` (the default) or `"common"` effects NMA can be specified, and model fit statistics are reported below the resulting plot.
+
+This can be useful to assess if the MBNMA predictions are in agreement with predictions from a lumped NMA model (within a specific range of time-points), and is a general indicator of the fit of the time-course model. However, it is important to note that the NMA model is not necessarily the "correct" model, since it ignores potential differences in treatment effects that may arise from lumping time-points together. The wider the range specified in `overlay.nma`, the greater the effect of lumping and the stronger the assumption of similarity between studies.
+
+The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line, with the 95%CrI shown by a grey rectangle. The NMA predictions represent those for *any time-points within this range* since they lump together data at all these time-points. Predictions for treatments that are disconnected from the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
+
+```{r, fig.height=3, results="hide", warning=FALSE}
+# Overlay predictions from lumped NMA between 8-10 weeks follow-up
+plot(pred, overlay.nma=c(8,10), n.iter=20000)
+```
 
 
 ## Consistency Testing
