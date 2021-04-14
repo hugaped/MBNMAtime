@@ -381,7 +381,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Predicted reference"), size=1)
     message(paste0("Reference treatment in plots is ", ref.treat))
   }
-  colorvals <- c("Reference MBNMA"="red")
+  colorvals <- c("Predicted reference"="red")
 
   # Add overlayed lines and legends
   g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted MBNMA")) +
