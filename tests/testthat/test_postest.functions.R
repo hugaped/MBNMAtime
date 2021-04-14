@@ -60,9 +60,9 @@ testthat::test_that("predict.mbnma functions correctly", {
     synth <- synth.list[[i]]
 
     # Tests using ref.resp
-    pred <- predict(mbnma, times=times,
+    pred <- suppressWarnings(predict(mbnma, times=times,
                     E0=E0, treats=treats,
-                    ref.resp=ref.resp, synth=synth)
+                    ref.resp=ref.resp, synth=synth))
 
     if (!is.null(treats)) {
       testthat::expect_equal(length(pred$pred.mat), length(treats))
