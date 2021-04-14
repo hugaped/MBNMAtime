@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare.functions.R
 \name{mb.validate.data}
 \alias{mb.validate.data}
-\title{Validates that a dataset fulfills requirements for MBNMA}
+\title{Validates that a dataset fulfils requirements for MBNMA}
 \usage{
 mb.validate.data(data.ab, single.arm = FALSE, CFB = TRUE)
 }
@@ -31,7 +31,7 @@ may lead to warnings.}
 An error or warnings if checks are not passed. Runs silently if checks are passed
 }
 \description{
-Validates that a dataset fulfills requirements for MBNMA
+Validates that a dataset fulfils requirements for MBNMA
 }
 \details{
 Checks done within the validation:

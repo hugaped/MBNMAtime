@@ -33,7 +33,7 @@
 #'   which case `object` must be a class effect model).
 #' @param ref.resp An object to indicate the value(s) to use for the reference treatment response in MBNMA models
 #'   in which the reference treatment response is not estimated within the model (i.e. those that model any time-
-#'   course paramters using `pool="rel"`). This can take a number of different formats depending
+#'   course parameters using `pool="rel"`). This can take a number of different formats depending
 #'   on how it will be used/calculated. There are two approaches for this:
 #'
 #'   1. The reference response can be estimated from a dataset of studies investigating the reference

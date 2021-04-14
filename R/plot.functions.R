@@ -254,7 +254,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 #'   treatment properly.
 #' @param overlay.nma Can be used to overlay the predicted results from a standard NMA model that
 #'   "lumps" time-points together within the range specified in `overlay.nma`. Must be a numeric vector of length 2, or
-#'   left as `NULL` (the default) to indicate no NMA should be performed. `overlay.nma` can only be speficied if
+#'   left as `NULL` (the default) to indicate no NMA should be performed. `overlay.nma` can only be specified if
 #'   `overlay.ref==TRUE`. See Details for further information.
 #' @param method Can take `"common"` or `"random"` to indicate the type of NMA model used to synthesise data points
 #'   given in `overlay.nma`. The default is `"random"` since this assumes different

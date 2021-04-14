@@ -33,7 +33,7 @@ treatment properly.
 
 \item{overlay.nma}{Can be used to overlay the predicted results from a standard NMA model that
 "lumps" time-points together within the range specified in \code{overlay.nma}. Must be a numeric vector of length 2, or
-left as \code{NULL} (the default) to indicate no NMA should be performed. \code{overlay.nma} can only be speficied if
+left as \code{NULL} (the default) to indicate no NMA should be performed. \code{overlay.nma} can only be specified if
 \code{overlay.ref==TRUE}. See Details for further information.}
 
 \item{method}{Can take \code{"common"} or \code{"random"} to indicate the type of NMA model used to synthesise data points

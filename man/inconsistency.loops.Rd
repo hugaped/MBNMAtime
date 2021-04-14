@@ -2,7 +2,7 @@
 % Please edit documentation in R/nodesplit.functions.R
 \name{inconsistency.loops}
 \alias{inconsistency.loops}
-\title{Identify comparisons in loops that fulfill criteria for node-splitting}
+\title{Identify comparisons in loops that fulfil criteria for node-splitting}
 \usage{
 inconsistency.loops(data)
 }
@@ -18,7 +18,7 @@ to treatment codes.
 }
 \description{
 Identify comparisons informed by both direct and indirect evidence from
-independent sources, which therefore fulfill the criteria for testing for
+independent sources, which therefore fulfil the criteria for testing for
 inconsistency via node-splitting. Follows the method of van Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 }
 \details{

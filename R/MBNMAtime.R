@@ -2,7 +2,7 @@
 #'
 #' @description
 #' MBNMAtime provides a collection of useful commands that allow users to run time-course
-#' Model-Based Network Meta-Analyses (MBNMA) or Model-Based Meta-Analyses (MBMA).
+#' Model-Based Network Meta-Analysis (MBNMA).
 #'
 #' @section Introduction:
 #' MBNMAtime allows meta-analysis of studies with multiple follow-up measurements that can

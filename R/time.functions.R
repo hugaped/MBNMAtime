@@ -494,7 +494,7 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 
 #' Fractional polynomial time-course function
 #'
-#' As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}.
+#' As first described for use in Network Meta-Analysis by \insertCite{jansen2015;textual}{MBNMAtime}.
 #'
 #' @param degree The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAtime}
 #' @param pool.1 Pooling for the 1st fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).

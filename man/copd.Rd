@@ -20,7 +20,7 @@ copd
 }
 \description{
 A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic
-obstructure pulmonary disease (COPD) \insertCite{karabis2013}{MBNMAtime}. Data are extracted from \insertCite{tallarita2019}{MBNMAtime}.
+obstructive pulmonary disease (COPD) \insertCite{karabis2013}{MBNMAtime}. Data are extracted from \insertCite{tallarita2019}{MBNMAtime}.
 SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing,
 using the median standard deviation calculated from other studies in the
 dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean

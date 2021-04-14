@@ -7,7 +7,7 @@
 \title{MBNMAtime for Model-Based Network Meta-Analysis of longitudinal (time-course) data}
 \description{
 MBNMAtime provides a collection of useful commands that allow users to run time-course
-Model-Based Network Meta-Analyses (MBNMA) or Model-Based Meta-Analyses (MBMA).
+Model-Based Network Meta-Analysis (MBNMA).
 }
 \section{Introduction}{
 

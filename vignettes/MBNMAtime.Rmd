@@ -72,7 +72,7 @@ kable(head(alog_pcfb), digits=2)
 
 ### Tiotropium, Aclidinium and Placebo for maintenance treatment of moderate to severe chronic obstructive pulmonary disease
 
-A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic obstructure pulmonary disease (COPD) [@karabis2013]. Data are extracted from [@tallarita2019]. SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing, using the median standard deviation calculated from other studies in the dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean change from baseline to follow-up. The dataset includes 13 RCTs, comparing 2 treatments (Tiotropium and Aclidinium) and placebo. `copd` is a data frame in long format (one row per observation, arm and study), with the variables `studyID`, `time`, `y`, `se`, `treatment`, and `n`.
+A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic obstructive pulmonary disease (COPD) [@karabis2013]. Data are extracted from [@tallarita2019]. SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing, using the median standard deviation calculated from other studies in the dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean change from baseline to follow-up. The dataset includes 13 RCTs, comparing 2 treatments (Tiotropium and Aclidinium) and placebo. `copd` is a data frame in long format (one row per observation, arm and study), with the variables `studyID`, `time`, `y`, `se`, `treatment`, and `n`.
 
 ```{r, echo=FALSE}
 kable(head(copd), digits=2) 
@@ -191,7 +191,7 @@ network.pain <- mb.network(osteopain, reference="Pl_0")
 timeplot(network.pain)
 ```
 
-As the mean response for all treatments shows a rapid reduction in pain score followed by a leveling out after 2-5 weeks, an exponential decay time-course function might be a reasonable fit for this dataset. More complex alternatives could be Emax models (with or without a Hill parameter), fractional polynomials or a spline function.
+As the mean response for all treatments shows a rapid reduction in pain score followed by a levelling out after 2-5 weeks, an exponential decay time-course function might be a reasonable fit for this dataset. More complex alternatives could be Emax models (with or without a Hill parameter), fractional polynomials or a spline function.
 
 Responses can also be plotted grouped by class rather than by treatment, and the relative effects between each treatment/class can be plotted instead of the absolute treatment responses. Since the MBNMA framework models the time-course on relative effects [@pedder2019] this can in fact make interpretation of the plots easier with regards to identifying a best-fitting time-course function. 
 
@@ -598,7 +598,7 @@ pred <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60",
 print(pred)
 ```
 
-The second is to assign `ref.resp` a data frame composed of single-arm studies of the network reference treatment. A separate synthesis model for the reference treatment effect will then be run, and the values from this used as the prediction reference treatment effect. This dataset could be a series of obesrvational studies measured at multiple follow-up times that closely match the population of interest for the prediction. Alternatively it could be a subset of data from the original RCT dataset used for the MBNMA model (though this may be less generalisable to the population of interest).
+The second is to assign `ref.resp` a data frame composed of single-arm studies of the network reference treatment. A separate synthesis model for the reference treatment effect will then be run, and the values from this used as the prediction reference treatment effect. This dataset could be a series of observational studies measured at multiple follow-up times that closely match the population of interest for the prediction. Alternatively it could be a subset of data from the original RCT dataset used for the MBNMA model (though this may be less generalisable to the population of interest).
 
 ```{r, results="hide", message=FALSE}
 # Generate a dataset of network reference treatment responses over time
@@ -624,7 +624,7 @@ Predicted responses can also be plotted using the `plot()` method on an object o
 plot(pred, overlay.ref=TRUE, disp.obs=TRUE)
 ```
 
-This can be used to identify any extrapolation/interpretation of the time-course that might be occuring for a particular treatment, and where predictions might therefore be problematic.
+This can be used to identify any extrapolation/interpretation of the time-course that might be occurring for a particular treatment, and where predictions might therefore be problematic.
 
 To illustrate a situation in which this could be very informative, we can look at predicted responses for a quadratic time-course function fitted to the Obesity dataset:
 

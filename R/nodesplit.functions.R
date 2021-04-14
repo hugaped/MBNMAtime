@@ -3,10 +3,10 @@
 # Date created: 2018-09-10
 
 
-#' Identify comparisons in loops that fulfill criteria for node-splitting
+#' Identify comparisons in loops that fulfil criteria for node-splitting
 #'
 #' Identify comparisons informed by both direct and indirect evidence from
-#' independent sources, which therefore fulfill the criteria for testing for
+#' independent sources, which therefore fulfil the criteria for testing for
 #' inconsistency via node-splitting. Follows the method of van Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 #'
 #' @param data A data frame containing variables `studyID` and `treatment` (as
@@ -249,11 +249,11 @@ mb.comparisons <- function(data)
 }
 
 
-#' Identify comparisons in time-course MBNMA datasets that fulfill criteria for node-splitting
+#' Identify comparisons in time-course MBNMA datasets that fulfil criteria for node-splitting
 #'
 #' Identify comparisons informed by both direct and indirect evidence from independent sources in MBNMA
 #' datasets with repeated measurements in each study. These comparisons are therefore those which
-#' fulfill the criteria for testing for inconsistency via node-splitting, following the method of van
+#' fulfil the criteria for testing for inconsistency via node-splitting, following the method of van
 #' Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 #'
 #' @inheritParams mb.run

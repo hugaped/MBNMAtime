@@ -12,10 +12,10 @@ status](https://travis-ci.com/hugaped/MBNMAtime.svg?branch=master)](https://trav
 # MBNMAtime
 
 The goal of `MBNMAtime` is to provide a collection of useful commands
-that allow users to run time-course Model-Based Network Meta-Analyses
-(MBNMA) or Model-Based Meta-Analyses (MBMA). This allows meta-analysis
-of studies with multiple follow-up measurements that can account for
-time-course for a single or multiple treatment comparisons.
+that allow users to run time-course Model-Based Network Meta-Analysis
+(MBNMA). This allows meta-analysis of studies with multiple follow-up
+measurements that can account for time-course for a single or multiple
+treatment comparisons.
 
 Including all available follow-up measurements within a study makes use
 of all the available evidence in a way that maintains connectivity

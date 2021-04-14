@@ -914,7 +914,7 @@ mb.make.contrast <- function(network, datatype=NULL, format="wide") {
 
 
 
-#' Validates that a dataset fulfills requirements for MBNMA
+#' Validates that a dataset fulfils requirements for MBNMA
 #'
 #' @inheritParams mb.network
 #' @param CFB A boolean object to indicate if the dataset is composed of studies measuring change from

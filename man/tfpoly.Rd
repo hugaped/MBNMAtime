@@ -35,7 +35,7 @@ tfpoly(
 An object of \code{class("timefun")}
 }
 \description{
-As first described for use in Network Meta-Anaysis by \insertCite{jansen2015;textual}{MBNMAtime}.
+As first described for use in Network Meta-Analysis by \insertCite{jansen2015;textual}{MBNMAtime}.
 }
 \details{
 \itemize{
