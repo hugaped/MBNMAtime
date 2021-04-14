@@ -824,7 +824,7 @@ mb.update <- function(mbnma, param="theta",
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
 #'
-#' @return Returns an object of `class("rjags")`
+#' @return Returns an object of `class("nma", "rjags")`
 #'
 #' @examples
 #' network <- mb.network(osteopain)
@@ -881,6 +881,7 @@ nma.run <- function(data.ab, method="common", link="identity", ...) {
     return(list("error"=cond))
   }
   )
+  class(out) <- c("nma", "rjags")
 
   return(out)
 }
