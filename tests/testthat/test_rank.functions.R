@@ -138,3 +138,24 @@ testthat::test_that("rank.mbnma functions correctly", {
 
   expect_error(rank(emax, direction=-1, level="class"), "not a class effect model")
 })
+
+
+testthat::test_that("rank.mb.predict functions correctly", {
+
+  preds <- predict(emax, E0=7,
+                   ref.resp=list(emax=~rnorm(n, -0.5, 0.05), et50=-0.2))
+
+  ranks <- rank(preds, lower_better=TRUE, treat=c("Pl_0", "Ce_100", "Ce_200", "Va_5"))
+  expect_equal(length(ranks[[1]]), 3)
+  expect_equal(nrow(ranks[[1]]$summary), 4)
+  expect_error(plot(ranks), NA)
+
+  preds <- predict(bs)
+  ranks <- rank(preds, lower_better=FALSE)
+  expect_equal(length(ranks[[1]]), 3)
+  expect_equal(nrow(ranks[[1]]$summary), 3)
+  expect_error(plot(ranks), NA)
+
+  expect_error(rank(preds, lower_better=TRUE, time=preds$times), "Must have length 1")
+
+})
