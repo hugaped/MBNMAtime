@@ -344,15 +344,16 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
       }
 
       #treatpred <- cbind(treatpred, pred)
-      if (is.vector(pred)) {
-        pred <- as.matrix(pred, ncol=1)
-      }
+      # if (is.vector(pred)) {
+      #   pred <- as.matrix(pred, ncol=1)
+      # }
 
       treatpred[[paste0("time", times[m])]] <- pred
 
     }
 
-    predicts[[paste0(treats[treat])]] <- treatpred[,-1]
+    # predicts[[paste0(treats[treat])]] <- treatpred[,1]
+    predicts[[paste0(treats[treat])]] <- treatpred[-1]
   }
 
   # Generate summary data frame
