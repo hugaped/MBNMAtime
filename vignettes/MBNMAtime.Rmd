@@ -2,7 +2,7 @@
 title: "MBNMAtime for time-course Model-Based (Network) Meta-Analysis"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: pdf_document
 bibliography: REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{MBNMAtime for time-course Model-Based (Network) Meta-Analysis}

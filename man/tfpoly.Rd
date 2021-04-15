@@ -49,31 +49,26 @@ As first described for use in Network Meta-Analysis by \insertCite{jansen2015;te
 for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
 \eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
 If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
+}
+\section{Time-course parameters}{
 
 Time-course parameters in the model must be specified using a \code{pool} and a \code{method} prefix.
 
 \code{pool} is used to define the approach used for pooling of a given time-course parameter and
-can take either:
-\itemize{
-\item \code{"rel"} indicates that relative effects should be pooled for this time-course parameter.
-This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-and allow for testing of consistency between direct and indirect evidence (e.g. using \code{mb.nodesplit()}). Pooling follows the
-general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-\item \code{"abs"} indicates that study arms should be pooled across the whole network for this
-time-course parameter  \emph{independently of assigned treatment}.
-This implies estimating a single absolute value across the network for this time-course parameter,
-and may therefore be making strong assumptions of similarity.
+can take any of:\tabular{ll}{
+   \strong{Argument} \tab \strong{Model specification} \cr
+   \code{"rel"} \tab Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. \cr
+   \code{"abs"} \tab Indicates that study arms should be pooled across the whole network for this time-course parameter  \emph{independently of assigned treatment} to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. \cr
 }
 
+
 \code{method} is used to define the model used for meta-analysis for a given time-course parameter
-and can take any of the following values:
-\itemize{
-\item \code{"common"} implies that all studies estimate the same true effect
-(akin to a "fixed effects" meta-analysis)
-\item \code{"random"} implies that all studies estimate a separate true effect, but that each
-of these true effects vary randomly around a true mean effect. This approach allows
-for modelling of between-study heterogeneity.
+and can take any of the following values:\tabular{ll}{
+   \strong{Argument} \tab \strong{Model specification} \cr
+   \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
+   \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
 }
+
 
 When relative effects are modelled on more than one time-course parameter,
 correlation between the time-course parameters is automatically
@@ -81,6 +76,7 @@ estimated using a vague Wishart prior. This prior can be made slightly more info
 by specifying the relative scale of variances between the time-course parameters in \code{mb.run()} using
 \code{var.scale}.
 }
+
 \examples{
 # 1st order fractional polynomial with random effects
 tfpoly(pool.1="rel", method.1="random")

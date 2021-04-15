@@ -119,6 +119,9 @@ Data must be present for all arms within a study at each follow-up time.
 }}
 
 \examples{
+
+\donttest{
+
 # Create an mb.network object from the data
 network <- mb.network(osteopain)
 
@@ -136,6 +139,8 @@ plot(goutnet, v.color="class", remove.loops=TRUE)
 # Plot network in which node size is proportional to number of participants
 alognet <- mb.network(alog_pcfb)
 plot(alognet, v.scale=2)
+
+}
 
 # Using the osteoarthritis dataset
 print(osteopain)

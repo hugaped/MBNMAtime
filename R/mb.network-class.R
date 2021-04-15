@@ -48,6 +48,9 @@
 #'   \code{\link[igraph]{igraph}}.
 #'
 #' @examples
+#'
+#' \donttest{
+#'
 #' # Create an mb.network object from the data
 #' network <- mb.network(osteopain)
 #'
@@ -65,6 +68,8 @@
 #' # Plot network in which node size is proportional to number of participants
 #' alognet <- mb.network(alog_pcfb)
 #' plot(alognet, v.scale=2)
+#'
+#' }
 #'
 #' @export
 plot.mb.network <- function(x, edge.scale=1, label.distance=0,

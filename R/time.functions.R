@@ -9,30 +9,31 @@
 #' \eqn{rate\times{(1-exp(-x))}}
 #'
 #' @param pool.rate Pooling for exponential rate parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.rate Method for synthesis of exponential rate parameter. Can take `"common` or `"random"` (see details).
+#' @param method.rate Method for synthesis of exponential rate parameter. Can take `"common` or `"random"` (see Time-course parameters section).
 #'
 #' @return An object of `class("timefun")`
 #'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#' @section Time-course parameters:
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
+#'
 #'
 #' @references
 #'   \insertAllCited
@@ -105,26 +106,27 @@ texp <- function(pool.rate="rel", method.rate="common") {
 #'
 #' @return An object of `class("timefun")`
 #'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' @section Time-course parameters:
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
 #'
 #'
 #' @references
@@ -213,26 +215,26 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #' \deqn{\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}}
 #'
 #'
+#' @section Time-course parameters:
 #' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single absolute value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
 #' correlation between the time-course parameters is automatically
@@ -389,26 +391,26 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 #'
 #'
 #'
+#' @section Time-course parameters:
 #' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single absolute value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
 #' correlation between the time-course parameters is automatically
@@ -520,26 +522,26 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #' If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
 #'
 #'
+#' @section Time-course parameters:
 #' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single absolute value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
 #' correlation between the time-course parameters is automatically
@@ -738,26 +740,26 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #'
 #' @return An object of `class("timefun")`
 #'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#' @section Time-course parameters:
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single absolute value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
 #' correlation between the time-course parameters is automatically
@@ -881,26 +883,26 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 #'
 #' @return An object of `class("timefun")`
 #'
-#' @details Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#' @section Time-course parameters:
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
 #'
 #' `pool` is used to define the approach used for pooling of a given time-course parameter and
-#' can take either:
-#' * `"rel"` indicates that relative effects should be pooled for this time-course parameter.
-#' This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-#' and allow for testing of consistency between direct and indirect evidence (e.g. using `mb.nodesplit()`). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-#' * `"abs"` indicates that study arms should be pooled across the whole network for this
-#' time-course parameter  *independently of assigned treatment*.
-#' This implies estimating a single absolute value across the network for this time-course parameter,
-#' and may therefore be making strong assumptions of similarity.
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
 #'
 #' `method` is used to define the model used for meta-analysis for a given time-course parameter
 #' and can take any of the following values:
-#' * `"common"` implies that all studies estimate the same true effect
-#' (akin to a "fixed effects" meta-analysis)
-#' * `"random"` implies that all studies estimate a separate true effect, but that each
-#' of these true effects vary randomly around a true mean effect. This approach allows
-#' for modelling of between-study heterogeneity.
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
 #' correlation between the time-course parameters is automatically

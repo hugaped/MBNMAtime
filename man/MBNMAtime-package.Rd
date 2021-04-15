@@ -88,7 +88,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Hugo Pedder \email{hugo.pedder@bristol.ac.uk}
+\strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com}
 
 Other contributors:
 \itemize{

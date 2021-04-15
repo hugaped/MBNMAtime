@@ -9,7 +9,7 @@ tloglin(pool.rate = "rel", method.rate = "common")
 \arguments{
 \item{pool.rate}{Pooling for exponential rate parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.rate}{Method for synthesis of exponential rate parameter. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.rate}{Method for synthesis of exponential rate parameter. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
 }
 \value{
 An object of \code{class("timefun")}
@@ -17,32 +17,26 @@ An object of \code{class("timefun")}
 \description{
 \eqn{rate\times{log(x + 1)}}
 }
-\details{
+\section{Time-course parameters}{
+
 Time-course parameters in the model must be specified using a \code{pool} and a \code{method} prefix.
 
 \code{pool} is used to define the approach used for pooling of a given time-course parameter and
-can take either:
-\itemize{
-\item \code{"rel"} indicates that relative effects should be pooled for this time-course parameter.
-This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification),
-and allow for testing of consistency between direct and indirect evidence (e.g. using \code{mb.nodesplit()}). Pooling follows the
-general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}.
-\item \code{"abs"} indicates that study arms should be pooled across the whole network for this
-time-course parameter  \emph{independently of assigned treatment}.
-This implies estimating a single value across the network for this time-course parameter,
-and may therefore be making strong assumptions of similarity.
+can take any of:\tabular{ll}{
+   \strong{Argument} \tab \strong{Model specification} \cr
+   \code{"rel"} \tab Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. \cr
+   \code{"abs"} \tab Indicates that study arms should be pooled across the whole network for this time-course parameter  \emph{independently of assigned treatment} to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. \cr
 }
 
+
 \code{method} is used to define the model used for meta-analysis for a given time-course parameter
-and can take any of the following values:
-\itemize{
-\item \code{"common"} implies that all studies estimate the same true effect
-(akin to a "fixed effects" meta-analysis)
-\item \code{"random"} implies that all studies estimate a separate true effect, but that each
-of these true effects vary randomly around a true mean effect. This approach allows
-for modelling of between-study heterogeneity.
+and can take any of the following values:\tabular{ll}{
+   \strong{Argument} \tab \strong{Model specification} \cr
+   \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
+   \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
 }
 }
+
 \examples{
 tloglin(pool.rate="rel", method.rate="random")
 tloglin(pool.rate="abs")
