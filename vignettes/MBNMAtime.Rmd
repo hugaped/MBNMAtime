@@ -2,7 +2,7 @@
 title: "MBNMAtime for time-course Model-Based (Network) Meta-Analysis"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: rmarkdown::html_vignette
 bibliography: REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{MBNMAtime for time-course Model-Based (Network) Meta-Analysis}
@@ -37,6 +37,7 @@ Including all available follow-up measurements within a study makes use of all t
 This package has been developed alongside `MBNMAdose`, a package that allows users to perform dose-response MBNMA to allow for modelling of dose-response relationships between different agents within a network. However, *they should not be loaded into R at the same time* as there are a number of functions with shared names that perform similar tasks yet are specific to dealing with either time-course *or* dose-response data.
 
 Within the vignette, some models have not been evaluated, or have been run with fewer iterations than would be necessary to achieve convergence and produce valid results in practice. This has been done to speed up computation and rendering of the vignette.
+
 
 ### Workflow within the package
 
@@ -481,6 +482,9 @@ If there are problems with convergence, the first solution may be to run the mod
 For a detailed review of MCMC convergence assessment see Sinharay [-@sinharay].
 
 
+
+
+
 ## Post-Estimation
 
 ### Deviance plots
@@ -667,7 +671,6 @@ The NMA predictions are plotted over the range specified in `overlay.nma` as a h
 plot(pred, overlay.nma=c(8,10), n.iter=20000)
 ```
 
-
 ## Consistency Testing
 
 When performing an MBNMA by pooling relative treatment effects (`pool="rel"`), the modelling approach assumes consistency between direct and indirect evidence within a network. This is an incredibly useful assumption as it allows us to improve precision on existing direct estimates, or to estimate relative effects between treatments that have not been compared in head-to-head trials, by making use of indirect evidence.
@@ -695,7 +698,7 @@ To check for consistency using UME we fit a model that does not assume consisten
 
 UME can be fitted to any time-course parameter which has been modelled using relative effects (`pool="rel"`). UME can be specified for each time-course parameter in separate analyses, or can be modelled all at once in a single analysis.
 
-```{r, eval=TRUE, results="hide"}
+```{r, eval=FALSE, results="hide"}
 # Identify quantile for knot at 0.5 weeks
 timequant <- 0.5/max(network.pain$data.ab$time)
 
@@ -730,22 +733,11 @@ ume.slope.2 <- mb.run(network.pain,
                             ),
               UME="beta.2")
 ```
-```{r, echo=FALSE, eval=TRUE, include=FALSE}
-umelist.1 <- list(paste("Deviance for mbnma:", 
-                        round(mbnma$BUGSoutput$median$deviance,2), sep=" "),
-                paste("Deviance for ume on slope.1 and slope.2:", 
-                      round(ume$BUGSoutput$median$deviance,2), sep=" "),
-                paste("Deviance for ume on slope.1:", 
-                      round(ume.slope.1$BUGSoutput$median$deviance,2), sep=" "),
-                paste("Deviance for ume on slope.2:", 
-                      round(ume.slope.2$BUGSoutput$median$deviance,2), sep=" ")
-                )
-#save(umelist.1, file="umelist.1.Rdata")
-```
 ```{r, echo=FALSE}
-for (i in seq_along(umelist.1)) {
-  print(umelist.1[[i]])
-}
+print("Deviance for mbnma: -110.54")
+print("Deviance for ume on beta.1 and beta.2: -118.16")
+print("Deviance for ume on beta.1: -117.51")
+print("Deviance for uyme on beta.2: -118.04")
 ```
 
 By comparing the deviance (or residual deviance) of models with UME fitted on different time-course parameters and the MBNMA model, we can see that there is some reduction in deviance in the different UME models. Given that deviance is lowest when UME is modelled only on `beta.1` this is suggestive of inconsistency between direct and indirect evidence on `beta.1`, but perhaps also on `beta.2` given that modelling UME on this also leads to a reduction in deviance.
@@ -844,3 +836,4 @@ plot(ns.exp, plot.type="forest")
 The package allows for flexible modelling of either relative or absolute effects interchangeably on different time-course parameters within the same analysis, whilst providing a straightforward syntax with which to define these models.
 
 ## References
+
