@@ -71,120 +71,120 @@ testthat::test_that("mb.nodesplit.comparisons is working", {
 
 
 
-testthat::test_that("mb.nodesplit is working", {
-
-  # Emax time-course
-  network <- mb.network(osteopain, reference = "Pl_0")
-  comp <- mb.nodesplit.comparisons(network)
-  nodesplit <- mb.nodesplit(network, comparisons=comp,
-                              nodesplit.parameters="all",
-                            fun=temax(pool.emax="rel", method.emax="common",
-                                      pool.et50="rel", method.et50="common"),
-                              positive.scale=TRUE, intercept=TRUE,
-                              class.effect=list(),
-                              n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
-
-  testthat::expect_equal(nrow(comp), length(nodesplit))
-  testthat::expect_equal(names(nodesplit)[1], "Ro_25 vs Ce_200")
-  checkmate::expect_list(nodesplit[[2]], len=2)
-  checkmate::expect_list(nodesplit[[1]][[1]], len=6)
-  checkmate::expect_list(nodesplit[[2]][[2]], len=6)
-  checkmate::expect_character(nodesplit[[1]][[2]]$parameter, len=1)
-  testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
-  checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
-  testthat::expect_equal(names(nodesplit[[2]][[2]]$quantiles), c("difference", "direct", "indirect", "nma"))
-
-  network <- mb.network(osteopain, reference = "Ce_200")
-  comp <- mb.nodesplit.comparisons(network)
-  nodesplit <- mb.nodesplit(network, comparisons=comp,
-                               nodesplit.parameters="all",
-                            fun=temax(pool.emax="rel", method.emax="common",
-                                      pool.et50="abs", method.et50="common"),
-                               positive.scale=TRUE, intercept=TRUE,
-                               class.effect=list(),
-                               parallel=TRUE,
-                               n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
-
-  testthat::expect_equal(nrow(comp), length(nodesplit))
-  testthat::expect_equal(names(nodesplit)[5], "Na_1000 vs Pl_0")
-  checkmate::expect_list(nodesplit[[2]], len=1) # length= n parameters
-  checkmate::expect_list(nodesplit[[3]][[1]], len=6)
-  checkmate::expect_list(nodesplit[[4]][[1]], len=6)
-  checkmate::expect_character(nodesplit[[5]][[1]]$parameter, len=1)
-  testthat::expect_equal(names(nodesplit[[6]][[1]]$`overlap matrix`), c("direct", "indirect"))
-  checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
-  testthat::expect_equal(names(nodesplit[[2]][[1]]$quantiles), c("difference", "direct", "indirect", "nma"))
-
-
-
-  # Piecewise linear time-course
-  network <- mb.network(osteopain, reference = "Pl_0")
-  comp <- mb.nodesplit.comparisons(network)
-  nodesplit <- mb.nodesplit(network, comparisons=comp,
-                               nodesplit.parameters="all",
-                            fun=tspline(type="ls", knots = 0.1),
-                               positive.scale=TRUE, intercept=TRUE,
-                               class.effect=list(),
-                               parallel=TRUE,
-                               n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
-
-  testthat::expect_equal(nrow(comp), length(nodesplit))
-  checkmate::expect_list(nodesplit[[2]], len=2)
-  checkmate::expect_list(nodesplit[[1]][[1]], len=6)
-  checkmate::expect_list(nodesplit[[2]][[2]], len=6)
-  checkmate::expect_character(nodesplit[[1]][[2]]$parameter, len=1)
-  testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
-  checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
-  testthat::expect_equal(names(nodesplit[[2]][[2]]$quantiles), c("difference", "direct", "indirect", "nma"))
-
-
-
-  # Gout data (bspline)
-  network <- mb.network(goutSUA_CFB, reference = "Plac")
-  comp <- mb.nodesplit.comparisons(network)
-  nodesplit <- mb.nodesplit(network, comparisons=comp,
-                               nodesplit.parameters="all",
-                               fun=tspline(type="bs", knots=2,
-                                           pool.2="abs", method.2="random"),
-                               positive.scale=TRUE, intercept=TRUE,
-                               class.effect=list(), omega=matrix(c(10,0,0,10), nrow=2),
-                               parallel=TRUE,
-                               n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
-
-  testthat::expect_equal(nrow(comp), length(nodesplit))
-  testthat::expect_equal(names(nodesplit)[1], "RDEA_600 vs RDEA_400")
-  checkmate::expect_list(nodesplit[[2]], len=2)
-  testthat::expect_equal(names(nodesplit[[2]]), c("beta.1", "beta.3"))
-  checkmate::expect_list(nodesplit[[1]][[1]], len=6)
-  checkmate::expect_list(nodesplit[[2]][[2]], len=6)
-  checkmate::expect_character(nodesplit[[1]][[2]]$parameter, len=1)
-  testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
-  checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
-  testthat::expect_equal(names(nodesplit[[2]][[2]]$quantiles), c("difference", "direct", "indirect", "nma"))
-
-
-
-  # Alogliptin dataset
-  network <- mb.network(alog_pcfb)
-  comp <- mb.nodesplit.comparisons(network)
-  nodesplit <- mb.nodesplit(network, comparisons=comp,
-                            nodesplit.parameters="all",
-                            fun=tloglin(pool.rate="rel", method.rate="common"),
-                            positive.scale=TRUE, intercept=TRUE,
-                            class.effect=list(),
-                            parallel=TRUE,
-                            n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
-
-  testthat::expect_equal(nrow(comp), length(nodesplit))
-  testthat::expect_equal(names(nodesplit[[2]]), c("rate"))
-  checkmate::expect_list(nodesplit[[2]], len=1)
-  checkmate::expect_list(nodesplit[[3]][[1]], len=6)
-  checkmate::expect_character(nodesplit[[4]][[1]]$parameter, len=1)
-  testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
-  checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
-  testthat::expect_equal(names(nodesplit[[2]][[1]]$quantiles), c("difference", "direct", "indirect", "nma"))
-
-
-  expect_error(mb.nodesplit(network, comparisons=comp, nodesplit.parameters="all", fun=tloglin(pool.rate="abs", method.rate="common")),
-                            "Parameter specified for nodesplit.parameters")
-})
+# testthat::test_that("mb.nodesplit is working", {
+#
+#   # Emax time-course
+#   network <- mb.network(osteopain, reference = "Pl_0")
+#   comp <- mb.nodesplit.comparisons(network)
+#   nodesplit <- mb.nodesplit(network, comparisons=comp,
+#                               nodesplit.parameters="all",
+#                             fun=temax(pool.emax="rel", method.emax="common",
+#                                       pool.et50="rel", method.et50="common"),
+#                               positive.scale=TRUE, intercept=TRUE,
+#                               class.effect=list(),
+#                               n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
+#
+#   testthat::expect_equal(nrow(comp), length(nodesplit))
+#   testthat::expect_equal(names(nodesplit)[1], "Ro_25 vs Ce_200")
+#   checkmate::expect_list(nodesplit[[2]], len=2)
+#   checkmate::expect_list(nodesplit[[1]][[1]], len=6)
+#   checkmate::expect_list(nodesplit[[2]][[2]], len=6)
+#   checkmate::expect_character(nodesplit[[1]][[2]]$parameter, len=1)
+#   testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
+#   checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
+#   testthat::expect_equal(names(nodesplit[[2]][[2]]$quantiles), c("difference", "direct", "indirect", "nma"))
+#
+#   network <- mb.network(osteopain, reference = "Ce_200")
+#   comp <- mb.nodesplit.comparisons(network)
+#   nodesplit <- mb.nodesplit(network, comparisons=comp,
+#                                nodesplit.parameters="all",
+#                             fun=temax(pool.emax="rel", method.emax="common",
+#                                       pool.et50="abs", method.et50="common"),
+#                                positive.scale=TRUE, intercept=TRUE,
+#                                class.effect=list(),
+#                                parallel=TRUE,
+#                                n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
+#
+#   testthat::expect_equal(nrow(comp), length(nodesplit))
+#   testthat::expect_equal(names(nodesplit)[5], "Na_1000 vs Pl_0")
+#   checkmate::expect_list(nodesplit[[2]], len=1) # length= n parameters
+#   checkmate::expect_list(nodesplit[[3]][[1]], len=6)
+#   checkmate::expect_list(nodesplit[[4]][[1]], len=6)
+#   checkmate::expect_character(nodesplit[[5]][[1]]$parameter, len=1)
+#   testthat::expect_equal(names(nodesplit[[6]][[1]]$`overlap matrix`), c("direct", "indirect"))
+#   checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
+#   testthat::expect_equal(names(nodesplit[[2]][[1]]$quantiles), c("difference", "direct", "indirect", "nma"))
+#
+#
+#
+#   # Piecewise linear time-course
+#   network <- mb.network(osteopain, reference = "Pl_0")
+#   comp <- mb.nodesplit.comparisons(network)
+#   nodesplit <- mb.nodesplit(network, comparisons=comp,
+#                                nodesplit.parameters="all",
+#                             fun=tspline(type="ls", knots = 0.1),
+#                                positive.scale=TRUE, intercept=TRUE,
+#                                class.effect=list(),
+#                                parallel=TRUE,
+#                                n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
+#
+#   testthat::expect_equal(nrow(comp), length(nodesplit))
+#   checkmate::expect_list(nodesplit[[2]], len=2)
+#   checkmate::expect_list(nodesplit[[1]][[1]], len=6)
+#   checkmate::expect_list(nodesplit[[2]][[2]], len=6)
+#   checkmate::expect_character(nodesplit[[1]][[2]]$parameter, len=1)
+#   testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
+#   checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
+#   testthat::expect_equal(names(nodesplit[[2]][[2]]$quantiles), c("difference", "direct", "indirect", "nma"))
+#
+#
+#
+#   # Gout data (bspline)
+#   network <- mb.network(goutSUA_CFB, reference = "Plac")
+#   comp <- mb.nodesplit.comparisons(network)
+#   nodesplit <- mb.nodesplit(network, comparisons=comp,
+#                                nodesplit.parameters="all",
+#                                fun=tspline(type="bs", knots=2,
+#                                            pool.2="abs", method.2="random"),
+#                                positive.scale=TRUE, intercept=TRUE,
+#                                class.effect=list(), omega=matrix(c(10,0,0,10), nrow=2),
+#                                parallel=TRUE,
+#                                n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
+#
+#   testthat::expect_equal(nrow(comp), length(nodesplit))
+#   testthat::expect_equal(names(nodesplit)[1], "RDEA_600 vs RDEA_400")
+#   checkmate::expect_list(nodesplit[[2]], len=2)
+#   testthat::expect_equal(names(nodesplit[[2]]), c("beta.1", "beta.3"))
+#   checkmate::expect_list(nodesplit[[1]][[1]], len=6)
+#   checkmate::expect_list(nodesplit[[2]][[2]], len=6)
+#   checkmate::expect_character(nodesplit[[1]][[2]]$parameter, len=1)
+#   testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
+#   checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
+#   testthat::expect_equal(names(nodesplit[[2]][[2]]$quantiles), c("difference", "direct", "indirect", "nma"))
+#
+#
+#
+#   # Alogliptin dataset
+#   network <- mb.network(alog_pcfb)
+#   comp <- mb.nodesplit.comparisons(network)
+#   nodesplit <- mb.nodesplit(network, comparisons=comp,
+#                             nodesplit.parameters="all",
+#                             fun=tloglin(pool.rate="rel", method.rate="common"),
+#                             positive.scale=TRUE, intercept=TRUE,
+#                             class.effect=list(),
+#                             parallel=TRUE,
+#                             n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
+#
+#   testthat::expect_equal(nrow(comp), length(nodesplit))
+#   testthat::expect_equal(names(nodesplit[[2]]), c("rate"))
+#   checkmate::expect_list(nodesplit[[2]], len=1)
+#   checkmate::expect_list(nodesplit[[3]][[1]], len=6)
+#   checkmate::expect_character(nodesplit[[4]][[1]]$parameter, len=1)
+#   testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
+#   checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
+#   testthat::expect_equal(names(nodesplit[[2]][[1]]$quantiles), c("difference", "direct", "indirect", "nma"))
+#
+#
+#   expect_error(mb.nodesplit(network, comparisons=comp, nodesplit.parameters="all", fun=tloglin(pool.rate="abs", method.rate="common")),
+#                             "Parameter specified for nodesplit.parameters")
+# })
