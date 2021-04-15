@@ -1,11 +1,11 @@
 ---
-title: "MBNMAtime for Time-Course Model-Based (Network) Meta-Analysis (Version 0.2.0)"
+title: "MBNMAtime for time-course Model-Based (Network) Meta-Analysis"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{MBNMAtime for Time-Course Model-Based (Network) Meta-Analysis (Version 0.2.0)}
+  %\VignetteIndexEntry{MBNMAtime for time-course Model-Based (Network) Meta-Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   \usepackage[UTF8]{inputenc}
