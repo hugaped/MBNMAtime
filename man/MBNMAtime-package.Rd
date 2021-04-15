@@ -83,12 +83,12 @@ plot(ranks)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://doi.org/10.1002/jrsm.1351}
+  \item \url{doi.org/10.1002/jrsm.1351}
 }
 
 }
 \author{
-\strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com}
+\strong{Maintainer}: Hugo Pedder \email{hugo.pedder@bristol.ac.uk}
 
 Other contributors:
 \itemize{
