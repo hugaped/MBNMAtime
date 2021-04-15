@@ -156,7 +156,7 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
     jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
   }
 
-  f <- function(time, beta.1, beta.2) {
+  f <- function(time, beta.1) {
     y <- beta.1 * log(time + 1)
     return(y)
   }
@@ -237,10 +237,10 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
-#' correlation between the time-course parameters is automatically
-#' estimated using a vague Wishart prior. This prior can be made slightly more informative
-#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
-#' `var.scale`.
+#' correlation between them is automatically estimated using a vague inverse-Wishart prior.
+#' This prior can be made slightly more informative by specifying the scale matrix `omega`
+#' and by changing the degrees of freedom of the inverse-Wishart prior
+#' using the `priors` argument in `mb.run()`.
 #'
 #' @references
 #'   \insertAllCited
@@ -413,10 +413,10 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
-#' correlation between the time-course parameters is automatically
-#' estimated using a vague Wishart prior. This prior can be made slightly more informative
-#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
-#' `var.scale`.
+#' correlation between them is automatically estimated using a vague inverse-Wishart prior.
+#' This prior can be made slightly more informative by specifying the scale matrix `omega`
+#' and by changing the degrees of freedom of the inverse-Wishart prior
+#' using the `priors` argument in `mb.run()`.
 #'
 #' @references
 #'   \insertAllCited
@@ -544,10 +544,10 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
-#' correlation between the time-course parameters is automatically
-#' estimated using a vague Wishart prior. This prior can be made slightly more informative
-#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
-#' `var.scale`.
+#' correlation between them is automatically estimated using a vague inverse-Wishart prior.
+#' This prior can be made slightly more informative by specifying the scale matrix `omega`
+#' and by changing the degrees of freedom of the inverse-Wishart prior
+#' using the `priors` argument in `mb.run()`.
 #'
 #' @references
 #'   \insertAllCited
@@ -762,10 +762,10 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
-#' correlation between the time-course parameters is automatically
-#' estimated using a vague Wishart prior. This prior can be made slightly more informative
-#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
-#' `var.scale`.
+#' correlation between them is automatically estimated using a vague inverse-Wishart prior.
+#' This prior can be made slightly more informative by specifying the scale matrix `omega`
+#' and by changing the degrees of freedom of the inverse-Wishart prior
+#' using the `priors` argument in `mb.run()`.
 #'
 #' @references
 #'   \insertAllCited
@@ -905,10 +905,10 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
-#' correlation between the time-course parameters is automatically
-#' estimated using a vague Wishart prior. This prior can be made slightly more informative
-#' by specifying the relative scale of variances between the time-course parameters in `mb.run()` using
-#' `var.scale`.
+#' correlation between them is automatically estimated using a vague inverse-Wishart prior.
+#' This prior can be made slightly more informative by specifying the scale matrix `omega`
+#' and by changing the degrees of freedom of the inverse-Wishart prior
+#' using the `priors` argument in `mb.run()`.
 #'
 #' @references
 #'   \insertAllCited
