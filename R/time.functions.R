@@ -513,11 +513,15 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #' @details
 #' * \eqn{\beta_1} represents the 1st coefficient.
 #' * \eqn{\beta_2} represents the 2nd coefficient.
-#' * \eqn{\beta_3} represents the 3rd coefficient.
-#' * \eqn{\beta_4} represents the 4th coefficient.
+#' * \eqn{p_1} represents the 1st power
+#' * \eqn{p_2} represents the 2nd power
 #'
-#' \deqn{\boldsymbol{\beta}x^{(p_1,p_2,...,p_m)}}
-#' for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
+#' For a polynomial of `degree=1`:
+#' \deqn{{\beta_1}x^{p_1}}
+#'
+#' For a polynomial of `degree=2`:
+#' \deqn{{\beta_1}x^{p_1}+{\beta_2}x^{p_2}}
+#'
 #' \eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
 #' If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
 #'
@@ -558,7 +562,10 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #'
 #' # 2nd order fractional polynomial
 #' # with a single absolute parameter estimated for the 2nd coefficient
-#' tfpoly(pool.1="rel", method.1="common", pool.2="abs", method.2="random")
+#' # 1st power estimated as exchangeable (random) across studies
+#' tfpoly(degree=2, pool.1="rel", method.1="common",
+#'   pool.2="abs", method.2="random",
+#'   method.power1="random")
 #'
 #' @export
 tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",

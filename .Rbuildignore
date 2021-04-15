@@ -1,4 +1,3 @@
-^\.travis\.yml$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^.*\.Rproj$
@@ -9,3 +8,4 @@
 ^\.gitignore$
 ^CRAN-RELEASE$
 ^MBNMAfunctionsDAG\.R$
+^\.github$

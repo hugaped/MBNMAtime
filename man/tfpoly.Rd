@@ -41,12 +41,16 @@ As first described for use in Network Meta-Analysis by \insertCite{jansen2015;te
 \itemize{
 \item \eqn{\beta_1} represents the 1st coefficient.
 \item \eqn{\beta_2} represents the 2nd coefficient.
-\item \eqn{\beta_3} represents the 3rd coefficient.
-\item \eqn{\beta_4} represents the 4th coefficient.
+\item \eqn{p_1} represents the 1st power
+\item \eqn{p_2} represents the 2nd power
 }
 
-\deqn{\boldsymbol{\beta}x^{(p_1,p_2,...,p_m)}}
-for a polynomial of degree \eqn{m} where \eqn{\boldsymbol{\beta}} is a vector of coefficients.
+For a polynomial of \code{degree=1}:
+\deqn{{\beta_1}x^{p_1}}
+
+For a polynomial of \code{degree=2}:
+\deqn{{\beta_1}x^{p_1}+{\beta_2}x^{p_2}}
+
 \eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
 If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
 }
@@ -71,10 +75,10 @@ and can take any of the following values:\tabular{ll}{
 
 
 When relative effects are modelled on more than one time-course parameter,
-correlation between the time-course parameters is automatically
-estimated using a vague Wishart prior. This prior can be made slightly more informative
-by specifying the relative scale of variances between the time-course parameters in \code{mb.run()} using
-\code{var.scale}.
+correlation between them is automatically estimated using a vague inverse-Wishart prior.
+This prior can be made slightly more informative by specifying the scale matrix \code{omega}
+and by changing the degrees of freedom of the inverse-Wishart prior
+using the \code{priors} argument in \code{mb.run()}.
 }
 
 \examples{
@@ -83,7 +87,10 @@ tfpoly(pool.1="rel", method.1="random")
 
 # 2nd order fractional polynomial
 # with a single absolute parameter estimated for the 2nd coefficient
-tfpoly(pool.1="rel", method.1="common", pool.2="abs", method.2="random")
+# 1st power estimated as exchangeable (random) across studies
+tfpoly(degree=2, pool.1="rel", method.1="common",
+  pool.2="abs", method.2="random",
+  method.power1="random")
 
 }
 \references{

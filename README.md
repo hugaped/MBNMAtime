@@ -5,8 +5,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
-[![Travis build
-status](https://travis-ci.com/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAtime)
+[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)
 <!-- badges: end -->
 
 # MBNMAtime
@@ -71,7 +70,7 @@ fitting. Exported functions in the package are connected like so:
 
 <div id="ref-jags">
 
-JAGS Computer Program. 2017. <http://mcmc-jags.sourceforge.net>.
+JAGS Computer Program. 2017. <https://mcmc-jags.sourceforge.io/>.
 
 </div>
 

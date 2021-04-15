@@ -41,6 +41,7 @@ Points represent observed responses and lines connect between observations withi
 same study and arm.
 }
 \examples{
+\donttest{
 # Make network
 goutnet <- mb.network(goutSUA_CFB)
 
@@ -56,5 +57,7 @@ timeplot(goutnet, level="class", plotby="rel")
 # Plot using Standardised Mean Differences
 copdnet <- mb.network(copd)
 timeplot(copdnet, plotby="rel", link="smd")
+
+}
 
 }
