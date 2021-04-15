@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare.functions.R
 \name{mb.validate.data}
 \alias{mb.validate.data}
-\title{Validates that a dataset fulfills requirements for MBNMA}
+\title{Validates that a dataset fulfils requirements for MBNMA}
 \usage{
 mb.validate.data(data.ab, single.arm = FALSE, CFB = TRUE)
 }
@@ -16,8 +16,8 @@ mb.validate.data(data.ab, single.arm = FALSE, CFB = TRUE)
 \item \code{treatment} Treatment identifiers (can be numeric, factor or character)
 \item \code{class} An optional column indicating a particular class identifier. Observations with the same treatment
 identifier must also have the same class identifier.
-\item \code{N} An optional column indicating the number of participants used to calculate the
-response at a given observation
+\item \code{n} An optional column indicating the number of participants used to calculate the
+response at a given observation (required if modelling using Standardised Mean Differences)
 }}
 
 \item{single.arm}{A boolean object to indicate whether or not function should allow singe arm studies to
@@ -31,7 +31,7 @@ may lead to warnings.}
 An error or warnings if checks are not passed. Runs silently if checks are passed
 }
 \description{
-Validates that a dataset fulfills requirements for MBNMA
+Validates that a dataset fulfils requirements for MBNMA
 }
 \details{
 Checks done within the validation:

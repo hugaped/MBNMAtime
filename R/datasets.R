@@ -87,7 +87,7 @@
 #' deviations have been imputed for 421 observations.
 #'
 #' `obesityBW_CFB` is a data frame in long format (one row per observation, arm and study),
-#' with the variables `studyID`, `time`, `y`, `se`, `N`, `treatment`, `treatname`, `agent` and `agentclass`.
+#' with the variables `studyID`, `time`, `y`, `se`, `N`, `treatment`, `treatname`, `agent` and `class`.
 #'
 #' @format A data frame with 710 rows and 7 variables:
 #' * `studyID` Study identifiers
@@ -98,7 +98,7 @@
 #' * `treatment` Treatment identifiers as factors. Labels are shortened treatment names.
 #' * `treatname` Character data giving the full names of each treatment in the format agent_dose
 #' * `agent` Agent (drug) names stored as characters
-#' * `agentclass` The drug class of the agent (a broader category than `agent`) stored as characters
+#' * `class` The drug class of the agent (a broader category than `agent`) stored as characters
 #'
 #' @source Pfizer Ltd.
 "obesityBW_CFB"
@@ -119,18 +119,51 @@
 #' within the network.
 #'
 #' `alog_pcfb` is a data frame in long format (one row per observation, arm and study),
-#' with the variables `studyID`, `agent`, `dose`, `treatment`, `y`, `se`, `N` and `time`.
+#' with the variables `studyID`, `clinicaltrialGov_ID`, `agent`, `dose`, `treatment`, `time`, `y`, `se`, and `N`.
 #'
-#' @format A data frame in long format (one row per arm and study), with 46 rows and 6 variables:
+#' @format A data frame in long format (one row per arm and study), with 46 rows and 9 variables:
 #' * `studyID` Study identifiers
+#' * `clinicaltrialGov_ID` The clinicaltrial.gov ID code
 #' * `agent` Character data indicating the agent to which participants were randomised
 #' * `dose` Numeric data indicating the standardised dose received
 #' * `treatment` Character data indicating the treatment (combination of agent and dose) to which participants were randomised
+#' * `time` Numeric data indicating the time at which the observation was measured (given in weeks)
 #' * `y` Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
 #' * `se` Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
-#' * `time` Numeric data indicating the time at which the observation was measured (given in weeks)
+#' * `N` Numeric data indicating the number in each arm at each follow-up time
 #'
 #' @references
 #' \insertAllCited{}
 #'
 "alog_pcfb"
+
+
+
+
+
+
+#' Studies comparing Tiotropium, Aclidinium and Placebo for maintenance treatment of moderate to severe chronic obstructive pulmonary disease
+#'
+#' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) for maintenance treatment of moderate to severe chronic
+#' obstructive pulmonary disease (COPD) \insertCite{karabis2013}{MBNMAtime}. Data are extracted from \insertCite{tallarita2019}{MBNMAtime}.
+#' SEs were imputed for three studies, and number of patients randomised were imputed for one study (LAS 39) in which they were missing,
+#' using the median standard deviation calculated from other studies in the
+#' dataset. The outcome is trough Forced Expiratory Volume in 1 second (FEV1), measured in litres and reported in each study arm as mean
+#' change from baseline to follow-up. The dataset includes 13 Randomised-Controlled Trials (RCTs), comparing 2 treatments (Tiotropium and
+#' Aclidinium) and placebo.
+#'
+#' `copd` is a data frame in long format (one row per observation, arm and study),
+#' with the variables `studyID`, `time`, `y`, `se`, `treatment`, and `n`.
+#'
+#' @format A data frame in long format (one row per arm and study), with 80 rows and 6 variables:
+#' * `studyID` Study identifiers
+#' * `time` Numeric data indicating the time at which the observation was measured (given in weeks)
+#' * `y` Numeric data indicating the mean change from baseline in FEV1 (litres) in a study arm
+#' * `se` Numeric data indicating the standard error for the mean change from baseline in FEV1 in a study arm
+#' * `treatment` Factor data indicating the treatment to which participants were randomised
+#' * `n` Numeric data indicating the number of participants randomised to each arm
+#'
+#' @references
+#' \insertAllCited{}
+#'
+"copd"

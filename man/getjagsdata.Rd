@@ -4,7 +4,14 @@
 \alias{getjagsdata}
 \title{Prepares data for JAGS}
 \usage{
-getjagsdata(data.ab, class = FALSE, rho = NULL, covstruct = "CS")
+getjagsdata(
+  data.ab,
+  fun = NULL,
+  class = FALSE,
+  rho = NULL,
+  covstruct = "CS",
+  link = "identity"
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -16,23 +23,29 @@ getjagsdata(data.ab, class = FALSE, rho = NULL, covstruct = "CS")
 \item \code{treatment} Treatment identifiers (can be numeric, factor or character)
 \item \code{class} An optional column indicating a particular class identifier. Observations with the same treatment
 identifier must also have the same class identifier.
-\item \code{N} An optional column indicating the number of participants used to calculate the
-response at a given observation
+\item \code{n} An optional column indicating the number of participants used to calculate the
+response at a given observation (required if modelling using Standardised Mean Differences)
 }}
+
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{class}{A boolean object indicating whether or not \code{data.ab} contains
 information on different classes of treatments}
 
-\item{rho}{The correlation coefficient when modelling correlation between time points. If left
-as \code{NULL} (the default) then this implies modelling no correlation between time points.
-Can either be assigned the string \code{"estimate"} to indicate that rho should be estimated
-from the data, or assigned a numeric value, which fixes \code{rho} in the model to the assigned
-value, either for when \code{rho} is calculated externally or for use in deterministic sensitivity
-analyses.}
+\item{rho}{The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
+prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
+numeric value (e.g. \code{rho=0.7}), which fixes \code{rho} in the model to this value (e.g. for use in a deterministic sensitivity analysis).
+If set to \code{rho=0} (the default) then this implies modelling no correlation between time points.}
 
 \item{covstruct}{A character to indicate the covariance structure required for modelling correlation between
 time points (if any), since
-this determines some of the data. Can be either \code{"CS"} (compound symmetry) or \code{"AR1"} (autoregressive AR1).}
+this determines some of the data. Can be either \code{"CS"} (compound symmetry), \code{"AR1"} (autoregressive AR1) or
+\code{"varadj"} (variance-adjustment).}
+
+\item{link}{Can take either \code{"identity"} (the default),
+\code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
+\code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to
@@ -74,6 +87,6 @@ jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 
 # Get JAGS data that allows for modelling correlation between time points
 painnet <- mb.network(osteopain)
-jagsdat <- getjagsdata(painnet$data.ab, rho="estimate", covstruct="AR1")
+jagsdat <- getjagsdata(painnet$data.ab, rho="dunif(0,1)", covstruct="AR1")
 
 }

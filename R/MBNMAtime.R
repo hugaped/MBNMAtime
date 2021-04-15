@@ -2,7 +2,7 @@
 #'
 #' @description
 #' MBNMAtime provides a collection of useful commands that allow users to run time-course
-#' Model-Based Network Meta-Analyses (MBNMA) or Model-Based Meta-Analyses (MBMA).
+#' Model-Based Network Meta-Analysis (MBNMA).
 #'
 #' @section Introduction:
 #' MBNMAtime allows meta-analysis of studies with multiple follow-up measurements that can
@@ -13,15 +13,16 @@
 #' that explains time-course, thus explaining heterogeneity and inconsistency that may be
 #' present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented
 #' in a Bayesian framework, following an extension of the standard NMA methodology presented by
-#' \insertCite{lu2004}{MBNMAtime} and are run in JAGS \insertCite{jags}{MBNMAtime}. For full details of time-course MBNMA
+#' \insertCite{lu2004}{MBNMAtime} and are run in JAGS \insertCite{jags}{MBNMAtime}. Correlation between
+#' time-points can be accounted for in the mdoelling framework. For full details of time-course MBNMA
 #' methodology see \insertCite{pedder2019;textual}{MBNMAtime}.
 #'
 #' @section Workflow:
 #' Functions within `MBNMAtime` follow a clear pattern of use:
 #'
 #' 1. Load your data into the correct format using \code{\link{mb.network}}
-#' 2. Analyse your data using \code{\link{mb.run}}, or any of the available wrapper time-course functions
-#' 3. Test for consistency using functions like \code{\link{mb.nodesplit}}
+#' 2. Specify a suitable time-course function and analyse your data using \code{\link{mb.run}}
+#' 3. Test for consistency using \code{\link{mb.nodesplit}} or by fitting Unrelated Mean Effects models
 #' 4. Examine model results using forest plots and treatment rankings
 #' 5. Use your model to predict responses using \code{\link{predict.mbnma}}
 #'
@@ -33,22 +34,20 @@
 #' @examples
 #' \donttest{
 #' # Generate an "mb.network" object that stores data in the correct format
-#' network <- mb.network(osteopain, ref="Pl_0")
+#' network <- mb.network(osteopain)
 #'
 #' # Generate a network plot
 #' plot(network, label.distance=3)
 #'
 #' # Analyse data using mb.run()
-#' result <- mb.run(network, fun="emax",
-#'   beta.1=list(pool="rel", method="common"),
-#'   beta.2=list(pool="arm", method="common"),
-#'   positive.scale=TRUE)
+#' result <- mb.run(network, fun=tloglin())
 #'
-#' # ...or achieve the same result by using a wrapper function for mb.run()
-#' result <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="arm", method="common"),
-#'   positive.scale=TRUE)
+#' # Time-course parameters can be explicitly specified
+#' # Correlation between time-points can be accounted for
+#' result <- mb.run(network,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="rel", method.et50="common"),
+#'   rho="dunif(0,1)")
 #'
 #' # Explore model fit statistics - plot residual deviances
 #' devplot(result, n.iter=500)
@@ -57,15 +56,14 @@
 #' plot(result)
 #'
 #' # Predict responses
-#' pred <- predict(result, time=c(0:10), baseline=10,
-#'   ref.data=list("emax"="rnorm(nsims,-2,0.5)"),
-#'   treats=c("Pl_0", "Ce_400", "Et_5", "Ox_44", "Tr_300"))
+#' pred <- predict(result, time=c(0:10), E0=8,
+#'   ref.resp=subset(osteopain, treatment=="Pl_0"))
 #'
 #' # Plot predicted response
 #' plot(pred, disp.obs=TRUE)
 #'
 #' # Rank by Area Under the time-course Curve
-#' ranks <- rank(result, param="auc", direction=-1, n.iter=500)
+#' ranks <- rank(result, param="auc", lower_better=TRUE, n.iter=500)
 #'
 #' # Plot histogram of rankings
 #' plot(ranks)

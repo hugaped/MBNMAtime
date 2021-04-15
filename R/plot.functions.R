@@ -4,195 +4,6 @@
 
 
 
-#' @describeIn mb.network Generate a network plot
-#'
-#' @param x An object of class `mb.network`.
-#' @param layout An igraph layout specification. This is a function specifying an igraph
-#'   layout that determines the arrangement of the vertices (nodes). The default
-#'   `igraph::as_circle()` arranged vertices in a circle. Two other useful layouts for
-#'   network plots are: `igraph::as_star()`, `igraph::with_fr()`. Others can be found
-#'   in \code{\link[igraph]{layout_}}
-#' @param edge.scale A number to scale the thickness of connecting lines
-#'   (edges). Line thickness is proportional to the number of studies for a
-#'   given comparison. Set to `0` to make thickness equal for all comparisons.
-#' @param v.color Can take either `"connect"` (the default) to indicate that nodes should
-#'   only be coloured if they are connected to the network reference treatment (indicates
-#'   network connectivity) or `"class"` to colour nodes by class (this requires that the
-#'   variable `class` be included in the dataset).
-#' @param v.scale A number with which to scale the size of the nodes. If the variable `N`
-#'   (to indicate the numbers of participants at each observation) is included in the
-#'   dataset then the size of the nodes will be proportional to the number of participants
-#'   within a treatment/class in the network *at the earliest time point reported in each study*.
-#' @param label.distance A number scaling the distance of labels from the nodes
-#'   to improve readability. The labels will be directly on top of the nodes if
-#'   the default of `0` is used. Option only applicable if `layout_in_circle` is
-#'   set to `TRUE`.
-#' @param level A string indicating whether nodes/facets should represent `treatment`
-#'   or `class` in the plot. Can be used to examine the expected impact of modelling
-#'   class/agent effects.
-#' @param remove.loops A boolean value indicating whether to include loops that
-#'   indicate comparisons within a node.
-#' @param ... Options for plotting in `igraph`.
-#'
-#' @details The S3 method `plot()` on an `mb.network` object generates a
-#'   network plot that shows how different treatments are connected within the
-#'   network via study comparisons. This can be used to identify how direct and
-#'   indirect evidence are informing different treatment comparisons. Depends on
-#'   \code{\link[igraph]{igraph}}.
-#'
-#' @examples
-#' # Create an mb.network object from the data
-#' network <- mb.network(osteopain)
-#'
-#' # Arrange network plot in a star with the reference treatment in the centre
-#' plot(network, layout=igraph::as_star())
-#'
-#' # Generate a network plot at the class level that removes loops indicating comparisons
-#' #within a node
-#' goutnet <- mb.network(goutSUA_CFB)
-#' plot(goutnet, level="class", remove.loops=TRUE)
-#'
-#' # Generate a network plot at the treatment level that colours nodes by class
-#' plot(goutnet, v.color="class", remove.loops=TRUE)
-#'
-#' # Plot network in which node size is proportional to number of participants
-#' alognet <- mb.network(alog_pcfb)
-#' plot(alognet, v.scale=2)
-#'
-#' @export
-plot.mb.network <- function(x, edge.scale=1, label.distance=0,
-                           level="treatment", remove.loops=FALSE, v.color="connect",
-                           v.scale=NULL, layout=igraph::in_circle(),
-                           ...)
-{
-  # Run checks
-  argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(x, "mb.network", add=argcheck)
-  checkmate::assertClass(layout, "igraph_layout_spec", add=argcheck)
-  checkmate::assertNumeric(edge.scale, finite=TRUE, len=1, add=argcheck)
-  checkmate::assertNumeric(label.distance, finite=TRUE, len=1, add=argcheck)
-  checkmate::assertNumeric(v.scale, lower = 0, finite=TRUE, null.ok=TRUE, len=1, add=argcheck)
-  checkmate::assertChoice(level, choices = c("treatment", "class"), add=argcheck)
-  checkmate::assertChoice(v.color, choices = c("connect", "class"), add=argcheck)
-  checkmate::assertLogical(remove.loops, len=1, add=argcheck)
-  checkmate::reportAssertions(argcheck)
-
-  # Generate comparisons (using get.latest.time and mb.contrast?
-  data <- get.latest.time(x)
-
-
-  # Check if level="class" that classes are present in dataset
-  if (level=="class") {
-    if (!("classes" %in% names(x))) {
-      stop("`level` has been set to `class` but there are no class codes given in the dataset")
-    }
-    nodes <- x[["classes"]]
-
-    # Replace treatment column with class codes
-    data$treatment <- data$class
-
-  } else if (level=="treatment") {
-    nodes <- x[["treatments"]]
-  }
-
-  # Calculate participant numbers (if v.scale not NULL)
-  if (!is.null(v.scale)) {
-    if (!("N" %in% names(data))) {
-      stop("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
-    }
-
-    data.early <- x$data.ab[x$data.ab$fupcount==1,]
-    size.vec <- vector()
-    for (i in seq_along(nodes)) {
-      size.vec <- append(size.vec, sum(data.early$N[data.early[[level]]==i]))
-    }
-    # Scale size.vec by the max node.size
-    size.vec <- size.vec/ (max(size.vec)/20)
-
-    node.size <-
-      stats::setNames(size.vec, nodes)
-    node.size <- as.matrix(node.size*v.scale)
-  } else {
-    node.size <- NULL
-    }
-
-
-  comparisons <- mb.comparisons(data)
-  #treatments <- x[["treatments"]]
-
-  # Code to make graph.create as an MBNMA command if needed
-  g <- igraph::graph.empty()
-  g <- g + igraph::vertex(nodes)
-  ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
-  ed <- factor(as.vector(ed), labels=nodes)
-  edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
-  #edges <- igraph::edges(as.vector(ed), weight = comparisons[["nr"]], arrow.mode=0)
-  g <- g + edges
-  #g <- igraph::add.edges(g, edges[[1]], weight = (comparisons[["nr"]]*10), arrow.mode=0)
-
-  # Check network is connected and produce warning message if not
-  disconnects <- check.network(g)
-  if (v.color=="connect") {
-    igraph::V(g)$color <- "SkyBlue2"
-    igraph::V(g)$color[which(names(igraph::V(g)) %in% disconnects)] <- "white"
-  } else if (v.color=="class") {
-    if (!("classes" %in% names(x))) {
-      stop("`level` has been set to `class` but there are no class codes given in the dataset")
-    }
-
-    # Get large vector of distinct colours using Rcolorbrewer
-    cols <- genmaxcols()
-
-    if (level=="treatment") {
-      igraph::V(g)$color <- cols[x$classkey$class]
-    } else if (level=="class") {
-      igraph::V(g)$color <- cols[unique(x$classkey$class)]
-    }
-  }
-
-  # Add attributes
-  igraph::V(g)$label.dist <- label.distance
-  if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
-  igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
-
-  if (remove.loops==TRUE) {
-    g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
-  }
-
-  # Change label locations if layout_in_circle
-  laycheck <- as.character(layout)[2]
-  if (any(
-    grepl("layout_in_circle", laycheck) |
-    grepl("layout_as_star", laycheck))) {
-    lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
-    igraph::V(g)$label.degree <- lab.locs
-  }
-
-  # Plot netgraph
-  layout <- igraph::layout_(g, layout)
-  igraph::plot.igraph(g,
-                      layout = layout,
-                      ...
-  )
-
-  # # Plot netgraph
-  # if (layout_in_circle==TRUE) {
-  #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
-  #   igraph::V(g)$label.degree <- lab.locs
-  #   igraph::plot.igraph(g,
-  #        layout = igraph::layout_in_circle(g),
-  #        ...
-  #   )
-  # } else {
-  #   igraph::plot.igraph(g, ...)
-  # }
-
-  return(invisible(g))
-}
-
-
-
-
 
 #' Get large vector of distinct colours using Rcolorbrewer
 genmaxcols <- function() {
@@ -242,144 +53,6 @@ radian.rescale <- function(x, start=0, direction=1) {
 
 
 
-
-#' Plots predicted responses from a time-course MBNMA model
-#'
-#' @param x An object of class `"mb.predict"` generated by
-#'   `predict("mbnma")`
-#' @param disp.obs A boolean object to indicate whether to show shaded sections
-#'   of the plot for where there is observed data (`TRUE`) or not (`FALSE`)
-#' @param overlay.ref A boolean object indicating whether to overlay a line
-#'   showing the median network reference treatment response over time on the
-#'   plot (`TRUE`) or not (`FALSE`). The network reference treatment (treatment
-#'   1) must be included in `predict` for this to display the network reference
-#'   treatment properly.
-#' @param col A character indicating the colour to use for shading if `disp.obs`
-#'   is set to `TRUE`. Can be either `"blue"`, `"green"`, or `"red"`
-#' @param max.col.scale Rarely requires adjustment. The maximum count of
-#'   observations (therefore the darkest shaded color) only used if `disp.obs` is
-#'   used. This allows consistency of shading between multiple plotted graphs.
-#'   It should always be at least as high as the maximum count of observations
-#'   plotted
-#' @param ... Arguments for `ggplot`
-#' @inheritParams plot.mb.rank
-#'
-#' @details For the S3 method `plot()`, if `disp.obs` is set to `TRUE` it is
-#'   advisable to ensure predictions in `predict` are estimated using an even
-#'   sequence of time points to avoid misrepresentation of shaded densities.
-#'   Shaded counts of observations will be relative to the treatment plotted in
-#'   each panel rather than to the network reference treatment if `disp.obs` is
-#'   set to `TRUE`.
-#'
-#' @examples
-#' \donttest{
-#' # Create an mb.network object from a dataset
-#' network <- mb.network(alog_pcfb)
-#'
-#' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="rel", method="common"))
-#'
-#' # Predict responses using the original dataset to estimate the network reference
-#' #treatment response
-#' df.ref <- alog_pcfb[alog_pcfb$treatment=="placebo",]
-#' predict <- predict(emax, times=c(0:15), baseline=10, ref.estimate=df.ref)
-#'
-#' # Plot the predicted responses with observations displayed on plot as green shading
-#' plot(predict, disp.obs=TRUE, overlay.ref=FALSE, col="green")
-#'
-#' # Plot the predicted responses with the median network reference treatment response overlayed
-#' #on the plot
-#' plot(predict, disp.obs=FALSE, overlay.ref=TRUE)
-#' }
-#'
-#' @export
-plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
-                           col="blue", max.col.scale=NULL, treat.labs=NULL, ...) {
-
-  # Run checks
-  argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(x, "mb.predict", add=argcheck)
-  checkmate::assertLogical(disp.obs, len=1, add=argcheck)
-  checkmate::assertLogical(overlay.ref, len=1, add=argcheck)
-  checkmate::reportAssertions(argcheck)
-
-  pred <- x[["summary"]]
-
-  data <- pred[[1]]
-  data[["treat"]] <- rep(0, nrow(data))
-  data <- data[0,]
-  for (i in seq_along(pred)) {
-    cut <- pred[[i]]
-    #cut[["treat"]] <- rep(as.numeric(names(pred)[i]), nrow(cut))
-    cut[["treat"]] <- rep(names(pred)[i], nrow(cut))
-    data <- rbind(data, cut)
-  }
-
-  # Keep only relevant columns
-  data <- data[, which(names(data) %in%
-                         c("time", "2.5%", "50%", "97.5%", "treat"))]
-
-
-  # Add treatment labels
-  if (!is.null(treat.labs)) {
-    data$treat <- factor(data$treat, labels=treat.labs)
-  } else if (is.null(treat.labs)) {
-    treat.labs <- names(pred$summary)
-  }
-
-  # Required for overlaying ref treatment effect
-  if (overlay.ref==TRUE) {
-    ref.treat <- x$network$treatments[1]
-
-    if (!(ref.treat %in% names(pred))) {
-      stop(paste0("Reference treatment (", ref.treat, ") must be included in `x` in order for it to be plotted"))
-    }
-
-    #data[["ref.median"]] <- rep(pred[["1"]][[/"50%"]], length(pred))
-    data[["ref.median"]] <- rep(pred[[ref.treat]][["50%"]], length(pred))
-    #data <- data[data$treat!=1,]
-    data <- data[data$treat!=ref.treat,]
-    treat.labs <- treat.labs[treat.labs!=ref.treat]
-    x[["summary"]][[ref.treat]] <- NULL
-  }
-
-
-  # Plot ggplot axes
-  g <- ggplot2::ggplot(data, ggplot2::aes(x=time, y=`50%`, ymin=`2.5%`, ymax=`97.5%`), ...)
-
-  # Add shaded regions for observations in original dataset
-  if (disp.obs==TRUE) {
-    #g <- disp.obs(g, network, x, col=col, max.col.scale=max.col.scale)
-    g <- disp.obs(g, predict=x, col=col, max.col.scale=max.col.scale)
-  }
-
-  # Overlay reference treatment effect
-  if (overlay.ref==TRUE) {
-    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Reference Mean"), size=1)
-    message(paste0("Reference treatment in plots is ", ref.treat))
-  }
-
-  # Add overlayed lines and legends
-  g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted Mean")) +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% CrI"))
-
-  g <- g + ggplot2::facet_wrap(~factor(treat)) +
-    ggplot2::labs(y="Predicted response", x="Time")
-
-  g <- g + ggplot2::scale_linetype_manual(name="",
-                                 values=c("Predicted Mean"="solid",
-                                          "95% CrI"="dashed"))
-
-  g <- g + ggplot2::scale_color_manual(name="",
-                              values=c("Reference Mean"="red"))
-
-  g <- g + ggplot2::theme_bw()
-
-  return(g)
-}
 
 
 
@@ -584,270 +257,130 @@ alpha.scale <- function(n.cut, col="blue") {
 
 
 
-
-
-
-
-#' Plot histograms of rankings from MBNMA models
-#' @param x An object of class `"mb.rank"` generated by `rank.mbnma()`
-#' @param treat.labs A vector of treatment labels in the same order as treatment codes.
-#' Easiest to use treatment labels stored by `mb.network()`
-#' @param ... Arguments to be sent to `ggplot::geom_bar()`
-#' @inheritParams rank.mbnma
+#' Predict "lumped" NMA predictions for plotting
 #'
-#' @return A series of histograms that show rankings for each treatment/agent/prediction, with a
-#' separate panel for each parameter
-#' The object returned is a list containing a separate element for each parameter in `params`
-#' which is an object of class `c("gg", "ggplot")`.
+#' @param pred An object of `class("mb.predict")`
+#' @param incl.range A numeric vector of length 2 representing a range between which time-points should be synthesised
+#' @inheritParams plot.mb.predict
+#' @inheritParams mb.run
 #'
-#' @examples
-#' \donttest{
-#' # Create an mb.network object from a dataset
-#' network <- mb.network(osteopain)
-#'
-#' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="arm", method="common"),
-#'   positive.scale=TRUE)
-#'
-#' # Calculate treatment rankings
-#' ranks <- rank(emax,
-#'   param=c("auc", "d.emax", "beta.et50"),
-#'   int.range=c(0,15),
-#'   treats=c(1:10), n.iter=500)
-#'
-#' # Plot histograms for ranking by AUC
-#' plot(ranks, param="auc")
-#'
-#' # Plot histograms for ranking by d.emax
-#' plot(ranks, param="d.emax")
-#' }
-#'
-#' @export
-plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
-  # ... are commands to be sent to geom_histogram
+#' @noRd
+overlay.nma <- function(pred, incl.range, method="common", link="identity", ...) {
 
-  # Run checks
-  argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(x, "mb.rank", add=argcheck)
-  checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(treat.labs, null.ok=TRUE, add=argcheck)
-  checkmate::reportAssertions(argcheck)
+  # Declare global variable
+  cor <- NULL
+  dif <- NULL
 
-  output <- list()
+  network <- pred$network
+  nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2],]
 
-  if (is.null(params)) {
-    params <- names(x)
+  # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
+  nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
+    dplyr::mutate(dif=time-mean(incl.range)) %>%
+    dplyr::arrange(dif) %>%
+    dplyr::group_by(studyID, arm) %>%
+    dplyr::slice_head()
+
+  if (!1 %in% nmanet$treatment) {
+    stop("Network reference treatment (treatment=1) must be evaluated at a time-point within 'incl.range' to allow overlay.nma")
   }
 
-  if (is.null(treat.labs)) {
-    treat.labs <- as.character(colnames(x[[1]]$rank.matrix))
-  } else if (!is.null(treat.labs)) {
-    if (length(treat.labs)!=ncol(x[[1]]$rank.matrix)) {
-      stop("`treat.labs` must be the same length as the number of treatments that have been ranked in `x`")
-    }
+  # Check network connectedness
+  comparisons <- mb.comparisons(nmanet)
+  nodes <- unique(sort(nmanet$treatment))
+  nodes <- network$treatments[nodes]
+  g <- igraph::graph.empty()
+  g <- g + igraph::vertex(nodes)
+  ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
+  ed <- factor(as.vector(ed), labels=nodes)
+  edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
+  g <- g + edges
+
+  discon <- check.network(g)
+
+  # Drop treatments disconnected to network reference
+  if (length(discon)>0) {
+    message(paste("The following treatments are disconnected from the network reference for studies in 'incl.range' and will be excluded from overlay.nma:",
+                  paste(discon, collapse = "\n"), sep="\n"))
+
+    drops <- which(network$treatments %in% drops)
+    nmanet <- nmanet[!nmanet$treatment %in% drops,]
+
+    nodes <- unique(sort(nmanet$treatment))
+    nodes <- network$treatments[nodes]
   }
 
-  for (param in seq_along(params)) {
+  # Recode treatments from 1-X
+  nmanet$treatment <- as.numeric(factor(nmanet$treatment))
 
-    rank.mat <- x[[params[param]]]$rank.matrix
-    #treats <- colnames(rank.mat)
-    treats <- c(1:ncol(rank.mat))
+  # Run model (incl write priors)
+  nma <- nma.run(data.ab=nmanet, method=method, link=link, ...)
 
-    ranks.param <- vector()
-    treat <- vector()
-    for (i in seq_along(treats)) {
-      treat <- append(treat, rep(treats[i], nrow(rank.mat)))
-      ranks.param <- append(ranks.param, rank.mat[,i])
-    }
-    data <- data.frame("ranks"=ranks.param, "treat"=treat)
-
-    # if (!is.null(treat.labs)) {
-    #   data$treat <- factor(data$treat, labels=treat.labs)
-    # } else {
-    #   data$treat <- factor(as.numeric(as.character(data$treat)))
-    # }
-    data$treat <- factor(data$treat, labels=treat.labs)
-
-    g <- ggplot2::ggplot(data, ggplot2::aes(x=data$ranks)) +
-      ggplot2::geom_bar(...) +
-      ggplot2::xlab("Rank (1 = best)") +
-      ggplot2::ylab("MCMC iterations") +
-      ggplot2::facet_wrap(~treat) +
-      ggplot2::ggtitle(params[param]) +
-      ggplot2::theme_bw()
-
-    graphics::plot(g)
-
-    output[[params[param]]] <- g
+  if (any(nma$BUGSoutput$summary[,"Rhat"]>1.02)) {
+    warn <- rownames(nma$BUGSoutput$summary)[which(nma$BUGSoutput$summary[,"Rhat"]>1.02)]
+    warning(crayon::bold(crayon::red(paste0("Rhat values for the following parameters are >1.02 - suggests problems with NMA model convergence:\n",
+                  paste(warn, collapse="\n")))))
   }
 
-  return(invisible(output))
-}
-
-
-
-
-
-
-
-
-
-#' Forest plot for results from time-course MBNMA models
-#'
-#' Generates a forest plot for time-course parameters of interest from results from time-course MBNMA models.
-#'
-#' @inheritParams devplot
-#' @param x An S3 object of class `"mbnma"` generated by running
-#' a time-course MBNMA model
-#' @param params A character vector of time-course parameters to plot.
-#' Parameters must be given the same name as monitored nodes in `mbnma` and must vary by treatment or class. Can be set to
-#' `NULL` to include all available time-course parameters estimated by `mbnma`.
-#' @param treat.labs A character vector of treatment labels. If left as `NULL` (the default) then
-#' labels will be used as defined in the data.
-#' @param class.labs A character vector of class labels if `mbnma` was modelled using class effects
-#' If left as `NULL` (the default) then labels will be used as defined in the data.
-#' @param ... Arguments to be sent to `ggplot`
-#'
-#' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for different time-course parameters
-#'
-#' @examples
-#'\donttest{
-#' # Create an mb.network object from a dataset
-#' network <- mb.network(alog_pcfb)
-#'
-#' # Run an MBNMA model with an Emax time-course
-#' emax <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="rel", method="common"))
-#'
-#' # Generate forest plot
-#' plot(emax)
-#'
-#' # Plot results for only one time-course parameter
-#' plot(emax, params="d.emax")
-#' }
-#' @export
-plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
-
-  # Run checks
-  argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(x, "mbnma", add=argcheck)
-  checkmate::assertChoice(params, choices=x[["parameters.to.save"]], null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(treat.labs, null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(class.labs, null.ok=TRUE, add=argcheck)
-  checkmate::reportAssertions(argcheck)
-
-  # Check that specified params vary over treatment
-  for (i in seq_along(params)) {
-    if (length(x[["BUGSoutput"]][["median"]][[params[i]]])<=1) {
-      stop(paste0(params[i], " does not vary over treatment/class and cannot be plotted"))
-    }
+  # Predict NMA results at specific time point
+  timedif <- abs(pred$times - mean(incl.range))
+  if (!any(timedif < (mean(incl.range) - incl.range[1]))) {
+    stop("No time-point in predicted values is within 'incl.range'.\nMust specify at least one of 'times' in 'predict()' to be within 'incl.range'")
   }
+  timeindex <- order(timedif)[1]
+  predref <- pred$pred.mat[[1]][[timeindex]]
 
+  if (method=="common") {
+    predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
+  } else if (method=="random") {
 
-  # Add all available params if is.null(params)
-  if (is.null(params)) {
-    params <- vector()
-
-    # Add d
-    params <- append(params,
-                     x[["parameters.to.save"]][grep("^d\\.", x[["parameters.to.save"]])]
-    )
-
-    # Add D
-    params <- append(params,
-                     x[["parameters.to.save"]][grep("^D\\.", x[["parameters.to.save"]])]
-    )
-
-    # Add BETA
-    params <- append(params,
-                     x[["parameters.to.save"]][grep("^BETA\\.", x[["parameters.to.save"]])]
-    )
-
-    # Add beta
-    for (i in seq_along(x[["BUGSoutput"]][["root.short"]])) {
-      if (grepl("^beta\\.", x[["BUGSoutput"]][["root.short"]][i]) &
-          length(x[["BUGSoutput"]][["long.short"]][[i]])>1) {
-        params <- append(params, x[["BUGSoutput"]][["root.short"]][i])
-      }
-    }
-    if (length(params)==0) {
-      stop("No time-course consistency parameters can be identified from the model")
-    }
-  }
-
-
-  # Compile parameter data into one data frame
-  mb.sum <- as.data.frame(x[["BUGSoutput"]][["summary"]])
-  plotdata <- mb.sum[0,]
-  for (i in seq_along(params)) {
-    paramdata <- mb.sum[grepl(paste0("^", params[i]),rownames(mb.sum)),]
-    paramdata[["timeparam"]] <- rep(params[i], nrow(paramdata))
-    plotdata <- rbind(plotdata, paramdata)
-  }
-  plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
-
-  # Change param labels for agents
-  treatdat <- plotdata[grepl("^d\\.", rownames(plotdata)) | grepl("^beta\\.", rownames(plotdata)),]
-  if (!is.null(treat.labs)) {
-    treatcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(treatdat)))
-    if (length(treat.labs)!=max(treatcodes)) {
-      stop("`treat.labs` length does not equal number of treatments that have been modelled for this time-course parameter")
+    if (is.vector(nma$BUGSoutput$sims.list$d[,-1])) {
+      cols <- 1
     } else {
-      t.labs <- treat.labs[sort(unique(treatcodes))]
+      cols <- ncol(nma$BUGSoutput$sims.list$d[,-1])
     }
-  } else if ("treatments" %in% names(x)) {
-    t.labs <- x$network[["treatments"]]
+
+    mat <- array(dim=c(nma$BUGSoutput$n.sims,
+                       cols,
+                       2)
+                 )
+    mat[,,1] <- nma$BUGSoutput$sims.list$d[,-1]
+    mat[,,2] <- nma$BUGSoutput$sims.list$sd
+    predtrt <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+    predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + predtrt
+  }
+  if (is.vector(predtrt)) {
+    predtrt <- matrix(predtrt, ncol=1)
+  }
+  colnames(predtrt) <- nodes[-1]
+
+  pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){stats::quantile(x, probs = c(0.025,0.5,0.975))})))
+  pred.df$time <- pred$times[timeindex]
+  pred.df$treat <- rownames(pred.df)
+
+  # Select only treatments included in pred
+  pred.df <- pred.df[pred.df$treat %in% names(pred$summary),]
+
+  if (method=="random") {
+    sd <- nma$BUGSoutput$summary[rownames(nma$BUGSoutput$summary)=="sd",]
+    sd <- round(sd, 3)
+    sd <- paste(sd[5], " (", sd[3], ", ", sd[7], ")", sep="")
   } else {
-    t.labs <- sort(unique(treatdat$param))
+    sd <- NULL
   }
 
-  # Change param labels for classes
-  classdat <- plotdata[grepl("^D\\.", rownames(plotdata)) | grepl("^BETA\\.", rownames(plotdata)),]
-  c.labs <- vector()
-  if (nrow(classdat)!=0) {
-    if (!is.null(class.labs)) {
-      classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
-      c.labs <- class.labs[classcodes]
-    } else if ("classes" %in% names(x)) {
-      c.labs <- x[["classes"]][x[["classes"]]!="Placebo"]
-    } else {
-      c.labs <- sort(unique(classdat$param))
-    }
-  }
+  return(list(pred.df=pred.df,
+              totresdev=round(nma$BUGSoutput$median$totresdev,1), ndat=nrow(nmanet),
+              dic=round(nma$BUGSoutput$median$totresdev+nma$BUGSoutput$pD,1),
+              sd=sd))
 
-  # Increase param number for classes
-  ntreat <- ifelse(nrow(treatdat)>0, max(treatdat$param), 0)
-  plotdata$param[grepl("^D\\.", rownames(plotdata)) | grepl("^BETA\\.", rownames(plotdata))] <-
-    plotdata$param[grepl("^D\\.", rownames(plotdata)) | grepl("^BETA\\.", rownames(plotdata))] + ntreat
-
-  # Attach labels
-  if (nrow(treatdat)>0) {
-    all.labs <- c(t.labs, c.labs)
-  } else {all.labs <- c.labs}
-  plotdata$param <- factor(plotdata$param, labels=all.labs)
-
-  if (any(is.na(levels(plotdata$param)))) {
-    stop("`treat.labs` or `class.labs` have not been specified correctly")
-  }
-
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=factor(plotdata$param))) +
-    ggplot2::geom_point() +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
-    ggplot2::coord_flip()
-
-  g <- g + ggplot2::facet_wrap(~timeparam, scales="free")
-
-  # Axis labels
-  g <- g + ggplot2::xlab("Treatment / Class") +
-    ggplot2::ylab("Effect size") +
-    ggplot2::theme_bw()
-
-  graphics::plot(g, ...)
-  return(invisible(g))
+  # DO BITS FOR RANDOM AND ADD ANNOTATIONS TO MODEL WITH RESIDUAL DEVIANCE AND N DATA POINTS AND SD (95%CRI)
 }
+
+
+
+
+
 
 
 
@@ -866,6 +399,7 @@ check.network <- function(g, reference=1) {
   }
   return(treats)
 }
+
 
 
 
@@ -896,13 +430,13 @@ nodesplit.plotdata <- function(nodesplit, type) {
 
 #' Plot raw responses over time by treatment or class
 #'
-#' @param network An object of class `mb.network`.
 #' @param plotby A character object that can take either `"arm"` to indicate that raw responses
 #' should be plotted separately for each study arm, or `"rel"` to indicate that the relative
 #' effects within each study should be plotted. In this way the time-course of both the absolute
 #' effects and the relative effects can be examined.
-#' @param ... Arguments to be sent to `ggplot`
+#' @param ... Arguments to be sent to `ggplot()`
 #' @inheritParams plot.mb.network
+#' @inheritParams mb.run
 #'
 #' @return The function returns an object of `class(c("gg", "ggplot")`. Characteristics
 #' of the object can therefore be amended as with other plots generated by `ggplot()`.
@@ -916,23 +450,39 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #' same study and arm.
 #'
 #' @examples
+#' \donttest{
 #' # Make network
-#' network <- mb.network(goutSUA_CFB)
+#' goutnet <- mb.network(goutSUA_CFB)
 #'
 #' # Use timeplot to plot responses grouped by treatment
-#' timeplot(network)
+#' timeplot(goutnet)
 #'
 #' # Use timeplot ot plot resposes grouped by class
-#' timeplot(network, level="class")
+#' timeplot(goutnet, level="class")
+#'
+#' # Plot matrix of relative effects
+#' timeplot(goutnet, level="class", plotby="rel")
+#'
+#' # Plot using Standardised Mean Differences
+#' copdnet <- mb.network(copd)
+#' timeplot(copdnet, plotby="rel", link="smd")
+#'
+#' }
 #'
 #' @export
-timeplot <- function(network, level="treatment", plotby="arm", ...) {
+timeplot <- function(network, level="treatment", plotby="arm", link="identity", ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "mb.network", add=argcheck)
   checkmate::assertChoice(level, choices = c("treatment", "class"), add=argcheck)
   checkmate::assertChoice(plotby, choices = c("arm", "rel"), add=argcheck)
+  checkmate::assertChoice(link, choices = c("identity", "smd", "rom"), add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Define global variables
+  poolvar <- NULL
+  Rx.Name.x <- NULL
+  Rx.Name.y <- NULL
 
   if (level=="class" & !("classes" %in% names(network))) {
     stop("`level` cannot be set to class if there is no class variable included in the dataset/network")
@@ -972,24 +522,39 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
     } else if (level=="class") {
       g <- g + ggplot2::facet_wrap(~factor(.data$class, labels=network$classes))
     }
+    g <- g + ggplot2::ylab("Response")
 
   } else if (plotby=="rel") {
 
-    if (level=="treatment") {
+    diffs <- plotdata %>%
+      dplyr::mutate(Rx.Name = factor(network$treatments[.data$treatment], levels=network$treatments))
 
-      diffs <- plotdata %>%
-        dplyr::mutate(Rx.Name = factor(network$treatments[.data$treatment], levels=network$treatments))
+    if (link=="identity") {
+      diffs <- diffs %>%
+        dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+        dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
+        dplyr::mutate(pairDiff = .data$y.y - .data$y.x)
+    } else if (link=="rom") {
+      diffs <- diffs %>%
+        dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+        dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
+        dplyr::mutate(pairDiff = log(.data$y.y/.data$y.x))
+    } else if (link=="smd") {
+      if (!"n" %in% names(diffs)) {
+        stop("'n' must be included in dataset if using link='smd'")
+      }
 
-    } else if (level=="class") {
-
-      diffs <- plotdata %>%
-        dplyr::mutate(Rx.Name = factor(network$classes[.data$class], levels=network$classes))
+      diffs <- diffs %>%
+        dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+        dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
+        dplyr::mutate(
+          var.y = (.data$se.y * (.data$n.y)^0.5)^2,
+          var.x = (.data$se.x * (.data$n.x)^0.5)^2,
+          poolvar = ((.data$var.y * (.data$n.y-1)) + (.data$var.x * (.data$n.x-1))) / (.data$n.y + .data$n.x-2),
+          pairDiff = (.data$y.y - .data$y.x) / (poolvar^0.5)
+          )
     }
 
-    diffs <- diffs %>%
-      dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
-      dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
-      dplyr::mutate(pairDiff = .data$y.x - .data$y.y)
 
     diffs <- diffs %>%
       dplyr::bind_rows(diffs %>%
@@ -997,18 +562,40 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
                          dplyr::slice(1) %>%
                          dplyr::mutate(time=0, pairDiff=0))
 
-    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID)) +
+    if (level=="class") {
+
+      diffs <- diffs %>%
+        dplyr::mutate(Rx.Name.x = network$classkey$class[match(Rx.Name.x, network$classkey$treatment)],
+                      Rx.Name.y = network$classkey$class[match(Rx.Name.y, network$classkey$treatment)]
+                      )
+    }
+
+    # g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff, group=.data$studyID)) +
+    #   ggplot2::geom_line() +
+    #   ggplot2::geom_point() +
+    #   ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
+
+    g <- ggplot2::ggplot(data=diffs, ggplot2::aes(x=.data$time, y=.data$pairDiff,
+                                                  # group=.data$studyID),
+                                                  group=paste(.data$studyID, .data$arm.x, .data$arm.y, sep="_")),
+                         ...) +
       ggplot2::geom_line() +
       ggplot2::geom_point() +
       ggplot2::facet_grid(rows=ggplot2::vars(.data$Rx.Name.y), cols=ggplot2::vars(.data$Rx.Name.x))
 
+    if (link=="identity") {
+      g <- g + ggplot2::ylab("Response")
+    } else if (link=="rom") {
+      g <- g + ggplot2::ylab("Log-Ratio of Means")
+    } else if (link=="smd") {
+      g <- g + ggplot2::ylab("Standardised Mean Difference")
+    }
   }
 
+  g <- g + ggplot2::xlab("Time") +
+    theme_mbnma()
 
-  g <- g + ggplot2::xlab("Time") + ggplot2::ylab("Response") +
-    ggplot2::theme_bw()
-
-  graphics::plot(g, ...)
+  graphics::plot(g)
   return(invisible(g))
 
 }
@@ -1022,18 +609,16 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
 #'
 #' @param mbnma An S3 object of class `"mbnma"` generated by running
 #' a time-course MBNMA model
-#' @param dev.type Deviances to plot - can be either residual deviances (`"resdev"`, the
-#' default) or deviances (`"dev"`)
+#' @param dev.type Deviances to plot - can be either residual deviances (`"resdev"`) or deviances (`"dev"`, the default)
 #' @param plot.type Deviances can be plotted either as scatter points (`"scatter"` - using
-#' `geom_point()`, the default) or as boxplots (`"box"`)
+#' `geom_point()`) or as boxplots (`"box"`, the default)
 #' @param xaxis A character object that indicates whether deviance contributions should be plotted
 #' by time (`"time"`) or by follow-up count (`"fup"`)
 #' @param facet A boolean object that indicates whether or not to facet by treatment
 #' @param n.iter The number of iterations to update the model whilst monitoring additional parameters (if necessary).
 #' Must be a positive integer. Default is the value used in `mbnma`.
 #' @param n.thin The thinning rate. Must be a positive integer. Default is the value used in `mbnma`.
-#' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_boxplot`
-#' @inheritParams predict.mbnma
+#' @param ... Arguments to be sent to `ggplot2::ggplot()`
 #'
 #' @return Generates a plot of deviance contributions and returns a list containing the
 #' plot (as an object of class `c("gg", "ggplot")`), and a data.frame of posterior mean
@@ -1051,10 +636,10 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
 #' @examples
 #' \donttest{
 #' # Make network
-#' network <- mb.network(alog_pcfb)
+#' alognet <- mb.network(alog_pcfb)
 #'
 #' # Run MBNMA
-#' mbnma <- mb.quadratic(network)
+#' mbnma <- mb.run(alognet, fun=tpoly(degree=2), intercept=FALSE)
 #'
 #' # Plot residual deviance contributions in a scatterplot
 #' devplot(mbnma)
@@ -1064,7 +649,7 @@ timeplot <- function(network, level="treatment", plotby="arm", ...) {
 #' devplot(mbnma, dev.type="dev", plot.type="box", xaxis="fup", n.iter=500)
 #' }
 #' @export
-devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
+devplot <- function(mbnma, dev.type="dev", plot.type="box",
                     xaxis="time", facet=TRUE,
                     n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin,
                     ...) {
@@ -1081,7 +666,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Check if !is.null(rho) (in which case cannot monitor deviances)
   # if (!is.null(mbnma$model.arg$rho)) {
-  if (!is.null(mbnma$model.arg$rho)) {
+  if (mbnma$model.arg$covar %in% c("AR1", "CS")) {
     stop("Correlation between time points has been modelled using a multivariate likelihood.
          Deviances cannot be calculated for this model.")
   }
@@ -1100,23 +685,23 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 
   # Changes fup to time if xaxis=time
   if (xaxis=="time") {
-    dev.df$fup <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model$data()$time[x[1], x[3]])
+    dev.df$fup <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model.arg$jagsdata$time[x[1], x[3]])
     xlab <- "Time"
   } else if (xaxis=="fup") {
     xlab <- "Follow-up count"
   }
 
   if (facet==TRUE) {
-    dev.df$facet <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model$data()$treat[x[1], x[2]])
+    dev.df$facet <- apply(dev.df, MARGIN=1, FUN=function(x) mbnma$model.arg$jagsdata$treat[x[1], x[2]])
   }
 
   # Plots the residual deviances over time grouped by study and arm
   if (plot.type=="scatter") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fup, y=mean), group=(paste(study, arm, sep="_"))) +
-      ggplot2::geom_point(...)
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fup, y=mean), group=(paste(study, arm, sep="_")), ...) +
+      ggplot2::geom_point()
   } else if (plot.type=="box") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fup), y=mean)) +
-      ggplot2::geom_boxplot(...)
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fup), y=mean), ...) +
+      ggplot2::geom_boxplot()
   }
 
   # Add facets
@@ -1127,7 +712,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab("Posterior mean") +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   graphics::plot(g)
   return(invisible(list("graph"=g, "dev.data"=dev.df)))
@@ -1141,7 +726,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 #' Can use `mb.network()[["treatments"]]` with original dataset if in doubt.
 #' @param disp.obs A boolean object to indicate whether raw data responses should be
 #' plotted as points on the graph
-#' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_line()`
+#' @param ... Arguments to be sent to `ggplot2::ggplot()`
 #' @inheritParams R2jags::jags
 #' @inheritParams devplot
 #'
@@ -1157,16 +742,16 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter",
 #' @examples
 #' \donttest{
 #' # Make network
-#' network <- mb.network(osteopain)
+#' painnet <- mb.network(osteopain)
 #'
 #' # Run MBNMA
-#' mbnma <- mb.emax(network,
-#'   emax=list(pool="rel", method="common"),
-#'   et50=list(pool="const", method="common"))
+#' mbnma <- mb.run(painnet,
+#'   fun=temax(pool.emax="rel", method.emax="common",
+#'     pool.et50="abs", method.et50="random"))
 #'
-#' # Plot fitted values from the model with treatment labels
+#' # Plot fitted values from the model
 #' # Monitor fitted values for 500 additional iterations
-#' fitplot(mbnma, treat.labs=network$treatments, n.iter=500)
+#' fitplot(mbnma, n.iter=500)
 #' }
 #'
 #' @export
@@ -1217,7 +802,7 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
 
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
-                       ggplot2::aes(x=time, y=mean, group=paste(study, arm, sep="_"))) +
+                       ggplot2::aes(x=time, y=mean, group=paste(study, arm, sep="_")), ...) +
     ggplot2::geom_line()
 
   # Overlay observed responses
@@ -1238,11 +823,10 @@ fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
   # Add axis labels
   g <- g + ggplot2::xlab("Time") +
     ggplot2::ylab("Response") +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   graphics::plot(g)
 
-  #return(invisible(list("graph"=g, "theta.data"=theta.df)))
 }
 
 
@@ -1257,7 +841,8 @@ get.treattimes <- function(mbnma, add.df, type="treat") {
   checkmate::reportAssertions(argcheck)
 
   # Get codes
-  index.df <- reshape2::melt(mbnma$model$data()[[type]])
+  #index.df <- reshape2::melt(mbnma$model$data()[[type]])
+  index.df <- reshape2::melt(mbnma$model.arg$jagsdata[[type]])
   index.df <- index.df[stats::complete.cases(index.df),]
 
   # Match codes to data frame
@@ -1336,115 +921,104 @@ get.theta.dev <- function(mbnma, param="theta") {
 
 
 
-#' @describeIn mb.nodesplit Plot outputs from nodesplit models
+
+
+#' Plot illustrative time-course functions (CURRENTLY NOT FUNCTIONAL FOR ALL TIME_COURSE FUNCTIONS)
 #'
-#' @param x An object of `class("mb.nodesplit")`
-#' @param plot.type A character string that can take the value of `"forest"` to plot
-#' only forest plots, `"density"` to plot only density plots, or left as `NULL` (the
-#' default) to plot both types of plot.
-#' @param params A character vector corresponding to a time-course parameter(s) for which to plot results.
-#' If left as `NULL` (the default), nodes-split results for all time-course parameters will be plotted.
+#' Can be used to plot potential time-course functions to identify if they may
+#' be a suitable fit for the data.
 #'
-#' @details The S3 method `plot()` on an `mb.nodesplit` object generates either
-#' forest plots of posterior medians and 95\\% credible intervals, or density plots
-#' of posterior densities for direct and indirect evidence.
+#' @param x An object of `class("timefun")`
+#' @inheritParams tuser
 #'
-#' @return Plots the desired graph(s) and returns an object (or list of objects if
-#' `plot.type=NULL`) of `class(c("gg", "ggplot"))`, which can be edited using `ggplot` commands.
+#' @return An illustrative plot of the time-course function with the parameters specified
+#' in `beta.1`, `beta.2`, `beta.3` and `beta.4`
 #'
-#' @export
-plot.mb.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
+#' @noRd
+plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
+                         beta.3=0, beta.4=0) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(x, "mb.nodesplit", add=argcheck)
-  checkmate::assertChoice(plot.type, choices = c("density", "forest"), null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
+  checkmate::assertClass(x, "timefun", add=argcheck)
+  checkmate::assertNumeric(beta.1, add=argcheck)
+  checkmate::assertNumeric(beta.2, add=argcheck)
+  checkmate::assertNumeric(beta.3, add=argcheck)
+  checkmate::assertNumeric(beta.4, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Check if params are within nodesplit
-  if (!is.null(params)) {
-    for (i in seq_along(params)) {
-      if (!(params[i] %in% names(x[[1]]))) {
-        stop(paste0(params[i], " is not a time-course parameter in `x` for which node-split results are available"))
-      }
-    }
-  } else if (is.null(params)) {
-    params <- names(x[[1]])
+  time <- seq(0,100)
+
+  funstr <- x$jags
+  #funstr <- gsub("beta", "tempbeta", funstr)
+  funstr <- gsub("\\[i\\,k\\]", "", funstr)
+  funstr <- gsub("\\[i\\,m\\]", "", funstr)
+
+  if (any(c("rcs", "ns", "bs") %in% x$name)) {
+    spline <- genspline(time, spline=x$name, knots=x$knots)
+    funstr <- gsub("spline\\[i\\,m", "spline[", funstr)
   }
 
-
-  if (is.null(plot.type)) {
-    plot.type <- c("density", "forest")
+  if (any(c("user", "fpoly") %in% x$name)) {
+    stop("Plotting for 'tfpoly()' and 'tuser()' not currently supported")
   }
 
-  forestdata <- x[[1]]$forest.plot$data[0,]
-  densitydata <- x[[1]]$density.plot$data[0,]
-  forestfacet <- vector()
-  forestparam <- vector()
-  densityfacet <- vector()
-  densityparam <- vector()
-  for (i in seq_along(x)) {
-    for (k in seq_along(params)) {
-      comp <- paste(x[[i]][[k]]$comparison, collapse=" vs ")
-      temp <- x[[i]][[k]]$forest.plot$data
-      forestfacet <- append(forestfacet, rep(comp, nrow(temp)))
-      forestparam <- append(forestparam, rep(params[k], nrow(temp)))
-      forestdata <- rbind(forestdata, temp)
+  nparam <- x$nparam
 
-      temp <- x[[i]][[k]]$density.plot$data
-      densityfacet <- append(densityfacet, rep(comp, nrow(temp)))
-      densityparam <- append(densityparam, rep(params[k], nrow(temp)))
-      densitydata <- rbind(densitydata, temp)
-    }
-  }
-  forestdata$comp <- forestfacet
-  densitydata$comp <- densityfacet
-  forestdata$param <- forestparam
-  densitydata$param <- densityparam
+  df <- data.frame("y"=NA, "time"=NA)
+  y <- eval(parse(text=funstr))
+  df <- rbind(df, stats::setNames(cbind(y,time), names(df)))
+  df <- df[-1,]
 
-  plotlist <- list()
-  for (k in seq_along(params)) {
-    if ("forest" %in% plot.type) {
-      plotdata <- forestdata[forestdata$param==params[k],]
-      forest <-
-        ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med,
-                                                    ymin=plotdata$l95, ymax=plotdata$u95)) +
-        ggplot2::geom_pointrange() +
-        ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
-        ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") +
-        ggplot2::theme(axis.text = ggplot2::element_text(size=10),
-                       axis.title = ggplot2::element_text(size=12),
-                       title=ggplot2::element_text(size=18)) +
-        ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-        ggplot2::facet_wrap(~factor(plotdata$comp)) +
-        ggplot2::ggtitle(paste0("Forest plot of node-split for ", params[k])) +
-        ggplot2::theme_bw()
-
-      graphics::plot(forest, ...)
-      plotlist[[length(plotlist)+1]] <- forest
-    }
-    if ("density" %in% plot.type) {
-      plotdata <- densitydata[densitydata$param==params[k],]
-
-      density <- ggplot2::ggplot(plotdata, ggplot2::aes(x=plotdata$value,
-                                                        linetype=plotdata$Estimate, fill=plotdata$Estimate)) +
-        ggplot2::geom_density(alpha=0.2) +
-        ggplot2::xlab("Treatment effect (95% CrI)") +
-        ggplot2::ylab("Posterior density") +
-        ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
-        ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                       axis.title = ggplot2::element_text(size=14)) +
-        ggplot2::facet_wrap(~factor(plotdata$comp)) +
-        ggplot2::ggtitle(paste0("Posterior densities of node-split for ", params[k])) +
-        ggplot2::guides(fill=ggplot2::guide_legend((title="Evidence Source")),
-                        linetype=ggplot2::guide_legend((title="Evidence Source"))) +
-        ggplot2::theme_bw()
-
-      graphics::plot(density, ...)
-      plotlist[[length(plotlist)+1]] <- density
-    }
+  vals <- vector()
+  for (i in 1:nparam) {
+    vals <- append(vals, get(paste0("beta.", i)))
   }
 
-  return(invisible(plotlist))
+  g <- ggplot2::ggplot(df, ggplot2::aes(x=time, y=y)) +
+    ggplot2::geom_line(size=1) +
+    ggplot2::labs(subtitle=paste(paste0("beta.", 1:nparam, " = ", vals), collapse="    ")) +
+    ggplot2::xlab("Time") +
+    theme_mbnma()
+
+  graphics::plot(g)
+  return(invisible(g))
+}
+
+
+
+
+
+
+plot.invisible <- function(...){
+  ff <- tempfile()
+  grDevices::png(filename=ff)
+  res <- graphics::plot(...)
+  grDevices::dev.off()
+  unlink(ff)
+  return(res)
+}
+
+
+
+
+#' MBNMA ggplot2 theme style
+#' @noRd
+theme_mbnma <- function(...) {
+  ggplot2::theme_bw(...) +
+    ggplot2::theme(
+      # change stuff here
+      panel.background  = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill="white", colour=NA),
+      legend.background = ggplot2::element_rect(fill="transparent", colour=NA),
+      legend.key = ggplot2::element_rect(fill="transparent", colour=NA),
+
+      # From multinma
+      #panel.border = ggplot2::element_rect(colour = "grey70", fill = NA),
+      panel.grid.major = ggplot2::element_line(colour = "grey95"),
+      panel.grid.minor = ggplot2::element_line(colour = "grey95"),
+      strip.background = ggplot2::element_rect(colour = "black",
+                                               fill = "lightsteelblue1"),
+      strip.text = ggplot2::element_text(colour = "black")
+    )
 }

@@ -5,8 +5,17 @@
 \title{Calculate plugin pD from a JAGS model with univariate likelihood for studies
 with repeated measurements}
 \usage{
-pDcalc(obs1, obs2, fups = NULL, narm, NS, theta.result, resdev.result,
-  likelihood = "normal", type = "time")
+pDcalc(
+  obs1,
+  obs2,
+  fups = NULL,
+  narm,
+  NS,
+  theta.result,
+  resdev.result,
+  likelihood = "normal",
+  type = "time"
+)
 }
 \arguments{
 \item{obs1}{A matrix (study x arm) or array (study x arm x time point) containing
@@ -58,8 +67,8 @@ parameters must be monitored when running the JAGS model.
 
 For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 can lead to non-sensical results when calculating pD via the plugin method.
-Alternative approaches are to use pV (\code{pv}) as an approximation (Plummer REF) or
-pD calculated by Kullback–Leibler divergence (\code{pd.kl}) or using an optimism adjustment (\code{popt}) (REF).
+Alternative approaches are to use pV (\code{pv}) as an approximation \insertCite{plummer2008}{MBNMAtime} or
+pD calculated by Kullback–Leibler divergence (\code{pd.kl}) or using an optimism adjustment (\code{popt}) \insertCite{plummer2008}{MBNMAtime}.
 }
 \examples{
 \donttest{
@@ -67,7 +76,8 @@ pD calculated by Kullback–Leibler divergence (\code{pd.kl}) or using an optimi
 network <- mb.network(alog_pcfb)
 
 # Run Emax model saving predicted means and residual deviance contributions
-emax <- mb.emax(network, parameters.to.save=c("theta", "resdev"))
+emax <- mb.run(network, fun=temax(),
+  parameters.to.save=c("theta", "resdev"), intercept=FALSE)
 
 # Get matrices of observed data
 jagsdat <- getjagsdata(network$data.ab)

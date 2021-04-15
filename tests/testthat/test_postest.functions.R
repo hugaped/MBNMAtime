@@ -1,367 +1,165 @@
-# testthat::context("Testing predict.functions")
-# network <- mb.network(osteopain)
-#
-# exponential <- mb.exponential(network, lambda=list(pool="rel", method="common"),
-#                                  positive.scale=TRUE,
-#                                  n.chain=3, n.iter=1200, n.burnin=800)
-#
-# emax1 <- mb.emax(network, emax=list(pool="rel", method="random"),
-#                     et50=list(pool="rel", method="common"),
-#                     positive.scale=TRUE,
-#                     n.chain=3, n.iter=1000, n.burnin=600)
-#
-# emax2 <- mb.emax(network, emax=list(pool="rel", method="common"),
-#                     et50=list(pool="const", method="common"),
-#                     positive.scale=TRUE,
-#                     n.chain=3, n.iter=1000, n.burnin=600)
-#
-# emax.hill <- mb.emax.hill(network, emax=list(pool="arm", method="common"),
-#                              et50=list(pool="arm", method="random"),
-#                              hill=list(pool="const", method=2),
-#                              positive.scale=TRUE, n.chain=3, n.iter=1000, n.burnin=600)
-#
-#
-# piece <- mb.piecelinear(network, slope.1=list(pool="arm", method="common"),
-#                            slope.2=list(pool="rel", method="common"),
-#                            knot=list(pool="const", method=1),
-#                            positive.scale=TRUE, n.chain=3, n.iter=1000, n.burnin=600)
-#
-# fract.first <- mb.fract.first(network, slope=list(pool="rel", method="random"),
-#                            power=list(pool="const", method="common"),
-#                            positive.scale=TRUE, n.chain=3, n.iter=1000, n.burnin=600)
-#
-#
-# # Specify a test model in terms of betas (use user.fun once it is fixed)
-# quad <- mb.run(network, fun="quadratic",
-#                   beta.1=list(pool="rel", method="common"),
-#                   beta.2=list(pool="arm", method="random"),
-#                   positive.scale=TRUE,
-#                   alpha="study",
-#                   n.chain=3, n.iter=1200, n.burnin=800)
-#
-# # Class data
-# #classdata <- osteopain
-# # classdata$class[classdata$treatment=="Pl_0"] <- 1
-# # classdata$class[classdata$treatment!="Pl_0"] <- 2
-# classdata <- goutSUA_CFBcomb
-# classnetwork <- mb.network(classdata)
-#
-# exp.class.fixed <- suppressWarnings(mb.exponential(classnetwork,
-#                                      lambda=list(pool="rel", method="common"),
-#                                      positive.scale=TRUE,
-#                                n.chain=3, n.iter=1200, n.burnin=800,
-#                                class.effect=list("lambda"="common")))
-#
-# exp.class.random <- suppressWarnings(mb.exponential(classnetwork,
-#                                       lambda=list(pool="rel", method="common"),
-#                                       positive.scale=TRUE,
-#                                n.chain=3, n.iter=1200, n.burnin=800,
-#                                class.effect=list("lambda"="random")))
-#
-#
-# # A model that does not save the required parameters for postestimation
-# resdev <- mb.emax(network, emax=list(pool="rel", method="common"),
-#                      et50=list(pool="const", method="common"), positive.scale=TRUE,
-#                           n.chain=3, n.iter=1200, n.burnin=800,
-#                           parameters.to.save=c("resdev")
-# )
-#
-# ################### Testing add_index ################
-#
-# testthat::test_that("predict.mbnma functions correctly", {
-#   model.list <- list(exponential, emax1, emax2, emax.hill, piece, fract.first, quad)
-#   treats.list <- list(c(1,5,8,15), c(2,6,9,16:20))
-#   ref.resp.list <- list(osteopain[osteopain$treatname=="Placebo_0",],
-#                    osteopain[osteopain$treatname=="Celebrex_200",])
-#   times.list <- list(c(0:10), c(1,10:20))
-#   E0.list <- list(7, "rnorm(n, 7,2)")
-#   synth.list <- list("fixed", "random")
-#
-#   for (i in 1:4) {
-#     model <- model.list[[i]]
-#     print(paste0("modellist: ", i))
-#     for (k in 1:2) {
-#       synth <- synth.list[[k]]
-#       for (m in 1:2) {
-#         E0 <- E0.list[[m]]
-#         ref.resp <- ref.resp.list[[m]]
-#         treats <- treats.list[[m]]
-#         times <- times.list[[m]]
-#
-#         # Tests using ref.resp
-#         testthat::expect_error(predict(model, times=times,
-#                                    E0=E0, treats=treats,
-#                                    ref.resp=ref.resp, synth=synth
-#                                    ), NA)
-#
-#         pred <- predict(model, times=times,
-#                               E0=E0, treats=treats,
-#                               ref.resp=ref.resp, synth=synth)
-#
-#         testthat::expect_equal(length(pred$pred.mat), length(treats))
-#         #testthat::expect_equal(names(pred$pred.mat), as.character(treats))
-#         testthat::expect_equal(names(pred$pred.mat), model$network$treatments[treats])
-#         testthat::expect_identical(names(pred), c("summary", "pred.mat", "network"))
-#         testthat::expect_equal(nrow(pred$pred.mat[[1]]), model$BUGSoutput$n.sims)
-#         testthat::expect_equal(nrow(pred$summary[[1]]), length(times))
-#         testthat::expect_equal(identical(pred$summary[[1]]$time, times), TRUE)
-#       }
-#     }
-#   }
-#
-#   # Tests of class models
-#   testthat::expect_error(predict(exp.class.random, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp, synth=synth))
-#
-#   expect_error(predict(exp.class.fixed, times=times,
-#                                  E0=E0, treats=treats,
-#                                  ref.resp=ref.resp, synth=synth), "Class effects have not")
-#
-#
-#
-#   # Tests using ref.resp
-#   ref.resp <- list("emax"=-1)
-#   testthat::expect_error(predict(emax2, times=times,
-#                              E0=7, treats=treats,
-#                              ref.resp=ref.resp),
-#                NA)
-#
-#   ref.resp <- list("d.emax"=-1) # incorrect prior name ("d.emax" rather than "emax")
-#   testthat::expect_error(predict(emax2, times=times,
-#                              E0=7, treats=treats,
-#                              ref.resp=ref.resp))
-#
-#   ref.resp <- list("beta.1"="rnorm(n, -1,1)")
-#   testthat::expect_error(predict(quad, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp), NA)
-#
-#   ref.resp <- list("beta.1"="rnorm(n, -1")
-#   testthat::expect_error(predict(quad, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp))
-#
-#   ref.resp <- list("beta.1"="rnorm(n, -1,1)", "beta.2"="rnorm(n, 1, 0.1)") # beta.2 is not a relative effect in quad
-#   testthat::expect_error(predict(quad, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp))
-#
-#   ref.resp <- list("beta.1"="rnorm(n, -1,1)")
-#   testthat::expect_error(predict(quad, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp), NA)
-#
-#   ref.resp <- list("beta.1"="rnorm(n, -1,1)")
-#   testthat::expect_error(predict(emax2, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp))
-#
-#   ref.resp <- list("emax"="rnorm(n, -1,1)", "et50"="rnorm(n, 1, 0.1)")
-#   testthat::expect_error(predict(emax2, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp))
-#
-#   ref.resp <- list("emax"=-1, "et50"=0.1)
-#   testthat::expect_error(predict(emax1, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=ref.resp),
-#                NA)
-#
-#   ref.resp <- list("slope.2"=0)
-#   testthat::expect_error(predict(piece, times=times,
-#                                  E0=E0, treats=treats,
-#                                  ref.resp=ref.resp),
-#                          NA)
-#
-#   ref.resp <- list("slope"=0)
-#   testthat::expect_error(predict(fract.first, times=times,
-#                                  E0=E0, treats=treats,
-#                                  ref.resp=ref.resp),
-#                          NA)
-#
-#   # Error due to wrong parameters being saved from model
-#   testthat::expect_error(predict(resdev, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.estimate=ref.estimate))
-#
-#
-#   # Expect no error even if ref.resp is NULL
-#   testthat::expect_error(predict(emax.hill, times=times,
-#                              E0=E0, treats=treats,
-#                              ref.resp=NULL), NA)
-#
-#
-#   # Test using different treatment codes (numeric and class)
-#   expect_error(predict(emax1, times=c(0:15), treats=c(1,5,10,15)), NA)
-#   expect_error(predict(emax1, times=c(0:15), treats=c(1,5,10,15,100)), "numeric treatment codes")
-#
-#   pred <- predict(emax1, times=c(0:15), treats=c("Pl_0","Du_90","Na_1000"))
-#   expect_identical(names(pred$summary), c("Pl_0","Du_90","Na_1000"))
-#
-#
-#   # Test using alogliptin dataset
-#   alognet <- mb.network(alog_pcfb)
-#   quad <- mb.quadratic(alognet)
-#   expect_error(predict(quad), NA)
-#
-#   quad <- mb.quadratic(alognet, beta.1=list("arm", "common"), beta.2=list("rel", "random"), n.iter=8000)
-#   quad <- mb.quadratic(alognet)
-#   quad <- mb.quadratic(alognet, beta.2=list("arm", "common"), beta.1=list("rel", "random"), n.iter=8000)
-# })
-#
-#
-#
-# testthat::test_that("ref.synth functions correctly", {
-#   ref.resp <- osteopain[osteopain$treatname=="Placebo_0",]
-#
-#   testthat::expect_warning(ref.synth(ref.resp, exponential, synth="random",
-#                            n.burnin=100, n.iter=200))
-#
-#   rand <- ref.synth(ref.resp, exponential, synth="random")
-#   fix <- ref.synth(ref.resp, exponential, synth="fixed")
-#
-#   testthat::expect_equal(length(rand), 2)
-#   testthat::expect_equal(length(fix), 1)
-#
-#   rand.emax <- ref.synth(ref.resp, emax1, synth="random")
-#   testthat::expect_equal(length(rand.emax), 4)
-#
-#   # Class models
-#   ref.resp <- classdata[classdata$treatname=="Placebo",]
-#   testthat::expect_warning(ref.synth(ref.resp, exp.class.fixed, synth="random"), "Synthesis of reference")
-# })
-#
-#
-#
-#
-# testthat::test_that("rankauc functions correctly", {
-#   model.list <- list(emax1, emax2, quad)
-#   treats.list <- list(c(1,5,8,15),
-#                       c(2,6,9,16:20),
-#                       c(1:4))
-#   int.list <- list(c(0,10), c(5,10), c(1,3))
-#   subs.list <- list(10, 5, 40)
-#   dec.list <- list(TRUE, FALSE, TRUE)
-#   for (i in seq_along(model.list)) {
-#     auc <- MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=model.list[[i]]$network$treatments[treats.list[[i]]],
-#              int.range=int.list[[i]], subdivisions=subs.list[[i]], n.iter=100)
-#
-#     testthat::expect_equal(names(auc), c("summary", "prob.matrix", "rank.matrix", "auc.int"))
-#     testthat::expect_equal(nrow(auc[["summary"]]), length(treats.list[[i]]))
-#     testthat::expect_equal(nrow(auc[["prob.matrix"]]), ncol(auc[["prob.matrix"]]))
-#     testthat::expect_equal(nrow(auc[["prob.matrix"]]), length(treats.list[[i]]))
-#     testthat::expect_equal(nrow(auc[["rank.matrix"]]), 100)
-#     testthat::expect_equal(colnames(auc[["rank.matrix"]]), model.list[[i]]$network$treatments[treats.list[[i]]])
-#   }
-#
-#   i <- 1
-#   testthat::expect_error(MBNMAtime:::rankauc(model.list[[i]], decreasing=5, treats=treats.list[[i]],
-#                     int.range=int.list[[i]], subdivisions=subs.list[[i]], n.iter=100))
-#
-#   testthat::expect_error(MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=c("Placecbo", "Celebrex"),
-#                         int.range=int.list[[i]], subdivisions=subs.list[[i]], n.iter=100))
-#
-#   testthat::expect_error(MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=treats.list[[i]],
-#                         int.range=c(1:10), subdivisions=subs.list[[i]], n.iter=100))
-#
-#   i <- 2
-#   testthat::expect_error(MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=treats.list[[i]],
-#                         int.range=c(-5,5), subdivisions=subs.list[[i]], n.iter=100))
-#
-#   testthat::expect_error(MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=treats.list[[i]],
-#                         subdivisions=subs.list[[i]], n.iter=100))
-#
-#   testthat::expect_error(MBNMAtime:::rankauc(model.list[[i]], decreasing=dec.list[[i]], treats=treats.list[[i]],
-#                         int.range=int.list[[i]], subdivisions=-10, n.iter=100))
-#
-#   # Error due to wrong parameters being saved from model
-#   testthat::expect_error(MBNMAtime:::rankauc(resdev, decreasing=dec.list[[i]],
-#                         treats=treats.list[[i]],
-#                         int.range=int.list[[i]],
-#                         subdivisions=subs.list[[i]], n.iter=100))
-#
-# })
-#
-#
-#
-#
-#
-# testthat::test_that("rank.mbnma functions correctly", {
-#   model.list <- list(emax1, emax2, quad)
-#   treats.list <- list(c(1,5,8,15), c("Pl_0", "Ce_100", "Ce_200", "Va_20"))
-#   i <- 1
-#
-#   rank <- rank(exponential, params="d.lambda",
-#                      direction=-1, treats=treats.list[[i]])
-#
-#   testthat::expect_equal(names(rank), "d.lambda")
-#   testthat::expect_equal(names(rank$d.lambda), c("summary", "prob.matrix", "rank.matrix"))
-#   testthat::expect_equal(nrow(rank$d.lambda[["summary"]]), length(treats.list[[i]]))
-#   testthat::expect_equal(nrow(rank$d.lambda[["prob.matrix"]]), ncol(rank$d.lambda[["prob.matrix"]]))
-#   testthat::expect_equal(nrow(rank$d.lambda[["prob.matrix"]]), length(treats.list[[i]]))
-#   testthat::expect_equal(nrow(rank$d.lambda[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
-#
-#   # Check that treatment codes can be character or numeric when estimating AUC
-#   expect_error(rank(emax1, params="auc",
-#                direction=-1, treats=treats.list[[1]], n.iter=100), NA)
-#   expect_error(rank(emax1, params="auc",
-#                     direction=-1, treats=treats.list[[2]], n.iter=100), NA)
-#
-#   if (is.numeric(treats.list[[i]])) {
-#     matchtreat <- exponential$network$treatments[treats.list[[i]]]
-#   } else if (is.character(treats.list[[i]])) {
-#     matchtreat <- treats.list[[i]]
-#   }
-#   testthat::expect_equal(colnames(rank$d.lambda[["rank.matrix"]]), matchtreat)
-#
-#
-#
-#   rank <- rank(emax1, params=c("d.emax", "d.et50"),
-#                      direction=-1, treats=treats.list[[i]])
-#
-#   testthat::expect_equal(sort(names(rank)), sort(c("d.emax", "d.et50")))
-#   testthat::expect_equal(names(rank$d.et50), c("summary", "prob.matrix", "rank.matrix"))
-#   testthat::expect_equal(nrow(rank$d.et50[["summary"]]), length(treats.list[[i]]))
-#   testthat::expect_equal(nrow(rank$d.et50[["prob.matrix"]]), ncol(rank$d.et50[["prob.matrix"]]))
-#   testthat::expect_equal(nrow(rank$d.et50[["prob.matrix"]]), length(treats.list[[i]]))
-#   testthat::expect_equal(nrow(rank$d.et50[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
-#
-#   i <- 2
-#   rank <- rank(quad, params=c("beta.2", "d.1"),
-#                      direction=-1, treats=treats.list[[i]])
-#
-#   testthat::expect_equal(sort(names(rank)), sort(c("beta.2", "d.1")))
-#   testthat::expect_equal(names(rank$d.1), c("summary", "prob.matrix", "rank.matrix"))
-#   testthat::expect_equal(nrow(rank$d.1[["summary"]]), length(treats.list[[i]]))
-#   testthat::expect_equal(nrow(rank$d.1[["prob.matrix"]]), ncol(rank$d.1[["prob.matrix"]]))
-#   testthat::expect_equal(nrow(rank$beta.2[["prob.matrix"]]), length(treats.list[[i]]))
-#   testthat::expect_equal(nrow(rank$beta.2[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
-#
-#   if (is.numeric(treats.list[[i]])) {
-#     matchtreat <- quad$network$treatments[treats.list[[i]]]
-#   } else if (is.character(treats.list[[i]])) {
-#     matchtreat <- treats.list[[i]]
-#   }
-#   testthat::expect_equal(colnames(rank$beta.2[["rank.matrix"]]), matchtreat)
-#   testthat::expect_equal(colnames(rank$d.1[["rank.matrix"]]), matchtreat)
-#
-#
-#   testthat::expect_error(rank(emax1, params=c("beta.1", "beta.2"),
-#                           direction=-1, treats=treats.list[[i]]))
-#
-#   # Class effect models
-#   testthat::expect_error(rank(exp.class.fixed,
-#                               direction=-1, param="D.lambda", treats=c("1","wer"), level="class"), "classes not included")
-#
-#   testthat::expect_error(rank(exp.class.fixed,
-#                               direction=-1, treats=c("1","2"), param="auc", level="class"), "AUC cannot currently")
-#
-#   testthat::expect_silent(rank(exp.class.fixed,
-#                               direction=-1, treats=c(1,2), param="D.lambda", level="class"))
-#
-#   expect_silent(rank(exp.class.fixed,
-#                      direction=-1, param="D.lambda", level="class"))
-#
-#   expect_error(rank(emax1, direction=-1, level="class"), "not a class effect model")
-# })
+testthat::context("Testing predict.functions")
+painnet <- mb.network(osteopain)
+alognet <- mb.network(alog_pcfb)
+copdnet <- mb.network(copd)
+goutnet <- mb.network(goutSUA_CFBcomb)
+obesenet <- mb.network(obesityBW_CFB)
+
+
+loglin <- mb.run(painnet, fun=tloglin(pool.rate="rel", method.rate="common"))
+
+emax <- mb.run(alognet, fun=temax(pool.emax="rel", method.emax="random",
+                                  pool.et50="abs", method.et50="common"), pd="pv")
+
+bs <- mb.run(copdnet, fun=tspline(type="bs", degree=1, knots=3,
+                                  pool.1="rel", method.1="common",
+                                  pool.2="abs", method.2="random",
+                                  pool.3 = "rel", method.3="random"), pd="pv")
+
+class <- mb.run(goutnet, fun=tfpoly(degree=2, method.1="common", pool.1="rel",
+                                    method.2="random", pool.2="rel"),
+                class.effect = list(beta.1="random"), pd="pv"
+                )
+
+ls <- mb.run(obesenet, fun=tspline(type="ls", knots = 25/250),
+                                   rho="dunif(0,1)", covar="varadj", pd="pv")
+
+
+loglin.ar1 <- mb.run(alognet, fun=tloglin(pool.rate="rel", method.rate="common"), covar="AR1",
+                     rho="dunif(0,1)", n.iter=1500, pd="pv")
+
+resdev <- mb.run(alognet, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv")
+
+
+################### Testing add_index ################
+
+testthat::test_that("predict.mbnma functions correctly", {
+  model.list <- list(loglin, emax, bs, class, ls, loglin.ar1)
+  treats.list <- list(c(1,5,8,15), c("alog_50", "alog_25"), NULL, c(3,5,7), NULL, NULL)
+  ref.resp.list <- list(painnet$data.ab[painnet$data.ab$treatment==1,],
+                        alognet$data.ab[alognet$data.ab$treatment==2,],
+                        list(beta.1=~rnorm(n,-0.1,0.1), beta.3=~rnorm(n, 0.2, 0.01), beta.4=~rnorm(n,0,0)),
+                        list(beta.1=-1, beta.2=0.1),
+                        NULL,
+                        NULL
+                        )
+  times.list <- list(c(0:10), c(1,10:20), seq(0, max(bs$model.arg$jagsdata$time, na.rm=TRUE), length.out=20),
+                     c(2,4,6,7,10), seq(0, max(ls$model.arg$jagsdata$time, na.rm=TRUE), length.out=20),
+                     c(0:20)
+                     )
+  E0.list <- list(7, ~rnorm(n, 7,2), 0, ~rnorm(n,5,5), 10, 0)
+  synth.list <- rep(c("common", "random"),3)
+
+  for (i in 1:6) {
+    print(paste0("modellist: ", i))
+    mbnma <- model.list[[i]]
+    E0 <- E0.list[[i]]
+    ref.resp <- ref.resp.list[[i]]
+    treats <- treats.list[[i]]
+    times <- times.list[[i]]
+    synth <- synth.list[[i]]
+
+    # Tests using ref.resp
+    pred <- suppressWarnings(predict(mbnma, times=times,
+                    E0=E0, treats=treats,
+                    ref.resp=ref.resp, synth=synth))
+
+    if (!is.null(treats)) {
+      testthat::expect_equal(length(pred$pred.mat), length(treats))
+    } else {
+      testthat::expect_equal(length(pred$pred.mat), length(mbnma$network$treatments))
+    }
+
+    if (is.numeric(treats)) {
+      testthat::expect_equal(names(pred$pred.mat), mbnma$network$treatments[treats])
+    } else if (is.character(treats)) {
+      testthat::expect_equal(names(pred$pred.mat), treats)
+    }
+
+    testthat::expect_identical(names(pred), c("summary", "pred.mat", "network", "times", "link"))
+    testthat::expect_equal(nrow(pred$pred.mat[[1]]), mbnma$BUGSoutput$n.sims)
+    testthat::expect_equal(nrow(pred$summary[[1]]), length(times))
+    testthat::expect_equal(identical(pred$summary[[1]]$time, times), TRUE)
+  }
+
+  # Tests of class models
+  expect_error(predict(class, level="class"), "all relative effects must be modelled with class")
+
+  class2 <- mb.run(goutnet, fun=tpoly(degree=2, method.1="common", pool.1="rel",
+                                      method.2="random", pool.2="rel"),
+                  class.effect = list(beta.1="random", beta.2="common"), pd="pv"
+  )
+
+  pred <- predict(class2, level="class")
+  testthat::expect_equal(names(pred$pred.mat), class2$network$classes)
+
+  pred <- predict(class2, level="class", treats = c("Allo", "Arha"))
+  testthat::expect_equal(names(pred$pred.mat), c("Allo", "Arha"))
+
+  pred <- predict(class2, level="class", treats = c(1,3,5))
+  testthat::expect_equal(names(pred$pred.mat), class2$network$classes[c(1,3,5)])
+
+
+
+  # Tests using ref.resp
+  ref.resp <- list("emax"=-1)
+  testthat::expect_error(predict(emax,
+                             E0=7,
+                             ref.resp=ref.resp),
+               NA)
+
+  ref.resp <- list("d.emax"=-1) # incorrect prior name ("d.emax" rather than "emax")
+  testthat::expect_error(predict(emax,
+                             E0=7,
+                             ref.resp=ref.resp), "Named elements of")
+
+  ref.resp <- list("rate"=~rnorm(n, -1,1))
+  testthat::expect_error(predict(loglin,
+                             E0=E0,
+                             ref.resp=ref.resp), NA)
+
+  ref.resp <- list("rate"="rnorm(n, -1,1)", "beta.2"="rnorm(n, 1, 0.1)") # beta.2 is not a relative effect in quad
+  testthat::expect_error(predict(loglin,
+                             E0=E0,
+                             ref.resp=ref.resp), "Named elements of")
+
+
+  # Error due to wrong parameters being saved from model
+  testthat::expect_error(predict(resdev), "Parameters required for estimation of time-course")
+
+
+  # Expect no error even if ref.resp is NULL
+  testthat::expect_error(predict(bs, ref.resp=NULL), NA)
+
+  # Expect no error even when only a single time point is predicted
+  testthat::expect_error(predict(bs, times=2), NA)
+
+})
+
+
+
+testthat::test_that("ref.synth functions correctly", {
+  ref.resp <- osteopain[osteopain$treatname=="Placebo_0",]
+
+  testthat::expect_warning(ref.synth(ref.resp, emax, synth="random",
+                           n.burnin=100, n.iter=200), "Rhat values")
+
+})
+
+
+
+
+testthat::test_that("get.model.vals functions correctly", {
+
+  vals <- get.model.vals(loglin)
+  testthat::expect_equal(names(vals), c("alpha", "d.1", "timecourse", "time.params"))
+
+  vals <- get.model.vals(emax)
+  testthat::expect_equal(names(vals), c("alpha", "d.1", "beta.2", "timecourse", "time.params"))
+
+  # Can add more here if problems
+})
+
+
+
+

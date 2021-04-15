@@ -4,7 +4,8 @@
 \name{goutSUA_CFBcomb}
 \alias{goutSUA_CFBcomb}
 \title{Studies of combined treatments for reducing serum uric acid in patients with gout}
-\format{A data frame with 224 rows and 7 variables:
+\format{
+A data frame with 224 rows and 7 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
@@ -13,7 +14,8 @@
 \item \code{treatment} Treatment identifiers as factors. Labels are shortened treatment names.
 \item \code{treatname} Character data giving the full names of each treatment in the format agent_dose
 \item \code{class} Shortened agent names stored as factors.
-}}
+}
+}
 \source{
 Pfizer Ltd.
 }

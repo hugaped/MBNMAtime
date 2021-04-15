@@ -1,13 +1,22 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
+[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)
+[![Travis build
+status](https://travis-ci.com/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAtime)
+<!-- badges: end -->
+
 # MBNMAtime
 
 The goal of `MBNMAtime` is to provide a collection of useful commands
-that allow users to run time-course Model-Based Network Meta-Analyses
-(MBNMA) or Model-Based Meta-Analyses (MBMA). This allows meta-analysis
-of studies with multiple follow-up measurements that can account for
-time-course for a single or multiple treatment comparisons.
+that allow users to run time-course Model-Based Network Meta-Analysis
+(MBNMA). This allows meta-analysis of studies with multiple follow-up
+measurements that can account for time-course for a single or multiple
+treatment comparisons.
 
 Including all available follow-up measurements within a study makes use
 of all the available evidence in a way that maintains connectivity
@@ -45,8 +54,8 @@ install.packages("MBNMAtime")
 Functions within `MBNMAtime` follow a clear pattern of use:
 
 1.  Load your data into the correct format using `mb.network()`
-2.  Analyse your data using `mb.run()`, or any of the available wrapper
-    time-course functions
+2.  Specify a suitable time-course function and analyse your data using
+    `mb.run()`
 3.  Test for consistency using functions like `mb.nodesplit()`
 4.  Examine model results using forest plots and treatment rankings
 5.  Use your model to predict responses using `predict()`
@@ -63,7 +72,7 @@ fitting. Exported functions in the package are connected like so:
 
 <div id="ref-jags">
 
-JAGS Computer Program. 2017. <http://mcmc-jags.sourceforge.net>.
+JAGS Computer Program. 2017. <https://mcmc-jags.sourceforge.io/>.
 
 </div>
 

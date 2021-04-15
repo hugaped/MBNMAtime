@@ -11,8 +11,6 @@ add_index(data.ab, reference = 1)
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{time} Numeric data indicating follow-up times
-\item \code{y} Numeric data indicating the mean response for a given observation
-\item \code{se} Numeric data indicating the standard error for a given observation
 \item \code{treatment} Treatment identifiers (can be numeric, factor or character)
 \item \code{class} An optional column indicating a particular class code. Treatments with the same identifier
 must also have the same class code.

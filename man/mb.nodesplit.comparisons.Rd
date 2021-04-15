@@ -2,12 +2,12 @@
 % Please edit documentation in R/nodesplit.functions.R
 \name{mb.nodesplit.comparisons}
 \alias{mb.nodesplit.comparisons}
-\title{Identify comparisons in time-course MBNMA datasets that fulfill criteria for node-splitting}
+\title{Identify comparisons in time-course MBNMA datasets that fulfil criteria for node-splitting}
 \usage{
 mb.nodesplit.comparisons(network)
 }
 \arguments{
-\item{network}{An object of class \code{mb.network}.}
+\item{network}{An object of class \code{"mb.network"}.}
 }
 \value{
 A data frame of comparisons that are informed by direct and indirect
@@ -18,7 +18,7 @@ to treatment codes.
 \description{
 Identify comparisons informed by both direct and indirect evidence from independent sources in MBNMA
 datasets with repeated measurements in each study. These comparisons are therefore those which
-fulfill the criteria for testing for inconsistency via node-splitting, following the method of van
+fulfil the criteria for testing for inconsistency via node-splitting, following the method of van
 Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 }
 \details{

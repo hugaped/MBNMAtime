@@ -13,9 +13,16 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
+
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
+[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)
+[![Travis build status](https://travis-ci.com/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAtime)
+<!-- badges: end -->
+
 # MBNMAtime
 
-The goal of `MBNMAtime` is to provide a collection of useful commands that allow users to run time-course Model-Based Network Meta-Analyses (MBNMA) or Model-Based Meta-Analyses (MBMA). This allows meta-analysis of studies with multiple follow-up measurements that can account for time-course for a single or multiple treatment comparisons.
+The goal of `MBNMAtime` is to provide a collection of useful commands that allow users to run time-course Model-Based Network Meta-Analysis (MBNMA). This allows meta-analysis of studies with multiple follow-up measurements that can account for time-course for a single or multiple treatment comparisons.
 
 Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments, and it does so in a way that explains time-course, thus explaining heterogeneity and inconsistency that may be present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by Lu and Ades [-@lu2004] and are run in JAGS [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019].
 
@@ -43,7 +50,7 @@ install.packages("MBNMAtime")
 Functions within `MBNMAtime` follow a clear pattern of use:
 
 1. Load your data into the correct format using `mb.network()`
-2. Analyse your data using `mb.run()`, or any of the available wrapper time-course functions
+2. Specify a suitable time-course function and analyse your data using `mb.run()`
 3. Test for consistency using functions like `mb.nodesplit()`
 4. Examine model results using forest plots and treatment rankings
 5. Use your model to predict responses using `predict()`

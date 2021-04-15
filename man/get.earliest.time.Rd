@@ -7,7 +7,7 @@
 get.earliest.time(network)
 }
 \arguments{
-\item{network}{An object of class \code{mb.network}.}
+\item{network}{An object of class \code{"mb.network"}.}
 }
 \value{
 A data frame in long format of responses at the earliest time point in
