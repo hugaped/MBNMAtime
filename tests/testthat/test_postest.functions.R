@@ -11,31 +11,36 @@ loglin <- mb.run(painnet, fun=tloglin(pool.rate="rel", method.rate="common"))
 emax <- mb.run(alognet, fun=temax(pool.emax="rel", method.emax="random",
                                   pool.et50="abs", method.et50="common"), pd="pv")
 
-bs <- mb.run(copdnet, fun=tspline(type="bs", degree=1, knots=3,
-                                  pool.1="rel", method.1="common",
-                                  pool.2="abs", method.2="random",
-                                  pool.3 = "rel", method.3="random"), pd="pv")
 
-class <- mb.run(goutnet, fun=tfpoly(degree=2, method.1="common", pool.1="rel",
-                                    method.2="random", pool.2="rel"),
-                class.effect = list(beta.1="random"), pd="pv"
-                )
-
-ls <- mb.run(obesenet, fun=tspline(type="ls", knots = 25/250),
-                                   rho="dunif(0,1)", covar="varadj", pd="pv")
-
-
-# loglin.ar1 <- mb.run(alognet, fun=tloglin(pool.rate="rel", method.rate="common"), covar="AR1",
-#                      rho="dunif(0,1)", n.iter=1500, pd="pv")
-
-resdev <- mb.run(alognet, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv")
 
 
 ################### Testing add_index ################
 
 testthat::test_that("predict.mbnma functions correctly", {
-  model.list <- list(loglin, emax, bs, class, ls)
-  # model.list <- list(loglin, emax, bs, class, ls, loglin.ar1)
+  skip_on_ci("problems with JAGS version")
+  skip_on_cran("problems with JAGS version")
+
+  # Run models
+  bs <- mb.run(copdnet, fun=tspline(type="bs", degree=1, knots=3,
+                                    pool.1="rel", method.1="common",
+                                    pool.2="abs", method.2="random",
+                                    pool.3 = "rel", method.3="random"), pd="pv")
+
+  class <- mb.run(goutnet, fun=tfpoly(degree=2, method.1="common", pool.1="rel",
+                                      method.2="random", pool.2="rel"),
+                  class.effect = list(beta.1="random"), pd="pv"
+  )
+
+  ls <- mb.run(obesenet, fun=tspline(type="ls", knots = 25/250),
+               rho="dunif(0,1)", covar="varadj", pd="pv")
+
+  loglin.ar1 <- mb.run(alognet, fun=tloglin(pool.rate="rel", method.rate="common"), covar="AR1",
+                       rho="dunif(0,1)", n.iter=1500, pd="pv")
+
+  resdev <- mb.run(alognet, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv")
+
+
+  model.list <- list(loglin, emax, bs, class, ls, loglin.ar1)
   treats.list <- list(c(1,5,8,15), c("alog_50", "alog_25"), NULL, c(3,5,7), NULL, NULL)
   ref.resp.list <- list(painnet$data.ab[painnet$data.ab$treatment==1,],
                         alognet$data.ab[alognet$data.ab$treatment==2,],

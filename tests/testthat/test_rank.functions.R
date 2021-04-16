@@ -13,11 +13,11 @@ bs <- mb.run(copdnet,
              fun=tspline(type = "bs", degree=2, knots = 2,
                          pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", link="smd")
 
-fpoly <- mb.run(goutnet, fun=tfpoly(degree=2),
-                class.effect = list("beta.2"="random"), pd="pv",
-                rho="dunif(0,1)", n.iter=1000)
 
 testthat::test_that("rankauc functions correctly", {
+  skip_on_ci("problems with JAGS version")
+  skip_on_cran("problems with JAGS version")
+
   model.list <- list(emax, bs)
   treats.list <- list(c(1,5,8,15),
                       c(1:3))
@@ -69,6 +69,9 @@ testthat::test_that("rankauc functions correctly", {
 
 
 testthat::test_that("rank.mbnma functions correctly", {
+  skip_on_ci("problems with JAGS version")
+  skip_on_cran("problems with JAGS version")
+
   model.list <- list(emax, bs)
   treats.list <- list(c(1,5,8,15), c("Placebo", "Aclidinium"))
   i <- 1
@@ -124,6 +127,10 @@ testthat::test_that("rank.mbnma functions correctly", {
 
 
   # Class effect models
+  fpoly <- mb.run(goutnet, fun=tfpoly(degree=2),
+                  class.effect = list("beta.2"="random"), pd="pv",
+                  rho="dunif(0,1)", n.iter=1000)
+
   testthat::expect_error(rank(fpoly,
                               direction=-1, param="D.2", treats=c("1","wer"), level="class"), "classes not included")
 
@@ -141,6 +148,8 @@ testthat::test_that("rank.mbnma functions correctly", {
 
 
 testthat::test_that("rank.mb.predict functions correctly", {
+  skip_on_ci("problems with JAGS version")
+  skip_on_cran("problems with JAGS version")
 
   preds <- predict(emax, E0=7,
                    ref.resp=list(emax=~rnorm(n, -0.5, 0.05), et50=-0.2))
