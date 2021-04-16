@@ -15,8 +15,8 @@ bs <- mb.run(copdnet,
 
 
 testthat::test_that("rankauc functions correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   model.list <- list(emax, bs)
   treats.list <- list(c(1,5,8,15),
@@ -69,8 +69,8 @@ testthat::test_that("rankauc functions correctly", {
 
 
 testthat::test_that("rank.mbnma functions correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   model.list <- list(emax, bs)
   treats.list <- list(c(1,5,8,15), c("Placebo", "Aclidinium"))
@@ -148,8 +148,8 @@ testthat::test_that("rank.mbnma functions correctly", {
 
 
 testthat::test_that("rank.mb.predict functions correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   preds <- predict(emax, E0=7,
                    ref.resp=list(emax=~rnorm(n, -0.5, 0.05), et50=-0.2))

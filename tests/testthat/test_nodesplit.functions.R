@@ -72,8 +72,8 @@ testthat::test_that("mb.nodesplit.comparisons is working", {
 
 
 testthat::test_that("mb.nodesplit is working", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   # Emax time-course
   network <- mb.network(osteopain, reference = "Pl_0")

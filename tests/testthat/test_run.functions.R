@@ -8,8 +8,8 @@ classnetwork <- mb.network(goutSUA_CFBcomb)
 ################ Testing mb.run wrapped functions ################
 
 testthat::test_that("exponential time-course function works correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   mb.result <- mb.run(painnet, fun=texp(pool.rate="rel", method.rate="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200)
@@ -41,8 +41,8 @@ testthat::test_that("exponential time-course function works correctly", {
 
 
 testthat::test_that("emax time-course function works correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   mb.result <- suppressWarnings(mb.run(painnet, fun=temax(pool.emax="rel", method.emax="common",
                                          pool.et50="abs", method.et50="common"),
@@ -102,8 +102,8 @@ testthat::test_that("emax time-course function works correctly", {
 
 
 testthat::test_that("polynomial time-course function works correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   mb.result <- mb.run(painnet, fun=tpoly(degree = 2, pool.1 = "rel", method.1="common",
                                          pool.2="abs", method.2="common"),
@@ -145,8 +145,8 @@ testthat::test_that("polynomial time-course function works correctly", {
 
 
 testthat::test_that("Fractional polynomial time-course function works correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   mb.result <- mb.run(painnet, fun=tfpoly(degree = 2, pool.1 = "rel", method.1="random",
                                           pool.2="abs", method.2="common"),
@@ -188,8 +188,8 @@ testthat::test_that("Fractional polynomial time-course function works correctly"
 
 
 testthat::test_that("mb.run function (+ tuser()) works correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   testthat::expect_warning(mb.run(mb.network(alog_pcfb), pd="plugin",  n.chain=3, n.iter=500, n.burnin=200), "Plugin method only works")
 
@@ -238,8 +238,8 @@ testthat::test_that("mb.run function (+ tuser()) works correctly", {
 
 
 test_that("mb.update function correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   result <- mb.run(copdnet, fun=tloglin(method.rate="random"),
                    UME=TRUE,

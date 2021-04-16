@@ -1,6 +1,6 @@
 testthat::context("Testing predict.functions")
-skip_on_ci("problems with JAGS version")
-skip_on_cran("problems with JAGS version")
+skip_on_ci()
+skip_on_cran()
 
 network <- mb.network(osteopain)
 

@@ -17,8 +17,8 @@ emax <- mb.run(alognet, fun=temax(pool.emax="rel", method.emax="random",
 ################### Testing add_index ################
 
 testthat::test_that("predict.mbnma functions correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   # Run models
   bs <- mb.run(copdnet, fun=tspline(type="bs", degree=1, knots=3,

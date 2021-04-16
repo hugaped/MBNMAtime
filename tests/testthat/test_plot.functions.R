@@ -40,8 +40,8 @@ emax.class.random <- suppressWarnings(
 
 
 testthat::test_that("plot(mb.predict) functions correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   treats <- c(1,5,8,10)
   data.ab <- painnet[["data.ab"]]
@@ -308,8 +308,8 @@ test_that("timeplot functions correctly", {
 
 
 test_that("plot.mb.nodesplit functions correctly", {
-  skip_on_ci("problems with JAGS version")
-  skip_on_cran("problems with JAGS version")
+  skip_on_ci()
+  skip_on_cran()
 
   network <- mb.network(osteopain, reference = "Pl_0")
   comp <- mb.nodesplit.comparisons(network)
