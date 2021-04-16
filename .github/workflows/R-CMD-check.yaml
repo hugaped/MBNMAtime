@@ -62,7 +62,7 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
-       - name: Install jags (windows-latest)
+      - name: Install jags (windows-latest)
         if: runner.os == 'Windows'
         run: |
           curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
