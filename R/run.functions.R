@@ -180,22 +180,24 @@
 #'                  intercept=TRUE)
 #'
 #'
+#' #### commented out to prevent errors from JAGS version in github actions build ####
 #' # Fit a log-linear MBNMA with:
 #' # random relative treatment effects on the rate
 #' # an autoregressive AR1 covariance structure
 #' # modelled as standardised mean differences
-#' copdnet <- mb.network(copd)
-#' result <- mb.run(copdnet, fun=tloglin(pool.rate="rel", method.rate="random"),
-#'                  covar="AR1", rho="dunif(0,1)", link="smd")
+#' # copdnet <- mb.network(copd)
+#' # result <- mb.run(copdnet, fun=tloglin(pool.rate="rel", method.rate="random"),
+#' #                covar="AR1", rho="dunif(0,1)", link="smd")
+#'
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
 #'
 #' # Traceplots
-#' mcmcplots::traplot(result)
+#' # mcmcplots::traplot(result)
 #'
 #' # Plots for assessing convergence
-#' mcmcplots::mcmcplot(result, c("rate", "sd.rate", "rho"))
+#' # mcmcplots::mcmcplot(result, c("rate", "sd.rate", "rho"))
 #'
 #' ########## Output ###########
 #'
