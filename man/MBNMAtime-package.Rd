@@ -80,13 +80,6 @@ plot(ranks)
 \references{
 \insertAllCited{}
 }
-\seealso{
-Useful links:
-\itemize{
-  \item \url{doi.org/10.1002/jrsm.1351}
-}
-
-}
 \author{
 \strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com}
 
