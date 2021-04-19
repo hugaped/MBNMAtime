@@ -141,7 +141,7 @@ print.treat.str <- function(mbnma, digits=4, ...) {
     }
 
     if (any(c(names(fun$apool)[i], TRUE) %in% mbnma$model.arg$UME)) {
-      paramdet <- append(paramdet, "UME results modelled for this parameter.\nToo many parameters to display in this summary")
+      paramdet <- append(paramdet, "Unrelated Mean Effect results modelled for this parameter.\nToo many parameters to display in this summary")
 
       cat(paste(paramdet, collapse="\n"))
     } else {
@@ -291,7 +291,7 @@ print.overall.str <- function(mbnma) {
 print.cor.str <- function(mbnma, digits=4) {
   if (!is.null(mbnma$model.arg$rho)) {
     cat(paste0("\n", crayon::underline(crayon::bold("Correlation between time points")), "\n"))
-    cov.str <- paste("Covariance structure:", mbnma$model.arg$covar, sep=" ")
+    cat(paste("Covariance structure:", mbnma$model.arg$covar, "\n", sep=" "))
 
     if (is.numeric(mbnma$model.arg$rho)) {
       cat(paste("Rho assigned a numeric value:", mbnma$model.arg$rho, sep=" "))
