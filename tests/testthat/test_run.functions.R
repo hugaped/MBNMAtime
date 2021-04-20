@@ -89,7 +89,7 @@ testthat::test_that("emax time-course function works correctly", {
   mb.result <- mb.run(painnet, fun=temax(pool.emax="rel", method.emax="common",
                                          pool.et50="rel", method.et50="common",
                                          pool.hill = "abs", method.hill = "common"),
-                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200, pd="pv", priors = list(hill="dnorm(0,0.1)"))
+                      n.chain=3, n.iter=500, n.burnin=200, pd="pv", priors = list(hill="dnorm(0,0.1) T(-0.5,0.5)"))
   testthat::expect_equal(all(c("hill") %in% mb.result$parameters.to.save), TRUE)
 
 })
