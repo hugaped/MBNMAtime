@@ -411,7 +411,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
   comparisons[["t1"]] <- as.numeric(comparisons[["t1"]])
   comparisons[["t2"]] <- as.numeric(comparisons[["t2"]])
   for (i in seq_along(comparisons[["t1"]])) {
-    comparisons[i,1:2] <- sort(comparisons[i,1:2])
+    comparisons[i,1:2] <- sort(as.matrix(comparisons[,1:2])[i,])
   }
 
 

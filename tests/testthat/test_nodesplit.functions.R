@@ -55,7 +55,7 @@ testthat::test_that("mb.nodesplit.comparisons is working", {
   checkmate::expect_class(comp$t1, "numeric")
   checkmate::expect_class(comp$t2, "numeric")
   checkmate::expect_class(comp$path, "factor")
-  testthat::expect_equal(sort(comp[1,1:2]), comp[1,1:2])
+  testthat::expect_equal(sort(as.matrix(comp[,1:2])[1,]), as.matrix(comp[,1:2])[1,])
 
   network <- mb.network(osteopain, reference = "Ce_200")
   comp <- mb.nodesplit.comparisons(network)
@@ -64,7 +64,7 @@ testthat::test_that("mb.nodesplit.comparisons is working", {
   checkmate::expect_class(comp$t1, "numeric")
   checkmate::expect_class(comp$t2, "numeric")
   checkmate::expect_class(comp$path, "factor")
-  testthat::expect_equal(sort(comp[1,1:2]), comp[1,1:2])
+  testthat::expect_equal(sort(as.matrix(comp[,1:2])[1,]), as.matrix(comp[,1:2])[1,])
 })
 
 
