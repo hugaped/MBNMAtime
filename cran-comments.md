@@ -1,10 +1,11 @@
 ## Test environments
 
-* Ubuntu 16.04 (on travis-ci), R 3.2.4
-* Local Windows 2010, R 3.6.1 (devel and release)
-* Local Mac OSX 10.14.5, R 3.6.1
-* Windows Server 2008 R2 SP1, R-devel, 32/64 bit (rhub)
-* Fedora Linux, R-devel, clang, gfortran (rhub)
+* Ubuntu 16.04 on travis-ci, R 3.2.4
+* Local (Windows 2010), R 4.0.2
+* win-builder (release, dev)
+* Ubuntu 20.04 on GitHub Actions (release, dev)
+* Mac OS 10.15 on GitHub Actions (release)
+* Windows Server 2019 on GitHub Actions (release)
 
 
 ## R CMD check results
