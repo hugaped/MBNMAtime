@@ -1109,7 +1109,7 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.time A number indicating the maximum time between which to calculate the spline function.
 #' @param knots The number/location of knots. If a single integer is given it indicates the number of knots (they will
-#'   be equally spaced across the range of doses). If a numeric vector is given it indicates the quantiles of the knots as
+#'   be equally spaced across the range of time-points). If a numeric vector is given it indicates the quantiles of the knots as
 #'   a proportion of the maximum study follow-up in the dataset. For example, if the maximum follow-up time in the dataset
 #'   is 10 months, `knots=c(0.1,0.5)` would indicate knots should be fitted at 1 and 5 months follow-up.
 #'

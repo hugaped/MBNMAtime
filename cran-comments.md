@@ -10,6 +10,8 @@
 
 ## R CMD check results
 
+This is a resubmission, having fixed errors due to sorting of data frame rows (`cannot xtfrm data frames`)
+
 There were no ERRORs or WARNINGs. 
 
 There was 1 NOTE: 
