@@ -10,7 +10,7 @@
 
 ## R CMD check results
 
-This is a resubmission, having fixed errors due to sorting of data frame rows (`cannot xtfrm data frames`)
+This is a resubmission, having fixed errors arising from unicode characters in manual.
 
 There were no ERRORs or WARNINGs. 
 
