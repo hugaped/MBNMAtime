@@ -333,7 +333,7 @@ summary.mbnma <- function(object, ...) {
 #' }
 #'
 #' @export
-predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$time, na.rm=TRUE), length.out=20),
+predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$time, na.rm=TRUE), length.out=30),
                           E0=0,
                           treats = NULL, level="treatment",
                           ref.resp=NULL, synth="common",
