@@ -10,7 +10,7 @@
 
 ## R CMD check results
 
-This is a resubmission, having fixed errors arising from unicode characters in manual.
+This is a resubmission, having added rmarkdown to VignetteBuilder in DESCRIPTION to fix error from vignette on Solaris
 
 There were no ERRORs or WARNINGs. 
 
