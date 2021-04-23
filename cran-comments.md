@@ -10,7 +10,7 @@
 
 ## R CMD check results
 
-This is a resubmission, having added rmarkdown to VignetteBuilder in DESCRIPTION to fix error from vignette on Solaris
+This is a resubmission, having only allowed vignette chunks to run if pandoc version >= 1.12.3 is installed
 
 There were no ERRORs or WARNINGs. 
 
