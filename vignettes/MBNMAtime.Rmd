@@ -8,7 +8,6 @@ vignette: >
   %\VignetteIndexEntry{MBNMAtime for time-course Model-Based (Network) Meta-Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  \usepackage[UTF8]{inputenc}
 ---
 
 ```{r setup, include = FALSE}
@@ -27,10 +26,9 @@ library(dplyr)
 #load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
-
 ## Introduction
 
-This vignette demonstrates how to use `MBNMAtime` to perform meta-analysis of studies with multiple follow-up measurements in order to account for time-course relationships within a single or multiple treatment comparisons. This can be performed by conducting Model-Based Network Meta-Analysis (MBNMA) to pool relative treatment effects.
+This vignette demonstrates how to use `MBNMAtime` to perform meta-analysis of studies with multiple follow-up measurements in order to account for time-course relationships within single or multiple treatment comparisons. This can be performed by conducting Model-Based (Network) Meta-Analysis (MBNMA) to pool relative treatment effects.
 
 Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments and explains how the response of the treatment changes over time, thus accounting for heterogeneity and inconsistency that may be present from "lumping" together different time points in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS *(version 4.3.0 or later is required)* [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019], and a simulation study exploring the statistical properties of the method is reported in Pedder et al. [-@pedder2020].
 
@@ -482,9 +480,6 @@ If there are problems with convergence, the first solution may be to run the mod
 For a detailed review of MCMC convergence assessment see Sinharay [-@sinharay].
 
 
-
-
-
 ## Post-Estimation
 
 ### Deviance plots
@@ -542,6 +537,10 @@ plot(mbnma)
 
 ### Ranking
 
+```{r, include=FALSE}
+load(system.file("extdata", "ranks.rda", package="MBNMAtime", mustWork = TRUE))
+```
+
 Rankings can be calculated for different time-course parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked. A vector of these is assigned to `params`. `lower_better` indicates whether negative scores should be ranked as "better" (`TRUE`) or "worse" (`FALSE`)
 
 In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
@@ -560,6 +559,9 @@ mbnma <- mb.run(network.pain,
 # Rank results based on AUC (calculated 0-10 weeks), more negative slopes considered to be "better"
 ranks <- rank(mbnma, params=c("auc", "d.2"), 
                     int.range=c(0,10),  lower_better = TRUE, n.iter=1000)
+```
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
+save(ranks, file="inst/extdata/ranks.rda")
 ```
 ```{r}
 print(ranks)
@@ -585,13 +587,17 @@ The more challenging parameter(s) to identify are those for the network referenc
 
 The first approach is to give values for each time-course parameter modelled using relative effects to `ref.resp`. This is given as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a function representing a random number generator distribution in R (stochastic).
 
-```{r, results="hide", message=FALSE}
+```{r, include=FALSE}
+load(system.file("extdata", "mbnmapred.rda", package="MBNMAtime", mustWork = TRUE))
+```
+```{r, results="hide", message=FALSE, eval=FALSE}
 # Run an Emax time-course MBNMA using the osteoarthritis dataset
 mbnma <- mb.run(network.pain,
                 fun=temax(pool.emax="rel", method.emax="common",
                           pool.et50="abs", method.et50="common"),
                 rho="dunif(0,1)", covar="varadj")
-
+```
+```{r, results="hide", message=FALSE}
 # Specify placebo time-course parameters
 ref.params <- list(emax=-2)
 
@@ -603,6 +609,9 @@ pred <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60",
                         E0=~rnorm(n, 8, 0.5), ref.resp=ref.params)
 
 print(pred)
+```
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
+save(mbnma, file="inst/extdata/mbnmapred.rda")
 ```
 
 The second is to assign `ref.resp` a data frame composed of single-arm studies of the network reference treatment. A separate synthesis model for the reference treatment effect will then be run, and the values from this used as the prediction reference treatment effect. This dataset could be a series of observational studies measured at multiple follow-up times that closely match the population of interest for the prediction. Alternatively it could be a subset of data from the original RCT dataset used for the MBNMA model (though this may be less generalisable to the population of interest).
@@ -747,6 +756,11 @@ Direct estimates from UME and MBNMA models can also be compared to examine in gr
 
 ### Node-splitting
 
+```{r, include=FALSE}
+load(system.file("extdata", "nodesplit.rda", package="MBNMAtime", mustWork = TRUE))
+load(system.file("extdata", "nd.exp.rda", package="MBNMAtime", mustWork = TRUE))
+```
+
 Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity. `mb.nodesplit()` takes similar arguments to `mb.run()` that define the underlying MBNMA model in which to test for consistency, and returns an object of `class("mb.nodesplit")`. There are two additional arguments required:
 
 `comparisons` indicates on which treatment comparisons to perform a node-split. The default value for this is to automatically identify all comparisons for which both direct and indirect evidence contributions are available using `mb.nodesplit.comparisons()`.
@@ -755,14 +769,6 @@ Another approach for consistency checking is node-splitting. This splits contrib
 
 As up to two models will need to be run for each treatment comparison to split, this function can take some time to run.
 
-```{r, include=FALSE}
-# Nodesplit using an Emax MBNMA
-nodesplit <- mb.nodesplit(network.pain,
-                          fun=temax(pool.emax="rel", method.emax = "random",
-                                    pool.et50="abs", method.et50 = "common"),
-                          nodesplit.parameters="all"
-                          )
-```
 ```{r, eval=FALSE, echo=TRUE}
 # Nodesplit using an Emax MBNMA
 nodesplit <- mb.nodesplit(network.pain,
@@ -772,21 +778,7 @@ nodesplit <- mb.nodesplit(network.pain,
                           )
 ```
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
-for (i in seq_along(nodesplit)) {
-  for (k in seq_along(nodesplit[[i]])) {
-    nodesplit[[i]][[k]]$direct <- NULL
-    nodesplit[[i]][[k]]$indirect <- NULL
-    
-    ggdat <- nodesplit[[i]][[k]]$forest.plot$data
-    nodesplit[[i]][[k]]$forest.plot <- NULL
-    nodesplit[[i]][[k]]$forest.plot <- list(data=ggdat)
-    
-    ggdat <- nodesplit[[i]][[k]]$density.plot$data
-    nodesplit[[i]][[k]]$density.plot <- NULL
-    nodesplit[[i]][[k]]$density.plot <- list(data=ggdat)
-  }
-}
-#save(nodesplit, file="nodesplit.1.RData")
+save(nodesplit, file="inst/extdata/nodesplit.rda")
 ```
 ```{r}
 print(nodesplit)
@@ -808,12 +800,6 @@ As a further example, if we use a different time-course function (exponential) t
 
 This highlights the importance of testing for consistency *after* identifying an appropriate time-course and common/random treatment effects model.
 
-```{r, include=FALSE}
-# Nodesplit on rate using an exponential MBNMA
-ns.exp <- mb.nodesplit(network.pain,
-                       fun=texp(pool.rate = "rel", method.rate="common"),
-                       nodesplit.parameters="all")
-```
 
 ```{r, eval=FALSE, echo=TRUE}
 # Nodesplit on rate using an exponential MBNMA
@@ -821,7 +807,9 @@ ns.exp <- mb.nodesplit(network.pain,
                        fun=texp(pool.rate = "rel", method.rate="common"),
                        nodesplit.parameters="all")
 ```
-
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
+save(ns.exp, file="inst/extdata/nd.exp.rda")
+```
 ```{r, fig.height=2.5}
 print(ns.exp)
 
