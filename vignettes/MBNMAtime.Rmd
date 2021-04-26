@@ -272,23 +272,23 @@ For an absolute time-course parameter if the corresponding method is common (e.g
 
 #### Examples
 
-An example MBNMA of the pain dataset using a linear time-course function and common treatment effects that pool relative effects and assumes consistency between direct and indirect evidence can be performed as follows:
+An example MBNMA of the alogliptin dataset using a linear time-course function and common treatment effects that pool relative effects and assumes consistency between direct and indirect evidence can be performed as follows:
 
 ```{r, results="hide"}
 # Run a linear time-course MBNMA
-mbnma <- mb.run(network.pain, fun=tpoly(degree=1, pool.1="rel", method.1="common"))
+mbnma <- mb.run(network.alog, fun=tpoly(degree=1, pool.1="rel", method.1="common"))
 ```
 ```{r}
 summary(mbnma)
 ```
 
-For this model, the `d.1` parameters correspond to the 1st polynomial coefficient, and therefore are the linear gradient of the response over time for each treatment versus `Pl_0` (Placebo). However, note that the residual deviance of the model is very high, suggesting that this time-course function is a poor fit.
+For this model, the `d.1` parameters correspond to the 1st polynomial coefficient, and therefore are the linear gradient of the response over time for each treatment versus `placebo`. However, note that the residual deviance of the model is very high, suggesting (as we might expect) that this linear time-course function is a poor fit.
 
 We may want to fit a more complex time-course function with two time-course parameters, such as an Emax function, yet limitations in the data might require that we make an assumption that one of the parameters does not vary by treatment. We can specify this by setting `pool` to be equal to `"abs"` for any parameters we choose.
 
 ```{r, results="hide"}
 # Run an Emax time-course MBNMA with two parameters
-mbnma <- mb.run(network.pain, fun=temax(
+mbnma <- mb.run(network.alog, fun=temax(
   pool.emax = "rel", method.emax="common",
   pool.et50 = "abs", method.et50="common"
 ))
@@ -297,7 +297,7 @@ mbnma <- mb.run(network.pain, fun=temax(
 summary(mbnma)
 ```
 
-In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum relative effect for each treatment versus `Pl_0` (Placebo), whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias. Further exploration of the degree of data required for reliable estimation of time-course parameters is given in Pedder et al. [-@pedder2020].
+In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum relative effect for each treatment versus `place`, whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias. Further exploration of the degree of data required for reliable estimation of time-course parameters is given in Pedder et al. [-@pedder2020].
 
 
 ### Additional model specification with `mb.run()`
@@ -314,7 +314,7 @@ However, in addition to this, it's also necessary to specify a value for `rho`, 
 * Given as a single numeric value, which indicates that the correlation should be fixed to that value. For example, this value could be estimated externally from another study using Individual Participant Data. This could also be used to run a deterministic sensitivity analysis using different fixed values of `rho`.
 
 
-```{r, results="hide"}
+```{r, eval=FALSE}
 # Using the COPD dataset
 network.copd <- mb.network(copd)
 
@@ -398,7 +398,7 @@ To change priors within a model, a list of replacements can be provided to `prio
 
 For example, we may wish to specify a tighter prior for the between-study SD:
 
-```{r, results="hide"}
+```{r, eval=FALSE}
 mbnma <- mb.run(network.copd, 
                 fun=tloglin(pool.rate="rel", method.rate="random"),
                 priors=list(rate="dnorm(0,2) T(0,)"))
@@ -489,7 +489,7 @@ To assess how well a model fits the data, it can be useful to look at a plot of 
 
 Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a series of boxplots (`plot.type="box"`).
 
-```{r, results="hide", fig.show="hold"}
+```{r, results="hide", fig.show="hold", eval=FALSE}
 # Run a first-order fractional polynomial time-course MBNMA
 mbnma <- mb.run(network.pain, 
                 fun=tfpoly(degree=1,
@@ -498,6 +498,16 @@ mbnma <- mb.run(network.pain,
 
 # Plot a box-plot of deviance contributions (the default)
 devplot(mbnma, n.iter=1000)
+```
+```{r, echo=FALSE, results="hide", fig.show="hold"}
+# Run a first-order fractional polynomial time-course MBNMA
+mbnma <- mb.run(network.pain, 
+                fun=tfpoly(degree=1,
+                          pool.1="rel", method.1="random",
+                          method.power1="common"), n.iter=5000)
+
+# Plot a box-plot of deviance contributions (the default)
+devplot(mbnma, n.iter=500)
 ```
 
 From these plots we can see that whilst the model fit is good at later time points, it frequently underestimates responses at earlier time points.
@@ -511,7 +521,7 @@ If saved to an object, the output of `devplot()` contains the results for indivi
 
 Another approach for assessing model fit can be to plot the fitted values, using `fitplot()`. As with `devplot()`, this may require running additional model iterations to monitor `theta`.
 
-```{r, results="hide"}
+```{r, eval=FALSE}
 # Plot fitted and observed values with treatment labels
 fitplot(mbnma, n.iter=1000)
 ```
@@ -538,7 +548,7 @@ plot(mbnma)
 
 ### Ranking
 
-```{r, include=FALSE}
+```{r, include=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
 load(system.file("extdata", "ranks.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
@@ -546,7 +556,7 @@ Rankings can be calculated for different time-course parameters from MBNMA model
 
 In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
 
-```{r, results="hide"}
+```{r, results="hide", eval=rmarkdown::pandoc_available("1.12.3")}
 # Identify quantile for knot at 1 week
 timequant <- 1/max(network.pain$data.ab$time)
 
@@ -564,7 +574,7 @@ ranks <- rank(mbnma, params=c("auc", "d.2"),
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
 save(ranks, file="inst/extdata/ranks.rda")
 ```
-```{r}
+```{r, eval=rmarkdown::pandoc_available("1.12.3")}
 print(ranks)
 ```
 
@@ -572,7 +582,7 @@ The output is an object of `class("mb.rank")`, containing a list for each ranked
 
 Histograms for ranking results can also be plotted using the `plot()` method, which takes the raw MCMC ranking results given in `rank.matrix` and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.
 
-```{r}
+```{r, eval=rmarkdown::pandoc_available("1.12.3")}
 # Ranking histograms for AUC
 plot(ranks, params = "auc")
 ```
@@ -588,9 +598,6 @@ The more challenging parameter(s) to identify are those for the network referenc
 
 The first approach is to give values for each time-course parameter modelled using relative effects to `ref.resp`. This is given as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a function representing a random number generator distribution in R (stochastic).
 
-```{r, include=FALSE}
-load(system.file("extdata", "mbnmapred.rda", package="MBNMAtime", mustWork = TRUE))
-```
 ```{r, results="hide", message=FALSE, eval=FALSE}
 # Run an Emax time-course MBNMA using the osteoarthritis dataset
 mbnma <- mb.run(network.pain,
@@ -598,7 +605,14 @@ mbnma <- mb.run(network.pain,
                           pool.et50="abs", method.et50="common"),
                 rho="dunif(0,1)", covar="varadj")
 ```
-```{r, results="hide", message=FALSE}
+```{r, results="hide", message=FALSE, echo=FALSE}
+# Run an Emax time-course MBNMA using the osteoarthritis dataset
+mbnma <- mb.run(network.pain,
+                fun=temax(pool.emax="rel", method.emax="common",
+                          pool.et50="abs", method.et50="common"),
+                rho="dunif(0,1)", covar="varadj", n.iter=3000)
+```
+```{r, results="hide", message=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
 # Specify placebo time-course parameters
 ref.params <- list(emax=-2)
 
@@ -611,13 +625,10 @@ pred <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60",
 
 print(pred)
 ```
-```{r, echo=FALSE, eval=FALSE, include=FALSE}
-save(mbnma, file="inst/extdata/mbnmapred.rda")
-```
 
 The second is to assign `ref.resp` a data frame composed of single-arm studies of the network reference treatment. A separate synthesis model for the reference treatment effect will then be run, and the values from this used as the prediction reference treatment effect. This dataset could be a series of observational studies measured at multiple follow-up times that closely match the population of interest for the prediction. Alternatively it could be a subset of data from the original RCT dataset used for the MBNMA model (though this may be less generalisable to the population of interest).
 
-```{r, results="hide", message=FALSE}
+```{r, results="hide", message=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
 # Generate a dataset of network reference treatment responses over time
 placebo.df <- network.pain$data.ab[network.pain$data.ab$treatment==1,]
 
@@ -637,7 +648,7 @@ An object of class `"mb.predict"` is returned, which is a list of summary tables
 
 Predicted responses can also be plotted using the `plot()` method on an object of `class("mb.predict")`. Within the default arguments, the median predicted network reference treatment response is overlaid on the predicted response for each treatment. Setting `overlay.ref = FALSE` prevents this and causes the network reference treatment predicted response to be plotted as a separate panel. Shaded counts of observations in the original dataset at each predicted time point can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`.
 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
 plot(pred, overlay.ref=TRUE, disp.obs=TRUE)
 ```
 
@@ -645,7 +656,7 @@ This can be used to identify any extrapolation/interpretation of the time-course
 
 To illustrate a situation in which this could be very informative, we can look at predicted responses for a quadratic time-course function fitted to the Obesity dataset:
 
-```{r, fig.height=3, results="hide"}
+```{r, fig.height=3, results="hide", eval=FALSE}
 # Fit a quadratic time-course MBNMA to the Obesity dataset
 network.obese <- mb.network(obesityBW_CFB, reference = "plac")
 
@@ -653,6 +664,25 @@ mbnma <- mb.run(network.obese,
                 fun=tpoly(degree=2,
                           pool.1 = "rel", method.1="common",
                           pool.2="rel", method.2="common"))
+
+# Define stochastic values centred at zero for network reference treatment
+ref.params <- list(beta.1=~rnorm(n, 0, 0.05), beta.2=~rnorm(n, 0, 0.0001))
+
+# Predict responses over the
+pred.obese <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
+                        ref.resp=ref.params)
+
+# Plot predictions
+plot(pred.obese, disp.obs = TRUE)
+```
+```{r, fig.height=3, results="hide", echo=FALSE, message=FALSE}
+# Fit a quadratic time-course MBNMA to the Obesity dataset
+network.obese <- mb.network(obesityBW_CFB, reference = "plac")
+
+mbnma <- mb.run(network.obese,
+                fun=tpoly(degree=2,
+                          pool.1 = "rel", method.1="common",
+                          pool.2="rel", method.2="common"), n.iter=3000)
 
 # Define stochastic values centred at zero for network reference treatment
 ref.params <- list(beta.1=~rnorm(n, 0, 0.05), beta.2=~rnorm(n, 0, 0.0001))
