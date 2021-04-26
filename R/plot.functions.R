@@ -712,6 +712,7 @@ devplot <- function(mbnma, dev.type="dev", plot.type="box",
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab("Posterior mean") +
+    ggplot2::geom_hline(yintercept = 0, lty="dashed") +
     theme_mbnma()
 
   graphics::plot(g)
