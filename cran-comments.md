@@ -10,11 +10,11 @@
 
 ## R CMD check results
 
-This is a resubmission, having only allowed vignette chunks to run if pandoc version >= 1.12.3 is installed
-
-There were no ERRORs or WARNINGs. 
+This is a resubmission, having set further tests to run conditionally and reduced build time of vignette.
 
 There was 1 NOTE: 
+
+### NOTEs
 
 * Checking Rd cross-references
   + Package unavailable to check Rd xrefs: ‘gemtc’ (gemtc package not in "Imports" in the DESCRIPTION, but it would only be needed for cross-referencing in the documentation of the package and so is not required for package functionality)

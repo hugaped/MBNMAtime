@@ -7,7 +7,7 @@ models}
 \usage{
 \method{predict}{mbnma}(
   object,
-  times = seq(0, max(object$model.arg$jagsdata$time, na.rm = TRUE), length.out = 20),
+  times = seq(0, max(object$model.arg$jagsdata$time, na.rm = TRUE), length.out = 30),
   E0 = 0,
   treats = NULL,
   level = "treatment",
