@@ -950,7 +950,6 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
   # Checks that studies have more than one arm if single.arm==FALSE
 
   varnames <- c("studyID", "time", "y", "se", "treatment")
-  data.ab <- dplyr::arrange(data.ab, studyID, time, treatment)
 
   # Check data.ab has required column names
   msg <- "Required variable names are: 'studyID', 'time', `treatment`, 'y' and `se`"
@@ -965,6 +964,7 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
     stop(msg)
   }
 
+  data.ab <- dplyr::arrange(data.ab, studyID, time, treatment)
 
   # Check data.ab has required column names
   if (all(varnames %in% names(data.ab))==FALSE) {
