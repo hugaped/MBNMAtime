@@ -64,6 +64,9 @@ At each of these stages there are a number of informative plots that can
 be generated to help make sense of your data and the models that you are
 fitting. Exported functions in the package are connected like so:
 
+*MBNMAtime package structure: Light green nodes represent classes and
+the generic functions that can be applied to them. Dashed boxes indicate
+functions that can be applied to objects of specific classes*
 ![Workflow](man/figures/functionstructure.png)
 
 ## References
