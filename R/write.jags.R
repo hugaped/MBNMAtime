@@ -860,7 +860,7 @@ get.prior <- function(model) {
 #'   time-course MBNMA model.
 #' @param priors A named list of parameter values (without indices) and
 #'   replacement prior distribution values given as strings
-#'   **using distributions as specified in JAGS syntax**.
+#'   **using distributions as specified in JAGS syntax** (see \insertCite{jagsmanual;textual}{MBNMAtime}).
 #'
 #' @details Values in `priors` can include any JAGS functions/distributions
 #'   (e.g. censoring/truncation).
