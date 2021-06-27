@@ -1,7 +1,7 @@
 Package: MBNMAtime
 Type: Package
 Title: Run Time-Course MBNMA Models
-Version: 0.2.0
+Version: 0.2.1.9000
 Language: en-GB
 Date: 2021-04-14
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
