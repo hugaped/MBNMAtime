@@ -1,3 +1,11 @@
+# MBNMAtime 0.2.1
+
+## Bug fixes
+
+### Minor
+- Error with `model.file` input length fixed for `mb.run()`
+
+
 # MBNMAtime 0.2.0
 
 ## Additions/changes

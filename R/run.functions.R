@@ -249,7 +249,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(fun, classes = "timefun", add=argcheck)
   checkmate::assertClass(network, "mb.network", add=argcheck)
-  checkmate::assertCharacter(model.file, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(model.file, any.missing=FALSE, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
