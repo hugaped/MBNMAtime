@@ -270,7 +270,7 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
     ehill <- FALSE
   } else {
     ehill <- TRUE
-    pool.hill <- "abs"
+    #pool.hill <- "abs"
   }
 
   if (ehill) {
