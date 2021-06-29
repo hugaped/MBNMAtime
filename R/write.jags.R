@@ -42,7 +42,7 @@
 #'
 #' @export
 mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
-                     rho=0, covar="varadj", omega=NULL,
+                     rho=0, covar="varadj", omega=NULL, corparam=TRUE,
                      class.effect=list(), UME=FALSE) {
 
 
@@ -54,6 +54,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertChoice(covar, choices=c("varadj", "CS", "AR1"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
+  checkmate::assertLogical(corparam, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
@@ -87,8 +88,9 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
                       UME=UME, class.effect=class.effect)
 
 
-
-  model <- write.cor(model=model, fun=fun, omega=omega, class.effect = class.effect)
+  if (corparam==TRUE) {
+    model <- write.cor(model=model, fun=fun, omega=omega, class.effect = class.effect)
+  }
 
   model <- add.funparams(model=model, fun=fun)
 

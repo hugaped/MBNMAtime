@@ -44,6 +44,9 @@
 #' be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 #' relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
 #' is used.
+#'  @param corparam A boolean object that indicates whether correlation should be modelled
+#' between relative effect time-course parameters. This is automatically set to `FALSE` if class effects are modelled.
+#' It can also be useful for providing informative priors more easily to the model.
 #'
 #' @param class.effect A list of named strings that determines which time-course
 #'   parameters to model with a class effect and what that effect should be
@@ -236,7 +239,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       link="identity",
                       parameters.to.save=NULL,
                       rho=0, covar="varadj",
-                      omega=NULL,
+                      omega=NULL, corparam=TRUE,
                       class.effect=list(), UME=FALSE,
                       pd="pv", parallel=FALSE,
                       priors=NULL,
@@ -266,7 +269,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       positive.scale=positive.scale, intercept=intercept,
                       rho=rho, covar=covar,
                       class.effect=class.effect, UME=UME,
-                      omega=omega
+                      omega=omega, corparam=corparam
     )
 
     if (!is.null(priors)) {
@@ -287,7 +290,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   # If multiple time-course parameters are relative effects then add omega default
   if (is.null(omega)) {
     relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
-    if (sum(relparam)>1) {
+    if (sum(relparam)>1 & corparam==TRUE) {
       omega <- diag(rep(1,sum(relparam)))
     }
   }
@@ -354,7 +357,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
-                    "omega"=omega,
+                    "omega"=omega, "corparam"=corparam,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
