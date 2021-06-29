@@ -54,7 +54,7 @@ the type of synthesis model to use}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax}.}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAtime}).}
 }
 \value{
 A character object of JAGS MBNMA model code that includes beta

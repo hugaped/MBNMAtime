@@ -49,7 +49,10 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
 be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
-is used.}
+is used.
+@param corparam A boolean object that indicates whether correlation should be modelled
+between relative effect time-course parameters. This is automatically set to \code{FALSE} if class effects are modelled.
+It can also be useful for providing informative priors more easily to the model.}
 
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or

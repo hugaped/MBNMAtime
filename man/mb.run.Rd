@@ -14,6 +14,7 @@ mb.run(
   rho = 0,
   covar = "varadj",
   omega = NULL,
+  corparam = TRUE,
   class.effect = list(),
   UME = FALSE,
   pd = "pv",
@@ -69,7 +70,10 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
 be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
-is used.}
+is used.
+@param corparam A boolean object that indicates whether correlation should be modelled
+between relative effect time-course parameters. This is automatically set to \code{FALSE} if class effects are modelled.
+It can also be useful for providing informative priors more easily to the model.}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
@@ -99,7 +103,7 @@ cannot be used with models implemented in parallel.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax}.}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAtime}).}
 
 \item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
