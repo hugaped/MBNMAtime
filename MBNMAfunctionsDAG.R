@@ -40,9 +40,9 @@ g <- create_graph(nodes_df = classnodes, attr_theme = "tb")
 # Generate function nodes
 funnodes <-
   create_node_df(
-    n=9,
+    n=10,
     label=c("mb.network()", "mb.run()", "mb.nodesplit()", "predict()", "rank()",
-            "timeplot()", "fitplot()", "devplot()", "get.relative()"), #"cumrank()"),
+            "timeplot()", "fitplot()", "devplot()", "get.relative()", "cumrank()"),
     shape="rectangle",
     fontname="Consolas",
     fillcolor = "white",
@@ -57,13 +57,13 @@ g <- add_node_df(g, funnodes)
 # Generate edges between classes and functions
 funedges <-
   create_edge_df(
-    from = c("1", "8", "2", "9", "3", "11", "2", "10", "3", "12", "2", "2", "2", "3", "16"),
-    to =   c("8", "2", "9", "3", "11", "4", "10", "5", "12", "6", "13", "14", "15", "16", "7"),
+    from = c("1", "8", "2", "9", "3", "11", "2", "10", "3", "12", "2", "2", "2", "3", "16", "6"),
+    to =   c("8", "2", "9", "3", "11", "4", "10", "5", "12", "6", "13", "14", "15", "16", "7", "17"),
     color="black",
     rel = "a",
     fontname="Consolas",
     arrowhead=c("none", "normal", "none", "normal", "none", "normal", "none", "normal",
-                "none", "normal", "normal", "normal", "normal", "none", "normal", "none")
+                "none", "normal", "normal", "normal", "normal", "none", "normal", "normal")
   )
 g <- add_edge_df(g, funedges)
 

@@ -13,7 +13,7 @@
 #' @inheritParams plot.mb.predict
 #' @inheritParams stats::integrate
 #' @param params A character vector containing any model parameters monitored
-#'   in `mbnma` for which ranking is desired (e.g. `"beta.1"`, `"d.emax"`).
+#'   in `mbnma` for which ranking is desired (e.g. `"beta.1"`, `"emax"`).
 #'   Parameters must vary by treatment for ranking to be possible. Can include
 #'   `"auc"` (see details).
 #' @param treats A character vector of treatment/class names (depending on the value of `level`) or
@@ -162,15 +162,33 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
       }))
       colnames(rank.mat) <- treats
 
+      # Ranking probabilityes
+      prob.mat <- calcprob(rank.mat, treats=treats)
+
+      # Calculate cumulative ranking probabilities
+      cum.mat <- apply(prob.mat, MARGIN=2,
+                       FUN=function(col) {cumsum(col)})
+
       rank.result[[params[i]]] <-
         list("summary"=sumrank(rank.mat),
-             "prob.matrix"=calcprob(rank.mat, treats=treats),
-             "rank.matrix"=rank.mat)
+             "prob.matrix"=prob.mat,
+             "rank.matrix"=rank.mat,
+             "cum.matrix"=cum.mat,
+             "lower_better"=lower_better
+             )
 
     } else if (params[i]=="auc") {
-      rank.result[["auc"]] <- rankauc(x, lower_better=lower_better,
-                                      treats=treats, level=level,
-                                      int.range=int.range, n.iter=n.iter, ...)
+
+      auc <- rankauc(x, lower_better=lower_better,
+                     treats=treats, level=level,
+                     int.range=int.range, n.iter=n.iter, ...)
+
+      # Calculate cumulative ranking probs for aux
+      auc[["cum.matrix"]] <- apply(auc$prob.matrix, MARGIN=2,
+                                   FUN=function(col) {cumsum(col)})
+      auc[["lower_better"]] <- lower_better
+
+      rank.result[["auc"]] <- auc
     } else {
       stop(paste0(params[i],
                   " is not a valid paramter saved from the MBNMA model"))

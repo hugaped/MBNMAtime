@@ -201,3 +201,21 @@ calcprob <- function(rank.mat, treats=NULL) {
 }
 
 
+
+
+
+calcauc <- function(df) {
+  str <- paste(paste(c(df$Var1[1], df$Var1, df$Var1[nrow(df)], df$Var1[1]),
+                     c(0, df$value, 0, 0),
+                     sep=" "),
+               collapse=",")
+  str <- paste0("POLYGON((", str, "))")
+
+  polygon <- rgeos::readWKT(str)
+  auc <- rgeos::gArea(polygon)
+
+  return(auc)
+}
+
+
+
