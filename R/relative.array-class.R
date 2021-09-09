@@ -10,13 +10,13 @@
 #' @param ... further arguments passed to `knitr::kable`
 #'
 #' @export
-print.relative.array <- function(x, digits=2, ...) {
+print.relative.array <- function(x, digits=1, ...) {
 
   xmat <- x$relarray
 
   outmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
-  dimnames(outmat)[[1]] <- dimnames(xmat)[[1]]
-  dimnames(outmat)[[2]] <- dimnames(xmat)[[2]]
+  # dimnames(outmat)[[1]] <- dimnames(xmat)[[1]]
+  # dimnames(outmat)[[2]] <- dimnames(xmat)[[2]]
 
   for (i in 1:nrow(xmat)) {
     for (k in 1:ncol(xmat)) {
@@ -25,11 +25,13 @@ print.relative.array <- function(x, digits=2, ...) {
       }
     }
   }
+  diag(outmat) <- dimnames(xmat)[[1]]
 
   cat(crayon::bold(paste0("========================================\nTreatment comparisons at time = ", x$time, "\n========================================\n")))
   cat("\n")
   #knitr::kable(outmat, ...)
-  print(outmat, ...)
+
+  write.table(format(outmat, justify="centre"), row.names = FALSE, col.names = FALSE, quote=FALSE)
 }
 
 
