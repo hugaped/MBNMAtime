@@ -798,3 +798,97 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
   graphics::plot(g)
   return(invisible(g))
 }
+
+
+
+
+
+
+
+#' Calculates relative effects/mean differences at a particular time-point
+#'
+#' Uses mbnma time-course parameter estimates to calculate relative effects or mean
+#' differences (depending on scale) between treatments or classes at a particular time-point.
+#' Can be used to compare treatments evaluated in studies at different follow-up times.
+#'
+#' @param time A numeric value for the time at which to estimate relative effects/mean differences.
+#' @param treats A character vector of treatment names for which to calculate relative effects/mean differences.
+#' Must be a subset of `mbnma$network$treatments`
+#' @param classes A character vector of class names for which to calculate relative effects/mean differences from.
+#' Must be a subset of `mbnma$network$classes`. Only works for class effect models.
+#' @inheritParams predict.mbnma
+#'
+#' @return A list containing details of the results and an array of class `relative.array` that contains
+#' MCMC results for the relative effects / mean differences between all treatments specified in `treats`
+#' or all classes specified in `classes`
+get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TRUE),
+                         treats=mbnma$network$treatments, classes=NULL) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertNumeric(time, lower=0, len=1, null.ok=FALSE, add=argcheck)
+  checkmate::assertSubset(treats, choices=mbnma$network$treatments, add=argcheck)
+  checkmate::assertSubset(classes, choices=mbnma$network$classes, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!is.null(classes)) {
+    treats <- classes
+    level <- "class"
+  } else {
+    level <- "treatment"
+  }
+
+  pred <- predict.mbnma(mbnma, times=time,
+                        treats = treats, level = level)
+
+
+  # Matrix of results
+  mat <- do.call(cbind, pred$pred.mat)
+
+  outmat <- array(dim=c(length(treats), length(treats), nrow(mat)))
+  for (i in 1:(ncol(mat)-1)) {
+    temp <- mat[,i] - mat[,-i]
+    #temp <- apply(temp, MARGIN=2, FUN=function(x) {neatCrI(quantile(x, probs=c(0.025, 0.5, 0.975)), digits = 2)})
+    outmat[(1+i):dim(outmat)[1],i,] <- t(temp[,i:ncol(temp)])
+  }
+  dimnames(outmat)[[1]] <- treats
+  dimnames(outmat)[[2]] <- treats
+
+
+
+  ######### Summary matrixes ######
+
+  xmat <- outmat
+
+  meanmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
+  semat <- meanmat
+  medmat <- meanmat
+  l95mat <- medmat
+  u95mat <- medmat
+
+  for (i in 1:nrow(xmat)) {
+    for (k in 1:ncol(xmat)) {
+      if (!is.na(xmat[i,k,1])) {
+        meanmat[i,k] <- mean(xmat[i,k,])
+        semat[i,k] <- sd(xmat[i,k,])
+        medmat[i,k] <- median(xmat[i,k,])
+        l95mat[i,k] <- quantile(xmat[i,k,], probs = 0.025)
+        u95mat[i,k] <- quantile(xmat[i,k,], probs = 0.975)
+      }
+    }
+  }
+
+  sumlist <- list("mean"=meanmat, "se"=semat, "median"=medmat, "lower95"=l95mat, "upper95"=u95mat)
+
+  for (i in seq_along(sumlist)) {
+    dimnames(sumlist[[i]])[[1]] <- dimnames(xmat)[[1]]
+    dimnames(sumlist[[i]])[[2]] <- dimnames(xmat)[[2]]
+  }
+
+  out <- list("time"=time, "relarray"=outmat)
+  out <- c(out, sumlist)
+
+  class(out) <- "relative.array"
+
+  return(out)
+}
