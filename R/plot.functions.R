@@ -489,6 +489,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
   }
 
   plotdata <- network$data.ab
+  cfb <- network$cfb
 
   if (plotby=="arm") {
     # Identify if data is CFB or not
@@ -555,12 +556,30 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
           )
     }
 
+    # Handle cfb data
+    studies <- unique(diffs$studyID)
+    diffs$bl <- FALSE
+    for (i in seq_along(cfb)) {
+      if (cfb[i]==FALSE) {
+        diffs$bl[diffs$studyID==studies[i] & diffs$fupcount.x==1 & diffs$fupcount.y==1] <- TRUE
+      }
+    }
 
-    diffs <- diffs %>%
-      dplyr::bind_rows(diffs %>%
-                         dplyr::group_by(.data$studyID, .data$arm.x, .data$arm.y) %>%
-                         dplyr::slice(1) %>%
-                         dplyr::mutate(time=0, pairDiff=0))
+
+    # diffs <- diffs %>%
+    #   dplyr::bind_rows(diffs %>%
+    #                      dplyr::group_by(.data$studyID, .data$arm.x, .data$arm.y) %>%
+    #                      dplyr::slice(1) %>%
+    #                      dplyr::mutate(time=0, pairDiff=0))
+
+    diffs <- diffs %>% dplyr::bind_rows(diffs %>% dplyr::group_by(.data$studyID,
+                                                                  .data$arm.x, .data$arm.y) %>%
+                                          dplyr::slice(1) %>%
+                                          dplyr::mutate(time=dplyr::case_when(bl==0 ~ 0),
+                                                        pairDiff=dplyr::case_when(bl==0 ~ 0),
+                                                        bl=dplyr::case_when(bl==0 ~ 1)))
+
+    diffs <- diffs[!is.na(diffs$time),]
 
     if (level=="class") {
 
