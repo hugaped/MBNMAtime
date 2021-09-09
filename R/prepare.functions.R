@@ -73,9 +73,6 @@ mb.network <- function(data.ab, reference=1, cfb=NULL, description="Network") {
 
   index.data <- add_index(data.ab=data.ab, reference=reference)
 
-  network <- index.data
-  network <- c(list("description" = description), network)
-
   # Assert cfb is reported correctly
   checkmate::assertLogical(cfb, len=length(unique(data.ab$studyID)), null.ok = TRUE)
   if (is.null(cfb)) {
@@ -86,7 +83,9 @@ mb.network <- function(data.ab, reference=1, cfb=NULL, description="Network") {
     cfb <- cfb.df$cfb
   }
 
-  network$cfb <- cfb
+  network <- append(index.data, list("cfb"=cfb), after=2)
+
+  network <- c(list("description" = description), network)
 
   class(network) <- "mb.network"
   return(network)
