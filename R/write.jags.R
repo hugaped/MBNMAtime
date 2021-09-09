@@ -41,7 +41,7 @@
 #'     pool.2="rel", method.2="common"))
 #'
 #' @export
-mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=TRUE,
+mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=NULL,
                      rho=0, covar="varadj", omega=NULL, corparam=TRUE,
                      class.effect=list(), UME=FALSE) {
 
@@ -51,7 +51,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   checkmate::assertClass(fun, classes = "timefun", add=argcheck)
   checkmate::assertChoice(link, choices=c("identity", "log", "smd"), add=argcheck)
   checkmate::assertLogical(positive.scale, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertLogical(intercept, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
+  checkmate::assertLogical(intercept, len=1, null.ok=TRUE, any.missing=FALSE, add=argcheck)
   checkmate::assertChoice(covar, choices=c("varadj", "CS", "AR1"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::assertLogical(corparam, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
@@ -116,7 +116,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 #'   will return an object that indicates whether the arguments imply modelling a
 #'   correlation between time points if it passes.
 #'
-write.check <- function(fun=tpoly(degree=1), positive.scale=TRUE, intercept=TRUE, rho=0, covar=NULL,
+write.check <- function(fun=tpoly(degree=1), positive.scale=TRUE, intercept=NULL, rho=0, covar=NULL,
                         omega=NULL, link="identity",
                         class.effect=list(), UME=c()) {
 
@@ -261,15 +261,26 @@ write.timecourse <- function(model, fun,
                         intercept, positive.scale) {
 
   timecourse <- fun$jags
-  if (intercept==TRUE) {
+  if (!is.null(intercept)) {
+    if (intercept==TRUE) {
 
+      # Insert prior for alpha
+      model <- model.insert(model, pos=which(names(model)=="study"), "alpha[i] ~ dnorm(0,0.0001)")
+
+      if (positive.scale==TRUE) {
+        timecourse <- paste0("exp(alpha[i]) + ", timecourse)
+      } else {
+        timecourse <- paste0("alpha[i] + ", timecourse)
+      }
+    }
+  } else if (is.null(intercept)) {
     # Insert prior for alpha
     model <- model.insert(model, pos=which(names(model)=="study"), "alpha[i] ~ dnorm(0,0.0001)")
 
     if (positive.scale==TRUE) {
-      timecourse <- paste0("exp(alpha[i]) + ", timecourse)
+      timecourse <- paste0("exp(ifelse(intercept[i]==1, alpha[i], 0)) + ", timecourse)
     } else {
-      timecourse <- paste0("alpha[i] + ", timecourse)
+      timecourse <- paste0("ifelse(intercept[i]==1, alpha[i], 0) + ", timecourse)
     }
   }
 

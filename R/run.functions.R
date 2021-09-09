@@ -18,10 +18,10 @@
 #' @param positive.scale A boolean object that indicates whether all continuous
 #'   mean responses (y) are positive and therefore whether the baseline response
 #'   should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).
-#' @param intercept A boolean object that indicates whether an intercept is to
-#'   be included in the model. Can be used to imply whether mean responses in
-#'   data are change from baseline (`FALSE`) or not (setting it to `FALSE`
-#'   removes the intercept, `alpha`, from the model).
+#' @param intercept A boolean object that indicates whether an intercept (written
+#'   as `alpha` in the model) is to be included. If left as `NULL` (the default), an intercept will
+#'   be included only for studies reporting absolute means, and will be excluded for
+#'   studies reporting change from baseline (as indicated in `network$cfb`).
 #' @param link Can take either `"identity"` (the default),
 #'   `"log"` (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 #'   `"smd"` (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).
@@ -235,7 +235,7 @@
 #'                  rho="dunif(0,1)", covar="varadj")
 #' }
 #' @export
-mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=TRUE,
+mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=NULL,
                       link="identity",
                       parameters.to.save=NULL,
                       rho=0, covar="varadj",
@@ -263,6 +263,15 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
     n.burnin <- n.burnin - 1
   }
 
+  # Set intercept if cfb is consistent across all trials
+  unicfb <- unique(network$cfb)
+  if (length(unicfb)==1) {
+    if (unicfb==TRUE) {
+      intercept <- FALSE
+    } else if (unicfb==FALSE) {
+      intercept <- TRUE
+    }
+  }
 
   if (is.null(model.file)) {
     model <- mb.write(fun=fun, link=link,
@@ -319,7 +328,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   #### Run jags model ####
 
   data.ab <- network[["data.ab"]]
-  result.jags <- mb.jags(data.ab, model, fun=fun, link=link,
+  result.jags <- mb.jags(data.ab, model, fun=fun, link=link, cfb=network$cfb,
                        class=class, rho=rho, covar=covar, omega=omega,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
@@ -380,7 +389,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                        class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
-                       likelihood=NULL, omega=NULL,
+                       cfb=NULL, omega=NULL,
                        warn.rhat=FALSE, ...) {
 
   # Run checks
@@ -391,13 +400,12 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
                   null.ok=TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", add=argcheck)
+  checkmate::assertLogical(cfb, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
-  if (is.null(likelihood)) {
-    # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
-  }
+  # For MBNMAtime
+  jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link, cfb=cfb) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
 
   if (!is.null(omega)) {
     jagsdata[["omega"]] <- omega

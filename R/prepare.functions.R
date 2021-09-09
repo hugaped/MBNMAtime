@@ -336,7 +336,7 @@ add_index <- function(data.ab, reference=1) {
 #' jagsdat <- getjagsdata(painnet$data.ab, rho="dunif(0,1)", covstruct="AR1")
 #'
 #' @export
-getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity") {
+getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity", cfb=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -344,6 +344,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(covstruct, choices=c("varadj", "CS", "AR1"), null.ok=TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(cfb, len=length(unique(data.ab$studyID)), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
@@ -527,25 +528,16 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
     }
   }
 
-  # mat.triangle <- vector()
-  # p <- 1
-  # for (i in 2:max(datalist$fups)) {
-  #   mat.triangle[datalist$fups==i] <- p
-  #   p <- p+i
-  # }
-  #
-  #
-  # mat.order <- array(dim=c(max(datalist$fups), max(datalist$fups), datalist$NS))
-  # for (i in 1:datalist$NS) {
-  #   p <- 1
-  #   for (c in 1:(datalist$fups[i]-1)) {
-  #     for (r in (c+1):datalist$fups[i]) {
-  #       mat.order[r,c,i] <- p
-  #       mat.order[c,r,i] <- p
-  #       p <- p+1
-  #     }
-  #   }
-  # }
+  # Add data for intercept
+  if (!is.null(cfb)) {
+    if (length(unique(cfb))>1) {
+
+      cfbid <- unique(data.ab$studyID)
+      newid <- unique(df$studynam)
+
+      datalist[["intercept"]] <- !cfb[match(newid, cfbid)]
+    }
+  }
 
   return(datalist)
 
