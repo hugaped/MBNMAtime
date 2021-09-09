@@ -44,7 +44,7 @@
 #' be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 #' relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
 #' is used.
-#'  @param corparam A boolean object that indicates whether correlation should be modelled
+#' @param corparam A boolean object that indicates whether correlation should be modelled
 #' between relative effect time-course parameters. This is automatically set to `FALSE` if class effects are modelled.
 #' It can also be useful for providing informative priors more easily to the model.
 #'
