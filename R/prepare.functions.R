@@ -32,6 +32,7 @@
 #' * `description` A short description of the network
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)
+#' * `studyID` A character vector with the IDs of included studies.
 #' * `treatments` A character vector indicating the treatment identifiers that correspond to the
 #' new treatment codes.
 #' * `classes` A character vector indicating the class identifiers (if included in the original data)
@@ -238,6 +239,11 @@ add_index <- function(data.ab, reference=1) {
     dplyr::mutate(narm=dplyr::n())
 
 
+  outlist <- list("data.ab"=data.ab,
+                  "studyID"=as.character(unique(data.ab$studyID)),
+                  "treatments"=orderlist
+                  )
+
   # Store class labels and recode (if they exist in data.ab)
   if ("class" %in% names(data.ab)) {
     # Create class labels
@@ -253,11 +259,12 @@ add_index <- function(data.ab, reference=1) {
     classkey$treatment <- factor(classkey$treatment, labels=orderlist)
     classkey$class <- factor(classkey$class, labels=classes)
 
-    return(list("data.ab"=data.ab, "treatments"=orderlist, "classes"=classes, "classkey"=classkey))
+    outlist$classes <- classes
+    outlist$classkey <- classkey
 
-  } else {
-    return(list("data.ab"=data.ab, "treatments"=orderlist))
   }
+
+  return(outlist)
 }
 
 
@@ -358,7 +365,11 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   # Prepare df
   df <- dplyr::arrange(df, dplyr::desc(narm), dplyr::desc(fups), studyID, arm, time)
 
-  df$studynam <- df$studyID
+  if (is.factor(df$studyID)) {
+    df$studynam <- as.character(df$studyID)
+  } else {
+    df$studynam <- df$studyID
+  }
   df <- transform(df,studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
 
