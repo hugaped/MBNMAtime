@@ -37,6 +37,7 @@
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)
 #' * `studyID` A character vector with the IDs of included studies.
+#' * `cfb` A logical vector indicating which studies report change from baseline data
 #' * `treatments` A character vector indicating the treatment identifiers that correspond to the
 #' new treatment codes.
 #' * `classes` A character vector indicating the class identifiers (if included in the original data)
