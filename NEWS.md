@@ -1,6 +1,8 @@
 # MBNMAtime 0.2.1
 
 ## Additions/changes
+- `get.relative()` function can be used to calculate relative effects/mean differences between treatments/classes
+at specified follow-up times (even those at which treatments have not been compared within any study)
 - Studies reporting change from baseline or absolute means can now be specified in `mb.network()`, or
 will be automatically inferred from the data (studies with no time=0 are assumed to report change
 from baseline)
