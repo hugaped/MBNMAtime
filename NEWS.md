@@ -1,5 +1,11 @@
 # MBNMAtime 0.2.1
 
+## Additions/changes
+- Studies reporting change from baseline or absolute means can now be specified in `mb.network()`, or
+will be automatically inferred from the data (studies with no time=0 are assumed to report change
+from baseline)
+- Model intercept (response at time=0) is now conditional on change from baseline *for each study*
+
 ## Bug fixes
 
 ### Minor
