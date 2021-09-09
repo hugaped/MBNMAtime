@@ -21,6 +21,10 @@
 #' @param reference A number or character (depending on the format of `treatment` within `data.ab`)
 #' indicating the reference treatment in the network (i.e. those for which estimated relative treatment
 #' effects estimated by the model will be compared to).
+#' @param cfb A logical vector whose length is equal to the unique number of studies in `data.ab`, where each
+#' element is `TRUE` if the study data reported is change-from-baseline and `FALSE` otherwise. If left as `NULL`
+#' (the default) then this will be identified from the data by assuming any study for which there is no data
+#' at `time=0` reports change-from-baseline.
 #' @param description Optional. Short description of the network.
 #'
 #' @details Missing values (`NA`) cannot be included in the dataset. Studies must have a baseline
@@ -57,7 +61,7 @@
 #' plot(network)
 #'
 #' @export
-mb.network <- function(data.ab, reference=1, description="Network") {
+mb.network <- function(data.ab, reference=1, cfb=NULL, description="Network") {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -72,7 +76,17 @@ mb.network <- function(data.ab, reference=1, description="Network") {
   network <- index.data
   network <- c(list("description" = description), network)
 
-  #mb.validate.network(network) # need to write a script to validate MBNMA network...should include sorting
+  # Assert cfb is reported correctly
+  checkmate::assertLogical(cfb, len=length(unique(data.ab$studyID)), null.ok = TRUE)
+  if (is.null(cfb)) {
+    message("Studies reporting change from baseline automatically identified from the data")
+    cfb.df <- index.data$data.ab %>% subset(arm==1 & fupcount==1) %>%
+      dplyr::mutate(cfb=dplyr::case_when(time==0 ~ FALSE,
+                                         time!=0 ~ TRUE))
+    cfb <- cfb.df$cfb
+  }
+
+  network$cfb <- cfb
 
   class(network) <- "mb.network"
   return(network)
@@ -1334,3 +1348,6 @@ getnmadata <- function(data.ab, link="identity") {
   return(datalist)
 
 }
+
+
+
