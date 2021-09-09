@@ -6,13 +6,15 @@ library(rsvg)
 # Generate nodes for MBNMA classes
 classnodes <-
   create_node_df(
-    n = 6,
+    n = 7,
     label = c("data.frame\\l",
               "mb.network\\l - plot()\\l - summary()\\l",
               "mbnma\\l - plot()\\l - summary()\\l",
               "mb.predict\\l - plot()\\l - summary()\\l",
               "nodesplit\\l - plot()\\l - summary()\\l",
-              "mb.rank\\l - plot()\\l - summary()\\l"),
+              "mb.rank\\l - plot()\\l - summary()\\l",
+              "relative.array\\l - plot()"
+              ),
     color = "black",
     fontname="Consolas",
     shape = "rectangle",
@@ -38,9 +40,9 @@ g <- create_graph(nodes_df = classnodes, attr_theme = "tb")
 # Generate function nodes
 funnodes <-
   create_node_df(
-    n=8,
+    n=9,
     label=c("mb.network()", "mb.run()", "mb.nodesplit()", "predict()", "rank()",
-            "timeplot()", "fitplot()", "devplot()"), #"cumrank()"),
+            "timeplot()", "fitplot()", "devplot()", "get.relative()"), #"cumrank()"),
     shape="rectangle",
     fontname="Consolas",
     fillcolor = "white",
@@ -55,13 +57,13 @@ g <- add_node_df(g, funnodes)
 # Generate edges between classes and functions
 funedges <-
   create_edge_df(
-    from = c("1", "7", "2", "8", "3", "10", "2", "9", "3", "11", "2", "2", "2", "4"),
-    to =   c("7", "2", "8", "3", "10", "4", "9", "5", "11", "6", "12", "13", "14", "11"),
+    from = c("1", "8", "2", "9", "3", "11", "2", "10", "3", "12", "2", "2", "2", "3", "16"),
+    to =   c("8", "2", "9", "3", "11", "4", "10", "5", "12", "6", "13", "14", "15", "16", "7"),
     color="black",
     rel = "a",
     fontname="Consolas",
     arrowhead=c("none", "normal", "none", "normal", "none", "normal", "none", "normal",
-                "none", "normal", "normal", "normal", "normal", "none")
+                "none", "normal", "normal", "normal", "normal", "none", "normal", "none")
   )
 g <- add_edge_df(g, funedges)
 
