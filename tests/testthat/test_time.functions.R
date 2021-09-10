@@ -1,17 +1,17 @@
 testthat::context("Testing time.functions")
 
-testthat::test_that("texp functions correctly", {
-  timefun <- texp(pool.rate="rel", method.rate="common")
+testthat::test_that("tloglin functions correctly", {
+  timefun <- tloglin(pool.rate="rel", method.rate="common")
   expect_equal(timefun$nparam, 1)
   expect_equal(timefun$apool, c("rate"="rel"))
   expect_equal(timefun$amethod, c("rate"="common"))
-  expect_equal(timefun$name, "exp")
+  expect_equal(timefun$name, "loglin")
 
-  timefun <- texp(pool.rate="abs", method.rate="random")
+  timefun <- tloglin(pool.rate="abs", method.rate="random")
   expect_equal(timefun$nparam, 1)
   expect_equal(timefun$apool, c("rate"="abs"))
   expect_equal(timefun$amethod, c("rate"="random"))
-  expect_equal(timefun$name, "exp")
+  expect_equal(timefun$name, "loglin")
 })
 
 
