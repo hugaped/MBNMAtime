@@ -85,7 +85,6 @@ plot(ranks)
 
 Other contributors:
 \itemize{
-  \item Tobias Saueressig [reviewer]
   \item Nicky Welton [contributor, reviewer]
   \item Sofia Dias [contributor, reviewer]
   \item Meg Bennetts [contributor, reviewer]

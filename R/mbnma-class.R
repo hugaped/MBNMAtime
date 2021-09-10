@@ -845,6 +845,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' @param classes A character vector of class names for which to calculate relative effects/mean differences from.
 #' Must be a subset of `mbnma$network$classes`. Only works for class effect models.
 #' @inheritParams predict.mbnma
+#' @inheritParams fitplot
 #'
 #' @return A list containing details of the results and an array of class `relative.array` that contains
 #' MCMC results for the relative effects / mean differences between all treatments specified in `treats`
