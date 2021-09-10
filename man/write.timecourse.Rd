@@ -13,10 +13,10 @@ write.timecourse(model, fun, intercept, positive.scale)
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
 \code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
-\item{intercept}{A boolean object that indicates whether an intercept is to
-be included in the model. Can be used to imply whether mean responses in
-data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
-removes the intercept, \code{alpha}, from the model).}
+\item{intercept}{A boolean object that indicates whether an intercept (written
+as \code{alpha} in the model) is to be included. If left as \code{NULL} (the default), an intercept will
+be included only for studies reporting absolute means, and will be excluded for
+studies reporting change from baseline (as indicated in \code{network$cfb}).}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response

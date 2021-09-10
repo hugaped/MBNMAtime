@@ -20,7 +20,7 @@
 \code{predict("mbnma")}}
 
 \item{params}{A character vector containing any model parameters monitored
-in \code{mbnma} for which ranking is desired (e.g. \code{"beta.1"}, \code{"d.emax"}).
+in \code{mbnma} for which ranking is desired (e.g. \code{"beta.1"}, \code{"emax"}).
 Parameters must vary by treatment for ranking to be possible. Can include
 \code{"auc"} (see details).}
 

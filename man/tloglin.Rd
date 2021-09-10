@@ -7,9 +7,9 @@
 tloglin(pool.rate = "rel", method.rate = "common")
 }
 \arguments{
-\item{pool.rate}{Pooling for exponential rate parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
+\item{pool.rate}{Pooling for rate parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.rate}{Method for synthesis of exponential rate parameter. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
+\item{method.rate}{Method for synthesis of rate parameter. Can take \code{"common"} or \code{"random"} (see Time-course parameters section)}
 }
 \value{
 An object of \code{class("timefun")}

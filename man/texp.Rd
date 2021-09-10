@@ -4,18 +4,36 @@
 \alias{texp}
 \title{Exponential time-course function}
 \usage{
-texp(pool.rate = "rel", method.rate = "common")
+texp(
+  pool.emax = "rel",
+  method.emax = "common",
+  pool.onset = NULL,
+  method.onset = NULL
+)
 }
 \arguments{
-\item{pool.rate}{Pooling for exponential rate parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
+\item{pool.emax}{Pooling for exponential Emax parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.rate}{Method for synthesis of exponential rate parameter. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
+\item{method.emax}{Method for synthesis of exponential Emax parameter. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
+
+\item{pool.onset}{Pooling for parameter controlling speed of onset. Default is \code{NULL} which avoids including
+this parameter (i.e. fixes it to 1 for all treatments). Can take \code{"rel"} or \code{"abs"} (see details).}
+
+\item{method.onset}{Method for synthesis of parameter controlling speed of onset. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
 }
 \value{
 An object of \code{class("timefun")}
 }
 \description{
-\eqn{rate\times{(1-exp(-x))}}
+Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Can fit
+a 1-parameter (Emax only) or 2-parameter (includes onset parameter) model
+}
+\details{
+1-parameter model:
+\eqn{emax\times{(1-exp(-x))}}
+
+2-parameter model:
+\eqn{emax\times{(1-exp(exp(onset)*-x))}}
 }
 \section{Time-course parameters}{
 
@@ -38,8 +56,8 @@ and can take any of the following values:\tabular{ll}{
 }
 
 \examples{
-texp(pool.rate="rel", method.rate="random")
-texp(pool.rate="abs")
+texp(pool.emax="rel", method.emax="random")
+texp(pool.emax="abs")
 
 }
 \references{

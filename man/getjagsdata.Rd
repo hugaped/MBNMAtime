@@ -10,7 +10,8 @@ getjagsdata(
   class = FALSE,
   rho = NULL,
   covstruct = "CS",
-  link = "identity"
+  link = "identity",
+  cfb = NULL
 )
 }
 \arguments{
@@ -46,6 +47,11 @@ this determines some of the data. Can be either \code{"CS"} (compound symmetry),
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{cfb}{A logical vector whose length is equal to the unique number of studies in \code{data.ab}, where each
+element is \code{TRUE} if the study data reported is change-from-baseline and \code{FALSE} otherwise. If left as \code{NULL}
+(the default) then this will be identified from the data by assuming any study for which there is no data
+at \code{time=0} reports change-from-baseline.}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

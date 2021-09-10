@@ -28,10 +28,10 @@ write.ref.synth(
 mean responses (y) are positive and therefore whether the baseline response
 should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).}
 
-\item{intercept}{A boolean object that indicates whether an intercept is to
-be included in the model. Can be used to imply whether mean responses in
-data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
-removes the intercept, \code{alpha}, from the model).}
+\item{intercept}{A boolean object that indicates whether an intercept (written
+as \code{alpha} in the model) is to be included. If left as \code{NULL} (the default), an intercept will
+be included only for studies reporting absolute means, and will be excluded for
+studies reporting change from baseline (as indicated in \code{network$cfb}).}
 
 \item{rho}{The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a

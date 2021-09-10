@@ -20,7 +20,7 @@
   ...
 )
 
-mb.network(data.ab, reference = 1, description = "Network")
+mb.network(data.ab, reference = 1, cfb = NULL, description = "Network")
 }
 \arguments{
 \item{x}{An object of class \code{mb.network}.}
@@ -84,6 +84,11 @@ response at a given observation (required if modelling using Standardised Mean D
 indicating the reference treatment in the network (i.e. those for which estimated relative treatment
 effects estimated by the model will be compared to).}
 
+\item{cfb}{A logical vector whose length is equal to the unique number of studies in \code{data.ab}, where each
+element is \code{TRUE} if the study data reported is change-from-baseline and \code{FALSE} otherwise. If left as \code{NULL}
+(the default) then this will be identified from the data by assuming any study for which there is no data
+at \code{time=0} reports change-from-baseline.}
+
 \item{description}{Optional. Short description of the network.}
 }
 \value{
@@ -92,6 +97,8 @@ An object of \code{class("mb.network")} which is a list containing:
 \item \code{description} A short description of the network
 \item \code{data.ab} A data frame containing the arm-level network data (treatment identifiers will have
 been recoded to a sequential numeric code)
+\item \code{studyID} A character vector with the IDs of included studies.
+\item \code{cfb} A logical vector indicating which studies report change from baseline data
 \item \code{treatments} A character vector indicating the treatment identifiers that correspond to the
 new treatment codes.
 \item \code{classes} A character vector indicating the class identifiers (if included in the original data)

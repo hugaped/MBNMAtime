@@ -8,7 +8,7 @@ mb.write(
   fun = tpoly(degree = 1),
   link = "identity",
   positive.scale = TRUE,
-  intercept = TRUE,
+  intercept = NULL,
   rho = 0,
   covar = "varadj",
   omega = NULL,
@@ -29,10 +29,10 @@ mb.write(
 mean responses (y) are positive and therefore whether the baseline response
 should be given a prior that constrains it to be positive (e.g. for scales that cannot be <0).}
 
-\item{intercept}{A boolean object that indicates whether an intercept is to
-be included in the model. Can be used to imply whether mean responses in
-data are change from baseline (\code{FALSE}) or not (setting it to \code{FALSE}
-removes the intercept, \code{alpha}, from the model).}
+\item{intercept}{A boolean object that indicates whether an intercept (written
+as \code{alpha} in the model) is to be included. If left as \code{NULL} (the default), an intercept will
+be included only for studies reporting absolute means, and will be excluded for
+studies reporting change from baseline (as indicated in \code{network$cfb}).}
 
 \item{rho}{The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 prior distribution in JAGS, indicating that it be estimated from the data (e.g. \code{rho="dunif(0,1)"}). \code{rho} also be assigned a
@@ -54,8 +54,9 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
 be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
-is used.
-@param corparam A boolean object that indicates whether correlation should be modelled
+is used.}
+
+\item{corparam}{A boolean object that indicates whether correlation should be modelled
 between relative effect time-course parameters. This is automatically set to \code{FALSE} if class effects are modelled.
 It can also be useful for providing informative priors more easily to the model.}
 
