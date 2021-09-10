@@ -51,7 +51,7 @@ testthat::test_that("testing prior writing functions", {
 
 
 testthat::test_that("test.mb.write", {
-  funlist <- list(tpoly(degree=1, pool.1 = "rel", method.1="common"), texp(pool.rate="rel", method.rate="common"))
+  funlist <- list(tpoly(degree=1, pool.1 = "rel", method.1="common"), tloglin(pool.rate="rel", method.rate="common"))
 
   jags <- mb.write(fun=tpoly(degree=1, pool.1 = "rel", method.1="common"), intercept=TRUE, positive.scale = TRUE)
   testthat::expect_equal(length(grep("alpha\\[i", jags))>0, TRUE)
@@ -60,7 +60,7 @@ testthat::test_that("test.mb.write", {
   jags <- mb.write(fun=tpoly(degree=1, pool.1 = "rel", method.1="common"), intercept=FALSE, positive.scale = FALSE)
   testthat::expect_equal(length(grep("alpha\\[i", jags))>0, FALSE)
 
-  jags <- mb.write(fun=texp(pool.rate="rel", method.rate="random"))
+  jags <- mb.write(fun=tloglin(pool.rate="rel", method.rate="random"))
   testthat::expect_equal(length(grep("rate", jags))>0, TRUE)
   testthat::expect_equal(length(grep("sd\\.rate ~ dnorm", jags))>0, TRUE)
   testthat::expect_equal(length(grep("dev", jags))>0, TRUE)
@@ -86,8 +86,8 @@ testthat::test_that("test.mb.write", {
                                             pool.2="abs", method.2="random"),
                                   rho=5, covar="AR1"), "cannot be outside the bounds")
 
-  testthat::expect_error(mb.write(fun=texp(pool.rate="rel", method.rate="random"), class.effect="alpha"))
-  testthat::expect_error(mb.write(fun=texp(pool.rate="rel", method.rate="random"), class.effect=list(fake="common"), "list element names in `class.effect`"))
+  testthat::expect_error(mb.write(fun=tloglin(pool.rate="rel", method.rate="random"), class.effect="alpha"))
+  testthat::expect_error(mb.write(fun=tloglin(pool.rate="rel", method.rate="random"), class.effect=list(fake="common"), "list element names in `class.effect`"))
 
 
   jags <- mb.write(fun=tfpoly(degree=2, pool.1="abs", method.1="common",
