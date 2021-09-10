@@ -917,6 +917,10 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
       #   stop("Prior named ", names(priors)[i], " has matched on multiple instances in the model code. Check priors currently present in model code using get.prior()")
     }
 
+    if (!grepl("^d[a-z.]*\\(", priors[[i]])) {
+      stop("Prior named ", names(priors)[i], " does not follow JAGS distribution syntax\nSee JAGS manual: https://people.stat.sc.edu/hansont/stat740/jags_user_manual.pdf")
+    }
+
     #line <- grep(paste0("^( +)?", names(priors)[i]), model)
     line <- grep(paste0("^( +)?", names(priors)[i], ".+~"), model)
     state <- model[line]
