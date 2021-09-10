@@ -151,8 +151,8 @@ testthat::test_that("predict.functions tests pass correctly", {
   testthat::test_that("ref.synth functions correctly", {
     ref.resp <- osteopain[osteopain$treatname=="Placebo_0",]
 
-    testthat::expect_error(ref.synth(ref.resp, emax, synth="random",
-                                     n.burnin=100, n.iter=200), NA)
+    testthat::expect_error(suppressWarnings(ref.synth(ref.resp, emax, synth="random",
+                                     n.burnin=100, n.iter=200)), NA)
 
   })
 
