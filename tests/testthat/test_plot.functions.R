@@ -345,7 +345,7 @@ testthat::test_that("plot(mb.network) functions correctly", {
 test_that("timeplot functions correctly", {
 
   expect_silent(timeplot(painnet))
-  expect_output(timeplot(alognet), "Absence of observations")
+  expect_silent(timeplot(alognet))
 
   expect_silent(timeplot(painnet, plotby="rel"))
 
