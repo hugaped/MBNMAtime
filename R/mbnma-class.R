@@ -393,8 +393,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
     stop(crayon::red(crayon::bold("UME model cannot be used for prediction")))
   }
 
-  # Check ref.resp has been specified correctly if any mbnma parameters are "rel"
-  #if (check.betas(object)==TRUE) {
+  # Check ref.resp has been specified correctly
   if ("rel" %in% object$model.arg$fun$apool) {
     if (is.null(ref.resp)) {
 
@@ -404,6 +403,12 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
       for (i in seq_along(rels)) {
         ref.resp[[rels[i]]] <- 0
       }
+
+      # # If ref.resp is not given then assign mbnma MCMC value to all abs time-course parameters
+      # abs <- names(object$model.arg$fun$apool)[object$model.arg$fun$apool %in% "abs"]
+      # for (i in seq_along(abs)) {
+      #   ref.resp[[abs[i]]] <- mbnma$BUGSoutput$sims.list[[abs[i]]]
+      # }
     } else {
 
       # If ref.resp is given ensure it is of the correct class
@@ -413,8 +418,6 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
       or estimated from a dataset of reference treatment studies by providing a data frame.")))
       }
     }
-  } else if (!"rel" %in% object$model.arg$fun$apool) {
-    ref.resp <- NULL
   }
 
 
@@ -498,14 +501,21 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
       # Assign ref.resp to mu values in model
       for (i in seq_along(ref.resp)) {
 
-        if (class(ref.resp[[i]])=="formula") {
-          ref.resp[[i]] <- as.character(ref.resp[[i]])[2]
-          if (grepl("r[A-z]+\\(n,.+\\)", ref.resp[[i]])==FALSE) {
-            stop(crayon::red("Stochastic distribution for ref.resp must be expressed as a formula in the form of a supported R distribution (e.g. ~rnorm(n, 5,2))"))
+        if (class(ref.resp[[i]]) %in% c("formula", "character")) {
+
+          if (class(ref.resp[[i]] %in% "formula")) {
+            ref.resp[[i]] <- as.character(ref.resp[[i]])[2]
+            if (grepl("r[A-z]+\\(n,.+\\)", ref.resp[[i]])==FALSE) {
+              stop(crayon::red("Stochastic distribution for ref.resp must be expressed as a formula in the form of a supported R distribution (e.g. ~rnorm(n, 5,2))"))
+            }
           }
+          assign(mu.params[which(names(ref.resp)[i]==mu.params)],
+                 eval(parse(text=ref.resp[[i]])))
+
+        } else if (class(ref.resp[[i]]) %in% "numeric") {
+          assign(mu.params[which(names(ref.resp)[i]==mu.params)],
+                 rep(ref.resp[[i]], n))
         }
-        assign(mu.params[which(names(ref.resp)[i]==mu.params)],
-               eval(parse(text=ref.resp[[i]])))
       }
     } else if (any(class(ref.resp) %in% c("data.frame", "tibble"))) {
 

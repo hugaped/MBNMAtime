@@ -275,24 +275,47 @@ ref.synth <- function(data.ab, mbnma, synth="common",
   #to study model
   # Do all the mb.write bits but without the consistency bits
 
-  jagsmodel <- write.ref.synth(fun=mbnma$model.arg$fun, positive.scale=mbnma$model.arg$positive.scale,
-                               intercept=mbnma$model.arg$intercept,
-                               rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar,
-                               mu.synth=synth,
-                               priors=mbnma$model.arg$priors
-  )
+  # Use values from MBNMA as priors for absolute time-course paramteters
+  synthprior <- mbnma$model.arg$priors
+  if ("abs" %in% mbnma$model.arg$fun$apool) {
+    absprior <- absdist(mbnma)
 
-  parameters.to.save <- vector()
-  for (i in seq_along(mbnma$model.arg$fun$apool)) {
-    if ("rel" %in% mbnma$model.arg$fun$apool[i]) {
-      parameters.to.save <- append(parameters.to.save, paste0("mu.",i))
-      if (synth=="random") {
-        parameters.to.save <- append(parameters.to.save, paste0("sd.mu.",i))
-      }
+    for (i in seq_along(absprior)) {
+      synthprior[[names(absprior)[i]]] <- absprior[[i]]
     }
   }
 
-  jags.result <- mb.jags(data.ab, link=mbnma$model.arg$link,
+  # Identify if data.ab contains cfb and specify intercept
+  message("Studies reporting change from baseline automatically identified from ref.resp")
+  cfb.df <- data.ab %>% subset(fupcount==1) %>%
+    dplyr::mutate(cfb=dplyr::case_when(time==0 ~ FALSE,
+                                       time!=0 ~ TRUE))
+  cfb <- cfb.df$cfb
+  if (all(cfb==TRUE)) {
+    intercept <- FALSE
+  } else if (all(cfb==FALSE)) {
+    intercept <- TRUE
+  } else {
+    intercept <- NULL
+  }
+
+  jagsmodel <- write.ref.synth(fun=mbnma$model.arg$fun, positive.scale=mbnma$model.arg$positive.scale,
+                               intercept=intercept,
+                               rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar,
+                               mu.synth=synth,
+                               priors=synthprior
+  )
+
+  parameters.to.save <- vector()
+  rels <- which(mbnma$model.arg$fun$apool %in% "rel")
+  for (i in seq_along(rels)) {
+    parameters.to.save <- append(parameters.to.save, paste0("mu.",rels[i]))
+    if (synth=="random") {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.mu.",rels[i]))
+    }
+  }
+
+  jags.result <- mb.jags(data.ab, link=mbnma$model.arg$link, cfb=cfb,
                             model=jagsmodel, fun=mbnma$model.arg$fun,
                             rho=mbnma$model.arg$rho, covar=mbnma$model.arg$covar,
                             parameters.to.save=parameters.to.save,
@@ -363,3 +386,23 @@ ref.validate <- function(data.ab) {
 
 
 
+
+
+
+#' Get distributions for absolute parameters from an MBNMA model
+#'
+#' @noRd
+absdist <- function(mbnma) {
+
+  absprior <- list()
+  if ("abs" %in% mbnma$model.arg$fun$apool) {
+    abs <- names(mbnma$model.arg$fun$apool)[mbnma$model.arg$fun$apool %in% "abs"]
+    for (i in seq_along(abs)) {
+      med <- median(mbnma$BUGSoutput$sims.list[[abs[i]]])
+      prec <- 1/(sd(mbnma$BUGSoutput$sims.list[[abs[i]]])^2)
+
+      absprior[[abs[i]]] <- paste0("dnorm(", format(med, digits=4), ",", format(prec,digits=4), ")")
+    }
+  }
+  return(absprior)
+}
