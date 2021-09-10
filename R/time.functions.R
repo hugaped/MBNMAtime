@@ -114,7 +114,8 @@ texp <- function(pool.emax="rel", method.emax="common",
 #'
 #' \eqn{rate\times{log(x + 1)}}
 #'
-#' @inheritParams texp
+#' @param pool.rate Pooling for rate parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.rate Method for synthesis of rate parameter. Can take `"common"` or `"random"` (see Time-course parameters section)
 #'
 #' @return An object of `class("timefun")`
 #'
