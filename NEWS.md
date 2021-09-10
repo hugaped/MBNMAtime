@@ -11,6 +11,9 @@ from baseline)
 
 ## Bug fixes
 
+### Major
+- Error with `predict()` not properly incorporating absolute time-course parameters fixed
+
 ### Minor
 - Error with `model.file` input length fixed for `mb.run()`
 
