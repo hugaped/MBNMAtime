@@ -84,7 +84,7 @@ testthat::test_that("rank.functions tests pass correctly", {
                        direction=-1, treats=treats.list[[i]])
 
     testthat::expect_equal(names(rank), c("emax", "et50"))
-    testthat::expect_equal(names(rank$et50), c("summary", "prob.matrix", "rank.matrix"))
+    testthat::expect_equal(names(rank$et50), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
     testthat::expect_equal(nrow(rank$et50[["summary"]]), length(treats.list[[i]]))
     testthat::expect_equal(nrow(rank$emax[["prob.matrix"]]), ncol(rank$emax[["prob.matrix"]]))
     testthat::expect_equal(nrow(rank$emax[["prob.matrix"]]), length(treats.list[[i]]))
@@ -111,7 +111,7 @@ testthat::test_that("rank.functions tests pass correctly", {
                        direction=-1, treats=treats.list[[i]])
 
     testthat::expect_equal(sort(names(rank)), sort(c("d.4", "d.1")))
-    testthat::expect_equal(names(rank$d.1), c("summary", "prob.matrix", "rank.matrix"))
+    testthat::expect_equal(names(rank$d.1), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
     testthat::expect_equal(nrow(rank$d.1[["summary"]]), length(treats.list[[i]]))
     testthat::expect_equal(nrow(rank$d.1[["prob.matrix"]]), ncol(rank$d.1[["prob.matrix"]]))
     testthat::expect_equal(nrow(rank$d.4[["prob.matrix"]]), length(treats.list[[i]]))

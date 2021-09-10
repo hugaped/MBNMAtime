@@ -11,30 +11,30 @@ testthat::test_that("exponential time-course function works correctly", {
   skip_on_ci()
   skip_on_cran()
 
-  mb.result <- mb.run(painnet, fun=texp(pool.rate="rel", method.rate="common"),
+  mb.result <- mb.run(painnet, fun=texp(pool.emax="rel", method.emax="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200)
-  expect_equal(all(c("rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+  expect_equal(all(c("emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
-  mb.result <- mb.run(copdnet, link="smd", fun=texp(pool.rate="rel", method.rate="random"),
+  mb.result <- mb.run(copdnet, link="smd", fun=texp(pool.emax="rel", method.emax="random"),
                       positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200)
-  expect_equal(all(c("rate", "sd.rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+  expect_equal(all(c("emax", "sd.emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
   # Class effects
-  mb.result <- mb.run(classnetwork, fun=texp(pool.rate="rel", method.rate="common"),
+  mb.result <- mb.run(classnetwork, fun=texp(pool.emax="rel", method.emax="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                      class.effect = list("rate"="random"))
-  expect_equal(all(c("RATE", "rate", "sd.RATE") %in% mb.result$parameters.to.save), TRUE)
+                      class.effect = list("emax"="random"))
+  expect_equal(all(c("emax", "emax", "sd.EMAX") %in% mb.result$parameters.to.save), TRUE)
 
-  mb.result <- mb.run(classnetwork, fun=texp(pool.rate="rel", method.rate="random"),
+  mb.result <- mb.run(classnetwork, fun=texp(pool.emax="rel", method.emax="random"),
                       positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                      class.effect = list("rate"="random"))
-  testthat::expect_equal(all(c("RATE", "sd.RATE", "sd.rate") %in% mb.result$parameters.to.save), TRUE)
+                      class.effect = list("emax"="random"))
+  testthat::expect_equal(all(c("EMAX", "sd.EMAX", "sd.emax") %in% mb.result$parameters.to.save), TRUE)
 
   # UME
-  mb.result <- mb.run(copdnet, link="log", fun=texp(pool.rate="rel", method.rate="common"),
+  mb.result <- mb.run(copdnet, link="log", fun=texp(pool.emax="rel", method.emax="common"),
                       positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
-                      UME = "rate")
-  testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("rate", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                      UME = "emax")
+  testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
                          4)
 
 })
