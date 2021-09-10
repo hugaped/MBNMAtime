@@ -8,6 +8,7 @@ at specified follow-up times (even those at which treatments have not been compa
 will be automatically inferred from the data (studies with no time=0 are assumed to report change
 from baseline)
 - Model intercept (response at time=0) is now conditional on change from baseline *for each study*
+- `texp()` now implements 2-parameter exponential function (rather than the simpler 1-parameter model)
 
 ## Bug fixes
 
