@@ -789,7 +789,7 @@ Direct estimates from UME and MBNMA models can also be compared to examine in gr
 
 ```{r, include=FALSE}
 load(system.file("extdata", "nodesplit.rda", package="MBNMAtime", mustWork = TRUE))
-load(system.file("extdata", "ns.lin.rda", package="MBNMAtime", mustWork = TRUE))
+load(system.file("extdata", "ns.exp.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
 Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity. `mb.nodesplit()` takes similar arguments to `mb.run()` that define the underlying MBNMA model in which to test for consistency, and returns an object of `class("mb.nodesplit")`. There are two additional arguments required:
@@ -827,24 +827,24 @@ plot(nodesplit, plot.type="forest")
 plot(nodesplit, plot.type="density")
 ```
 
-As a further example, if we use a different time-course function (linear) that is a less good fit for the data, and perform a node-split on the `rate` time-course parameter, we find that there seems to be a strong discrepancy between direct and indirect estimates. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain whether differences in studies making different comparisons may be causing this.
+As a further example, if we use a different time-course function (1-parameter exponential) that is a less good fit for the data, and perform a node-split on the `rate` time-course parameter, we find that there seems to be a strong discrepancy between direct and indirect estimates. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain whether differences in studies making different comparisons may be causing this.
 
 This highlights the importance of testing for consistency *after* identifying an appropriate time-course and common/random treatment effects model.
 
 
 ```{r, eval=FALSE, echo=TRUE}
-# Nodesplit on linear slope using a linear MBNMA
-ns.lin <- mb.nodesplit(network.pain,
-                       fun=tpoly(degree=1, pool.1 = "rel", method.1="common"),
+# Nodesplit on emax of 1-parameter exponential MBNMA
+ns.exp <- mb.nodesplit(network.pain,
+                       fun=texp(pool.emax = "rel", method.emax="common"),
                        nodesplit.parameters="all")
 ```
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
-save(ns.lin, file="inst/extdata/ns.lin.rda")
+save(ns.exp, file="inst/extdata/ns.exp.rda")
 ```
 ```{r, fig.height=2.5}
-print(ns.lin)
+print(ns.exp)
 
-plot(ns.lin, plot.type="forest")
+plot(ns.exp, plot.type="forest")
 ```
 
 
