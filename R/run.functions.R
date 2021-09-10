@@ -80,9 +80,14 @@
 #' beginning. Default is `n.iter/2``, that is, discarding the first half of the
 #' simulations. If `n.burnin` is 0, jags() will run 100 iterations for adaption.
 #'
-#' @param model.file A JAGS model written as a character object that can be used
+#' @param model.file The file path to a JAGS model (.jags file) that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
-#'   specified options. Useful when amending priors using replace.prior()
+#'   specified options in `MBNMAtime`. Useful for adding further model flexibility.
+#' @param jagsdata A named list of the data objects to be used in the JAGS model. Only
+#'   required if users are defining their own JAGS model using `model.file`. Format
+#'   should match that of standard models fitted in `MBNMAtime`
+#'   (see `mbnma$model.arg$jagsdata`)
+#'
 #' @param ... Arguments to be sent to R2jags.
 #'
 #' @inheritParams replace.prior
@@ -152,6 +157,16 @@
 #' @section Correlation between observations:
 #'   When modelling correlation between observations using `rho`, values for `rho` must imply a
 #'   positive semidefinite covariance matrix.
+#'
+#'
+#' @section Advanced options:
+#'   `model.file` and `jagsdata` can be used to run an edited JAGS model and dataset. This allows
+#'   users considerably more modelling flexibility than is possible using the basic `MBNMAtime` syntax,
+#'   though requires strong understanding of JAGS and the MBNMA modelling framework. Treatment-specific
+#'   priors, meta-regression and bias-adjustment are all possible in this way, and it allows users to
+#'   make use of the subsequent functions in `MBNMAtime` (plotting, prediction, ranking) whilst fitting
+#'   these more complex models.
+#'
 #'
 #' @importFrom Rdpack reprompt
 #' @importFrom magrittr "%>%"
@@ -245,7 +260,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       priors=NULL,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
-                      model.file=NULL, ...
+                      model.file=NULL, jagsdata=NULL, ...
 ) {
 
   # Run checks
@@ -287,7 +302,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 
   } else {
     warning("All parameter specifications (time-course, rho, class effects, UME, priors, etc.) are being overwritten by `model.file`")
-    model <- model.file
+    model <- readLines(model.file)
   }
 
   assigned.parameters.to.save <- parameters.to.save
@@ -330,6 +345,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   data.ab <- network[["data.ab"]]
   result.jags <- mb.jags(data.ab, model, fun=fun, link=link, cfb=network$cfb,
                        class=class, rho=rho, covar=covar, omega=omega,
+                       jagsdata=jagsdata,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
                        n.burnin=n.burnin, n.thin=n.thin,
@@ -390,6 +406,7 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                        class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
                        cfb=NULL, omega=NULL,
+                       jagsdata=NULL,
                        warn.rhat=FALSE, ...) {
 
   # Run checks
@@ -401,20 +418,23 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                   null.ok=TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", add=argcheck)
   checkmate::assertLogical(cfb, null.ok=TRUE, add=argcheck)
+  checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
-  # For MBNMAtime
-  jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link, cfb=cfb) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+  if (is.null(jagsdata)) {
+    # For MBNMAtime
+    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link, cfb=cfb) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
 
-  if (!is.null(omega)) {
-    jagsdata[["omega"]] <- omega
-  }
+    if (!is.null(omega)) {
+      jagsdata[["omega"]] <- omega
+    }
 
 
-  # Add variable for maxtime to jagsdata if required
-  if (any(grepl("maxtime", model))) {
-    jagsdata[["maxtime"]] <- max(data.ab$time)
+    # Add variable for maxtime to jagsdata if required
+    if (any(grepl("maxtime", model))) {
+      jagsdata[["maxtime"]] <- max(data.ab$time)
+    }
   }
 
   # Remove studyID from jagsdata (not used in model)
