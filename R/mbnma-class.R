@@ -503,7 +503,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
 
         if (class(ref.resp[[i]]) %in% c("formula", "character")) {
 
-          if (class(ref.resp[[i]] %in% "formula")) {
+          if (class(ref.resp[[i]]) %in% "formula") {
             ref.resp[[i]] <- as.character(ref.resp[[i]])[2]
             if (grepl("r[A-z]+\\(n,.+\\)", ref.resp[[i]])==FALSE) {
               stop(crayon::red("Stochastic distribution for ref.resp must be expressed as a formula in the form of a supported R distribution (e.g. ~rnorm(n, 5,2))"))
