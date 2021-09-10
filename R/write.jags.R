@@ -540,7 +540,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
           # Insert sd.D prior
           model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=c(paste0("sd.D.", i, " ~ dnorm(0,0.0025) T(0,)"),
+                                x=c(paste0("sd.D.", i, " ~ dnorm(0,0.05) T(0,)"),
                                   paste0("tau.D.", i, " <- pow(sd.D.", i, ", -2)")
                                   )
                                 )
@@ -569,7 +569,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
           # Insert prior for heterogeneity
           model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=c(paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)"),
+                                x=c(paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)"),
                                   paste0("tau.", i, " <- pow(sd.beta.", i, ", -2)"))
                                 )
         }
@@ -592,7 +592,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
           # Insert prior for heterogeneity
           model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=c(paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)"),
+                                x=c(paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)"),
                                   paste0("tau.", i, " <- pow(sd.beta.", i, ", -2)"))
           )
 
@@ -622,7 +622,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
           # Insert sd prior for random absolute effect
           model <- model.insert(model, pos=which(names(model)=="end"),
                                 x=c(paste0("prec.beta.", i, " <- pow(sd.beta.", i, ", -2)"),
-                                  paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)")
+                                  paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
                                 )
           )
         }
@@ -1053,7 +1053,7 @@ write.beta.ref <- function(model, timecourse, fun,
                               x=paste0("i.mu.", i, "[i,k] ~ dnorm(mu.", i, ", tau.mu.", i, ")"))
 
         model <- model.insert(model, pos=which(names(model)=="end"),
-                              x=paste0("sd.mu.", i, " ~ dnorm(0,0.0025) T(0,)"))
+                              x=paste0("sd.mu.", i, " ~ dnorm(0,0.05) T(0,)"))
         model <- model.insert(model, pos=which(names(model)=="end"),
                               x=paste0("tau.mu.", i, " <- pow(sd.mu.", i, ", -2)"))
       }
@@ -1071,7 +1071,7 @@ write.beta.ref <- function(model, timecourse, fun,
         # Insert sd prior for random absolute effect
         model <- model.insert(model, pos=which(names(model)=="end"),
                               x=c(paste0("prec.beta.", i, " <- pow(sd.beta.", i, ", -2)"),
-                                  paste0("sd.beta.", i, " ~ dnorm(0,0.0025) T(0,)")
+                                  paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
                               )
         )
       }
@@ -1174,7 +1174,7 @@ write.nma <- function(method="common", link="identity") {
     #Insert at end
     model <- model.insert(model, pos=which(names(model)=="end"),
                           x=c("tau <- pow(sd,-2)",
-                              "sd ~ dnorm(0,0.0025) T(0,)"))
+                              "sd ~ dnorm(0,0.05) T(0,)"))
   }
   model <- model.insert(model, pos=which(names(model)=="te"),
                         x=te.insert)
