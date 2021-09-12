@@ -87,16 +87,9 @@ texp <- function(pool.emax="rel", method.emax="common",
     jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
   }
 
-  if (!is.null(pool.onset)) {
-    f <- function(time, beta.1, beta.2) {
-      y <- beta.1 * (1-exp(exp(beta.2)*-time))
-      return(y)
-    }
-  } else {
-    f <- function(time, beta.1) {
-      y <- beta.1 * (1-exp(-time))
-      return(y)
-    }
+  f <- function(time, beta.1, beta.2) {
+    y <- beta.1 * (1-exp(exp(beta.2)*-time))
+    return(y)
   }
 
 
