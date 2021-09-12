@@ -899,10 +899,10 @@ get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TR
     for (k in 1:ncol(xmat)) {
       if (!is.na(xmat[i,k,1])) {
         meanmat[i,k] <- mean(xmat[i,k,])
-        semat[i,k] <- sd(xmat[i,k,])
-        medmat[i,k] <- median(xmat[i,k,])
-        l95mat[i,k] <- quantile(xmat[i,k,], probs = 0.025)
-        u95mat[i,k] <- quantile(xmat[i,k,], probs = 0.975)
+        semat[i,k] <- stats::sd(xmat[i,k,])
+        medmat[i,k] <- stats::median(xmat[i,k,])
+        l95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.025)
+        u95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.975)
       }
     }
   }

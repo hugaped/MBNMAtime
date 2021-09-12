@@ -398,8 +398,8 @@ absdist <- function(mbnma) {
   if ("abs" %in% mbnma$model.arg$fun$apool) {
     abs <- names(mbnma$model.arg$fun$apool)[mbnma$model.arg$fun$apool %in% "abs"]
     for (i in seq_along(abs)) {
-      med <- median(mbnma$BUGSoutput$sims.list[[abs[i]]])
-      prec <- 1/(sd(mbnma$BUGSoutput$sims.list[[abs[i]]])^2)
+      med <- stats::median(mbnma$BUGSoutput$sims.list[[abs[i]]])
+      prec <- 1/(stats::sd(mbnma$BUGSoutput$sims.list[[abs[i]]])^2)
 
       absprior[[abs[i]]] <- paste0("dnorm(", format(med, digits=4), ",", format(prec,digits=4), ")")
     }
