@@ -131,7 +131,9 @@ Additional columns can be included in the dataset. These will simply be added to
 * Class labels are consistent within each treatment
 * Studies have at least two arms
 
-And finally it converts the data into an object of `class("mb.network")`, which contains indices for study arms and follow-up measurements, and generates numeric values for treatments and classes. By convention, treatments are numbered alphabetically, though if the original data for treatments is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAtime` functions.
+Unless otherwise specified, `mb.network()` will automatically determine whether each study in the dataset is reported as change from baseline or absolute - studies that include a measurement at `time=0` are assumed to report absolute values, whilst those with no measurement at `time=0` are assumed to be change from baseline. This can also be explicitly specified by the user by including a logical vector for the argument `cfb` in `mb.network()` - `TRUE` indicates a study reports change from baseline, and `FALSE` indicates that it reports absolute values. 
+
+Finally, `mb.network()` converts the data into an object of `class("mb.network")`, which contains indices for study arms and follow-up measurements, and generates numeric values for treatments and classes. By convention, treatments are numbered alphabetically, though if the original data for treatments is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAtime` functions.
 
 
 ### Network connectivity
@@ -229,7 +231,7 @@ Time-course parameters within time-course functions are each defined by two argu
 
 `pool` is used to define the approach used for the pooling of a given time-course parameter and can either of:
 
-* `"rel"` indicates that relative effects should be pooled for this time-course parameter. This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by Lu and Ades [-@lu2004].
+* `"rel"` indicates that relative effects (or mean differences) should be pooled for this time-course parameter. This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by Lu and Ades [-@lu2004].
 * `"abs"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single absolute value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity.
 
 `method` is used to define the model used for meta-analysis for a given time-course parameter and can take either of:
@@ -249,7 +251,7 @@ Additional arguments within the function may also be used to specify the degree 
 
 #### Parameters modelled using relative effects
 
-If pooling is relative (e.g. `pool.1="rel"`) for a given parameter then the named parameter (e.g. `emax`) or a numbered `d` parameter (e.g. `d.1`) corresponds to the pooled relative effect for a given treatment compared to the network reference treatment for this time-course parameter.
+If pooling is relative (e.g. `pool.1="rel"`) for a given parameter then the named parameter (e.g. `emax`) or a numbered `d` parameter (e.g. `d.1`) corresponds to the pooled relative effect (or mean difference) for a given treatment compared to the network reference treatment for this time-course parameter.
 
 `sd.` followed by a named (e.g. `emax`, `beta.1`) is the between-study SD (heterogeneity) for relative effects, reported if pooling for a time-course parameter is relative (e.g. `pool.1="rel"`) *and* the method for synthesis is random (e.g. `method.1="random`).
 
@@ -282,7 +284,7 @@ mbnma <- mb.run(network.alog, fun=tpoly(degree=1, pool.1="rel", method.1="common
 summary(mbnma)
 ```
 
-For this model, the `d.1` parameters correspond to the 1st polynomial coefficient, and therefore are the linear gradient of the response over time for each treatment versus `placebo`. However, note that the residual deviance of the model is very high, suggesting (as we might expect) that this linear time-course function is a poor fit.
+For this model, the `d.1` parameters correspond to the 1st polynomial coefficient, and therefore are the linear gradient of the response over time for each treatment versus `placebo` - i.e. the mean difference for the change in efficacy for each treatment versus `placebo`. However, note that the residual deviance of the model is very high, suggesting (as we might expect) that this linear time-course function is a poor fit.
 
 We may want to fit a more complex time-course function with two time-course parameters, such as an Emax function, yet limitations in the data might require that we make an assumption that one of the parameters does not vary by treatment. We can specify this by setting `pool` to be equal to `"abs"` for any parameters we choose.
 
@@ -297,7 +299,7 @@ mbnma <- mb.run(network.alog, fun=temax(
 summary(mbnma)
 ```
 
-In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum relative effect for each treatment versus `place`, whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias. Further exploration of the degree of data required for reliable estimation of time-course parameters is given in Pedder et al. [-@pedder2020].
+In this case, the parameters are named following the Emax function specification. `emax` corresponds to the maximum effect for each treatment versus `placebo` (interpretable as a mean difference versus `placebo`), whereas `et50` is the log of the time at which 50% of the maximum response is achieved, **across all treatments in the network**. This assumes conditional constancy of absolute effects for this time-course parameter, which is typically a strong assumption. However, if there were limited data with which to inform this parameter (e.g. at earlier time-points) then such an assumption might be necessary, with the caveat that interpolation of response at time-points informed by this parameter may be more susceptible to bias. Further exploration of the degree of data required for reliable estimation of time-course parameters is given in Pedder et al. [-@pedder2020].
 
 
 ### Additional model specification with `mb.run()`
@@ -418,7 +420,7 @@ Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  w
 
 #### Correlation between time-course parameters
 
-`mb.run()` automatically models correlation between time-course parameters modelled using relative effects. Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modelled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the scale matrix for the parameters that are modelled using relative effects, and by increasing the degrees of freedom of the inverse-Wishart prior $\Sigma_t$. 
+`mb.run()` automatically models correlation between time-course parameters modelled using relative effects (though this can be prevented by setting `corparam=FALSE`). Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modelled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the scale matrix for the parameters that are modelled using relative effects, and by increasing the degrees of freedom of the inverse-Wishart prior $\Sigma_t$. 
 
 `omega` can be used as an argument in `mb.run()` to represent this scale matrix. If specified, it must be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1 is used. The degrees of freedom can then be changed within the `priors` argument of `mb.run()` to make the prior more informative.
 
@@ -546,7 +548,20 @@ plot(mbnma)
 ```
 
 
-### Ranking
+### `get.relative()`: Calculating differences between treatments at a specified time-point
+
+Although `mb.run()` estimates the effects for different treatments on different time-course parameters, these are not necessarily easy to draw conclusions from, particularly for time-course functions with less easily interpretable parameters. `get.relative()` allows users to calculate mean differences between treatments at a specified time-point even if a subset, or even none of the treatments have been investigated at that time-point in included RCTs. 
+
+These results will then be reported on the scale on which the data were modelled (i.e. depending on the link function specified in `mb.run()`), rather than that of the specific time-course parameters. Within the matrices of results, mean differences/relative effects are shown as the row-defined treatment versus the column-defined treatment.
+
+```{r}
+allres <- get.relative(mbnma, time=20,
+                       treats = c("alog_100", "alog_50", "placebo"))
+print(allres)
+```
+
+
+### `rank()`: Ranking
 
 ```{r, include=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
 load(system.file("extdata", "ranks.rda", package="MBNMAtime", mustWork = TRUE))
@@ -585,6 +600,13 @@ Histograms for ranking results can also be plotted using the `plot()` method, wh
 ```{r, eval=rmarkdown::pandoc_available("1.12.3")}
 # Ranking histograms for AUC
 plot(ranks, params = "auc")
+```
+
+Cumulative rankograms indicating the probability of each treatment being ranked 1st, 2nd, etc. for each ranked parameter can also be plotted using `cumrank()`. These can be used to easily compare how different treatments rank for each ranked parameter simultaneously. By default, the Surface Under the Cumulative Ranking curve (SUCRA) are also returned for each treatment and ranked parameter [@salanti2011].
+
+```{r, eval=rmarkdown::pandoc_available("1.12.3")}
+# Cumulative ranking for all ranked parameters
+cumrank(ranks)
 ```
 
 
