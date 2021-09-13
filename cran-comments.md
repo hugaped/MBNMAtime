@@ -1,7 +1,7 @@
 ## Test environments
 
 * Ubuntu 16.04 on travis-ci, R 3.2.4
-* Local (Windows 2010), R 4.0.2
+* Local (Windows 2010), R 4.1.0
 * win-builder (release, dev)
 * Ubuntu 20.04 on GitHub Actions (release, dev)
 * Mac OS 10.15 on GitHub Actions (release)
@@ -9,8 +9,6 @@
 
 
 ## R CMD check results
-
-This is a resubmission, having set further tests to run conditionally and reduced build time of vignette.
 
 There was 1 NOTE: 
 
