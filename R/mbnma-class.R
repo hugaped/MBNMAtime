@@ -862,7 +862,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' alognet <- mb.network(alog_pcfb)
 #'
 #' # Run a quadratic time-course MBNMA using the alogliptin dataset
-#' mbnma <- mb.run(network.alog,
+#' mbnma <- mb.run(alognet,
 #'   fun=tpoly(degree=2,
 #'   pool.1="rel", method.1="random",
 #'   pool.2="rel", method.2="common"
