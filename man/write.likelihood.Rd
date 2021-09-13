@@ -29,9 +29,9 @@ be done by specifying one of the following:
 \item \code{"varadj"} - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \item \code{"CS"} - a multivariate normal likelihood with a
-\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{compound symmetry} structure
+\href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{compound symmetry} structure
 \item \code{"AR1"} - a multivariate normal likelihood with an
-\href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
+\href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 }}
 
 \item{link}{Can take either \code{"identity"} (the default),

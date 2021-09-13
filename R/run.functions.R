@@ -35,9 +35,9 @@
 #'   * `"varadj"` - a univariate likelihood with a variance adjustment to assume a constant correlation between subsequent
 #'   time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 #'   * `"CS"` - a multivariate normal likelihood with a
-#'     \href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{compound symmetry} structure
+#'     \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{compound symmetry} structure
 #'   * `"AR1"` - a multivariate normal likelihood with an
-#'     \href{https://online.stat.psu.edu/stat502/lesson/10/10.3}{autoregressive AR1} structure
+#'     \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 #'
 #' @param omega A scale matrix for the inverse-Wishart prior for the covariance matrix used
 #' to model the correlation between time-course parameters (see Details for time-course functions). `omega` must
