@@ -24,12 +24,40 @@ Must be a subset of \code{mbnma$network$treatments}}
 Must be a subset of \code{mbnma$network$classes}. Only works for class effect models.}
 }
 \value{
-A list containing details of the results and an array of class \code{relative.array} that contains
-MCMC results for the relative effects / mean differences between all treatments specified in \code{treats}
-or all classes specified in \code{classes}
+An object of class \code{"relative.array"} list containing:
+\itemize{
+\item The time-point for which results are estimated
+\item Matrices of posterior means, medians, SDs and upper and lower 95\% credible intervals for the
+differences between each treatment
+\item An array containing MCMC results for the differences between all treatments specified in \code{treats}
+or all classes specified in \code{classes}.
+}
+
+Results are reported in tables as the row-defined treatment minus the column-defined treatment.
 }
 \description{
-Uses mbnma time-course parameter estimates to calculate relative effects or mean
-differences (depending on scale) between treatments or classes at a particular time-point.
+Uses mbnma time-course parameter estimates to calculate treatment
+differences between treatments or classes at a particular time-point.
 Can be used to compare treatments evaluated in studies at different follow-up times.
+}
+\examples{
+\donttest{
+# Create an mb.network object from a dataset
+alognet <- mb.network(alog_pcfb)
+
+# Run a quadratic time-course MBNMA using the alogliptin dataset
+mbnma <- mb.run(network.alog,
+  fun=tpoly(degree=2,
+  pool.1="rel", method.1="random",
+  pool.2="rel", method.2="common"
+  )
+)
+
+# Calculate differences between all treatments at 20 weeks follow-up
+allres <- get.relative(mbnma, time=20)
+
+# Calculate difference between a subset of treatments at 10 weeks follow-up
+subres <- get.relative(mbnma, time=10,
+  treats=c("alog_50", "alog_25", "placebo"))
+}
 }
