@@ -11,7 +11,7 @@
 #' @param ... further arguments passed to `knitr::kable`
 #'
 #' @export
-print.relative.array <- function(x, digits=1, ...) {
+print.relative.array <- function(x, digits=2, ...) {
 
   xmat <- x$relarray
 
@@ -22,7 +22,7 @@ print.relative.array <- function(x, digits=1, ...) {
   for (i in 1:nrow(xmat)) {
     for (k in 1:ncol(xmat)) {
       if (!is.na(xmat[i,k,1])) {
-        outmat[i,k] <- neatCrI(quantile(xmat[i,k,], probs=c(0.025, 0.5, 0.975)), digits = digits)
+        outmat[i,k] <- neatCrI(stats::quantile(xmat[i,k,], probs=c(0.025, 0.5, 0.975)), digits = digits)
       }
     }
   }
