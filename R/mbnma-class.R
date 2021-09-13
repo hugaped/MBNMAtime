@@ -835,8 +835,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 
 #' Calculates relative effects/mean differences at a particular time-point
 #'
-#' Uses mbnma time-course parameter estimates to calculate relative effects or mean
-#' differences (depending on scale) between treatments or classes at a particular time-point.
+#' Uses mbnma time-course parameter estimates to calculate treatment
+#' differences between treatments or classes at a particular time-point.
 #' Can be used to compare treatments evaluated in studies at different follow-up times.
 #'
 #' @param time A numeric value for the time at which to estimate relative effects/mean differences.
@@ -847,9 +847,36 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' @inheritParams predict.mbnma
 #' @inheritParams fitplot
 #'
-#' @return A list containing details of the results and an array of class `relative.array` that contains
-#' MCMC results for the relative effects / mean differences between all treatments specified in `treats`
-#' or all classes specified in `classes`
+#' @return An object of class `"relative.array"` list containing:
+#' * The time-point for which results are estimated
+#' * Matrices of posterior means, medians, SDs and upper and lower 95% credible intervals for the
+#' differences between each treatment
+#' * An array containing MCMC results for the differences between all treatments specified in `treats`
+#' or all classes specified in `classes`.
+#'
+#' Results are reported in tables as the row-defined treatment minus the column-defined treatment.
+#'
+#' @examples
+#' \donttest{
+#' # Create an mb.network object from a dataset
+#' alognet <- mb.network(alog_pcfb)
+#'
+#' # Run a quadratic time-course MBNMA using the alogliptin dataset
+#' mbnma <- mb.run(network.alog,
+#'   fun=tpoly(degree=2,
+#'   pool.1="rel", method.1="random",
+#'   pool.2="rel", method.2="common"
+#'   )
+#' )
+#'
+#' # Calculate differences between all treatments at 20 weeks follow-up
+#' allres <- get.relative(mbnma, time=20)
+#'
+#' # Calculate difference between a subset of treatments at 10 weeks follow-up
+#' subres <- get.relative(mbnma, time=10,
+#'   treats=c("alog_50", "alog_25", "placebo"))
+#' }
+#' @export
 get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TRUE),
                          treats=mbnma$network$treatments, classes=NULL) {
 
@@ -867,19 +894,27 @@ get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TR
     level <- "treatment"
   }
 
-  pred <- predict.mbnma(mbnma, times=time,
-                        treats = treats, level = level)
+  pred <- suppressMessages(predict.mbnma(mbnma, times=time,
+                        treats = treats, level = level))
 
 
   # Matrix of results
   mat <- do.call(cbind, pred$pred.mat)
 
+  # For lower triangle
   outmat <- array(dim=c(length(treats), length(treats), nrow(mat)))
   for (i in 1:(ncol(mat)-1)) {
-    temp <- mat[,i] - mat[,-i]
+    temp <- mat[,-i] - mat[,i]
     #temp <- apply(temp, MARGIN=2, FUN=function(x) {neatCrI(quantile(x, probs=c(0.025, 0.5, 0.975)), digits = 2)})
     outmat[(1+i):dim(outmat)[1],i,] <- t(temp[,i:ncol(temp)])
   }
+
+  # For upper triangle
+  for (i in 1:(ncol(mat)-1)) {
+    temp <- mat[,i] - mat[,-i]
+    outmat[i,(1+i):dim(outmat)[2],] <- t(temp[,i:ncol(temp)])
+  }
+
   dimnames(outmat)[[1]] <- treats
   dimnames(outmat)[[2]] <- treats
 
