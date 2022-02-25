@@ -639,7 +639,7 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 
   if (degree==1) {
     if (method.power1=="random") {
-      jags <- gsub("beta\\.2", "beta.2[i,k]", jags)
+      jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
     }
   } else if (degree==2) {
     if (pool.2=="rel") {
@@ -648,10 +648,10 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
       jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
     }
     if (method.power1=="random") {
-      jags <- gsub("beta\\.3", "beta.3[i,k]", jags)
+      jags <- gsub("beta\\.3", "i.beta.3[i,k]", jags)
     }
     if (method.power2=="random") {
-      jags <- gsub("beta\\.4", "beta.4[i,k]", jags)
+      jags <- gsub("beta\\.4", "i.beta.4[i,k]", jags)
     }
   }
 
