@@ -1,10 +1,13 @@
 Package: MBNMAtime
 Type: Package
 Title: Run Time-Course Model-Based Network Meta-Analysis (MBNMA) Models
-Version: 0.2.1
+Version: 0.2.2.900
 Language: en-GB
 Date: 2021-09-13
-Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
+Authors@R: c(person("Hugo", "Pedder", 
+    email = "hugopedder@gmail.com", 
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-7813-3749")),
   person("Nicky", "Welton", role = c("ctb", "rev")),
   person("Sofia", "Dias", role = c("ctb", "rev")),
   person("Meg", "Bennetts", role = c("ctb", "rev")),
