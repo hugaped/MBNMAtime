@@ -16,10 +16,10 @@
 #' \eqn{emax\times{(1-exp(exp(onset)*-x))}}
 #'
 #' @param pool.emax Pooling for exponential Emax parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.emax Method for synthesis of exponential Emax parameter. Can take `"common` or `"random"` (see Time-course parameters section).
+#' @param method.emax Method for synthesis of exponential Emax parameter. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.onset Pooling for parameter controlling speed of onset. Default is `NULL` which avoids including
 #' this parameter (i.e. fixes it to 1 for all treatments). Can take `"rel"` or `"abs"` (see details).
-#' @param method.onset Method for synthesis of parameter controlling speed of onset. Can take `"common` or `"random"` (see Time-course parameters section).
+#' @param method.onset Method for synthesis of parameter controlling speed of onset. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -42,7 +42,7 @@
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
-#'
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' @references
@@ -59,10 +59,27 @@ texp <- function(pool.emax="rel", method.emax="common",
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(pool.emax, choices=c("rel", "abs"), add=argcheck)
-  checkmate::assertChoice(method.emax, choices=c("common", "random"), add=argcheck)
+  # checkmate::assertChoice(method.emax, choices=c("common", "random"), add=argcheck)
   checkmate::assertChoice(pool.onset, choices=c("rel", "abs"), null.ok = TRUE, add=argcheck)
-  checkmate::assertChoice(method.onset, choices=c("common", "random"), null.ok = TRUE, add=argcheck)
+  # checkmate::assertChoice(method.onset, choices=c("common", "random"), null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.emax=method.emax, method.onset=method.onset)
+  for (i in seq_along(params)) {
+    if (!is.null(parms[[i]])) {
+      err <- TRUE
+      if (length(params[[i]])==1) {
+        if (any(c("common", "random") %in% params[[i]])) {
+          err <- FALSE
+        } else if (is.numeric(params[[i]])) {
+          err <- FALSE
+        }
+      }
+      if (err) {
+        stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+      }
+    }
+  }
 
   # Define time-course function
   if (!is.null(pool.onset)) {
@@ -138,7 +155,7 @@ texp <- function(pool.emax="rel", method.emax="common",
 #' \eqn{rate\times{log(x + 1)}}
 #'
 #' @param pool.rate Pooling for rate parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.rate Method for synthesis of rate parameter. Can take `"common"` or `"random"` (see Time-course parameters section)
+#' @param method.rate Method for synthesis of rate parameter. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -162,7 +179,7 @@ texp <- function(pool.emax="rel", method.emax="common",
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
-#'
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' @references
@@ -178,8 +195,25 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(pool.rate, choices=c("rel", "abs"), add=argcheck)
-  checkmate::assertChoice(method.rate, choices=c("common", "random"), add=argcheck)
+  # checkmate::assertChoice(method.rate, choices=c("common", "random"), add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.rate=method.rate)
+  for (i in seq_along(params)) {
+    if (!is.null(parms[[i]])) {
+      err <- TRUE
+      if (length(params[[i]])==1) {
+        if (any(c("common", "random") %in% params[[i]])) {
+          err <- FALSE
+        } else if (is.numeric(params[[i]])) {
+          err <- FALSE
+        }
+      }
+      if (err) {
+        stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+      }
+    }
+  }
 
   # Define time-course function
   fun <- ~ rate * log(time + 1)
@@ -231,11 +265,11 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #' Emax time-course function
 #'
 #' @param pool.emax Pooling for Emax parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.emax Method for synthesis of Emax parameter. Can take `"common` or `"random"` (see details).
+#' @param method.emax Method for synthesis of Emax parameter. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.et50 Pooling for ET50 parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.et50 Method for synthesis of ET50 parameter. Can take `"common` or `"random"` (see details).
+#' @param method.et50 Method for synthesis of ET50 parameter. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.hill Pooling for Hill parameter. Can take `"rel"` or `"abs"` (see details).
-#' @param method.hill Method for synthesis of Hill parameter. Can take `"common` or `"random"` (see details).
+#' @param method.hill Method for synthesis of Hill parameter. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -270,6 +304,7 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
@@ -295,12 +330,29 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(pool.emax, choices=c("rel", "abs"), add=argcheck)
-  checkmate::assertChoice(method.emax, choices=c("common", "random"), add=argcheck)
+  # checkmate::assertChoice(method.emax, choices=c("common", "random"), add=argcheck)
   checkmate::assertChoice(pool.et50, choices=c("rel", "abs"), add=argcheck)
-  checkmate::assertChoice(method.et50, choices=c("common", "random"), add=argcheck)
+  # checkmate::assertChoice(method.et50, choices=c("common", "random"), add=argcheck)
   checkmate::assertChoice(pool.hill, choices=c("rel", "abs"), null.ok = TRUE, add=argcheck)
-  checkmate::assertChoice(method.hill, choices=c("common", "random"), null.ok = TRUE, add=argcheck)
+  # checkmate::assertChoice(method.hill, choices=c("common", "random"), null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.emax=method.emax, method.et50=method.et50, method.hill=method.hill)
+  for (i in seq_along(params)) {
+    if (!is.null(parms[[i]])) {
+      err <- TRUE
+      if (length(params[[i]])==1) {
+        if (any(c("common", "random") %in% params[[i]])) {
+          err <- FALSE
+        } else if (is.numeric(params[[i]])) {
+          err <- FALSE
+        }
+      }
+      if (err) {
+        stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+      }
+    }
+  }
 
   if (is.null(method.hill)) {
     ehill <- FALSE
@@ -397,13 +449,13 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 #'
 #' @param degree The degree of the polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
 #' @param pool.1 Pooling for the 1st polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.1 Method for synthesis of the 1st polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.1 Method for synthesis of the 1st polynomial coefficient.Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.2 Pooling for the 2nd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.2 Method for synthesis of the 2nd polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.2 Method for synthesis of the 2nd polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.3 Pooling for the 3rd polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.3 Method for synthesis of the 3rd polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.3 Method for synthesis of the 3rd polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.4 Pooling for the 4th polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.4 Method for synthesis of the 4th polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.4 Method for synthesis of the 4th polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -446,6 +498,7 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
@@ -473,9 +526,24 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
   checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
   for (i in 1:4) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
-    checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
+    # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
   }
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.1=method.1, method.2=method.2, method.3=method.3, method.4=method.4)
+  for (i in seq_along(params)) {
+    err <- TRUE
+    if (length(params[[i]])==1) {
+      if (any(c("common", "random") %in% params[[i]])) {
+        err <- FALSE
+      } else if (is.numeric(params[[i]])) {
+        err <- FALSE
+      }
+    }
+    if (err) {
+      stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+    }
+  }
 
   # Define time-course function
   fun <- "beta.1 * time"
@@ -536,12 +604,12 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #'
 #' @param degree The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAtime}
 #' @param pool.1 Pooling for the 1st fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.1 Method for synthesis of the 1st fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.1 Method for synthesis of the 1st fractional polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.2 Method for synthesis of the 2nd fractional polynomial coefficient. Can take `"common` or `"random"` (see details).
-#' @param method.power1 Method for synthesis of the 1st fractional polynomial power. Can take `"common` or `"random"` (see details).
+#' @param method.2 Method for synthesis of the 2nd fractional polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param method.power1 Method for synthesis of the 1st fractional polynomial power. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'   `pool` for this parameter is set to `"abs"`.
-#' @param method.power2 Method for synthesis of the 2nd fractional polynomial power. Can take `"common` or `"random"` (see details).
+#' @param method.power2 Method for synthesis of the 2nd fractional polynomial power. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'   `pool` for this parameter is set to `"abs"`.
 #'
 #' @return An object of `class("timefun")`
@@ -581,6 +649,7 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
@@ -611,10 +680,26 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
   checkmate::assertIntegerish(degree, len=1, lower=1, upper = 2, add=argcheck)
   for (i in 1:2) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
-    checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
-    checkmate::assertChoice(get(paste0("method.power", i)), choices=c("common", "random"), add=argcheck)
+    # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
+    # checkmate::assertChoice(get(paste0("method.power", i)), choices=c("common", "random"), add=argcheck)
   }
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.1=method.1, method.2=method.2, method.power1=method.power1, method.power2=method.power2)
+  for (i in seq_along(params)) {
+    err <- TRUE
+    if (length(params[[i]])==1) {
+      if (any(c("common", "random") %in% params[[i]])) {
+        err <- FALSE
+      } else if (is.numeric(params[[i]])) {
+        err <- FALSE
+      }
+    }
+    if (err) {
+      stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+    }
+  }
+
 
   pool.power1 <- "abs"
 
@@ -773,13 +858,13 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
 #' @param degree The degree of the piecewise B-spline polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
 #' @param pool.1 Pooling for the 1st coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.1 Method for synthesis of the 1st coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.1 Method for synthesis of the 1st coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.2 Pooling for the 2nd coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.2 Method for synthesis of the 2nd coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.2 Method for synthesis of the 2nd coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.3 Pooling for the 3rd coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.3 Method for synthesis of the 3rd coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.3 Method for synthesis of the 3rd coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.4 Pooling for the 4th coefficient. Can take `"rel"` or `"abs"` (see details).
-#' @param method.4 Method for synthesis of the 4th coefficient. Can take `"common` or `"random"` (see details).
+#' @param method.4 Method for synthesis of the 4th coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -802,6 +887,7 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
@@ -838,9 +924,24 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
   checkmate::assertIntegerish(degree, add=argcheck)
   for (i in 1:4) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
-    checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
+    # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
   }
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.1=method.1, method.2=method.2, method.3=method.3, method.4=method.4)
+  for (i in seq_along(params)) {
+    err <- TRUE
+    if (length(params[[i]])==1) {
+      if (any(c("common", "random") %in% params[[i]])) {
+        err <- FALSE
+      } else if (is.numeric(params[[i]])) {
+        err <- FALSE
+      }
+    }
+    if (err) {
+      stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+    }
+  }
 
   # Check knots and degrees
   x <- c(0:100)
@@ -915,14 +1016,14 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 #'
 #' @param fun A formula specifying any relationship including `time` and
 #'   one/several of: `beta.1`, `beta.2`, `beta.3`, `beta.4`.
-#' @param pool.1 Pooling for `beta.1`. Can take `"rel"` or `"abs"` (see details).
+#' @param pool.1 Pooling for `beta.1`. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param method.1 Method for synthesis of `beta.1`. Can take `"common` or `"random"` (see details).
-#' @param pool.2 Pooling for `beta.2`. Can take `"rel"` or `"abs"` (see details).
+#' @param pool.2 Pooling for `beta.2`. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param method.2 Method for synthesis of `beta.2. Can take `"common` or `"random"` (see details).
-#' @param pool.3 Pooling for `beta.3. Can take `"rel"` or `"abs"` (see details).
+#' @param pool.3 Pooling for `beta.3`. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param method.3 Method for synthesis of `beta.3. Can take `"common` or `"random"` (see details).
-#' @param pool.4 Pooling for `beta.4. Can take `"rel"` or `"abs"` (see details).
-#' @param method.4 Method for synthesis of `beta.4`. Can take `"common` or `"random"` (see details).
+#' @param pool.4 Pooling for `beta.4`. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param method.4 Method for synthesis of `beta.4`. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -945,6 +1046,7 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 #' | ----------------- | ---------------------------- |
 #' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
 #' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
 #'
 #'
 #' When relative effects are modelled on more than one time-course parameter,
@@ -974,9 +1076,24 @@ tuser <- function(fun, pool.1="rel", method.1="common",
   checkmate::assertFormula(fun, add=argcheck)
   for (i in 1:4) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
-    checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
+    # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
   }
   checkmate::reportAssertions(argcheck)
+
+  params <- list(method.1=method.1, method.2=method.2, method.3=method.3, method.4=method.4)
+  for (i in seq_along(params)) {
+    err <- TRUE
+    if (length(params[[i]])==1) {
+      if (any(c("common", "random") %in% params[[i]])) {
+        err <- FALSE
+      } else if (is.numeric(params[[i]])) {
+        err <- FALSE
+      }
+    }
+    if (err) {
+      stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+    }
+  }
 
   # Check user function
   user.str <- as.character(fun[2])

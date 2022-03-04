@@ -608,7 +608,8 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
   for (i in seq_along(fun$amethod)) {
     if ("abs" %in% fun$apool[i]) {
 
-      if (is.character(fun$amethod[i])) {
+      if (grepl("[A-z]", fun$amethod[i])) {
+      # if (is.character(fun$amethod[i])) {
         # Insert prior for absolute effect
         model <- model.insert(model, pos=which(names(model)=="end"),
                               x=paste0("beta.", i, " ~ dnorm(0,0.0001)"))
@@ -626,10 +627,10 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
                                 )
           )
         }
-      } else if (is.numeric(fun$amethod[i])) {
+      } else if (grepl("[0-9]", fun$amethod[i])) {
         # Insert fixed value for absolute effect
         model <- model.insert(model, pos=which(names(model)=="start"),
-                              x=paste0("beta.", i, " <- ", fun$amethod[i]))
+                              x=paste0("beta.", i, " <- ", as.numeric(fun$amethod[i])))
 
       }
     }

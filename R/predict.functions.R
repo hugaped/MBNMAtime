@@ -85,8 +85,12 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
         # Add beta parameters to the vector of time-course parameters
         time.params <- append(time.params, fun$bname[i])
 
-      } else if (is.numeric(fun$amethod[i])) {
-        stop(paste0("Common time-course parameter for", params[i], " currently not supported for prediction"))
+      } else if (grepl("[0-9]", fun$amethod[i])) {
+
+        model.vals[[fun$bname[i]]] <- sims.matrix[,names(fun$bname)[i]]
+
+        # Add beta parameters to the vector of time-course parameters
+        time.params <- append(time.params, fun$bname[i])
       }
     } else if ("rel" %in% fun$apool[i]) {
 
