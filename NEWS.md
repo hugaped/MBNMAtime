@@ -1,3 +1,16 @@
+# MBNMAtime 0.2.2
+
+## Additions/changes
+- Can now specify numeric values for time-course parameters in the `method` argument. Can be useful for discrete values that cannot be estimated (e.g. fractional polynomial powers, Hill parameter).
+
+## Bug fixes
+
+### Major
+
+### Minor
+
+
+
 # MBNMAtime 0.2.1
 
 ## Additions/changes
