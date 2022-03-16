@@ -2,6 +2,7 @@
 
 ## Additions/changes
 - Can now specify numeric values for time-course parameters in the `method` argument. Can be useful for discrete values that cannot be estimated (e.g. fractional polynomial powers, Hill parameter).
+- Fractional polynomial powers in `tfpoly()` can only take numeric values from set defined in Jansen 2015.
 
 ## Bug fixes
 
