@@ -607,9 +607,9 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #' @param method.1 Method for synthesis of the 1st fractional polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"` or `"abs"` (see details).
 #' @param method.2 Method for synthesis of the 2nd fractional polynomial coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
-#' @param method.power1 Method for synthesis of the 1st fractional polynomial power. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param method.power1 Value for the 1st fractional polynomial power. Must take any numeric value in the set `-2, -1, -0.5, 0, 0.5, 1, 2, 3`.
 #'   `pool` for this parameter is set to `"abs"`.
-#' @param method.power2 Method for synthesis of the 2nd fractional polynomial power. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param method.power2 Value for the 2nd fractional polynomial power. Must take any numeric value in the set `-2, -1, -0.5, 0, 0.5, 1, 2, 3`.
 #'   `pool` for this parameter is set to `"abs"`.
 #'
 #' @return An object of `class("timefun")`
@@ -667,21 +667,21 @@ tpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", metho
 #'
 #' # 2nd order fractional polynomial
 #' # with a single absolute parameter estimated for the 2nd coefficient
-#' # 1st power estimated as exchangeable (random) across studies
+#' # 1st power equal to zero
 #' tfpoly(degree=2, pool.1="rel", method.1="common",
 #'   pool.2="abs", method.2="random",
-#'   method.power1="random")
+#'   method.power1=0)
 #'
 #' @export
 tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", method.2="common",
-                   method.power1="common", method.power2="common") {
+                   method.power1=0, method.power2=0) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, len=1, lower=1, upper = 2, add=argcheck)
   for (i in 1:2) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
     # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
-    # checkmate::assertChoice(get(paste0("method.power", i)), choices=c("common", "random"), add=argcheck)
+    checkmate::assertChoice(get(paste0("method.power", i)), choices=c(-2,-1,-0.5,0,0.5,1,2,3), add=argcheck)
   }
   checkmate::reportAssertions(argcheck)
 
