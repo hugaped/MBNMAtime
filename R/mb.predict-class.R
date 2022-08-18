@@ -153,8 +153,8 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   # Add overlayed lines and legends
   g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted MBNMA")) +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% CrI"))
+    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% Interval")) +
+    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% Interval"))
 
 
   if (!is.null(overlay.nma)) {
@@ -171,7 +171,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     }
 
     # Run split NMA
-    nma <- overlay.nma(x, incl.range=overlay.nma, method=method, link=x$link, ...)
+    nma <- overlay.nma(x, incl.range=overlay.nma, method=method, link=x$link, lim=x$lim, ...)
 
     predtrt <- nma$pred.df
 
@@ -186,12 +186,12 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     }
 
     g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=overlay.nma[1], xmax=overlay.nma[2],
-                                             fill="NMA (95%CrI)"),
-                                alpha=0.8, data=predtrt) +
+                                             fill="NMA (95% Interval)"),
+                                alpha=0.5, data=predtrt) +
       ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=overlay.nma[1], xend=overlay.nma[2], color="Predicted NMA"),
                             data=predtrt, size=1) +
       ggplot2::labs(caption=capt) +
-      ggplot2::scale_fill_manual(name="", values=c("NMA (95%CrI)"="grey"))
+      ggplot2::scale_fill_manual(name="", values=c("NMA (95% Interval)"="grey"))
 
     colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
 
@@ -201,7 +201,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     ggplot2::labs(y="Predicted response", x="Time")
 
   linetypevals <- c("Predicted MBNMA"="solid",
-                    "MBNMA 95% CrI"="dashed")
+                    "MBNMA 95% Interval"="dashed")
   g <- g + ggplot2::scale_linetype_manual(name="",
                                           values=linetypevals)
 

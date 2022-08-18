@@ -30,7 +30,7 @@
 #'   the prediction
 #'
 #'   @noRd
-get.model.vals <- function(mbnma, E0=0, level="treatments") {
+get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
 
   # Check that correct parameters are monitored
   genparams <- gen.parameters.to.save(fun=mbnma$model.arg$fun, model=mbnma$model.arg$jagscode)
@@ -65,14 +65,14 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 
   for (i in seq_along(params)) {
     if ("abs" %in% fun$apool[i]) {
-      if ("common" %in% fun$amethod[i]) {
+      if ("common" %in% fun$amethod[i] | lim=="cred") {
         # Store matrix of MCMC iterations to list
         model.vals[[fun$bname[i]]] <-
           sims.matrix[,grepl(paste0("^", params[i]), colnames(sims.matrix))]
 
         # Add beta parameters to the vector of time-course parameters
         time.params <- append(time.params, fun$bname[i])
-      } else if ("random" %in% fun$amethod[i]) {
+      } else if ("random" %in% fun$amethod[i] & lim=="pred") {
         # Store matrix of beta values generated from random distribution determined by model parameters
         len <- sum(grepl(paste0("^", params[i]), colnames(sims.matrix)))
         mat <- array(dim=c(n, len, 2))
@@ -120,7 +120,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
             mcmcmat <- cbind(mcmcmat, matrix(rep(mat[,k], tperc[k]), ncol=tperc[k]))
           }
 
-          if ("random" %in% mbnma$model.arg$class.effect[[params[i]]]) {
+          if ("random" %in% mbnma$model.arg$class.effect[[params[i]]] & lim=="pred") {
             # Store matrix of beta values generated from random distribution determined by model parameters
             mcmcarray <- array(dim=c(n, ncol(mcmcmat), 2))
             mcmcarray[,,1] <- mcmcmat
@@ -137,10 +137,10 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
 
         if (level=="classes") {
 
-          if ("common" %in% mbnma$model.arg$class.effect[[params[i]]]) {
+          if ("common" %in% mbnma$model.arg$class.effect[[params[i]]] | lim=="cred") {
             # Store MCMC results for relevant parameters
             model.vals[[paste0("d.", i)]] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
-          } else if ("random" %in% mbnma$model.arg$class.effect[[params[i]]]) {
+          } else if ("random" %in% mbnma$model.arg$class.effect[[params[i]]] & lim=="pred") {
             # Store matrix of beta values generated from random distribution determined by model parameters
             len <- sum(grepl(findd, colnames(sims.matrix)))
             mat <- array(dim=c(n, len, 2))
@@ -157,12 +157,12 @@ get.model.vals <- function(mbnma, E0=0, level="treatments") {
         time.params <- append(time.params, paste0("d.", i))
         findd <- ifelse(grepl("beta", params[i]), paste0("^d\\.", i), paste0("^", params[i]))
 
-        if ("common" %in% fun$amethod[i]) {
+        if ("common" %in% fun$amethod[i] | lim=="cred") {
 
           # Store MCMC results for relevant parameters
           model.vals[[paste0("d.", i)]] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
 
-        } else if ("random" %in% fun$amethod[i]) {
+        } else if ("random" %in% fun$amethod[i] & lim=="pred") {
 
           # Store matrix of beta values generated from random distribution determined by model parameters
           len <- sum(grepl(findd, colnames(sims.matrix)))

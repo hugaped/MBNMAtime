@@ -263,9 +263,10 @@ alpha.scale <- function(n.cut, col="blue") {
 #' @param incl.range A numeric vector of length 2 representing a range between which time-points should be synthesised
 #' @inheritParams plot.mb.predict
 #' @inheritParams mb.run
+#' @inheritParams mb.predict
 #'
 #' @noRd
-overlay.nma <- function(pred, incl.range, method="common", link="identity", ...) {
+overlay.nma <- function(pred, incl.range, method="common", link="identity", lim="cred", ...) {
 
   # Declare global variable
   cor <- NULL
@@ -330,9 +331,9 @@ overlay.nma <- function(pred, incl.range, method="common", link="identity", ...)
   timeindex <- order(timedif)[1]
   predref <- pred$pred.mat[[1]][[timeindex]]
 
-  if (method=="common") {
+  if (method=="common" | "cred" %in% lim) {
     predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
-  } else if (method=="random") {
+  } else if (method=="random" & "pred" %in% lim) {
 
     if (is.vector(nma$BUGSoutput$sims.list$d[,-1])) {
       cols <- 1

@@ -296,6 +296,7 @@ summary.mbnma <- function(object, ...) {
 #' @param synth A character object that can take the value `"common"` or `"random"` that
 #'   specifies the the type of pooling to use for synthesis of `ref.resp`. Using `"random"` rather
 #'   than `"common"` for `synth` will result in wider 95\\% CrI for predictions.
+#' @param lim Specifies calculation of either 95% credible intervals (`lim="cred"`) or 95% prediction intervals (`lim="pred"`).
 #' @param ... Arguments to be sent to R2jags for synthesis of the network
 #'   reference treatment effect (using [ref.synth()])
 #'
@@ -355,6 +356,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
                           E0=0,
                           treats = NULL, level="treatment",
                           ref.resp=NULL, synth="common",
+                          lim="cred",
                           ...) {
   ######## CHECKS ########
 
@@ -365,6 +367,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
                            sorted=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices=c("treatment", "class"), add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "common"), add=argcheck)
+  checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
   #checkmate::assertClass(treats, classes=c("numeric", "character"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -459,6 +462,19 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
     stop(crayon::red(crayon::bold("'E0' has been incorrectly specified")))
   }
 
+  # Ensure prediction intervals are used where appropriate
+  if (lim=="pred" & "random" %in% object$model.arg$a.method) {
+
+    addsd <- TRUE
+
+    if (!any(grepl("sd\\.", object$parameters.to.save))) {
+      stop(crayon::red("'sd' for time-course parameters not included in parameters.to.save...\n...cannot calculate prediction intervals"))
+    }
+
+    message("Bayesian prediction intervals to be calculated")
+  } else {
+    addsd <- FALSE
+  }
 
   ###### Extract info from mbnma #######
 
@@ -471,7 +487,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   # timecourse <- paste0("alpha + ", object$model.arg$fun$jags)
 
   # Extract parameter values from MBNMA result
-  model.vals <- get.model.vals(mbnma=object, E0=E0, level=level)
+  model.vals <- get.model.vals(mbnma=object, E0=E0, level=level, lim=lim)
   timecourse <- model.vals[["timecourse"]]
   time.params <- model.vals[["time.params"]]
 
@@ -625,7 +641,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
 
   #predict.result <- list("summary"=sumpred, "pred.mat"=predicts, "treatments"=object$network$treatments, "mbnma"=object)
   predict.result <- list("summary"=sumpred, "pred.mat"=predicts, "network"=object$network,
-                         "times"=times, "link"=object$model.arg$link)
+                         "times"=times, "link"=object$model.arg$link, "lim"=lim)
   class(predict.result) <- "mb.predict"
 
   return(predict.result)
@@ -878,7 +894,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' }
 #' @export
 get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TRUE),
-                         treats=mbnma$network$treatments, classes=NULL) {
+                         treats=mbnma$network$treatments, classes=NULL, lim="cred") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -895,7 +911,7 @@ get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TR
   }
 
   pred <- suppressMessages(predict.mbnma(mbnma, times=time,
-                        treats = treats, level = level))
+                        treats = treats, level = level, lim=lim))
 
 
   # Matrix of results
@@ -950,7 +966,7 @@ get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TR
   }
 
   out <- list("time"=time, "relarray"=outmat)
-  out <- c(out, sumlist)
+  out <- c(out, sumlist, lim=lim)
 
   class(out) <- "relative.array"
 
