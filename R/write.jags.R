@@ -1186,3 +1186,93 @@ write.nma <- function(method="common", link="identity") {
 
   return(model)
 }
+
+
+
+
+
+
+#' Write non-parametric random walk model JAGS code
+#'
+#' Writes JAGS code for a Bayesian non-parametric model that splits the
+#' data into different time-bins and assumes a random walk process for treatment
+#' effects between them.
+#'
+#' @inheritParams nonparam.run
+#'
+#' @return A single long character string containing the JAGS model generated
+#'   based on the arguments passed to the function.
+#'
+#' @examples
+#' # Write a common effects non-paramtric random walk model
+#' write.rw(method="common")
+#'
+#' @export
+write.rw <- function(method="common", link="identity") {
+
+  model <- c(
+    "model{ \t\t\t# Begin Model Code",
+    "d[1] <- 0",
+    "",
+    "for(i in 1:NS){ # Run through all NS trials",
+    "mu[i,1] ~ dnorm(0,0.0001)",
+    "delta[i,1,1] <- 0",
+    "for (k in 1:narm[i]){ # Run through all arms within a study",
+    "for (m in 1:nbin) { # Run through each bin",
+    "y[i,k,m] ~ dnorm(theta[i,k,m], prec[i,k,m])",
+    "prec[i,k,m] <- pow(se[i,k,m], -2)",
+    "theta[i,k,m] <- mu[i,m] + delta[i,k,m]",
+    "dev[i,k,m] <- pow((y[i,k,m] - theta[i,k,m]),2) * prec[i,k,m] # residual deviance for normal likelihood",
+    "}",
+    "",
+    "resdev[i,k] <- sum(dev[i,k, 1:nbin])",
+    "}",
+    "",
+    "for (m in 2:nbin) { # Run through each bin",
+    "delta[i,1,m] <- 0",
+    "mu[i,m] ~ dnorm(mu[i,m-1],tau.rw)",
+    "",
+    "for(k in 2:narm[i]){ # Treatment effects",
+    "delta[i,k,m] ~ dnorm(delta[i,k,m-1],tau.rw)",
+    "}",
+    "}",
+    "",
+    "resstudydev[i] <- sum(resdev[i, 1:narm[i]])",
+    "",
+
+    # Common effects
+    "for(k in 2:narm[i]){ # Treatment effects",
+    "delta[i,k,1] <- md[i,k]",
+    "md[i,k] <- d[treat[i,k]] - d[treat[i,1]]",
+    "}",
+
+    # # Random effects
+    # "for(k in 2:narm[i]){ # Treatment effects",
+    # "delta[i,k,1] ~ dnorm(md[i,k], taud[i,k])",
+    # "md[i,k] <- d[treat[i,k]] - d[treat[i,1]] + sw[i,k]",
+    # "taud[i,k] <- tau *2*(k-1)/k",
+    # "w[i,k] <- (delta[i,k,1] - d[treat[i,k]] + d[treat[i,1]])",
+    # "sw[i,k] <- sum(w[i,1:(k-1)])/(k-1)",
+    # "}",
+
+    "",
+    "}",
+    "",
+    "for (k in 2:NT){ # Priors on relative treatment effects",
+    "d[k] ~ dnorm(0,0.0001)",
+    "}",
+    "totresdev <- sum(resstudydev[])",
+    "",
+    "tau.rw <- pow(sd.rw,-2)",
+    "sd.rw ~ dnorm(0,0.05) T(0,)",
+    "",
+
+    "tau <- pow(sd,-2)",
+    "sd ~ dnorm(0,0.05) T(0,)",
+    "# Model ends",
+    "}"
+    )
+
+
+return(model)
+}
