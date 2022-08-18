@@ -252,21 +252,34 @@ add_index <- function(data.ab, reference=1) {
     dplyr::group_by(studyID, time) %>%
     dplyr::mutate(narm=dplyr::n())
 
+  # Reorder columns in data.ab
+  ord <- c("time", "treatment", "class", "narm", "arm", "y", "se", "r", "E", "n")
+  newdat <- data.frame("studyID"=data.ab$studyID)
+  for (i in seq_along(ord)) {
+    if (ord[i] %in% names(data.ab)) {
+      newdat <- cbind(newdat, data.ab[,which(names(data.ab)==ord[i])])
+    }
+  }
+  olddat <- data.ab[,!(names(data.ab) %in% c("studyID", ord))]
+  newdat <- cbind(newdat, olddat)
 
-  outlist <- list("data.ab"=data.ab,
-                  "studyID"=as.character(unique(data.ab$studyID)),
-                  "treatments"=orderlist
-                  )
+  newdat <- dplyr::arrange(newdat, dplyr::desc(newdat$narm), newdat$studyID, newdat$time, newdat$arm)
+
+  outlist <- list("data.ab"=newdat,
+                 "studyID"=as.character(unique(newdat$studyID)),
+                 "treatments"=orderlist
+                 )
+
 
   # Store class labels and recode (if they exist in data.ab)
-  if ("class" %in% names(data.ab)) {
+  if ("class" %in% names(newdat)) {
     # Create class labels
-    classdata <- data.ab[, names(data.ab) %in% c("treatment", "class")]
+    classdata <- newdat[, names(newdat) %in% c("treatment", "class")]
     classdata <- dplyr::arrange(classdata, treatment)
     classes <- as.character(unique(classdata$class))
 
     # Recode classes
-    data.ab$class <- as.numeric(factor(data.ab$class, levels=classes))
+    newdat$class <- as.numeric(factor(newdat$class, levels=classes))
 
     # Generate class key
     classkey <- unique(classdata)
