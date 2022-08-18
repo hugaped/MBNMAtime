@@ -17,3 +17,11 @@ each arm of each study.
 Takes the earliest time point from each arm in each study within an
 \code{mb.network} object. Useful for network plots.
 }
+\examples{
+# Using the alogliptin dataset
+network <- mb.network(alog_pcfb)
+
+# Generate a data frame with only the earliest time point included in each study
+get.earliest.time(network)
+
+}

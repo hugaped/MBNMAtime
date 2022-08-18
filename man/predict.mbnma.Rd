@@ -13,6 +13,7 @@ models}
   level = "treatment",
   ref.resp = NULL,
   synth = "common",
+  lim = "cred",
   ...
 )
 }
@@ -71,6 +72,8 @@ and can take any RNG distribution for which a function exists in R. For example:
 \item{synth}{A character object that can take the value \code{"common"} or \code{"random"} that
 specifies the the type of pooling to use for synthesis of \code{ref.resp}. Using \code{"random"} rather
 than \code{"common"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
+
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 
 \item{...}{Arguments to be sent to R2jags for synthesis of the network
 reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}

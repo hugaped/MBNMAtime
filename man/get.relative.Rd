@@ -8,7 +8,8 @@ get.relative(
   mbnma,
   time = max(mbnma$model.arg$jagsdata$time, na.rm = TRUE),
   treats = mbnma$network$treatments,
-  classes = NULL
+  classes = NULL,
+  lim = "cred"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ Must be a subset of \code{mbnma$network$treatments}}
 
 \item{classes}{A character vector of class names for which to calculate relative effects/mean differences from.
 Must be a subset of \code{mbnma$network$classes}. Only works for class effect models.}
+
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 }
 \value{
 An object of class \code{"relative.array"} list containing:

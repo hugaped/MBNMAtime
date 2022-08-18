@@ -42,6 +42,9 @@ network <- mb.network(osteopain)
 # Get the latest time point
 df <- get.latest.time(network)
 
+# Get the closest time point to a given value (t)
+df <- get.closest.time(network, t=7)
+
 # Run NMA on the data
 nma.run(df, method="random")
 
