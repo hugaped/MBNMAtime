@@ -785,6 +785,9 @@ mb.update <- function(mbnma, param="theta",
 #' # Get the latest time point
 #' df <- get.latest.time(network)
 #'
+#' # Get the closest time point to a given value (t)
+#' df <- get.closest.time(network, t=7)
+#'
 #' # Run NMA on the data
 #' nma.run(df, method="random")
 #'
@@ -835,6 +838,106 @@ nma.run <- function(data.ab, method="common", link="identity", ...) {
   }
   )
   class(out) <- c("nma", "rjags")
+
+  return(out)
+}
+
+
+
+
+
+
+
+#' Run an non-parametric model
+#'
+#' @inheritParams mb.network
+#' @inheritParams mb.run
+#'
+#' @export
+nonparam.run <- function(network, class=FALSE, method="common", link="identity",
+                         binvals=bintime(network$data.ab), ...) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertLogical(class, add=argcheck)
+  checkmate::assertChoice(method, choices = c("common", "random"), add=argcheck)
+  checkmate::assertChoice(link, choices = c("identity", "smd", "log"), add=argcheck)
+  checkmate::assertClass(network, classes="mb.network", add=argcheck)
+  checkmate::assertNumeric(binvals, lower=0, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  data.ab <- network$data.ab
+
+  binvals <- sort(binvals)
+  if (!identical(unique(binvals), binvals)) {
+    stop("binvals must only include unique values for time bins")
+  }
+  if (binvals[1]!=0) {
+    binvals <- c(0, binvals)
+  }
+  if (max(binvals)<max(data.ab$time)) {
+    binvals <- c(binvals, max(data.ab$time))
+  }
+
+  # Write NMA model for common/random effects
+  model <- write.rw(method=method, link=link)
+
+
+  # Get jags data
+  jagsdata <<- getrwdata(data.ab, link=link, class=class, binvals=binvals)
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL
+  tempjags[["time"]] <- NULL
+
+  parameters.to.save <- c("d", "sd.rw", "totresdev")
+  if (method=="random") {
+    parameters.to.save <- append(parameters.to.save, "sd")
+  }
+
+  # Put data from jagsdata into separate R objects
+  for (i in seq_along(tempjags)) {
+    ##first extract the object value
+    temp <- tempjags[[i]]
+    ##now create a new variable with the original name of the list item
+    eval(parse(text=paste(names(tempjags)[[i]],"<- temp")))
+  }
+
+  # Take names of variables in tempjags for use in rjags
+  jagsvars <- list()
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
+  }
+
+  # Create a temporary model file
+  tmpf=tempfile()
+  tmps=file(tmpf,"w")
+  cat(paste(model, collapse="\n"),file=tmps)
+  close(tmps)
+
+  out <- tryCatch({
+    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+                           parameters.to.save=parameters.to.save,
+                           ...
+    )
+  },
+  error=function(cond) {
+    message(cond)
+    return(list("error"=cond))
+  }
+  )
+
+  model.arg <- list(parameters.to.save=parameters.to.save,
+                    fun="nonparam",
+                    jagscode=model,
+                    link=link,
+                    class.effect=class,
+                    UME=FALSE,
+                    priors=NULL
+                    )
+  out$model.arg <- model.arg
+  out$network <- network
+  out$type <- "time"
+  class(out) <- c("nonparam", "rjags")
 
   return(out)
 }
