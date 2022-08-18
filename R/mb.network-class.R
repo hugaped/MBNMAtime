@@ -111,8 +111,8 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
 
   # Calculate participant numbers (if v.scale not NULL)
   if (!is.null(v.scale)) {
-    if (!("N" %in% names(df))) {
-      stop("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
+    if (!("n" %in% names(df))) {
+      stop("`n` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
     }
 
     data.early <- x$data.ab[x$data.ab$fupcount==1,]
