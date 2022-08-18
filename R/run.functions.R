@@ -848,10 +848,27 @@ nma.run <- function(data.ab, method="common", link="identity", ...) {
 
 
 
-#' Run an non-parametric model
+#' Run a non-parametric random walk model
+#'
+#' Runs a non-parametric model that splits the data into different time-bins
+#' and models a random walk process between them, following the method
+#' of \insertCite{lu2007;textual}{MBNMAtime}.
+#'
+#' @param binvals A numeric vector defining the boundaries of the time
+#' bins.
 #'
 #' @inheritParams mb.network
 #' @inheritParams mb.run
+#'
+#' @examples
+#' # Using the alogliptin dataset
+#' network <- mb.network(alog_pcfb)
+#'
+#' # Specify time bins to use for analysis
+#' timebins <- c(0,6,12,20,40)
+#'
+#' # Run a common effects non-parametric RW model
+#' nonparam.run(network, binvals=timebins, method="common")
 #'
 #' @export
 nonparam.run <- function(network, class=FALSE, method="common", link="identity",
