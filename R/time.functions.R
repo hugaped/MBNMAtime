@@ -200,7 +200,7 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 
   params <- list(method.rate=method.rate)
   for (i in seq_along(params)) {
-    if (!is.null(parms[[i]])) {
+    if (!is.null(params[[i]])) {
       err <- TRUE
       if (length(params[[i]])==1) {
         if (any(c("common", "random") %in% params[[i]])) {
