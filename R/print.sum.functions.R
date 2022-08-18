@@ -254,9 +254,7 @@ print.overall.str <- function(mbnma) {
   if (timefun %in% c("poly", "fpoly")) {
     timefun <- paste0(timefun, " (degree = ", mbnma$model.arg$fun$nparam, ")")
   }
-  if (timefun=="rcs") {
-    timefun <- paste0("Restricted cubic spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), ")")
-  } else if (timefun=="ns") {
+  if (timefun=="ns") {
     timefun <- paste0("Natural cubic spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), ")")
   } else if (timefun=="ls") {
     timefun <- paste0("Piecewise linear spline (knots = ", paste(mbnma$model.arg$fun$knots, collapse=", "), ")")

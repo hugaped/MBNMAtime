@@ -108,7 +108,7 @@ testthat::test_that("test.mb.write", {
 
 
   # Class effects
-  jags <- mb.write(fun=tspline(type="rcs", knots=5, pool.1 = "rel", method.1="common",
+  jags <- mb.write(fun=tspline(type="ns", knots=3, pool.1 = "rel", method.1="common",
                                pool.2="rel", method.2="random", pool.3="abs", method.3="common", pool.4="abs", method.4="random"),
                    class.effect=list(beta.1="common", beta.2="random"), rho="dunif(0,1)", covar="varadj")
   testthat::expect_equal(length(grep("D\\.1", jags))>0, TRUE)

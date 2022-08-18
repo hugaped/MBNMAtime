@@ -16,15 +16,15 @@ temax(
 \arguments{
 \item{pool.emax}{Pooling for Emax parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.emax}{Method for synthesis of Emax parameter. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.emax}{Method for synthesis of Emax parameter. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.et50}{Pooling for ET50 parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.et50}{Method for synthesis of ET50 parameter. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.et50}{Method for synthesis of ET50 parameter. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.hill}{Pooling for Hill parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.hill}{Method for synthesis of Hill parameter. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.hill}{Method for synthesis of Hill parameter. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 }
 \value{
 An object of \code{class("timefun")}
@@ -60,6 +60,7 @@ and can take any of the following values:\tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
    \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
+   \code{numeric()} \tab Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. \cr
 }
 
 

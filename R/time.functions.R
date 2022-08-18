@@ -848,12 +848,11 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 
 #' Spline time-course functions
 #'
-#' Used to fit B-splines, natural cubic splines, restricted cubic splines and
+#' Used to fit B-splines, natural cubic splines, and
 #' piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}.
 #'
 #' @param type The type of spline. Can take `"bs"` (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
-#'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}), `"rcs"` (restricted cubic spline)
-#'   or `"ls"` (piecewise linear spline)
+#'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}) or `"ls"` (piecewise linear spline)
 #' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
 #'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
 #' @param degree The degree of the piecewise B-spline polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
@@ -919,7 +918,7 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(type, choices=c("rcs", "bs", "ns", "ls"), add=argcheck)
+  checkmate::assertChoice(type, choices=c("bs", "ns", "ls"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::assertIntegerish(degree, add=argcheck)
   for (i in 1:4) {

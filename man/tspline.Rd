@@ -20,8 +20,7 @@ tspline(
 }
 \arguments{
 \item{type}{The type of spline. Can take \code{"bs"} (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
-\code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}), \code{"rcs"} (restricted cubic spline)
-or \code{"ls"} (piecewise linear spline)}
+\code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}) or \code{"ls"} (piecewise linear spline)}
 
 \item{knots}{The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
 be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.}
@@ -30,25 +29,25 @@ be equally spaced across the range of time points). If a numeric vector is given
 
 \item{pool.1}{Pooling for the 1st coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.1}{Method for synthesis of the 1st coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.1}{Method for synthesis of the 1st coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.2}{Pooling for the 2nd coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.2}{Method for synthesis of the 2nd coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.2}{Method for synthesis of the 2nd coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.3}{Pooling for the 3rd coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.3}{Method for synthesis of the 3rd coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.3}{Method for synthesis of the 3rd coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.4}{Pooling for the 4th coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.4}{Method for synthesis of the 4th coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.4}{Method for synthesis of the 4th coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 }
 \value{
 An object of \code{class("timefun")}
 }
 \description{
-Used to fit B-splines, natural cubic splines, restricted cubic splines and
+Used to fit B-splines, natural cubic splines, and
 piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}.
 }
 \section{Time-course parameters}{
@@ -68,6 +67,7 @@ and can take any of the following values:\tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
    \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
+   \code{numeric()} \tab Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. \cr
 }
 
 

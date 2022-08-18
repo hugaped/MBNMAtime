@@ -991,7 +991,7 @@ plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
   funstr <- gsub("\\[i\\,k\\]", "", funstr)
   funstr <- gsub("\\[i\\,m\\]", "", funstr)
 
-  if (any(c("rcs", "ns", "bs") %in% x$name)) {
+  if (any(c("ns", "bs", "ls") %in% x$name)) {
     spline <- genspline(time, spline=x$name, knots=x$knots)
     funstr <- gsub("spline\\[i\\,m", "spline[", funstr)
   }

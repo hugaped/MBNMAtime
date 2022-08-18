@@ -20,21 +20,21 @@ tuser(
 \item{fun}{A formula specifying any relationship including \code{time} and
 one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
-\item{pool.1}{Pooling for \code{beta.1}. Can take \code{"rel"} or \code{"abs"} (see details).}
+\item{pool.1}{Pooling for \code{beta.1}. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method.1}{Method for synthesis of \code{beta.1}. Can take \verb{"common} or \code{"random"} (see details).}
 
-\item{pool.2}{Pooling for \code{beta.2}. Can take \code{"rel"} or \code{"abs"} (see details).}
+\item{pool.2}{Pooling for \code{beta.2}. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method.2}{Method for synthesis of \verb{beta.2. Can take }"common\code{or}"random"` (see details).}
 
-\item{pool.3}{Pooling for \verb{beta.3. Can take }"rel"\code{or}"abs"` (see details).}
+\item{pool.3}{Pooling for \code{beta.3}. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method.3}{Method for synthesis of \verb{beta.3. Can take }"common\code{or}"random"` (see details).}
 
-\item{pool.4}{Pooling for \verb{beta.4. Can take }"rel"\code{or}"abs"` (see details).}
+\item{pool.4}{Pooling for \code{beta.4}. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method.4}{Method for synthesis of \code{beta.4}. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.4}{Method for synthesis of \code{beta.4}. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 }
 \value{
 An object of \code{class("timefun")}
@@ -59,6 +59,7 @@ and can take any of the following values:\tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
    \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
+   \code{numeric()} \tab Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. \cr
 }
 
 

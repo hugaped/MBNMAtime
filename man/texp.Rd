@@ -14,12 +14,12 @@ texp(
 \arguments{
 \item{pool.emax}{Pooling for exponential Emax parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.emax}{Method for synthesis of exponential Emax parameter. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
+\item{method.emax}{Method for synthesis of exponential Emax parameter. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.onset}{Pooling for parameter controlling speed of onset. Default is \code{NULL} which avoids including
 this parameter (i.e. fixes it to 1 for all treatments). Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.onset}{Method for synthesis of parameter controlling speed of onset. Can take \verb{"common} or \code{"random"} (see Time-course parameters section).}
+\item{method.onset}{Method for synthesis of parameter controlling speed of onset. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 }
 \value{
 An object of \code{class("timefun")}
@@ -52,6 +52,7 @@ and can take any of the following values:\tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
    \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
+   \code{numeric()} \tab Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. \cr
 }
 }
 

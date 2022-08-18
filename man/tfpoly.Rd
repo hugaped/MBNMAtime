@@ -10,8 +10,8 @@ tfpoly(
   method.1 = "common",
   pool.2 = "rel",
   method.2 = "common",
-  method.power1 = "common",
-  method.power2 = "common"
+  method.power1 = 0,
+  method.power2 = 0
 )
 }
 \arguments{
@@ -19,16 +19,16 @@ tfpoly(
 
 \item{pool.1}{Pooling for the 1st fractional polynomial coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.1}{Method for synthesis of the 1st fractional polynomial coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.1}{Method for synthesis of the 1st fractional polynomial coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{pool.2}{Pooling for the 2nd fractional polynomial coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
-\item{method.2}{Method for synthesis of the 2nd fractional polynomial coefficient. Can take \verb{"common} or \code{"random"} (see details).}
+\item{method.2}{Method for synthesis of the 2nd fractional polynomial coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method.power1}{Method for synthesis of the 1st fractional polynomial power. Can take \verb{"common} or \code{"random"} (see details).
+\item{method.power1}{Value for the 1st fractional polynomial power. Must take any numeric value in the set \verb{-2, -1, -0.5, 0, 0.5, 1, 2, 3}.
 \code{pool} for this parameter is set to \code{"abs"}.}
 
-\item{method.power2}{Method for synthesis of the 2nd fractional polynomial power. Can take \verb{"common} or \code{"random"} (see details).
+\item{method.power2}{Value for the 2nd fractional polynomial power. Must take any numeric value in the set \verb{-2, -1, -0.5, 0, 0.5, 1, 2, 3}.
 \code{pool} for this parameter is set to \code{"abs"}.}
 }
 \value{
@@ -71,6 +71,7 @@ and can take any of the following values:\tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"common"} \tab Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) \cr
    \code{"random"} \tab Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. \cr
+   \code{numeric()} \tab Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. \cr
 }
 
 
@@ -87,10 +88,10 @@ tfpoly(pool.1="rel", method.1="random")
 
 # 2nd order fractional polynomial
 # with a single absolute parameter estimated for the 2nd coefficient
-# 1st power estimated as exchangeable (random) across studies
+# 1st power equal to zero
 tfpoly(degree=2, pool.1="rel", method.1="common",
   pool.2="abs", method.2="random",
-  method.power1="random")
+  method.power1=0)
 
 }
 \references{

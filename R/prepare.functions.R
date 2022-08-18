@@ -408,7 +408,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
     datavars.ik <- append(datavars.ik, "n")
   }
   datavars.im <- c("time")
-  if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
+  if (any(c("ns", "bs", "ls") %in% fun$name)) {
     datavars.im <- append(datavars.im, "spline")
   }
 
@@ -466,7 +466,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
 
   # Generate empty spline matrix
   if (!is.null(fun)) {
-    if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
+    if (any(c("ns", "bs", "ls") %in% fun$name)) {
 
       times <- df[, colnames(df) %in% c("time")]
       times <- unique(sort(times))
@@ -523,7 +523,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
       datalist[["time"]][i,m] <- unique(df$time[as.numeric(df$studyID)==i &
                                            df$fupcount==m])
 
-      if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
+      if (any(c("ns", "bs", "ls") %in% fun$name)) {
         datalist[["spline"]][i,m,] <- as.numeric(df[as.numeric(df$studyID)==i &
                                            df$arm==1 & df$fupcount==m,
                                          grepl("spline", colnames(df))])
@@ -1134,7 +1134,7 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #'
 #' @param x A numeric vector indicating all time points available in the dataset
 #' @param spline Indicates the type of spline function. Can be either a piecewise linear spline (`"ls"`),
-#' natural cubic spline (`"ns"`), restricted cubic spline (`"rcs"`) or B-spline (`"bs"`).
+#' natural cubic spline (`"ns"`) or B-spline (`"bs"`).
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.time A number indicating the maximum time between which to calculate the spline function.
@@ -1154,8 +1154,8 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' # Generate a quadratic B-spline with 1 equally spaced internal knot
 #' genspline(x, spline="bs", knots=2, degree=2)
 #'
-#' # Generate a restricted cubic spline with 3 knots at selected quantiles
-#' genspline(x, spline="rcs", knots=c(0.1, 0.5, 0.7))
+#' # Generate a natural spline with 2 knots at selected quantiles
+#' genspline(x, spline="ns", knots=c(0.1, 0.5))
 #'
 #' # Generate a piecewise linear spline with 3 equally spaced knots
 #' genspline(x, spline="ls", knots=3)
@@ -1210,8 +1210,6 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
     # Generate spline basis matrix
     if (spline=="bs") {
       splinedesign <- splines::bs(x=x0, knots=knots, degree=degree)
-    } else if (spline=="rcs") {
-      splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
       splinedesign <- splines::ns(x=x0, knots=knots)
 
