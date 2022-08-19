@@ -688,7 +688,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #' @export
 devplot <- function(mbnma, dev.type="dev", plot.type="box",
                     xaxis="time", facet=TRUE,
-                    n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin,
+                    n.iter=round(mbnma$BUGSoutput$n.iter/4), n.thin=mbnma$BUGSoutput$n.thin,
                     ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -794,7 +794,7 @@ devplot <- function(mbnma, dev.type="dev", plot.type="box",
 #'
 #' @export
 fitplot <- function(mbnma, treat.labs=NULL, disp.obs=TRUE,
-                    n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin, ...) {
+                    n.iter=round(mbnma$BUGSoutput$n.iter/4), n.thin=mbnma$BUGSoutput$n.thin, ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
