@@ -161,7 +161,7 @@ texp <- function(pool.emax="rel", method.emax="common",
 #' Integrated Two-Component Prediction (ITP) function
 #'
 #' Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Proposed
-#' by proposed by \insertCite{dingfu;textual}{MBNMAtime}
+#' by proposed by \insertCite{fumanner;textual}{MBNMAtime}
 #'
 #' \deqn{{E_{max}}\times\frac{(1-exp(-{rate}\times{x}))}{(1-exp(-{rate}\times{max(x)}))}}
 #'
