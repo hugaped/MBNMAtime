@@ -621,7 +621,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
         if (fun$amethod[i]=="random") {
           # Insert distribution for random absolute effect
           model <- model.insert(model, pos=which(names(model)=="arm"),
-                                x=priors[[paste0("i.beta.", i)]])
+                                x=paste0("i.beta.", i, "[i,k] ~ dnorm(beta.", i, ", prec.beta.", i, ")"))
 
           # Insert sd prior for random absolute effect
           model <- model.insert(model, pos=which(names(model)=="end"),
@@ -1077,7 +1077,7 @@ write.beta.ref <- function(model, timecourse, fun,
       if (fun$amethod[i]=="random") {
         # Insert distribution for random absolute effect
         model <- model.insert(model, pos=which(names(model)=="arm"),
-                              x=priors[[paste0("i.beta.", i)]])
+                              x=paste0("i.beta.", i, "[i,k] ~ dnorm(beta.", i, ", prec.beta.", i, ")"))
 
         # Insert sd prior for random absolute effect
         model <- model.insert(model, pos=which(names(model)=="end"),
@@ -1299,7 +1299,6 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0,0.001)")
     priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0,0.001)")
     priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0,0.0001)")
-    priors[[paste0("i.beta.",i)]] <- paste0("i.beta.", i, "[i,k] ~ dnorm(beta.", i, ", prec.beta.", i, ")")
 
     priors[[paste0("sd.mu.",i)]] <- paste0("sd.mu.", i, " ~ dnorm(0,0.05) T(0,)")
     priors[[paste0("sd.d.",i)]] <- paste0("sd.d.", i, " ~ dnorm(0,0.05) T(0,)")
@@ -1307,13 +1306,15 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste0("sd.beta.",i)]] <- paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
   }
 
-  if ("itp" %in% fun$name) {
-    priors[["mu.2"]] <- "mu.2[i] ~ dnorm(0, 0.001) T(0,)"
-    priors[["d.2"]] <- "d.2[k] ~ dnorm(0, 0.001) T(0,)"
-    priors[["dume.2"]] <- "d.2[c,k] ~ dnorm(0, 0.001) T(0,)"
-    priors[["D.2"]] <- "D.2[k] ~ dnorm(0, 0.001) T(0,)"
-    priors[["beta.2"]] <- "beta.2[k] ~ dnorm(0, 0.001) T(0,)"
-    priors[["i.beta.2"]] <- "i.beta.2[k] ~ dnorm(0, 0.001) T(0,)"
+  if (fun$name %in% c("itp", "emax") & TRUE %in% fun$p.expon) {
+
+    for (i in 2:3) {
+      priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0,0.0001) T(0,)")
+      priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0,0.001) T(0,)")
+      priors[[paste("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0,0.001) T(0,)")
+      priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0,0.001) T(0,)")
+      priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0,0.0001) T(0,)")
+    }
   }
 
   return(priors)
