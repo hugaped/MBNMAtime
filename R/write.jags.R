@@ -1285,6 +1285,23 @@ return(model)
 
 
 
+#' Sets default priors for JAGS model code
+#'
+#' This function creates JAGS code snippets for default MBNMA model priors.
+#'
+#' @inheritParams mb.run
+#'
+#' @return A list, each element of which is a named JAGS snippet
+#'   corresponding to a prior in the MBNMA JAGS code.
+#'
+#' @examples
+#' \donttest{
+#' default.priors(fun=temax())
+#'
+#' default.priors(fun=titp(p.expon=TRUE))
+#' }
+#'
+#' @export
 default.priors <- function(fun=tloglin()) {
 
   priors <- list(
