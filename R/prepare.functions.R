@@ -489,6 +489,9 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
                                           knotnum))
 
     }
+    if ("ipt" %in% fun$name) {
+      datalist[["maxtime"]] <- max(df$time)
+    }
   }
 
 
