@@ -6,6 +6,9 @@
 
 #' Exponential time-course function
 #'
+#' ** This function will be removed in the next MBNMAtime version (>=0.2.3). titp() should be used
+#' instead as a more flexible and intuitive parameterisation of the same model **
+#'
 #' Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Can fit
 #' a 1-parameter (Emax only) or 2-parameter (includes onset parameter) model
 #'
@@ -145,6 +148,8 @@ texp <- function(pool.emax="rel", method.emax="common",
               bpool=bpool, bmethod=bmethod)
 
   class(out) <- "timefun"
+
+  warning("From version 0.2.3 onwards texp() will be removed - titp() should be used insead")
 
   return(out)
 }
