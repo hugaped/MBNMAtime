@@ -567,6 +567,10 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
     spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots, degree=object$model.arg$fun$degree)
   }
 
+  if ("itp" %in% object$model.arg$fun$name) {
+    maxtime <- max(c(max(object$model.arg$jagsdata$time, na.rm=TRUE), times))
+  }
+
   ########## Predict responses ###########
 
   # Assign E0 to alpha in model
