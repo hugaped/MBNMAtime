@@ -66,7 +66,7 @@ texp <- function(pool.emax="rel", method.emax="common",
 
   params <- list(method.emax=method.emax, method.onset=method.onset)
   for (i in seq_along(params)) {
-    if (!is.null(parms[[i]])) {
+    if (!is.null(params[[i]])) {
       err <- TRUE
       if (length(params[[i]])==1) {
         if (any(c("common", "random") %in% params[[i]])) {
@@ -86,6 +86,10 @@ texp <- function(pool.emax="rel", method.emax="common",
     fun <- ~ emax * (1 - exp(exp(onset)*-time))
     latex <- "\beta_1 * (1 - exp(exp(\beta_2)*-x_m))"
     jags <- "beta.1 * (1 - exp(exp(beta.2)*- time[i,m]))"
+
+    if (is.null(method.onset)) {
+      method.onset <- "common"
+    }
   } else {
     fun <- ~ emax * (1 - exp(-time))
     latex <- "\beta_1 * (1 - exp(-x_m))"
@@ -141,6 +145,143 @@ texp <- function(pool.emax="rel", method.emax="common",
               bpool=bpool, bmethod=bmethod)
 
   class(out) <- "timefun"
+
+  return(out)
+}
+
+
+
+
+
+#' Integrated Two-Component Prediction (ITP) function
+#'
+#' Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Can fit
+#' a 1-parameter (Emax only) or 2-parameter (includes onset parameter) model
+#'
+#' 1-parameter model:
+#' \eqn{emax\times{(1-exp(-x))}}
+#'
+#' 2-parameter model:
+#' \eqn{emax\times{(1-exp(exp(onset)*-x))}}
+#'
+#' @param pool.emax Pooling for exponential Emax parameter. Can take `"rel"` or `"abs"` (see details).
+#' @param method.emax Method for synthesis of exponential Emax parameter. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param pool.onset Pooling for parameter controlling speed of onset. Default is `NULL` which avoids including
+#' this parameter (i.e. fixes it to 1 for all treatments). Can take `"rel"` or `"abs"` (see details).
+#' @param method.onset Method for synthesis of parameter controlling speed of onset. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#'
+#' @return An object of `class("timefun")`
+#'
+#' @section Time-course parameters:
+#' Time-course parameters in the model must be specified using a `pool` and a `method` prefix.
+#'
+#' `pool` is used to define the approach used for pooling of a given time-course parameter and
+#' can take any of:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Indicates that \emph{relative} effects should be pooled for this time-course parameter. Relative effects preserve randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by \insertCite{lu2004;textual}{MBNMAtime}. |
+#' | `"abs"` | Indicates that study arms should be pooled across the whole network for this time-course parameter  *independently of assigned treatment* to estimate an \emph{absolute} effect. This implies estimating a single value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity. |
+#'
+#'
+#' `method` is used to define the model used for meta-analysis for a given time-course parameter
+#' and can take any of the following values:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"common"` | Implies that all studies estimate the same true effect (often called a "fixed effect" meta-analysis) |
+#' | `"random"` | Implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity. |
+#' | `numeric()` | Assigned a numeric value, indicating that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions, power parameters in fractional polynomials) to a single value. |
+#'
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' texp(pool.emax="rel", method.emax="random")
+#' texp(pool.emax="abs")
+#'
+#' @export
+titp <- function(pool.emax="rel", method.emax="common",
+                 pool.rate="rel", method.rate="common") {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(pool.emax, choices=c("rel", "abs"), add=argcheck)
+  #checkmate::assertChoice(method.emax, choices=c("common", "random"), add=argcheck)
+  checkmate::assertChoice(pool.rate, choices=c("rel", "abs"), null.ok = TRUE, add=argcheck)
+  #checkmate::assertChoice(method.onset, choices=c("common", "random"), null.ok = TRUE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  params <- list(method.emax=method.emax, method.rate=method.rate)
+  for (i in seq_along(params)) {
+    if (!is.null(params[[i]])) {
+      err <- TRUE
+      if (length(params[[i]])==1) {
+        if (any(c("common", "random") %in% params[[i]])) {
+          err <- FALSE
+        } else if (is.numeric(params[[i]])) {
+          err <- FALSE
+        }
+      }
+      if (err) {
+        stop(paste0(names(params)[i], " must take either 'common', 'random' or be assigned a numeric value"))
+      }
+    }
+  }
+
+  # Define time-course function
+  fun <- ~ emax * (1 - exp(-abs(rate)*time)) / (1 - exp(-abs(rate)*max(time)))
+  #jags <- "beta.1 * ((1-exp(-abs(beta.2)*time[i,m])) / (1-exp(-abs(beta.2)*max(time[,]))))"
+  jags <- "beta.1 * ((1-exp(-(beta.2)*time[i,m])) / (1-exp(-(beta.2)*maxtime)))"
+  latex <- "\beta_1 * (1-exp(-abs(\beta_2)*x_m)) / (1-exp(-abs(\beta_2)*max(x_m)))"
+
+  f <- function(time, beta.1, beta.2) {
+    y <- beta.1 * (1-exp(-abs(beta.2)*time)) / (1-exp(-abs(beta.2)*max(time)))
+    return(y)
+  }
+
+  if (pool.emax=="rel") {
+    jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
+  } else if (pool.emax=="abs" & method.emax=="random") {
+    jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
+  }
+  if (pool.rate=="rel") {
+    jags <- gsub("beta\\.2", "beta.2[i,k]", jags)
+  } else if (pool.rate=="abs" & method.rate=="random") {
+    jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
+  }
+
+
+  # Generate output values
+  paramnames <- c("emax", "rate")
+  nparam <- length(paramnames)
+
+  apool <- pool.emax
+  amethod <- method.emax
+
+  apool <- append(apool, pool.rate)
+  amethod <- append(amethod, method.rate)
+
+  names(apool) <- paramnames
+  names(amethod) <- paramnames
+
+  bname <- paste0("beta.", 1:nparam)
+  names(bname) <- paramnames
+
+  bpool <- paste0("pool.", 1:nparam)
+  names(bpool) <- paramnames
+  bmethod <- paste0("method.", 1:nparam)
+  names(bmethod) <- paramnames
+
+  out <- list(name="itp", fun=fun, f=f, latex=latex,
+              params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, amethod=amethod, bname=bname,
+              bpool=bpool, bmethod=bmethod)
+
+  class(out) <- "timefun"
+
+  message("'rate' parameters must take positive values.\n Default prior restricts posterior to positive values.")
 
   return(out)
 }
@@ -339,7 +480,7 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 
   params <- list(method.emax=method.emax, method.et50=method.et50, method.hill=method.hill)
   for (i in seq_along(params)) {
-    if (!is.null(parms[[i]])) {
+    if (!is.null(params[[i]])) {
       err <- TRUE
       if (length(params[[i]])==1) {
         if (any(c("common", "random") %in% params[[i]])) {
