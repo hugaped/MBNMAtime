@@ -371,8 +371,8 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   #checkmate::assertClass(treats, classes=c("numeric", "character"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (object$model.arg$link=="rom") {
-    stop("'predict()' cannot currently be used with MBNMAs modelled using ratios of means (link='rom')")
+  if (object$model.arg$link=="log") {
+    stop("'predict()' cannot currently be used with MBNMAs modelled using ratios of means (link='log')")
   }
 
   # Check if level="class" that class effect model was fitted

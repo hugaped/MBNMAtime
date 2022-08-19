@@ -474,7 +474,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
   checkmate::assertClass(network, "mb.network", add=argcheck)
   checkmate::assertChoice(level, choices = c("treatment", "class"), add=argcheck)
   checkmate::assertChoice(plotby, choices = c("arm", "rel"), add=argcheck)
-  checkmate::assertChoice(link, choices = c("identity", "smd", "rom"), add=argcheck)
+  checkmate::assertChoice(link, choices = c("identity", "smd", "log"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Define global variables
@@ -553,7 +553,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
         dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
         dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
         dplyr::mutate(pairDiff = .data$y.y - .data$y.x)
-    } else if (link=="rom") {
+    } else if (link=="log") {
       diffs <- diffs %>%
         dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
         dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
@@ -622,7 +622,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 
     if (link=="identity") {
       g <- g + ggplot2::ylab("Response")
-    } else if (link=="rom") {
+    } else if (link=="log") {
       g <- g + ggplot2::ylab("Log-Ratio of Means")
     } else if (link=="smd") {
       g <- g + ggplot2::ylab("Standardised Mean Difference")

@@ -1142,7 +1142,7 @@ write.nma <- function(method="common", link="identity") {
                     "prec[i,k] <- pow(se[i,k], -2)",
                     "theta[i,k] <- mu[i] + delta[i,k]"
     )
-  } else if (link=="rom") {
+  } else if (link=="log") {
     arm.insert <- c("y[i,k] ~ dnorm(theta[i,k], prec[i,k])",
                     "prec[i,k] <- pow(se[i,k], -2)",
                     "log(theta[i,k]) <- mu[i] + delta[i,k]"

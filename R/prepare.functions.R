@@ -1336,7 +1336,7 @@ getnmadata <- function(data.ab, link="identity") {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
-  checkmate::assertChoice(link, choices = c("identity", "smd", "rom"), null.ok = FALSE, add=argcheck)
+  checkmate::assertChoice(link, choices = c("identity", "smd", "log"), null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
@@ -1430,7 +1430,7 @@ getrwdata <- function(data.ab, link="identity", class=FALSE, binvals=bintime(dat
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
-  checkmate::assertChoice(link, choices = c("identity", "smd", "rom"), null.ok = FALSE, add=argcheck)
+  checkmate::assertChoice(link, choices = c("identity", "smd", "log"), null.ok = FALSE, add=argcheck)
   checkmate::assertNumeric(bins, lower = 0, null.ok=FALSE)
   checkmate::reportAssertions(argcheck)
 
