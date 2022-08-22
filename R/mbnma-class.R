@@ -434,12 +434,19 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
       if (any(treats > NT | any(treats<1))) {
         stop(crayon::red(crayon::bold("If given as numeric treatment/class codes, `treats` must be numbered similarly to treatment/class codes in `object`")))
       }
+
+      # Sort treats into order in object$network
+      treats <- sort(treats)
+
       treats <- object$network[[level]][treats]
     }
     if (is.character(treats)) {
       if (!all(treats %in% object$network[[level]])) {
         stop(crayon::red(crayon::bold("`treats` includes treatments/classes not included in `object`")))
       }
+
+      # Sort treats into order in object$network
+      treats <- object$network[[level]][sort(match(treats, object$network[[level]]))]
     }
   }
 
@@ -593,7 +600,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   d.params <- time.params[grepl("^d\\.", time.params)]
 
   predicts <- list()
-  treatsnum <- which(object$network[[level]] %in% treats)
+  treatsnum <<- which(object$network[[level]] %in% treats)
   for (treat in seq_along(treatsnum)) {
 
     # Assign d results to d values in model
@@ -897,29 +904,102 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #'   treats=c("alog_50", "alog_25", "placebo"))
 #' }
 #' @export
-get.relative <- function(mbnma, time=max(mbnma$model.arg$jagsdata$time, na.rm=TRUE),
-                         treats=mbnma$network$treatments, classes=NULL, lim="cred") {
+get.relative <- function(mbnma, mbnma.add=NULL, time=max(mbnma$model.arg$jagsdata$time, na.rm=TRUE),
+                         treats=unique(c(mbnma$network$treatments, mbnma.add$network$treatments)),
+                         classes=NULL, lim="cred") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertNumeric(time, lower=0, len=1, null.ok=FALSE, add=argcheck)
-  checkmate::assertSubset(treats, choices=mbnma$network$treatments, add=argcheck)
-  checkmate::assertSubset(classes, choices=mbnma$network$classes, add=argcheck)
+  checkmate::assertSubset(treats, choices=c(mbnma$network$treatments,
+                                            mbnma.add$network$treatments),
+                          add=argcheck)
+  checkmate::assertSubset(classes, choices=c(mbnma$network$classes,
+                                             mbnma.add$network$classes),
+                          add=argcheck)
+  checkmate::assertClass(mbnma, classes="mbnma", add=argcheck)
+  checkmate::assertClass(mbnma.add, classes="mbnma", null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (!is.null(classes)) {
     treats <- classes
     level <- "class"
+    levels <- "classes"
   } else {
     level <- "treatment"
+    levels <- "treatments"
   }
 
-  pred <- suppressMessages(predict.mbnma(mbnma, times=time,
-                        treats = treats, level = level, lim=lim))
+  if (is.null(mbnma.add)) {
+    pred <- suppressMessages(predict.mbnma(mbnma, times=time,
+                                           treats = treats, level = level, lim=lim))
 
+    # Matrix of results
+    mat <- do.call(cbind, pred$pred.mat)
 
-  # Matrix of results
-  mat <- do.call(cbind, pred$pred.mat)
+  } else if (!is.null(mbnma.add)) {
+
+    # Identify common treatment to be the reference
+    match1 <- which(treats %in% mbnma$network[[levels]])
+    match2 <- which(treats %in% mbnma.add$network[[levels]])
+
+    ind1 <- which(match1 %in% match2)
+    ind2 <- which(match2 %in% match1)
+
+    ref <- treats[match1[ind1]]
+
+    if (length(ind1)!=1 | length(ind2)!=1) {
+      stop("mbnma and mbnma.add must have a single treatment/class in common within `treats` in order to perform 2-stage MBNMA")
+    }
+
+    # Split treatments/classes into subnetworks
+    treats2 <- c(ref, treats[!treats %in% mbnma$network[[levels]]])
+    treats1 <- c(ref, treats[!treats %in% mbnma.add$network[[levels]]])
+
+    # Predict relative effects at specific time
+    pred <- suppressMessages(predict.mbnma(mbnma, times=time,
+                                           treats = treats1, level = level, lim=lim))
+
+    pred.add <- suppressMessages(predict.mbnma(mbnma.add, times=time,
+                                               treats = treats2, level = level, lim=lim))
+
+    # Matrix of results
+    mat1 <- do.call(cbind, pred$pred.mat)
+    mat2 <- do.call(cbind, pred.add$pred.mat)
+
+    # Ensure matrices are same size
+    niter <- min(c(nrow(mat1), c(nrow(mat2))))
+
+    if (nrow(mat1)>nrow(mat2)) {
+      mat1 <- mat1[sample(1:nrow(mat1), nrow(mat2), replace = FALSE),]
+    } else if (nrow(mat1)<nrow(mat2)) {
+      mat2 <- mat2[sample(1:nrow(mat2), nrow(mat1), replace = FALSE),]
+    }
+
+    # Rearrange matrix to common reference treatment
+    if (which(names(pred$summary) %in% ref)!=1) {
+      mat1 <- mat1 - mat1[,ind1]
+
+      # Rearrange columns
+      refcol <- which(names(pred$summary) %in% ref)
+      mat1 <- cbind(mat1[,refcol], mat1[,-refcol])
+    }
+    if (which(names(pred.add$summary) %in% ref)!=1) {
+      mat2 <- mat2 - mat2[,ind2]
+
+      # Rearrange columns
+      refcol <- which(names(pred.add$summary) %in% ref)
+      mat2 <- cbind(mat2[,refcol], mat2[,-refcol])
+    }
+
+    # Drop shared reference from mat2
+    mat2 <- mat2[,-which(treats2 %in% ref)]
+
+    # Combine results
+    mat <<- cbind(mat1, mat2)
+    treats <- c(treats1, treats2[-which(treats2 %in% ref)])
+  }
+
 
   # For lower triangle
   outmat <- array(dim=c(length(treats), length(treats), nrow(mat)))
