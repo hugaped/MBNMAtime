@@ -432,7 +432,10 @@ write.likelihood <- function(model, timecourse, rho=0, covar="varadj", link="ide
       model <- subset(model, !grepl("dev", model))
     }
     if (covar %in% c("varadj")) {
-      norm.like[1] <- gsub("(prec\\[i\\,k\\,m\\])", "\\1*(1-rho2)", norm.like[1])
+      # norm.like[1] <- gsub("(prec\\[i\\,k\\,m\\])", "\\1*(1-rho2)", norm.like[1])
+      norm.like[1] <- gsub("prec\\[i\\,k\\,m\\] \\<\\- pow\\(se\\[i\\,k\\,m\\]",
+                           "\\1*(1-rho2)", norm.like[1])
+
       model <- model.insert(model, pos=which(names(model)=="fup"), x=norm.like)
 
       model <- model.insert(model, pos=which(names(model)=="start"), x="rho2 <- rho*rho")
@@ -543,7 +546,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 
           # Insert sd.D prior
           model <- model.insert(model, pos=which(names(model)=="end"),
-                                x=c(paste0("sd.D.", i, " ~ dnorm(0,0.05) T(0,)"),
+                                x=c(priors[[paste0("sd.D.", i)]],
                                   paste0("tau.D.", i, " <- pow(sd.D.", i, ", -2)")
                                   )
                                 )
@@ -1053,7 +1056,7 @@ write.beta.ref <- function(model, timecourse, fun,
     if ("rel" %in% fun$apool[i]) {
 
       model <- model.insert(model, pos=which(names(model)=="end"),
-                            x=paste0("mu.", i, " ~ dnorm(0,0.0001)"))
+                            x=priors[[paste0("mu.",i)]])
 
       if (mu.synth=="common") {
         model <- gsub(paste0("beta\\.",i, "\\[i\\,k\\]"), paste0("mu.",i), model)
@@ -1323,7 +1326,7 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste0("sd.beta.",i)]] <- paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
   }
 
-  if (fun$name %in% c("itp") | (fun$name %in% "emax" & FALSE %in% fun$p.expon)) {
+  if (fun$name %in% c("itp") | ((fun$name %in% "emax") & (FALSE %in% fun$p.expon))) {
 
     for (i in 2:3) {
       priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0,0.0001) T(0,)")
