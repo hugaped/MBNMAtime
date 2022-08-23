@@ -260,122 +260,279 @@ alpha.scale <- function(n.cut, col="blue") {
 #' Predict "lumped" NMA predictions for plotting
 #'
 #' @param pred An object of `class("mb.predict")`
-#' @param incl.range A numeric vector of length 2 representing a range between which time-points should be synthesised
+#' @param timebins A numeric vector defining the boundaries of the time bins within which to perform
+#' a standard NMA. Length must be >=2. See details.
+#' and of studies with `time>10` and `time<=15`
 #' @inheritParams plot.mb.predict
 #' @inheritParams mb.run
 #' @inheritParams mb.predict
 #'
+#' @details `timebins` indicate regions of the data (defined as "time bins") over which it may be reasonable to "lump" different
+#' follow-up times from different studies together and assume a standard NMA model.
+#'
 #' @noRd
-overlay.nma <- function(pred, incl.range, method="common", link="identity", lim="cred", ...) {
+overlay.nma <- function(pred, timebins, method="common", link="identity", lim="cred", ...) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(pred, c("mb.predict"), add=argcheck)
+  checkmate::assertNumeric(timebins, lower=0, null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
 
   # Declare global variable
   cor <- NULL
   dif <- NULL
 
   network <- pred$network
-  nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2],]
 
-  # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
-  nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
-    dplyr::mutate(dif=time-mean(incl.range)) %>%
-    dplyr::arrange(dif) %>%
-    dplyr::group_by(studyID, arm) %>%
-    dplyr::slice_head()
+  outlist <- list()
 
-  if (!1 %in% nmanet$treatment) {
-    stop("Network reference treatment (treatment=1) must be evaluated at a time-point within 'incl.range' to allow overlay.nma")
-  }
+  # Loop across timebins
+  for (bin in 2:length(timebins)) {
 
-  # Check network connectedness
-  comparisons <- mb.comparisons(nmanet)
-  nodes <- unique(sort(nmanet$treatment))
-  nodes <- network$treatments[nodes]
-  g <- igraph::graph.empty()
-  g <- g + igraph::vertex(nodes)
-  ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
-  ed <- factor(as.vector(ed), labels=nodes)
-  edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
-  g <- g + edges
+    skip <- FALSE
 
-  discon <- check.network(g)
+    incl.range <- c(timebins[bin-1], timebins[bin])
+    str.incl.range <- paste(c("time=", incl.range[1], " and time=", incl.range[2]), collapse="")
 
-  # Drop treatments disconnected to network reference
-  if (length(discon)>0) {
-    message(paste("The following treatments are disconnected from the network reference for studies in 'incl.range' and will be excluded from overlay.nma:",
-                  paste(discon, collapse = "\n"), sep="\n"))
+    # Predict NMA results at specific time point
+    timedif <- abs(pred$times - mean(incl.range))
+    if (!any(timedif < (mean(incl.range) - incl.range[1]))) {
+      message(paste(c("No time-point in predicted values is between ", str.incl.range,
+                    ". Cannot overlay.nma for this time bin."), collapse=""))
 
-    drops <- which(network$treatments %in% drops)
-    nmanet <- nmanet[!nmanet$treatment %in% drops,]
+      skip <- TRUE
+    }
+    timeindex <- order(timedif)[1]
+    predref <- pred$pred.mat[[1]][[timeindex]]
 
-    nodes <- unique(sort(nmanet$treatment))
-    nodes <- network$treatments[nodes]
-  }
 
-  # Recode treatments from 1-X
-  nmanet$treatment <- as.numeric(factor(nmanet$treatment))
+    nmanet <- network$data.ab[network$data.ab$time>incl.range[1] & network$data.ab$time<=incl.range[2],]
 
-  # Run model (incl write priors)
-  nma <- nma.run(data.ab=nmanet, method=method, link=link, ...)
+    # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
+    nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
+      #dplyr::mutate(dif=time-mean(incl.range)) %>%
+      dplyr::mutate(dif=time-pred$times[timeindex]) %>%
+      dplyr::arrange(dif) %>%
+      dplyr::group_by(studyID, arm) %>%
+      dplyr::slice_head()
 
-  if (any(nma$BUGSoutput$summary[,"Rhat"]>1.02)) {
-    warn <- rownames(nma$BUGSoutput$summary)[which(nma$BUGSoutput$summary[,"Rhat"]>1.02)]
-    warning(crayon::bold(crayon::red(paste0("Rhat values for the following parameters are >1.02 - suggests problems with NMA model convergence:\n",
-                  paste(warn, collapse="\n")))))
-  }
+    if (!1 %in% nmanet$treatment) {
+      message(paste(c("overlay.nma not possible between ", str.incl.range,
+                    ". Data for network reference (treatment=1) not available in this time bin"),
+                    collapse = ""))
 
-  # Predict NMA results at specific time point
-  timedif <- abs(pred$times - mean(incl.range))
-  if (!any(timedif < (mean(incl.range) - incl.range[1]))) {
-    stop("No time-point in predicted values is within 'incl.range'.\nMust specify at least one of 'times' in 'predict()' to be within 'incl.range'")
-  }
-  timeindex <- order(timedif)[1]
-  predref <- pred$pred.mat[[1]][[timeindex]]
-
-  if (method=="common" | "cred" %in% lim) {
-    predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
-  } else if (method=="random" & "pred" %in% lim) {
-
-    if (is.vector(nma$BUGSoutput$sims.list$d[,-1])) {
-      cols <- 1
-    } else {
-      cols <- ncol(nma$BUGSoutput$sims.list$d[,-1])
+      skip <- TRUE
     }
 
-    mat <- array(dim=c(nma$BUGSoutput$n.sims,
-                       cols,
-                       2)
-                 )
-    mat[,,1] <- nma$BUGSoutput$sims.list$d[,-1]
-    mat[,,2] <- nma$BUGSoutput$sims.list$sd
-    predtrt <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
-    predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + predtrt
+    # Store max range of data over which NMA is performed
+    dat.range <- range(c(nmanet$time, pred$times[timeindex]))
+
+    if (skip==FALSE) {
+      # Check network connectedness
+      comparisons <- mb.comparisons(nmanet)
+      nodes <- unique(sort(nmanet$treatment))
+      nodes <- network$treatments[nodes]
+      g <- igraph::graph.empty()
+      g <- g + igraph::vertex(nodes)
+      ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
+      ed <- factor(as.vector(ed), labels=nodes)
+      edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
+      g <- g + edges
+
+      discon <- check.network(g)
+
+      # Drop treatments disconnected to network reference
+      if (length(discon)>0) {
+        # message(paste("The following treatments are disconnected from the network reference for studies in 'incl.range' and will be excluded from overlay.nma:",
+        #               paste(discon, collapse = "\n"), sep="\n"))
+
+        drops <- which(network$treatments %in% drops)
+        nmanet <- nmanet[!nmanet$treatment %in% drops,]
+
+        nodes <- unique(sort(nmanet$treatment))
+        nodes <- network$treatments[nodes]
+      }
+
+      # Recode treatments from 1-X
+      nmanet$treatment <- as.numeric(factor(nmanet$treatment))
+
+      # Print message
+      message(paste0("Running overlay.nma for ", str.incl.range))
+
+      # Run model (incl write priors)
+      nma <- nma.run(data.ab=nmanet, method=method, link=link,
+                     n.iter=ifelse(method=="common", 3000, 4000),
+                     ...)
+
+      # if (any(nma$BUGSoutput$summary[,"Rhat"]>1.02)) {
+      #   warn <- rownames(nma$BUGSoutput$summary)[which(nma$BUGSoutput$summary[,"Rhat"]>1.02)]
+      #   warning(crayon::bold(crayon::red(paste0("Rhat values for the following parameters are >1.02 - suggests problems with NMA model convergence:\n",
+      #                                           paste(warn, collapse="\n")))))
+      # }
+
+      if (method=="common" | "cred" %in% lim) {
+        predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
+      } else if (method=="random" & "pred" %in% lim) {
+
+        if (is.vector(nma$BUGSoutput$sims.list$d[,-1])) {
+          cols <- 1
+        } else {
+          cols <- ncol(nma$BUGSoutput$sims.list$d[,-1])
+        }
+
+        mat <- array(dim=c(nma$BUGSoutput$n.sims,
+                           cols,
+                           2)
+        )
+        mat[,,1] <- nma$BUGSoutput$sims.list$d[,-1]
+        mat[,,2] <- nma$BUGSoutput$sims.list$sd
+        predtrt <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+        predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + predtrt
+      }
+      if (is.vector(predtrt)) {
+        predtrt <- matrix(predtrt, ncol=1)
+      }
+      colnames(predtrt) <- nodes[-1]
+
+      pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){stats::quantile(x, probs = c(0.025,0.5,0.975))})))
+      pred.df$time <- pred$times[timeindex]
+      pred.df$treat <- rownames(pred.df)
+
+      # Select only treatments included in pred
+      pred.df <- pred.df[pred.df$treat %in% names(pred$summary),]
+
+      # Add range of data to pred.df
+      pred.df$tmin <- dat.range[1]
+      pred.df$tmax <- dat.range[2]
+
+      if (method=="random") {
+        sd <- nma$BUGSoutput$summary[rownames(nma$BUGSoutput$summary)=="sd",]
+        sd <- round(sd, 3)
+        sd <- paste(sd[5], " (", sd[3], ", ", sd[7], ")", sep="")
+      } else {
+        sd <- NULL
+      }
+    }
+
+    listnam <- paste0("bin", bin-1)
+    outlist[[listnam]] <- list(pred.df=pred.df,
+                               nma.summary=nma$BUGSoutput$summary,
+                               totresdev=round(nma$BUGSoutput$median$totresdev,1), ndat=nrow(nmanet),
+                               dic=round(nma$BUGSoutput$median$totresdev+nma$BUGSoutput$pD,1),
+                               sd=sd,
+                               incl.range=dat.range)
   }
-  if (is.vector(predtrt)) {
-    predtrt <- matrix(predtrt, ncol=1)
-  }
-  colnames(predtrt) <- nodes[-1]
 
-  pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){stats::quantile(x, probs = c(0.025,0.5,0.975))})))
-  pred.df$time <- pred$times[timeindex]
-  pred.df$treat <- rownames(pred.df)
 
-  # Select only treatments included in pred
-  pred.df <- pred.df[pred.df$treat %in% names(pred$summary),]
+  # network <- pred$network
+  # nmanet <- network$data.ab[network$data.ab$time>=incl.range[1] & network$data.ab$time<=incl.range[2],]
+  #
+  # # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
+  # nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
+  #   dplyr::mutate(dif=time-mean(incl.range)) %>%
+  #   dplyr::arrange(dif) %>%
+  #   dplyr::group_by(studyID, arm) %>%
+  #   dplyr::slice_head()
+  #
+  # if (!1 %in% nmanet$treatment) {
+  #   stop("Network reference treatment (treatment=1) must be evaluated at a time-point within 'incl.range' to allow overlay.nma")
+  # }
+  #
+  # # Check network connectedness
+  # comparisons <- mb.comparisons(nmanet)
+  # nodes <- unique(sort(nmanet$treatment))
+  # nodes <- network$treatments[nodes]
+  # g <- igraph::graph.empty()
+  # g <- g + igraph::vertex(nodes)
+  # ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
+  # ed <- factor(as.vector(ed), labels=nodes)
+  # edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
+  # g <- g + edges
+  #
+  # discon <- check.network(g)
+  #
+  # # Drop treatments disconnected to network reference
+  # if (length(discon)>0) {
+  #   message(paste("The following treatments are disconnected from the network reference for studies in 'incl.range' and will be excluded from overlay.nma:",
+  #                 paste(discon, collapse = "\n"), sep="\n"))
+  #
+  #   drops <- which(network$treatments %in% drops)
+  #   nmanet <- nmanet[!nmanet$treatment %in% drops,]
+  #
+  #   nodes <- unique(sort(nmanet$treatment))
+  #   nodes <- network$treatments[nodes]
+  # }
+  #
+  # # Recode treatments from 1-X
+  # nmanet$treatment <- as.numeric(factor(nmanet$treatment))
+  #
+  # # Run model (incl write priors)
+  # nma <- nma.run(data.ab=nmanet, method=method, link=link, ...)
+  #
+  # if (any(nma$BUGSoutput$summary[,"Rhat"]>1.02)) {
+  #   warn <- rownames(nma$BUGSoutput$summary)[which(nma$BUGSoutput$summary[,"Rhat"]>1.02)]
+  #   warning(crayon::bold(crayon::red(paste0("Rhat values for the following parameters are >1.02 - suggests problems with NMA model convergence:\n",
+  #                 paste(warn, collapse="\n")))))
+  # }
+  #
+  # # Predict NMA results at specific time point
+  # timedif <- abs(pred$times - mean(incl.range))
+  # if (!any(timedif < (mean(incl.range) - incl.range[1]))) {
+  #   stop("No time-point in predicted values is within 'incl.range'.\nMust specify at least one of 'times' in 'predict()' to be within 'incl.range'")
+  # }
+  # timeindex <- order(timedif)[1]
+  # predref <- pred$pred.mat[[1]][[timeindex]]
+  #
+  # if (method=="common" | "cred" %in% lim) {
+  #   predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
+  # } else if (method=="random" & "pred" %in% lim) {
+  #
+  #   if (is.vector(nma$BUGSoutput$sims.list$d[,-1])) {
+  #     cols <- 1
+  #   } else {
+  #     cols <- ncol(nma$BUGSoutput$sims.list$d[,-1])
+  #   }
+  #
+  #   mat <- array(dim=c(nma$BUGSoutput$n.sims,
+  #                      cols,
+  #                      2)
+  #                )
+  #   mat[,,1] <- nma$BUGSoutput$sims.list$d[,-1]
+  #   mat[,,2] <- nma$BUGSoutput$sims.list$sd
+  #   predtrt <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+  #   predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + predtrt
+  # }
+  # if (is.vector(predtrt)) {
+  #   predtrt <- matrix(predtrt, ncol=1)
+  # }
+  # colnames(predtrt) <- nodes[-1]
+  #
+  # pred.df <- as.data.frame(t(apply(predtrt, MARGIN=2, FUN=function(x){stats::quantile(x, probs = c(0.025,0.5,0.975))})))
+  # pred.df$time <- pred$times[timeindex]
+  # pred.df$treat <- rownames(pred.df)
+  #
+  # # Select only treatments included in pred
+  # pred.df <- pred.df[pred.df$treat %in% names(pred$summary),]
+  #
+  # if (method=="random") {
+  #   sd <- nma$BUGSoutput$summary[rownames(nma$BUGSoutput$summary)=="sd",]
+  #   sd <- round(sd, 3)
+  #   sd <- paste(sd[5], " (", sd[3], ", ", sd[7], ")", sep="")
+  # } else {
+  #   sd <- NULL
+  # }
+  #
+  # return(list(pred.df=pred.df,
+  #             totresdev=round(nma$BUGSoutput$median$totresdev,1), ndat=nrow(nmanet),
+  #             dic=round(nma$BUGSoutput$median$totresdev+nma$BUGSoutput$pD,1),
+  #             sd=sd))
+  #
+  # # DO BITS FOR RANDOM AND ADD ANNOTATIONS TO MODEL WITH RESIDUAL DEVIANCE AND N DATA POINTS AND SD (95%CRI)
 
-  if (method=="random") {
-    sd <- nma$BUGSoutput$summary[rownames(nma$BUGSoutput$summary)=="sd",]
-    sd <- round(sd, 3)
-    sd <- paste(sd[5], " (", sd[3], ", ", sd[7], ")", sep="")
-  } else {
-    sd <- NULL
-  }
-
-  return(list(pred.df=pred.df,
-              totresdev=round(nma$BUGSoutput$median$totresdev,1), ndat=nrow(nmanet),
-              dic=round(nma$BUGSoutput$median$totresdev+nma$BUGSoutput$pD,1),
-              sd=sd))
-
-  # DO BITS FOR RANDOM AND ADD ANNOTATIONS TO MODEL WITH RESIDUAL DEVIANCE AND N DATA POINTS AND SD (95%CRI)
+  return(outlist)
 }
 
 

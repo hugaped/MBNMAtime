@@ -29,7 +29,7 @@
 #'   used. This allows consistency of shading between multiple plotted graphs.
 #'   It should always be at least as high as the maximum count of observations
 #'   plotted
-#' @param ... Arguments for `ggplot()`
+#' @param ... Arguments for `ggplot()` or `R2jags()`
 #' @inheritParams plot.mb.rank
 #'
 #' @details For the S3 method `plot()`, if `disp.obs` is set to `TRUE` it is
@@ -39,7 +39,15 @@
 #'   each panel rather than to the network reference treatment if `disp.obs` is
 #'   set to `TRUE`.
 #'
-#'   `overlay.nma` can be useful to assess if the MBNMA predictions are in agreement with predictions from an NMA model
+#'   `overlay.nma` indicates regions of the data (defined as "time bins") over which it may be reasonable to "lump" different
+#'   follow-up times from different studies together and assume a standard NMA model. For example:
+#'
+#'   * `overlay.nma=c(5,10)` indicates a single NMA of studies with follow-up times `>5` and `<=10`
+#'   * `overlay.nma=c(5,10,15)` indicates two NMAs should be performed of studies with follow-up times `>5` and `<=10`
+#'   of studies with follow-up times `>10` and `<=15`
+#'
+#'   This then allows comparison to MBNMA results over a specific range of time within each time bin.
+#'   It can be useful to assess if the MBNMA predictions are in agreement with predictions from an NMA model
 #'   for a specific range of time-points. This can be a general indicator of the fit of the time-course model. However, it
 #'   is important to note that the wider the range specified in `overlay.nma`, the more likely it is that different time-points
 #'   are included, and therefore that there is greater heterogeneity/inconsistency in the NMA model. If `overlay.nma` includes
@@ -49,9 +57,18 @@
 #'   all these time-points. Predictions for treatments that are disconnected from
 #'   the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
 #'
-#'   It is important to note that the NMA model is not necessarily the "correct" model, since it "lump" different time-points
+#'   It is important to note that the NMA model is not necessarily the "correct" model, since it "lumps" different time-points
 #'   together and ignores potential differences in treatment effects that may arise from this. The wider the range specified in
 #'   `overlay.nma`, the greater the effect of "lumping" and the stronger the assumption of similarity between studies.
+#'
+#'   For an NMA model to be estimated and a corresponding prediction to be made from it, **each** time bin
+#'   must include:
+#'
+#'   * A time at which MBNMA results have been predicted in `x` (this can easily be made possible by increasing
+#'   the number of values in the `times` argument of `predict.mbnma()`)
+#'   * The network reference treatment (treatment=1) evaluated in at least 1 connected study in the time bin.
+#'
+#'   If a given time bin does not meet these criteria then an NMA will not be calculated for it.
 #'
 #' @examples
 #' \donttest{
@@ -159,7 +176,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   if (!is.null(overlay.nma)) {
     # CHECKS
-    checkmate::assertNumeric(overlay.nma, lower=0.0001, upper = max(x$times), len=2, sorted = TRUE)
+    checkmate::assertNumeric(overlay.nma, lower=0, sorted = TRUE)
 
     if (overlay.ref!=TRUE) {
       stop("'overlay.ref' must be TRUE if overlay.nma is used, to ensure prediction of reference treatment response is correct")
@@ -171,30 +188,41 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     }
 
     # Run split NMA
-    nma <- overlay.nma(x, incl.range=overlay.nma, method=method, link=x$link, lim=x$lim, ...)
+    nma <- overlay.nma(x, timebins=overlay.nma, method=method, link=x$link, lim=x$lim, ...)
 
-    predtrt <- nma$pred.df
+    predlist <- list()
 
-    # Write caption
-    capt <- paste0(" effects NMA model\nResDev = ", nma$totresdev,
-                   "; Ndat = ", nma$ndat,
-                   "; DIC = ", nma$dic)
-    if (method=="common") {
-      capt <- paste0("Common", capt)
-    } else if (method=="random") {
-      capt <- paste0("Random", capt, "\nBetween-study SD = ", nma$sd)
+    for (bin in seq_along(nma)) {
+
+      predtrt <- nma[[bin]]$pred.df
+
+      # Write caption
+      if (length(overlay.nma)==2) {
+        capt <- paste0(" effects NMA model\nResDev = ", nma[[bin]]$totresdev,
+                       "; Ndat = ", nma[[bin]]$ndat,
+                       "; DIC = ", nma[[bin]]$dic)
+        if (method=="common") {
+          capt <- paste0("Common", capt)
+        } else if (method=="random") {
+          capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[bin]]$sd)
+        }
+      } else {
+        capt <- "Results for each NMA in overlay.nma are stored in output"
+      }
+
+      g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
+                                               fill="NMA (95% Interval)"),
+                                  alpha=0.5, data=predtrt) +
+        ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax, color="Predicted NMA"),
+                              data=predtrt, size=1)
+
+      colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
+
     }
 
-    g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=overlay.nma[1], xmax=overlay.nma[2],
-                                             fill="NMA (95% Interval)"),
-                                alpha=0.5, data=predtrt) +
-      ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=overlay.nma[1], xend=overlay.nma[2], color="Predicted NMA"),
-                            data=predtrt, size=1) +
+    g <- g +
       ggplot2::labs(caption=capt) +
       ggplot2::scale_fill_manual(name="", values=c("NMA (95% Interval)"="grey"))
-
-    colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
-
   }
 
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
@@ -209,7 +237,14 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
                                        values=colorvals) +
     theme_mbnma()
 
-  return(g)
+  graphics::plot(g)
+
+  out <- list("graph"=g)
+
+  if (!is.null(overlay.nma)) {
+    out[["overlay.nma"]] <- nma
+  }
+  return(invisible(out))
 }
 
 
