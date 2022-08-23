@@ -689,9 +689,15 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
 
   priors <- default.priors(fun)
 
+  if ("itp" %in% fun$name & FALSE %in% fun$p.expon) {
+    d.zero <- 0.00001
+  } else {
+    d.zero <- 0
+  }
+
   jagswish <- c(
     "for (r in 1:mat.size) {",
-    "d.prior[r] <- 0",
+    paste0("d.prior[r] <- ", d.zero),
     "}",
     "",
     priors[["inv.R"]]
@@ -699,7 +705,7 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
 
   jagsrho <- c(
     "for (r in 1:mat.size) {",
-    "d.prior[r] <- 0",
+    paste0("d.prior[r] <- ", d.zero),
     "R[r,r] <- 1000    # Covariance matrix diagonals",
     "}",
     "",
@@ -747,7 +753,7 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     #                       x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
 
     model <- model.insert(model, pos=which(names(model)=="end"),
-                          x=paste0("muinv.R ~ dwish(omega[,], ", mat.size, ")"))
+                          x=priors[["muinv.R"]])
 
     # # Check that var.scale has correct length and add omega to code
     # if (is.null(var.scale)) {
@@ -1312,7 +1318,8 @@ default.priors <- function(fun=tloglin()) {
   priors <- list(
     rho = "rho ~ dunif(0,1)",
     alpha = "alpha[i] ~ dnorm(0,0.0001)",
-    inv.R = "inv.R ~ dwish(omega[,], mat.size)"
+    inv.R = "inv.R ~ dwish(omega[,], mat.size)",
+    muinv.R = "muinv.R ~ dwish(omega[,], mat.size)"
   )
 
   for (i in 1:4) {
@@ -1328,7 +1335,7 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste0("sd.beta.",i)]] <- paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
   }
 
-  if (fun$name %in% c("itp") | ((fun$name %in% "emax") & (FALSE %in% fun$p.expon))) {
+  if ((fun$name %in% c("itp") | (fun$name %in% "emax")) & (FALSE %in% fun$p.expon)) {
 
     for (i in 2:3) {
       priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0,0.0001) T(0,)")
