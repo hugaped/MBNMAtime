@@ -615,7 +615,7 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
   out <- list(name="emax", fun=fun, f=f,
               latex=latex, params=paramnames, nparam=nparam, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
-              bpool=bpool, bmethod=bmethod)
+              bpool=bpool, bmethod=bmethod, p.expon=p.expon)
   class(out) <- "timefun"
 
   if (p.expon==TRUE) {
