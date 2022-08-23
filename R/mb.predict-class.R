@@ -50,10 +50,12 @@
 #'   * `overlay.nma=c(5,10,15)` indicates two NMAs should be performed of studies with follow-up times `>5` and `<=10`
 #'   of studies with follow-up times `>10` and `<=15`
 #'
-#'   This then allows comparison to MBNMA results over a specific range of time within each time bin.
-#'   It can be useful to assess if the MBNMA predictions are in agreement with predictions from an NMA model
-#'   for a specific range of time-points. This can be a general indicator of the fit of the time-course model. However, it
-#'   is important to note that the wider the range specified in `overlay.nma`, the more likely it is that different time-points
+#'   When used with MBNMA (via `predict.mbnma()`) this allows comparison to MBNMA results over a specific range of time within each time bin.
+#'   It can be useful to assess which time-course function might be suitable when using `timebinplot()`, or to
+#'   to assess if the MBNMA predictions are in agreement with predictions from an NMA model when using `plot.mb.predict()`
+#'   for a specific range of time-points. This can be a general indicator of the fit of the time-course model.
+#'
+#'   However, it is important to note that the wider the range specified in `overlay.nma`, the more likely it is that different time-points
 #'   are included, and therefore that there is greater heterogeneity/inconsistency in the NMA model. If `overlay.nma` includes
 #'   several follow-up times for any study then only a single time-point will be taken (the one closest to `mean(overlay.nma)`).
 #'   The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line, with the 95%CrI shown by a grey
@@ -66,13 +68,8 @@
 #'   `overlay.nma`, the greater the effect of "lumping" and the stronger the assumption of similarity between studies.
 #'
 #'   For an NMA model to be estimated and a corresponding prediction to be made from it, **each** time bin
-#'   must include:
-#'
-#'   * A time at which MBNMA results have been predicted in `x` (this can easily be made possible by increasing
-#'   the number of values in the `times` argument of `predict.mbnma()`)
-#'   * The network reference treatment (treatment=1) evaluated in at least 1 connected study in the time bin.
-#'
-#'   If a given time bin does not meet these criteria then an NMA will not be calculated for it.
+#'   must include the network reference treatment (treatment=1) evaluated in at least 1 connected study in the time bin.
+#'   If a given time bin does not meet this criteria then an NMA will not be calculated for it.
 #'
 #' @examples
 #' \donttest{

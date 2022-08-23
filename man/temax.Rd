@@ -10,7 +10,8 @@ temax(
   pool.et50 = "rel",
   method.et50 = "common",
   pool.hill = NULL,
-  method.hill = NULL
+  method.hill = NULL,
+  p.expon = TRUE
 )
 }
 \arguments{
@@ -25,23 +26,36 @@ temax(
 \item{pool.hill}{Pooling for Hill parameter. Can take \code{"rel"} or \code{"abs"} (see details).}
 
 \item{method.hill}{Method for synthesis of Hill parameter. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{p.expon}{Should parameters that can only take positive values be modeled on the exponential scale (\code{TRUE})
+or should they be assigned a prior that restricts the posterior to positive values (\code{FALSE})}
 }
 \value{
 An object of \code{class("timefun")}
 }
 \description{
-Emax time-course function
+** Future update for version 0.2.3: to ensure positive posterior values, et50 and hill parameters will in
+the future be modeled on the natural scale using a half-normal prior rather than a symmetrical prior
+on the exponential scale **
 }
 \details{
-Emax represents the maximum response.
-exp(ET50) represents the time at which 50\% of the maximum response is achieved.
-exp(Hill) is the Hill parameter, which allows for a sigmoidal function.
+\itemize{
+\item Emax represents the maximum response.
+\item ET50 represents the time at which 50\% of the maximum response is achieved. This can only take
+positive values and so is modeled on the exponential scale and assigned a symmetrical normal prior
+Alternatively it can be assigned a normal prior truncated at zero (half-normal) (this
+will be the default in MBNMAtime version >=0.2.3).
+\item Hill is the Hill parameter, which allows for a sigmoidal function. This can only take
+positive values and so is modeled on the exponential scale and assigned a symmetrical normal prior
+Alternatively it can be assigned a normal prior truncated at zero (half-normal) (this
+will be the default in MBNMAtime version >=0.2.3).
+}
 
 Without Hill parameter:
-\deqn{\frac{E_{max}\times{x}}{e^{ET_{50}}+x}}
+\deqn{\frac{E_{max}\times{x}}{ET_{50}+x}}
 
 With Hill parameter:
-\deqn{\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}}
+\deqn{\frac{E_{max}\times{x^{hill}}}{ET_{50}\times{hill}+x^{hill}}}
 }
 \section{Time-course parameters}{
 

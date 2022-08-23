@@ -689,8 +689,24 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
 #'
-#' @inheritSection plot.mb.predict [Overlaying NMA results]
+#' @inheritSection plot.mb.predict Overlaying NMA results
 #'
+#' @examples
+#' \donttest{
+#' # Create an mb.network object from a dataset
+#' alognet <- mb.network(alog_pcfb)
+#'
+#' # Plot relative effects from NMAs calculated for a single time-bins
+#' # Do not plot time-bin boundaries
+#' timebinplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE)
+#'
+#' # Plot relative effects from NMAs at multiple time-bins
+#' # With random treatment effects
+#' timebinplot(alognet, overlay.nma=c(5,10,15,20),
+#'   method="random")
+#' }
+#'
+#' @export
 timebinplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$time)),
                         method="common", link="identity", lim="cred", plot.bins=TRUE, ...) {
 
@@ -724,10 +740,11 @@ timebinplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.a
 
   colorvals <- c("Posterior median"="gray0")
 
-  capt <- paste0("Results relative to ", network$treatments[1])
+  capt <- paste0("Results relative to ", network$treatments[1],
+                 "\nWidth of 95% interval denotes range of follow-up times included in NMA")
 
   if (plot.bins==TRUE) {
-    capt <- paste0(capt, "\nVertical dashed lined indicate time bin boundaries")
+    capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
 
     g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
   }

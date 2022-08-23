@@ -10,7 +10,8 @@ write.likelihood(
   timecourse,
   rho = 0,
   covar = "varadj",
-  link = "identity"
+  link = "identity",
+  fun
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
+\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 }
 \value{
 A character vector of JAGS MBNMA model code that includes likelihood

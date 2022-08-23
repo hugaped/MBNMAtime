@@ -6,8 +6,9 @@
 \usage{
 get.relative(
   mbnma,
+  mbnma.add = NULL,
   time = max(mbnma$model.arg$jagsdata$time, na.rm = TRUE),
-  treats = mbnma$network$treatments,
+  treats = unique(c(mbnma$network$treatments, mbnma.add$network$treatments)),
   classes = NULL,
   lim = "cred"
 )

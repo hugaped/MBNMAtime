@@ -11,7 +11,7 @@ A data frame with 710 rows and 7 variables:
 \item \code{time} Numeric data indicating follow-up times
 \item \code{y} Numeric data indicating the mean response for a given observation
 \item \code{se} Numeric data indicating the standard error for a given observation
-\item \code{N} Numeric data indicating the number of participants used to calculate means for each observation
+\item \code{n} Numeric data indicating the number of participants used to calculate means for each observation
 \item \code{treatment} Treatment identifiers as factors. Labels are shortened treatment names.
 \item \code{treatname} Character data giving the full names of each treatment in the format agent_dose
 \item \code{agent} Agent (drug) names stored as characters
@@ -33,6 +33,6 @@ deviations have been imputed for 421 observations.
 }
 \details{
 \code{obesityBW_CFB} is a data frame in long format (one row per observation, arm and study),
-with the variables \code{studyID}, \code{time}, \code{y}, \code{se}, \code{N}, \code{treatment}, \code{treatname}, \code{agent} and \code{class}.
+with the variables \code{studyID}, \code{time}, \code{y}, \code{se}, \code{n}, \code{treatment}, \code{treatname}, \code{agent} and \code{class}.
 }
 \keyword{datasets}

@@ -31,10 +31,12 @@ plot (\code{TRUE}) or not (\code{FALSE}). The network reference treatment (treat
 treatment properly.
 }}
 
-\item{overlay.nma}{Can be used to overlay the predicted results from a standard NMA model that
-"lumps" time-points together within the range specified in \code{overlay.nma}. Must be a numeric vector of length 2, or
-left as \code{NULL} (the default) to indicate no NMA should be performed. \code{overlay.nma} can only be specified if
-\code{overlay.ref==TRUE}. See Details for further information.}
+\item{overlay.nma}{Numeric vector used to overlay the results from a standard NMA model that
+"lumps" time-points together within the time bin ranges specified in \code{overlay.nma}.
+The numbers in \code{overlay.nma} define the boundaries of the time bins within which to perform
+a standard NMA. Length must be >=2, or can be left as \code{NULL} (the default) to indicate that no NMA
+should be perfomed. \code{overlay.nma} can only be specified if \code{overlay.ref==TRUE}.
+See Details for further information.}
 
 \item{method}{Can take \code{"common"} or \code{"random"} to indicate the type of NMA model used to synthesise data points
 given in \code{overlay.nma}. The default is \code{"random"} since this assumes different
@@ -52,7 +54,7 @@ plotted}
 \item{treat.labs}{A vector of treatment labels in the same order as treatment codes.
 Easiest to use treatment labels stored by \code{mb.network()}}
 
-\item{...}{Arguments for \code{ggplot()}}
+\item{...}{Arguments for \code{ggplot()} or \code{R2jags()}}
 }
 \description{
 Plots predicted responses from a time-course MBNMA model
@@ -64,10 +66,24 @@ sequence of time points to avoid misrepresentation of shaded densities.
 Shaded counts of observations will be relative to the treatment plotted in
 each panel rather than to the network reference treatment if \code{disp.obs} is
 set to \code{TRUE}.
+}
+\section{Overlaying NMA results}{
 
-\code{overlay.nma} can be useful to assess if the MBNMA predictions are in agreement with predictions from an NMA model
-for a specific range of time-points. This can be a general indicator of the fit of the time-course model. However, it
-is important to note that the wider the range specified in \code{overlay.nma}, the more likely it is that different time-points
+
+\code{overlay.nma} indicates regions of the data (defined as "time bins") over which it may be reasonable to "lump" different
+follow-up times from different studies together and assume a standard NMA model. For example:
+\itemize{
+\item \code{overlay.nma=c(5,10)} indicates a single NMA of studies with follow-up times \verb{>5} and \verb{<=10}
+\item \code{overlay.nma=c(5,10,15)} indicates two NMAs should be performed of studies with follow-up times \verb{>5} and \verb{<=10}
+of studies with follow-up times \verb{>10} and \verb{<=15}
+}
+
+When used with MBNMA (via \code{predict.mbnma()}) this allows comparison to MBNMA results over a specific range of time within each time bin.
+It can be useful to assess which time-course function might be suitable when using \code{timebinplot()}, or to
+to assess if the MBNMA predictions are in agreement with predictions from an NMA model when using \code{plot.mb.predict()}
+for a specific range of time-points. This can be a general indicator of the fit of the time-course model.
+
+However, it is important to note that the wider the range specified in \code{overlay.nma}, the more likely it is that different time-points
 are included, and therefore that there is greater heterogeneity/inconsistency in the NMA model. If \code{overlay.nma} includes
 several follow-up times for any study then only a single time-point will be taken (the one closest to \code{mean(overlay.nma)}).
 The NMA predictions are plotted over the range specified in \code{overlay.nma} as a horizontal line, with the 95\%CrI shown by a grey
@@ -75,10 +91,15 @@ rectangle. The NMA predictions represent those for \emph{any time-points within 
 all these time-points. Predictions for treatments that are disconnected from
 the network reference treatment at data points specified within \code{overlay.nma} cannot be estimated so are not included.
 
-It is important to note that the NMA model is not necessarily the "correct" model, since it "lump" different time-points
+It is important to note that the NMA model is not necessarily the "correct" model, since it "lumps" different time-points
 together and ignores potential differences in treatment effects that may arise from this. The wider the range specified in
 \code{overlay.nma}, the greater the effect of "lumping" and the stronger the assumption of similarity between studies.
+
+For an NMA model to be estimated and a corresponding prediction to be made from it, \strong{each} time bin
+must include the network reference treatment (treatment=1) evaluated in at least 1 connected study in the time bin.
+If a given time bin does not meet this criteria then an NMA will not be calculated for it.
 }
+
 \examples{
 \donttest{
 # Create an mb.network object from a dataset
@@ -101,10 +122,10 @@ plot(predict, disp.obs=TRUE, overlay.ref=FALSE, col="green")
 #on the plot
 plot(predict, disp.obs=FALSE, overlay.ref=TRUE)
 
-# Plot predictions from an NMA calculated between different time-points
+# Plot predictions from NMAs calculated between different time-points
 plot(predict, overlay.nma=c(5,10), n.iter=20000)
-plot(predict, overlay.nma=c(15,20), n.iter=20000)
-# Time-course fit may be less good at 15-20 weeks follow-up
+plot(predict, overlay.nma=c(5,10,15,20), n.iter=20000)
+# Time-course fit may be less well at 15-20 weeks follow-up
 }
 
 }

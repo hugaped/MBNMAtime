@@ -8,7 +8,7 @@ fitplot(
   mbnma,
   treat.labs = NULL,
   disp.obs = TRUE,
-  n.iter = mbnma$BUGSoutput$n.iter,
+  n.iter = round(mbnma$BUGSoutput$n.iter/4),
   n.thin = mbnma$BUGSoutput$n.thin,
   ...
 )

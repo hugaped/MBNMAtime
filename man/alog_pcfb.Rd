@@ -15,7 +15,7 @@ A data frame in long format (one row per arm and study), with 46 rows and 9 vari
 \item \code{time} Numeric data indicating the time at which the observation was measured (given in weeks)
 \item \code{y} Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
 \item \code{se} Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
-\item \code{N} Numeric data indicating the number in each arm at each follow-up time
+\item \code{n} Numeric data indicating the number in each arm at each follow-up time
 }
 }
 \usage{
@@ -33,7 +33,7 @@ within the network.
 }
 \details{
 \code{alog_pcfb} is a data frame in long format (one row per observation, arm and study),
-with the variables \code{studyID}, \code{clinicaltrialGov_ID}, \code{agent}, \code{dose}, \code{treatment}, \code{time}, \code{y}, \code{se}, and \code{N}.
+with the variables \code{studyID}, \code{clinicaltrialGov_ID}, \code{agent}, \code{dose}, \code{treatment}, \code{time}, \code{y}, \code{se}, and \code{n}.
 }
 \references{
 \insertAllCited{}
