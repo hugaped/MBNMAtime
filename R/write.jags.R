@@ -714,7 +714,8 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
   mat.size <- length(sufparams)
   for (i in seq_along(sufparams)) {
     # Change d.1[k] ~ dnorm(0,0.001)  to   d.1[k] <- d.mult[1,k]
-    model <- gsub(paste0("^d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
+    model <- gsub(paste0("^d\\.", sufparams[i], "\\[k\\].+$"),
+                  #paste0("^d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
                   paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]"),
                   model
     )
@@ -725,7 +726,8 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     #               model
     # )
     # model <- model[-grep(paste0("^mu\\[i,", sufparams[i], "\\]"), model)]
-    model <- gsub(paste0("^mu\\.", sufparams[i], "\\[i\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
+    model <- gsub(paste0("^mu\\.", sufparams[i], "\\[i\\].+$"),
+                  #paste0("^mu\\.", sufparams[i], "\\[i\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
                   paste0("mu.", sufparams[i], "[i] <- mumult[i,", i, "]"),
                   model
     )
