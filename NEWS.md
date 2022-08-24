@@ -11,6 +11,7 @@
 - `get.relative()` can be used to combine two MBNMA models to allow different time-course functions to be fitted to a different set of treatments (see examples in the vignette)
 - New priors that restrict posterior to positive values where necessary can be easily incorporated. 
 - `timebinplot()` can be used to plot the results of NMAs conducted at multiple time bins. This can be particularly useful to explore which time-course functions might be appropriate, and to check the validity of MBNMA predictions.
+- `mb.nodesplit()` can be performed at specific time-points, in addition to by time-course parameter
 - `corparam` set to `FALSE` as default
 
 ## Bug fixes
