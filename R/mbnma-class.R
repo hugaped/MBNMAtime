@@ -1004,14 +1004,14 @@ get.relative <- function(mbnma, mbnma.add=NULL, time=max(mbnma$model.arg$jagsdat
   # For lower triangle
   outmat <- array(dim=c(length(treats), length(treats), nrow(mat)))
   for (i in 1:(ncol(mat)-1)) {
-    temp <- mat[,-i] - mat[,i]
+    temp <- mat[,-i, drop=FALSE] - mat[,i, drop=FALSE]
     #temp <- apply(temp, MARGIN=2, FUN=function(x) {neatCrI(quantile(x, probs=c(0.025, 0.5, 0.975)), digits = 2)})
     outmat[(1+i):dim(outmat)[1],i,] <- t(temp[,i:ncol(temp)])
   }
 
   # For upper triangle
   for (i in 1:(ncol(mat)-1)) {
-    temp <- mat[,i] - mat[,-i]
+    temp <- mat[,i, drop=FALSE] - mat[,-i, drop=FALSE]
     outmat[i,(1+i):dim(outmat)[2],] <- t(temp[,i:ncol(temp)])
   }
 
