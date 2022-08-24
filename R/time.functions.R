@@ -287,7 +287,7 @@ titp <- function(pool.emax="rel", method.emax="common",
   out <- list(name="itp", fun=fun, f=f, latex=latex,
               params=paramnames, nparam=nparam, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
-              bpool=bpool, bmethod=bmethod)
+              bpool=bpool, bmethod=bmethod, p.expon=p.expon)
 
   class(out) <- "timefun"
 
