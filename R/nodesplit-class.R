@@ -142,7 +142,11 @@ print.nodesplit <- function(x, groupby="time.param", ...) {
     params <- names(x[[1]])
 
     for (i in seq_along(params)) {
-      cat(paste0("\n", crayon::bold(crayon::underline(params[i])), "\n\n"))
+
+      temp <- params[i]
+      temp <- gsub("time", "time = ", temp)
+
+      cat(paste0("\n", crayon::bold(crayon::underline(temp)), "\n\n"))
 
       param.df <- sum.df[sum.df$Time.Param==params[i],]
 

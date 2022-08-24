@@ -500,7 +500,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
       for (time in seq_along(times)) {
         trtnam.dir <- c(network.temp$treatments[1], network.temp$treatments[comp.temp])
-        rel <- get.relative(result.dir, time=times[time], lim=lim, treats=trtnam.ind)
+        rel <- get.relative(result.dir, time=times[time], lim=lim, treats=trtnam.dir)
         dir.dif[[paste0("time", times[time])]] <- rel$relarray[2,1,]
       }
 
