@@ -471,7 +471,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
       if (network.temp$treatment[1] != network$treatment[comp[1]]) {
         data.temp <- network.temp$data.ab
         data.temp$treatment <- factor(data.temp$treatment, labels=network.temp$treatments)
-        network.temp <- mb.network(data.temp, reference=network$treatment[comp[1]])
+        network.temp <- mb.network(data.temp, reference=network$treatment[comp[1]], cfb=network$cfb)
       }
 
       # Run UME model to estimate direct effects
@@ -479,8 +479,19 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
                                               ...))
     }
 
-    # Store required model parameter values
     comp.temp <- which(network$treatments[comp[2]] == network.temp$treatments)
+
+    # Node-split at specific time
+    if (!is.null(time)) {
+      trtnam.dir <- c(network.temp$treatments[1], network.temp$treatments[comp.temp])
+      rel <- get.relative(result.dir, time=time, lim=lim, treats=trtnam.ind)
+      dir.dif[[paste0("pred", time)]] <- rel$relarray[2,1,]
+
+      # Node-split by time-course parameter
+    }
+
+    # Store required model parameter values
+
     dir.dif <- list()
     for (param in seq_along(nodesplit.parameters)) {
       if (grepl("beta", nodesplit.parameters[param])) {
@@ -504,12 +515,15 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
     df <- network[["data.ab"]]
 
-    # Remove comparisons to split on
-    df <- drop.comp(df=df, comp=comp)
+    # Add treatment labels
+    df$treatment <- factor(df$treatment, labels=network$treatments)
 
-    if (!(1 %in% df$treatment)) {
-      string <- paste("Reference treatment removed for node-split. Treatments have been reordered with the next lowest coded treatment as the reference:\ntreatment ",
-                     min(df$treatment, na.rm=TRUE))
+    # Remove comparisons to split on
+    df <- drop.comp(df=df, comp=network$treatments[comp])
+
+    if (!(1 %in% as.numeric(df$treatment))) {
+      string <- paste("Reference treatment removed for node-split. Treatments have been reordered with the next lowest coded treatment as the reference:\n",
+                      levels(df$treatment)[min(as.numeric(df$treatment), na.rm=TRUE)])
       warning(string)
     }
 
@@ -517,22 +531,33 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
     result.ind <- do.call(mb.run, args=list(network=ind.net, fun=fun, ...))
 
-    ind.dif <- list()
-    for (param in seq_along(nodesplit.parameters)) {
-      if (grepl("beta", nodesplit.parameters[param])) {
-        index <- which(nodesplit.parameters[param] %in% fun$params)
-        node1 <- paste0("d.", index, "[", comp[1], "]")
-        node2 <- paste0("d.", index, "[", comp[2], "]")
-      } else{
-        node1 <- paste0(nodesplit.parameters[param], "[", comp[1], "]")
-        node2 <- paste0(nodesplit.parameters[param], "[", comp[2], "]")
+    # Node-split at specific time
+    if (!is.null(time)) {
+      trtnam.ind <- c(network$treatments[comp[1]], network$treatments[comp[2]])
+      rel.ind <- get.relative(result.ind, time=time, lim=lim, treats=trtnam.ind)
+      ind.dif[[paste0("pred", time)]] <- rel.ind$relarray[2,1,]
+
+    # Node-split by time-course parameter
+    } else if (is.null(time)) {
+      ind.dif <- list()
+      for (param in seq_along(nodesplit.parameters)) {
+        if (grepl("beta", nodesplit.parameters[param])) {
+          index <- which(nodesplit.parameters[param] %in% fun$params)
+          node1 <- paste0("d.", index, "[", comp[1], "]")
+          node2 <- paste0("d.", index, "[", comp[2], "]")
+        } else{
+          node1 <- paste0(nodesplit.parameters[param], "[", comp[1], "]")
+          node2 <- paste0(nodesplit.parameters[param], "[", comp[2], "]")
+        }
+
+        ind1 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node1]
+        ind2 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node2]
+
+        ind.dif[[nodesplit.parameters[param]]] <- ind2 - ind1
       }
-
-      ind1 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node1]
-      ind2 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node2]
-
-      ind.dif[[nodesplit.parameters[param]]] <- ind2 - ind1
     }
+
+
 
     print("Indirect complete")
 
