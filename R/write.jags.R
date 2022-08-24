@@ -753,7 +753,7 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     #                       x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
 
     model <- model.insert(model, pos=which(names(model)=="end"),
-                          x=priors[["muinv.R"]])
+                          x=paste0("muinv.R ~ dwish(omega[,], ", mat.size, ")"))
 
     # # Check that var.scale has correct length and add omega to code
     # if (is.null(var.scale)) {
@@ -1318,8 +1318,7 @@ default.priors <- function(fun=tloglin()) {
   priors <- list(
     rho = "rho ~ dunif(0,1)",
     alpha = "alpha[i] ~ dnorm(0,0.0001)",
-    inv.R = "inv.R ~ dwish(omega[,], mat.size)",
-    muinv.R = "muinv.R ~ dwish(omega[,], mat.size)"
+    inv.R = "inv.R ~ dwish(omega[,], mat.size)"
   )
 
   for (i in 1:4) {
@@ -1338,11 +1337,11 @@ default.priors <- function(fun=tloglin()) {
   if ((fun$name %in% c("itp") | (fun$name %in% "emax")) & (FALSE %in% fun$p.expon)) {
 
     for (i in 2:3) {
-      priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0,0.0001) T(0,)")
-      priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0,0.001) T(0,)")
-      priors[[paste("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0,0.001) T(0,)")
-      priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0,0.001) T(0,)")
-      priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0,0.0001) T(0,)")
+      priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0.00001,0.0001) T(0,)")
+      priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
+      priors[[paste("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0.00001,0.001) T(0,)")
+      priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
+      priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0.00001,0.0001) T(0,)")
     }
   }
 
