@@ -44,9 +44,11 @@
 #' be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 #' relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
 #' is used.
-#' @param corparam A boolean object that indicates whether correlation should be modelled
-#' between relative effect time-course parameters. This is automatically set to `FALSE` if class effects are modelled.
-#' It can also be useful for providing informative priors more easily to the model.
+#' @param corparam A boolean object that indicates whether correlation should be modeled
+#' between relative effect time-course parameters. Default is `FALSE` and this is automatically set to `FALSE` if class effects are modeled.
+#' Setting it to `TRUE` models correlation between time-course parameters. This can help identify parameters
+#' that are estimated poorly for some treatments by allowing sharing of information between
+#' parameters for different treatments in the network, but may also cause some shrinkage.
 #'
 #' @param class.effect A list of named strings that determines which time-course
 #'   parameters to model with a class effect and what that effect should be
@@ -254,7 +256,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       link="identity",
                       parameters.to.save=NULL,
                       rho=0, covar="varadj",
-                      omega=NULL, corparam=TRUE,
+                      omega=NULL, corparam=FALSE,
                       class.effect=list(), UME=FALSE,
                       pd="pv", parallel=FALSE,
                       priors=NULL,
@@ -272,6 +274,8 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  message("Change from version 0.2.2 onwards: corparam=FALSE as default")
 
   # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
   if (n.iter==n.burnin) {
