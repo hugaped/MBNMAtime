@@ -310,6 +310,11 @@ mb.nodesplit.comparisons <- function(network)
 #' @inherit mb.run details
 #' @inherit inconsistency.loops references
 #'
+#' @details
+#' Note that by specifying the `times` argument a user can perform a node-split of treatment
+#' effects at a specific time-point. This will give the treatment effect for both direct, indirect, and
+#' MBNMA estimates at this time point.
+#'
 #' @return A an object of `class("mb.nodesplit")` that is a list containing elements
 #' `d.X.Y` (treatment 1 = `X`, treatment 2 = `Y`). Each element (corresponding to each
 #' comparison) contains additional numbered elements corresponding to each parameter in the
