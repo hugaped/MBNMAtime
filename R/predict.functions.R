@@ -410,3 +410,40 @@ absdist <- function(mbnma) {
   }
   return(absprior)
 }
+
+
+
+
+
+#' @noRd
+prepare.ume.predict <- function(mbnma, treats, level="treatment") {
+
+  checkmate::assertCharacter(treats, len=2)
+
+  if (FALSE %in% mbnma$model.arg$UME) {
+    stop("object is not a UME model")
+  }
+  if (level=="class") {
+    stop("UME and class models do not mix :-(")
+  }
+
+  umetag <- which(mbnma$network$treatments %in% treats)
+  umetag <- paste0("\\[1\\,[0-9]+\\]")
+
+  tag <- which(mbnma$network$treatments %in% treats[2])
+  tag <- paste0("\\[[0-9]+\\]")
+
+  params <- mbnma$model.arg$fun$params
+
+  keep <- c("^sd", paste0(c("^sd\\.beta\\."), 1:4), paste0(params, tag), paste0(params, umetag))
+
+  ind <- vector()
+  for (i in seq_along(keep)) {
+    ind <- append(ind, grep(keep[i], colnames(mbnma$BUGSoutput$sims.matrix)))
+  }
+
+  mbnma$BUGSoutput$sims.matrix <-
+    mbnma$BUGSoutput$sims.matrix[,ind]
+
+  return(mbnma)
+}

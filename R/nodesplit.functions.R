@@ -305,6 +305,7 @@ mb.nodesplit.comparisons <- function(network)
 #' node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.
 #' @param ... Arguments to be sent to `mb.run()`
 #' @inheritParams mb.run
+#' @inheritParams predict.mbnma
 #'
 #' @inherit mb.run details
 #' @inherit inconsistency.loops references
@@ -352,8 +353,9 @@ mb.nodesplit.comparisons <- function(network)
 #' }
 #' @export
 mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
-                            nodesplit.parameters="all", fun=tpoly(degree = 1),
-                            ...
+                         nodesplit.parameters="all", fun=tpoly(degree = 1),
+                         times=NULL, lim="cred",
+                         ...
 )
 {
   # Required packages: overlapping
@@ -417,6 +419,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
   ############# Run NMA model #############
 
+  print("Running NMA model")
+
   result.nma <- do.call(mb.run, args=list(network=network, fun=fun,
                                          ...))
 
@@ -440,9 +444,18 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
     ######### For NMA model  ###########
     #######################################
 
-    print("Running NMA model")
-
     nma.dif <- list()
+
+    if (!is.null(times)) {
+
+      for (time in seq_along(times)) {
+        trtnam.nma <- c(network$treatments[comp[1]], network$treatments[comp[2]])
+        rel.nma <- get.relative(result.nma, time=times[time], lim=lim, treats=trtnam.nma)
+        nma.dif[[paste0("time", times[time])]] <- rel.nma$relarray[2,1,]
+      }
+    }
+
+    # Node-split by time-course parameter
     for (param in seq_along(nodesplit.parameters)) {
       if (grepl("beta", nodesplit.parameters[param])) {
         index <- which(nodesplit.parameters[param] %in% fun$params)
@@ -458,7 +471,6 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
       nma.dif[[nodesplit.parameters[param]]] <- nma2 - nma1
     }
-
 
     #######################################
     ######### For direct model  ###########
@@ -479,20 +491,23 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
                                               ...))
     }
 
+    # Store required model parameter values
     comp.temp <- which(network$treatments[comp[2]] == network.temp$treatments)
+    dir.dif <- list()
 
     # Node-split at specific time
-    if (!is.null(time)) {
-      trtnam.dir <- c(network.temp$treatments[1], network.temp$treatments[comp.temp])
-      rel <- get.relative(result.dir, time=time, lim=lim, treats=trtnam.ind)
-      dir.dif[[paste0("pred", time)]] <- rel$relarray[2,1,]
+    if (!is.null(times)) {
 
-      # Node-split by time-course parameter
+      for (time in seq_along(times)) {
+        trtnam.dir <- c(network.temp$treatments[1], network.temp$treatments[comp.temp])
+        rel <- get.relative(result.dir, time=times[time], lim=lim, treats=trtnam.ind)
+        dir.dif[[paste0("time", times[time])]] <- rel$relarray[2,1,]
+      }
+
+
     }
 
-    # Store required model parameter values
-
-    dir.dif <- list()
+    # Node-split by time-course parameter
     for (param in seq_along(nodesplit.parameters)) {
       if (grepl("beta", nodesplit.parameters[param])) {
         index <- which(nodesplit.parameters[param] %in% fun$params)
@@ -531,30 +546,35 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
     result.ind <- do.call(mb.run, args=list(network=ind.net, fun=fun, ...))
 
+    ind.dif <- list()
+
     # Node-split at specific time
     if (!is.null(time)) {
-      trtnam.ind <- c(network$treatments[comp[1]], network$treatments[comp[2]])
-      rel.ind <- get.relative(result.ind, time=time, lim=lim, treats=trtnam.ind)
-      ind.dif[[paste0("pred", time)]] <- rel.ind$relarray[2,1,]
+
+      for (time in seq_along(times)) {
+        trtnam.ind <- c(network$treatments[comp[1]], network$treatments[comp[2]])
+        rel.ind <- get.relative(result.ind, time=times[time], lim=lim, treats=trtnam.ind)
+        ind.dif[[paste0("time", times[time])]] <- rel.ind$relarray[2,1,]
+      }
+
+
+    }
 
     # Node-split by time-course parameter
-    } else if (is.null(time)) {
-      ind.dif <- list()
-      for (param in seq_along(nodesplit.parameters)) {
-        if (grepl("beta", nodesplit.parameters[param])) {
-          index <- which(nodesplit.parameters[param] %in% fun$params)
-          node1 <- paste0("d.", index, "[", comp[1], "]")
-          node2 <- paste0("d.", index, "[", comp[2], "]")
-        } else{
-          node1 <- paste0(nodesplit.parameters[param], "[", comp[1], "]")
-          node2 <- paste0(nodesplit.parameters[param], "[", comp[2], "]")
-        }
-
-        ind1 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node1]
-        ind2 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node2]
-
-        ind.dif[[nodesplit.parameters[param]]] <- ind2 - ind1
+    for (param in seq_along(nodesplit.parameters)) {
+      if (grepl("beta", nodesplit.parameters[param])) {
+        index <- which(nodesplit.parameters[param] %in% fun$params)
+        node1 <- paste0("d.", index, "[", comp[1], "]")
+        node2 <- paste0("d.", index, "[", comp[2], "]")
+      } else{
+        node1 <- paste0(nodesplit.parameters[param], "[", comp[1], "]")
+        node2 <- paste0(nodesplit.parameters[param], "[", comp[2], "]")
       }
+
+      ind1 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node1]
+      ind2 <- result.ind$BUGSoutput$sims.matrix[,colnames(result.ind$BUGSoutput$sims.matrix)==node2]
+
+      ind.dif[[nodesplit.parameters[param]]] <- ind2 - ind1
     }
 
 

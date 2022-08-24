@@ -68,6 +68,9 @@ plot.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
   }
   plot.df <- plot.df[-1,]
 
+  # Replace "pred"
+  plot.df$Parameter <- gsub("time", "time = ", plot.df$Parameter)
+
   # Factorise
   plot.df <- plot.df %>% dplyr::mutate(
     Parameter = factor(Parameter),
@@ -97,7 +100,7 @@ plot.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
     dens.df <- subset(plot.df, Source!="NMA")
 
     dens <- ggplot2::ggplot(dens.df, ggplot2::aes(x=value, linetype=Source, fill=Source), ...) +
-      ggplot2::geom_density(alpha=0.2, size=1) +
+      ggplot2::geom_density(alpha=0.2, size=0.8) +
       ggplot2::xlab("Treatment effect") +
       ggplot2::ylab("Posterior density") +
       ggplot2::scale_fill_manual(values=cols) +
