@@ -7,9 +7,16 @@ classnetwork <- mb.network(goutSUA_CFBcomb)
 
 ################ Testing mb.run wrapped functions ################
 
+
+
+
+
 testthat::test_that("exponential time-course function works correctly", {
   skip_on_ci()
   skip_on_cran()
+
+  # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
+  suppressWarnings({
 
   mb.result <- mb.run(painnet, fun=texp(pool.emax="rel", method.emax="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200)
@@ -37,12 +44,64 @@ testthat::test_that("exponential time-course function works correctly", {
   testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
                          4)
 
+  })
+})
+
+
+
+testthat::test_that("itp time-course function works correctly", {
+  skip_on_ci()
+  skip_on_cran()
+
+  mb.result <- suppressWarnings(mb.run(painnet, fun=titp(pool.emax="rel", method.emax="common",
+                                                          pool.rate="abs", method.rate="common"),
+                                       positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200, pd="plugin"))
+  testthat::expect_equal(all(c("emax", "rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+
+  mb.result <- mb.run(copdnet, fun=titp(pool.emax="rel", method.emax="common",
+                                         pool.rate="rel", method.rate="random"),
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200, pd="popt")
+  testthat::expect_equal(all(c("emax", "rate", "sd.rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+
+
+  result <- mb.run(copdnet, fun=titp(),
+                   rho="dunif(0,1)", covar="CS", n.iter=500, n.burnin=200, pd="pv")
+  test <- all(c("emax", "rate", "rho") %in% result$parameters.to.save)
+  testthat::expect_equal(test, TRUE)
+
+  # Class effects
+  mb.result <- mb.run(classnetwork, fun=titp(pool.emax="rel", method.emax="common",
+                                              pool.rate="abs", method.rate="common"),
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
+                      class.effect = list("emax"="common"))
+  testthat::expect_equal(all(c("EMAX") %in% mb.result$parameters.to.save), TRUE)
+  testthat::expect_equal(all(c("sd.EMAX") %in% mb.result$parameters.to.save), FALSE)
+
+  testthat::expect_error(mb.run(classnetwork, fun=titp(pool.emax="rel", method.emax="common",
+                                                        pool.rate="abs", method.rate="common"),
+                                class.effect = list("rate"="common")),
+                         "Class effects can only"
+  )
+
+  # UME
+  mb.result <- mb.run(copdnet, fun=titp(pool.emax="rel", method.emax="common",
+                                         pool.rate="rel", method.rate="common"),
+                      positive.scale=TRUE,  n.chain=3, n.iter=500, n.burnin=200,
+                      UME=TRUE)
+  testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                         4)
+  testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("rate", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                         4)
+
 })
 
 
 testthat::test_that("emax time-course function works correctly", {
   skip_on_ci()
   skip_on_cran()
+
+  # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
+  suppressWarnings({
 
   mb.result <- suppressWarnings(mb.run(painnet, fun=temax(pool.emax="rel", method.emax="common",
                                          pool.et50="abs", method.et50="common"),
@@ -92,6 +151,7 @@ testthat::test_that("emax time-course function works correctly", {
                       n.chain=3, n.iter=500, n.burnin=200, pd="pv", priors = list(hill="dnorm(0,0.1) T(-0.5,0.5)"))
   testthat::expect_equal(all(c("hill") %in% mb.result$parameters.to.save), TRUE)
 
+  })
 })
 
 
@@ -257,3 +317,8 @@ test_that("mb.update function correctly", {
   expect_equal(sort(names(update)), sort(c("study", "arm", "mean", "fup")))
 
 })
+
+
+
+
+
