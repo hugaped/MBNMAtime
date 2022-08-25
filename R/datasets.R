@@ -167,3 +167,32 @@
 #' \insertAllCited{}
 #'
 "copd"
+
+
+
+
+
+
+#' Studies comparing treatments for type 2 diabetes
+#'
+#' A dataset from of trials for reduction of hsemoglobin A1c (HbA1c) in patients
+#' with type 2 diabetes\insertCite{dingfu2013}{MBNMAtime}.
+#' Data are reported in each study arm as mean change from baseline to follow-up.
+#' The dataset includes 4 Randomised-Controlled Trials (RCTs), comparing 4 treatments.
+#'
+#' `diabetes` is a data frame in long format (one row per observation, arm and study),
+#' with the variables `studyID`, `treatment`, `time`, `y`, `se`, `sd`, and `n`.
+#'
+#' @format A data frame in long format (one row per arm and study), with 28 rows and 7 variables:
+#' * `studyID` Study identifiers
+#' * `treatment` Numeric data indicating the treatment to which participants were randomised
+#' * `time` Numeric data indicating the time at which the observation was measured (given in weeks)
+#' * `y` Numeric data indicating the mean change from baseline in HbA1c in a study arm
+#' * `se` Numeric data indicating the standard error for the mean change from baseline in HbA1c in a study arm
+#' * `sd` Numeric data indicating the standard deviation for the mean change from baseline in HbA1c in a study arm
+#' * `n` Numeric data indicating the number of participants randomised to each arm
+#'
+#' @references
+#' \insertAllCited{}
+#'
+"diabetes"
