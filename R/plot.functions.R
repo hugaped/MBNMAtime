@@ -715,7 +715,7 @@ timebinplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.a
 
   # Create pred to match overlay.nma
   pred <- list()
-  pred$times <- seq(0,max(timebins), length.out=100)
+  pred$times <- seq(0,max(overlay.nma), length.out=100)
   pred$pred.mat <- list(matrix(0, ncol=100, nrow=1))
   pred$network <- network
 
