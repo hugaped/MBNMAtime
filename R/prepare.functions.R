@@ -172,7 +172,7 @@ add_index <- function(data.ab, reference=1) {
   }
 
   if (is.character(data.ab$treatment)) {
-    if (is.null(reference)) {
+    if (is.null(reference) | 1 %in% reference) {
       stop("Reference treatment must be specified if treatments are given as characters")
     } else if (is.numeric(reference)) {
       stop("Reference treatment must correspond to format of treatments provided: a character corresponding to a named treatment within the data")
