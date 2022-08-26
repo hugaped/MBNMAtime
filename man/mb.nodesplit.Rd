@@ -12,6 +12,8 @@ mb.nodesplit(
   comparisons = mb.nodesplit.comparisons(network),
   nodesplit.parameters = "all",
   fun = tpoly(degree = 1),
+  times = NULL,
+  lim = "cred",
   ...
 )
 }
@@ -37,6 +39,11 @@ node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-cour
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
 \code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+
+\item{times}{A sequence of positive numbers indicating which time points to
+predict mean responses for (or at which to conduct a node-split if used with \code{mb.nodesplit()})}
+
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 }
 \value{
 Plots the desired graph(s) and returns an object (or list of objects if
@@ -66,6 +73,10 @@ van Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 The S3 method \code{plot()} on an \code{mb.nodesplit} object generates either
 forest plots of posterior medians and 95\\\% credible intervals, or density plots
 of posterior densities for direct and indirect evidence.
+
+Note that by specifying the \code{times} argument a user can perform a node-split of treatment
+effects at a specific time-point. This will give the treatment effect for both direct, indirect, and
+MBNMA estimates at this time point.
 }
 \section{Methods (by generic)}{
 \itemize{

@@ -22,7 +22,7 @@ models}
 a time-course MBNMA model}
 
 \item{times}{A sequence of positive numbers indicating which time points to
-predict mean responses for}
+predict mean responses for (or at which to conduct a node-split if used with \code{mb.nodesplit()})}
 
 \item{E0}{An object to indicate the value(s) to use for the response at time = 0
 in the prediction. This can take a number of different formats depending
