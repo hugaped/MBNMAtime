@@ -1,6 +1,6 @@
 testthat::context("Testing prepare.functions")
 
-datalist <- list(osteopain, copd, goutSUA_CFBcomb)
+datalist <- list(osteopain, copd, goutSUA_CFBcomb, hyalarthritis, diabetes, alog_pcfb)
 
 ################### Testing add_index ################
 
@@ -9,11 +9,16 @@ testthat::test_that("add_index functions correctly", {
     testthat::expect_equal(is.character(add_index(datalist[[i]])[["treatments"]]), TRUE)
     testthat::expect_equal(is.numeric(add_index(datalist[[i]])[["data.ab"]]$treatment), TRUE)
 
-    testthat::expect_error(mb.network(datalist[[i]], ref="test"))
+    if (is.numeric(datalist[[i]]$treatment)) {
+      testthat::expect_error(mb.network(datalist[[i]], ref="test"), "treatment must correspond to format of treatments")
+    } else {
+      testthat::expect_error(mb.network(datalist[[i]], ref="test"), "treatment specified is not a treatment")
+      testthat::expect_message(mb.network(datalist[[i]], ref=1), "Reference treatment is `")
+    }
 
-    testthat::expect_error(mb.network(datalist[[i]], ref=40))
-    testthat::expect_message(mb.network(datalist[[i]], ref=1))
-    testthat::expect_message(mb.network(datalist[[i]], ref=NULL))
+
+    testthat::expect_error(mb.network(datalist[[i]], ref=40), "treatment specified is not a treatment")
+    testthat::expect_message(mb.network(datalist[[i]], ref=NULL), "treatment has automatically been set")
 
     testthat::expect_error(mb.network(datalist[[i]], ref="Notarealtreatment"))
   }
@@ -125,6 +130,12 @@ test_that("mb.network functions correctly", {
 
   expect_silent(mb.network(obesityBW_CFB, reference = "orli",
                            cfb=rep(FALSE, dplyr::n_distinct(obesityBW_CFB$studyID))))
+
+
+  for (i in seq_along(datalist)) {
+    expect_error(mb.network(datalist[[i]]),NA)
+    expect_warning(mb.network(datalist[[i]]),NA)
+  }
 })
 
 
