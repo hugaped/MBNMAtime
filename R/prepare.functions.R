@@ -143,6 +143,10 @@ add_index <- function(data.ab, reference=1) {
       reference <- levels(data.ab$treatment)[1]
       message(paste0("Reference treatment has automatically been set to `", reference, "`"))
     } else if (is.numeric(reference)) {
+      if (reference>length(levels(data.ab$treatment))) {
+        stop("Reference treatment specified is not a treatment given in the data")
+      }
+
       reference <- as.character(data.ab$treatment[as.numeric(data.ab$treatment)==reference])[1]
       message(paste0("Reference treatment is `", reference, "`"))
     } else if (is.character(reference)) {
