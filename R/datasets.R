@@ -190,9 +190,39 @@
 #' * `y` Numeric data indicating the mean change from baseline in HbA1c in a study arm
 #' * `se` Numeric data indicating the standard error for the mean change from baseline in HbA1c in a study arm
 #' * `sd` Numeric data indicating the standard deviation for the mean change from baseline in HbA1c in a study arm
-#' * `n` Numeric data indicating the number of participants randomised to each arm
+#' * `n` Numeric data indicating the number of participants in each arm at each time-point
 #'
 #' @references
 #' \insertAllCited{}
 #'
 "diabetes"
+
+
+
+
+
+
+#' Studies comparing hyaluronan (HA)–based viscosupplements for osteoarthritis
+#'
+#' A dataset from of trials for pain reduction for patients with
+#' osteoarthritis treated with HA-based viscosupplements\insertCite{jansen2015}{MBNMAtime}.
+#' Data are reported in each study arm as mean change from baseline to follow-up
+#' on a visual analogue scale (0-100).
+#' The dataset includes 16 Randomised-Controlled Trials (RCTs), comparing 6 treatments
+#' and placebo.
+#'
+#' `hyalarthritis` is a data frame in long format (one row per observation, arm and study),
+#' with the variables `studyID`, `time`, `treatment`, `n`, `y`, and `se`.
+#'
+#' @format A data frame in long format (one row per arm and study), with 150 rows and 6 variables:
+#' * `studyID` Study identifiers
+#' * `time` Numeric data indicating the time at which the observation was measured (given in weeks)
+#' * `treatment` Factor data indicating the treatment to which participants were randomised
+#' * `n` Numeric data indicating the number of participants randomised to each arm
+#' * `y` Numeric data indicating the mean change from baseline in HbA1c in a study arm
+#' * `se` Numeric data indicating the standard error for the mean change from baseline in HbA1c in a study arm
+#'
+#' @references
+#' \insertAllCited{}
+#'
+"hyalarthritis"
