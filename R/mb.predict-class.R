@@ -51,7 +51,7 @@
 #'   of studies with follow-up times `>10` and `<=15`
 #'
 #'   When used with MBNMA (via `predict.mbnma()`) this allows comparison to MBNMA results over a specific range of time within each time bin.
-#'   It can be useful to assess which time-course function might be suitable when using `timebinplot()`, or to
+#'   It can be useful to assess which time-course function might be suitable when using `binplot()`, or to
 #'   to assess if the MBNMA predictions are in agreement with predictions from an NMA model when using `plot.mb.predict()`
 #'   for a specific range of time-points. This can be a general indicator of the fit of the time-course model.
 #'

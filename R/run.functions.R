@@ -874,7 +874,6 @@ nma.run <- function(data.ab, method="common", link="identity", ...) {
 #' # Run a common effects non-parametric RW model
 #' nonparam.run(network, binvals=timebins, method="common")
 #'
-#' @export
 nonparam.run <- function(network, class=FALSE, method="common", link="identity",
                          binvals=bintime(network$data.ab), ...) {
 

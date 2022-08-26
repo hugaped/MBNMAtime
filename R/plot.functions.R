@@ -698,16 +698,16 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #'
 #' # Plot relative effects from NMAs calculated for a single time-bins
 #' # Do not plot time-bin boundaries
-#' timebinplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE)
+#' binplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE)
 #'
 #' # Plot relative effects from NMAs at multiple time-bins
 #' # With random treatment effects
-#' timebinplot(alognet, overlay.nma=c(5,10,15,20),
+#' binplot(alognet, overlay.nma=c(5,10,15,20),
 #'   method="random")
 #' }
 #'
 #' @export
-timebinplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$time)),
+binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$time)),
                         method="common", link="identity", lim="cred", plot.bins=TRUE, ...) {
 
   # Ensure timebins are unique
