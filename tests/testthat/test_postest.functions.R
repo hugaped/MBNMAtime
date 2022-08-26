@@ -7,20 +7,29 @@ obesenet <- mb.network(obesityBW_CFB)
 
 
 testthat::test_that("predict.functions tests pass correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
   loglin <- mb.run(painnet, fun=tloglin(pool.rate="rel", method.rate="common"))
 
+
+  # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
+  suppressWarnings({
+
   emax <- mb.run(alognet, fun=temax(pool.emax="rel", method.emax="random",
                                     pool.et50="abs", method.et50="common"), pd="pv")
 
+  })
 
 
 
   ################### Testing add_index ################
 
   testthat::test_that("predict.mbnma functions correctly", {
+
+    skip_on_appveyor()
     skip_on_ci()
     skip_on_cran()
 

@@ -8,6 +8,14 @@ testthat::test_that("get.relative tests pass correctly", {
   testthat::test_that("get.relative passes", {
 
     alognet <- mb.network(alog_pcfb)
+    copdnet <- mb.network(copd)
+
+    itp <- mb.run(copdnet, titp(), corparam = FALSE, n.iter=2000)
+    loglin <- mb.run(alognet, tloglin(), n.iter=2000)
+
+    expect_error(get.relative(mbnma=loglin, mbnma.add=itp, time=20),
+                 "mbnma and mbnma.add must have a single treatment")
+
 
     copdnew <- copd
     levels(copdnew$treatment)[1] <- "placebo"

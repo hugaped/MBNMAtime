@@ -12,6 +12,8 @@ classnetwork <- mb.network(goutSUA_CFBcomb)
 
 
 testthat::test_that("exponential time-course function works correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
@@ -50,6 +52,8 @@ testthat::test_that("exponential time-course function works correctly", {
 
 
 testthat::test_that("itp time-course function works correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
@@ -97,6 +101,8 @@ testthat::test_that("itp time-course function works correctly", {
 
 
 testthat::test_that("emax time-course function works correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
@@ -162,6 +168,8 @@ testthat::test_that("emax time-course function works correctly", {
 
 
 testthat::test_that("polynomial time-course function works correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
@@ -205,6 +213,8 @@ testthat::test_that("polynomial time-course function works correctly", {
 
 
 testthat::test_that("Fractional polynomial time-course function works correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
@@ -248,6 +258,8 @@ testthat::test_that("Fractional polynomial time-course function works correctly"
 
 
 testthat::test_that("mb.run function (+ tuser()) works correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
@@ -298,6 +310,8 @@ testthat::test_that("mb.run function (+ tuser()) works correctly", {
 
 
 test_that("mb.update function correctly", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 

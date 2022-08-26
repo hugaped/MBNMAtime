@@ -4,6 +4,8 @@ network <- mb.network(osteopain)
 
 
 testthat::test_that("testing prior writing functions", {
+
+  skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
 
