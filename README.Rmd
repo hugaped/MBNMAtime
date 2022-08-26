@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
-[![Travis build status](https://travis-ci.org/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.org/hugaped/MBNMAtime)
-<!--[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)-->
+[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)
 <!-- badges: end -->
 
 # MBNMAtime
