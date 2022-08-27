@@ -4,3 +4,4 @@ library(MBNMAtime)
 library(igraph)
 
 testthat::test_check("MBNMAtime")
+
