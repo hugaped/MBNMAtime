@@ -250,7 +250,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
 #' }
 #'
 #' @export
-ref.synth <- function(data.ab, mbnma, synth="common",
+ref.synth <- function(data.ab, mbnma, synth="random",
                       link=mbnma$model.arg$link,
                       n.iter=mbnma$BUGSoutput$n.iter,
                       n.burnin=mbnma$BUGSoutput$n.burnin,

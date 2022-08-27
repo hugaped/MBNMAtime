@@ -1028,7 +1028,7 @@ write.ref.synth <- function(fun=tpoly(degree = 1), link="identity",
 
   model <- write.likelihood(model=model, timecourse=timecourse, rho=rho, covar=covar, link=link)
 
-  model <- write.beta.ref(model=model, timecourse=timecourse, fun=fun)
+  model <- write.beta.ref(model=model, timecourse=timecourse, fun=fun, mu.synth=mu.synth)
 
   model <- remove.loops(model)
 
@@ -1064,7 +1064,7 @@ write.beta.ref <- function(model, timecourse, fun,
     if ("rel" %in% fun$apool[i]) {
 
       model <- model.insert(model, pos=which(names(model)=="end"),
-                            x=priors[[paste0("mu.",i)]])
+                            x=priors[[paste0("m.mu.",i)]])
 
       if (mu.synth=="common") {
         model <- gsub(paste0("beta\\.",i, "\\[i\\,k\\]"), paste0("mu.",i), model)
@@ -1323,6 +1323,7 @@ default.priors <- function(fun=tloglin()) {
 
   for (i in 1:4) {
     priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0,0.0001)")
+    priors[[paste0("m.mu.",i)]] <- paste0("mu.", i, " ~ dnorm(0,0.0001)")
     priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0,0.001)")
     priors[[paste0("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0,0.001)")
     priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0,0.001)")
@@ -1338,6 +1339,7 @@ default.priors <- function(fun=tloglin()) {
 
     for (i in 2:3) {
       priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0.00001,0.0001) T(0,)")
+      priors[[paste0("m.mu.",i)]] <- paste0("mu.", i, " ~ dnorm(0.00001,0.0001) T(0,)")
       priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
       priors[[paste0("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0.00001,0.001) T(0,)")
       priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
