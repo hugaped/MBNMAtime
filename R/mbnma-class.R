@@ -90,7 +90,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
   checkmate::reportAssertions(argcheck)
 
   # Check level
-  if (level=="class" & !("classes" %in% names(x$network))) {
+  if (level=="class" & length(x$model.arg$class.effect)==0) {
     stop("`level` has been specified as `class` yet `x` is not a class effect model")
   }
   level <- ifelse(level=="treatment", "treatments", "classes")
