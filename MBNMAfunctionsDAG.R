@@ -60,14 +60,15 @@ g <- add_node_df(g, funnodes)
 funedges <-
   create_edge_df(
     from = c("1", "9", "2", "10", "3", "12", "2", "11", "3", "13", "2", "2", "2", "3", "17", "6",
-             "2", "2", "19"),
+             "2", "2", "19", "4"),
     to =   c("9", "2", "10", "3", "12", "4", "11", "5", "13", "6", "14", "15", "16", "17", "7", "18",
-             "20", "19", "8"),
+             "20", "19", "8", "13"),
     color="black",
     rel = "a",
     fontname="Consolas",
     arrowhead=c("none", "normal", "none", "normal", "none", "normal", "none", "normal",
-                "none", "normal", "normal", "normal", "normal", "none", "normal", "normal")
+                "none", "normal", "normal", "normal", "normal", "none", "normal", "normal",
+                "normal", "none", "normal", "none")
   )
 g <- add_edge_df(g, funedges)
 
