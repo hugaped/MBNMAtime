@@ -283,14 +283,17 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   }
 
   # Set intercept if cfb is consistent across all trials
-  unicfb <- unique(network$cfb)
-  if (length(unicfb)==1) {
-    if (unicfb==TRUE) {
-      intercept <- FALSE
-    } else if (unicfb==FALSE) {
-      intercept <- TRUE
+  if (is.null(intercept)) {
+    unicfb <- unique(network$cfb)
+    if (length(unicfb)==1) {
+      if (unicfb==TRUE) {
+        intercept <- FALSE
+      } else if (unicfb==FALSE) {
+        intercept <- TRUE
+      }
     }
   }
+
 
   if (is.null(model.file)) {
     model <- mb.write(fun=fun, link=link,
