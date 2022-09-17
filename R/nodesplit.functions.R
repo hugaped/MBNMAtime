@@ -514,6 +514,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
     # Node-split by time-course parameter
     for (param in seq_along(nodesplit.parameters)) {
+
       if (grepl("beta", nodesplit.parameters[param])) {
         index <- which(nodesplit.parameters[param] %in% fun$params)
         node <- paste0("d.", index, "[1,", comp.temp, "]")
@@ -567,6 +568,8 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
     # Node-split by time-course parameter
     for (param in seq_along(nodesplit.parameters)) {
+      #print(nodesplit.parameters[param])
+
       if (grepl("beta", nodesplit.parameters[param])) {
         index <- which(nodesplit.parameters[param] %in% fun$params)
         node1 <- paste0("d.", index, "[", comp[1], "]")
@@ -648,7 +651,10 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 #' Drops arms with comp treatments to generate dataset for indirect MBNMA
 #' @noRd
 drop.comp <- function(df, comp) {
-  #x <- 1
+
+  # Order from least to most arms to ensure 2 arm studies get dropped first
+  df <- dplyr::arrange(df, narm, studyID)
+
   studies <- unique(df$studyID)
 
   for (i in seq_along(studies)) {
@@ -660,15 +666,23 @@ drop.comp <- function(df, comp) {
       df <- subset(df, df$studyID!=studies[i])
 
       if (subset$narm[1]>2) {
-        subset <- subset(subset, subset$treatment!=sample(comp,1))
-        #subset <- subset(subset, subset$treatment!=comp[abs(x)+1])
-        #x <- x-1
+
+        ind <- sample(1:2, 1) # Choose index 1 or 2 from comp
+
+        # Check if index sampled is the only arm with that treatment code in the network
+        if (!comp[ind] %in% df$treatment) {
+          ind <- c(1:2)[-ind]
+        }
+
+        # subset <- subset(subset, subset$treatment!=sample(comp,1))
+        subset <- subset(subset, subset$treatment!=comp[ind])
 
         # Reinsert ammended study
         df <- rbind(df, subset)
       }
     }
   }
+
   return(df)
 }
 
