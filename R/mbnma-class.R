@@ -242,10 +242,10 @@ summary.mbnma <- function(object, ...) {
 
 
 
-#' Predict responses over time in a given population based on MBNMA time-course
+#' Predict effects over time in a given population based on MBNMA time-course
 #' models
 #'
-#' Used to predict responses over time for different treatments or to predict
+#' Used to predict effects over time for different treatments or to predict
 #' the results of a new study. For MBNMA models that include consistency
 #' relative effects on time-course parameters, this is calculated by combining
 #' relative treatment effects with a given reference treatment response
