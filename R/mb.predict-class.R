@@ -193,6 +193,8 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
     predlist <- list()
 
+    capt <- "" # Ensure variable is present to avoid error
+
     for (bin in seq_along(nma)) {
 
       predtrt <- nma[[bin]]$pred.df
