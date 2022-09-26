@@ -304,7 +304,7 @@ overlay.nma <- function(pred, timebins, method="common", link="identity", lim="c
       # Predict NMA results at specific time point
       timedif <- abs(pred$times - mean(incl.range))
       if (!any(timedif < (mean(incl.range) - incl.range[1]))) {
-        message(paste(c("No time-point in predicted values is between ", str.incl.range,
+        warning(paste(c("No time-point in predicted values is between ", str.incl.range,
                         ". Cannot overlay.nma for this time bin."), collapse=""))
 
         skip <- TRUE
