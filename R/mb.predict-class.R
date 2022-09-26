@@ -109,6 +109,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
   checkmate::assertClass(x, "mb.predict", add=argcheck)
   checkmate::assertLogical(disp.obs, len=1, add=argcheck)
   checkmate::assertLogical(overlay.ref, len=1, add=argcheck)
+  checkmate::assertNumeric(overlay.nma, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(method, choices = c("common", "random"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
