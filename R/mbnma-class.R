@@ -575,8 +575,10 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
 
   # Convert predicted times to splines
   if (any(c("bs", "ns", "ls") %in% object$model.arg$fun)) {
+
     timecourse <- gsub("\\[i\\,", "[", timecourse)
-    spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots, degree=object$model.arg$fun$degree)
+    spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots, degree=object$model.arg$fun$degree,
+                        boundaries = c(0, max(object$model.arg$jagsdata$time, na.rm=TRUE)))
   }
 
   if ("itp" %in% object$model.arg$fun$name) {

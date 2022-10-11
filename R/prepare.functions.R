@@ -1228,13 +1228,14 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' genspline(x, spline="ls", knots=3)
 #'
 #' @export
-genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
+genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x), boundaries=NULL){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertNumeric(knots, add=argcheck)
   checkmate::assertIntegerish(degree, add=argcheck)
   checkmate::assertNumeric(max.time, null.ok = FALSE, add=argcheck)
+  checkmate::assertNumeric(boundaries, null.ok = TRUE, len = 2, lower = 0, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check knot specification
@@ -1274,11 +1275,15 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x)){
       knots <- stats::quantile(0:max.time, probs = knots)
     }
 
+    if (is.null(boundaries)) {
+      boundaries <- range(x0)
+    }
+
     # Generate spline basis matrix
     if (spline=="bs") {
-      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree)
+      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
     } else if (spline=="ns") {
-      splinedesign <- splines::ns(x=x0, knots=knots)
+      splinedesign <- splines::ns(x=x0, knots=knots, Boundary.knots = boundaries)
 
       # splinedesign <- splines::ns(x0, knots=knots)
       # splinedesign <- cbind(x0, splinedesign)
