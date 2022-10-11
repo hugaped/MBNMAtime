@@ -1209,6 +1209,9 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #'   be equally spaced across the range of time-points). If a numeric vector is given it indicates the quantiles of the knots as
 #'   a proportion of the maximum study follow-up in the dataset. For example, if the maximum follow-up time in the dataset
 #'   is 10 months, `knots=c(0.1,0.5)` would indicate knots should be fitted at 1 and 5 months follow-up.
+#' @param boundaries A positive numeric vector of length 2 that represents the time-points at which to anchor the B-spline or natural
+#' cubic spline basis matrix. This allows data to extend beyond the boundary knots, or for the basis parameters to not depend on `x`.
+#' The default (`boundaries=NULL`)is the range of `x`.
 #'
 #' @return A spline basis matrix with number of rows equal to `length(x)` and the number of columns equal to the number
 #' of coefficients in the spline.
