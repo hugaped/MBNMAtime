@@ -13,6 +13,8 @@ testthat::test_that("post-estimation tests pass correctly", {
   n.burnin <- 100
   n.thin <- 1
 
+  testthat::expect_equal(1,1) # Avoids empty tests
+
   for (i in seq_along(datalist)) {
 
     print(names(datalist)[i])
