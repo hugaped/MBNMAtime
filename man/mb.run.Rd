@@ -33,7 +33,7 @@ mb.run(
 \item{network}{An object of class \code{"mb.network"}.}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response
@@ -197,7 +197,7 @@ Available time-course functions are:
 \itemize{
 \item Log-linear: \code{tloglin()}
 \item Polynomial: \code{tpoly()}
-\item Exponential: \code{texp()}
+\item Integrated Two-Component Prediction (ITP): \code{titp()}
 \item Emax: \code{temax()}
 \item Fractional polynomial: \code{tfpoly()}
 \item Splines (various spline types can be used): \code{tspline()}

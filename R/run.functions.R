@@ -13,7 +13,7 @@
 #' @param parameters.to.save A character vector containing names of parameters
 #'   to monitor in JAGS
 #' @param fun An object of class `"timefun"` generated (see Details) using any of
-#'   `tloglin()`, `tpoly()`, `texp()`, `temax()`, `tfpoly()`, `tspline()` or `tuser()`
+#'   `tloglin()`, `tpoly()`, `titp()`, `temax()`, `tfpoly()`, `tspline()` or `tuser()`
 #'
 #' @param positive.scale A boolean object that indicates whether all continuous
 #'   mean responses (y) are positive and therefore whether the baseline response
@@ -149,7 +149,7 @@
 #'   Available time-course functions are:
 #'   * Log-linear: `tloglin()`
 #'   * Polynomial: `tpoly()`
-#'   * Exponential: `texp()`
+#'   * Integrated Two-Component Prediction (ITP): `titp()`
 #'   * Emax: `temax()`
 #'   * Fractional polynomial: `tfpoly()`
 #'   * Splines (various spline types can be used): `tspline()`

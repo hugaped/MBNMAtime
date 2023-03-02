@@ -18,7 +18,7 @@ write.ref.synth(
 }
 \arguments{
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or

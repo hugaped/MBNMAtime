@@ -38,7 +38,7 @@ The frame has two columns indicating each treatment for each comparison: \code{t
 node-split (e.g. c("beta.1", "beta.2")). Can use "all" to split on all time-course parameters.}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{times}{A sequence of positive numbers indicating which time points to
 predict mean responses for (or at which to conduct a node-split if used with \code{mb.nodesplit()})}
@@ -78,11 +78,11 @@ Note that by specifying the \code{times} argument a user can perform a node-spli
 effects at a specific time-point. This will give the treatment effect for both direct, indirect, and
 MBNMA estimates at this time point.
 }
-\section{Methods (by generic)}{
+\section{Functions}{
 \itemize{
-\item \code{plot}: Plot outputs from nodesplit models
-}}
+\item \code{plot(nodesplit)}: Plot outputs from nodesplit models
 
+}}
 \examples{
 \donttest{
 # Create mb.network object

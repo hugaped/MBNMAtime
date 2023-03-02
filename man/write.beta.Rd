@@ -13,7 +13,7 @@ write.beta(model, timecourse, fun, UME, class.effect)
 \item{timecourse}{A character object representing the time-course used in the MBNMA model}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{UME}{Can take either \code{TRUE} or \code{FALSE} (for an unrelated mean effects
 model on all or no time-course parameters respectively) or can be a vector

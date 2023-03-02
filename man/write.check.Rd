@@ -18,7 +18,7 @@ write.check(
 }
 \arguments{
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{positive.scale}{A boolean object that indicates whether all continuous
 mean responses (y) are positive and therefore whether the baseline response

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mbnma-class.R
 \name{predict.mbnma}
 \alias{predict.mbnma}
-\title{Predict responses over time in a given population based on MBNMA time-course
+\title{Predict effects over time in a given population based on MBNMA time-course
 models}
 \usage{
 \method{predict}{mbnma}(
@@ -92,7 +92,7 @@ follow-up times specified in \code{times} for each treatment specified in
 }
 }
 \description{
-Used to predict responses over time for different treatments or to predict
+Used to predict effects over time for different treatments or to predict
 the results of a new study. For MBNMA models that include consistency
 relative effects on time-course parameters, this is calculated by combining
 relative treatment effects with a given reference treatment response

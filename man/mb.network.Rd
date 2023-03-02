@@ -122,9 +122,9 @@ Data must be present for all arms within a study at each follow-up time.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{plot}: Generate a network plot
-}}
+\item \code{plot(mb.network)}: Generate a network plot
 
+}}
 \examples{
 
 \donttest{

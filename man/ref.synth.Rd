@@ -8,7 +8,7 @@ treatment over time}
 ref.synth(
   data.ab,
   mbnma,
-  synth = "common",
+  synth = "random",
   link = mbnma$model.arg$link,
   n.iter = mbnma$BUGSoutput$n.iter,
   n.burnin = mbnma$BUGSoutput$n.burnin,

@@ -29,7 +29,7 @@ response at a given observation (required if modelling using Standardised Mean D
 }}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{class}{A boolean object indicating whether or not \code{data.ab} contains
 information on different classes of treatments}

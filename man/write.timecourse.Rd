@@ -11,7 +11,7 @@ write.timecourse(model, fun, intercept, positive.scale)
 \item{model}{A character string representing the MBNMA model in JAGS code}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
-\code{tloglin()}, \code{tpoly()}, \code{texp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
+\code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
 \item{intercept}{A boolean object that indicates whether an intercept (written
 as \code{alpha} in the model) is to be included. If left as \code{NULL} (the default), an intercept will

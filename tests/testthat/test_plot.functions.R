@@ -365,6 +365,14 @@ testthat::test_that("plot function tests pass correctly", {
 
     })
 
+
+
+    test_that(paste0("binplot functions correctly for ", names(datalist)[dat]), {
+
+
+
+    })
+
   }
 
 
