@@ -1335,7 +1335,7 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste0("sd.beta.",i)]] <- paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
   }
 
-  if ((fun$name %in% c("itp") | (fun$name %in% "emax")) & (FALSE %in% fun$p.expon)) {
+  if ((fun$name %in% c("itp") | (fun$name %in% "emax"))) {
 
     for (i in 2:3) {
       priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0.00001,0.0001) T(0,)")
