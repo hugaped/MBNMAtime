@@ -341,7 +341,7 @@ tloglin <- function(pool.rate="rel", method.rate="common") {
 #'
 #' @export
 temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method.et50="common",
-                 pool.hill=NULL, method.hill=NULL, p.expon=TRUE) {
+                 pool.hill=NULL, method.hill=NULL, p.expon=FALSE) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -467,11 +467,9 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
 
   if (p.expon==TRUE) {
     message("'et50' parameters are on exponential scale to ensure they take positive values on the natural scale")
-    warning("From version 0.2.3 onwards p.expon=TRUE will no longer be the default")
 
     if (ehill) {
       message("'hill' parameters are on exponential scale to ensure they take positive values on the natural scale")
-      warning("From version 0.2.3 onwards p.expon=TRUE will no longer be the default")
     }
   } else if (p.expon==FALSE) {
     message("'et50' parameters must take positive values.\n Default half-normal prior restricts posterior to positive values.")
