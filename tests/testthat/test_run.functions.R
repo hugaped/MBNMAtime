@@ -26,7 +26,7 @@ testthat::test_that("run.functions tests:", {
       # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
       suppressWarnings({
 
-        mb.result <- mb.run(network, fun=texp(pool.emax="rel", method.emax="common"),
+        mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
         expect_equal(all(c("emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
@@ -34,19 +34,19 @@ testthat::test_that("run.functions tests:", {
 
           if (any(is.na(datalist[[i]]$n))) {
 
-            expect_error(mb.run(network, link="smd", fun=texp(pool.emax="rel", method.emax="random"),
+            expect_error(mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
                                 positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin),
                          "Missing values in n")
 
           } else {
-            mb.result <- mb.run(network, link="smd", fun=texp(pool.emax="rel", method.emax="random"),
+            mb.result <- mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
                                 positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
             expect_equal(all(c("emax", "sd.emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
           }
 
         } else {
 
-          expect_error(mb.run(network, link="smd", fun=texp(pool.emax="rel", method.emax="random"),
+          expect_error(mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
                               positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin))
         }
 
@@ -54,12 +54,12 @@ testthat::test_that("run.functions tests:", {
         # Class effects
         if ("class" %in% names(datalist[[i]])) {
 
-          mb.result <- mb.run(network, fun=texp(pool.emax="rel", method.emax="common"),
+          mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
                               class.effect = list("emax"="random"))
           expect_equal(all(c("emax", "emax", "sd.EMAX") %in% mb.result$parameters.to.save), TRUE)
 
-          mb.result <- mb.run(network, fun=texp(pool.emax="rel", method.emax="random"),
+          mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="random"),
                               positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
                               class.effect = list("emax"="random"))
           testthat::expect_equal(all(c("EMAX", "sd.EMAX", "sd.emax") %in% mb.result$parameters.to.save), TRUE)
@@ -67,7 +67,7 @@ testthat::test_that("run.functions tests:", {
         }
 
         # UME
-        mb.result <- mb.run(network, link="log", fun=texp(pool.emax="rel", method.emax="common"),
+        mb.result <- mb.run(network, link="log", fun=titp(pool.emax="rel", method.emax="common"),
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
                             UME = "emax")
         testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
