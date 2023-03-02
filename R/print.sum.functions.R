@@ -133,7 +133,9 @@ print.treat.str <- function(mbnma, digits=4, ...) {
     }
 
     if (names(fun$apool)[i] %in% c("et50", "hill")) {
-      paramdet <- append(paramdet, "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale")
+      if (TRUE %in% fun$p.expon) {
+        paramdet <- append(paramdet, "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale")
+      }
     }
 
     if (names(fun$amethod)[i] %in% names(mbnma$model.arg$class.effect)) {
