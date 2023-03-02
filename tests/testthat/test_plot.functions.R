@@ -369,7 +369,13 @@ testthat::test_that("plot function tests pass correctly", {
 
     test_that(paste0("binplot functions correctly for ", names(datalist)[dat]), {
 
+      network <- mb.network(datalist[[dat]])
 
+      expect_error(binplot(network), NA)
+
+      expect_message(binplot(network, overlay.nma = c(0,5,5.001)), "not possible between")
+
+      expect_error(binplot(network, overlay.nma=10), "Must have length >= 2")
 
     })
 
