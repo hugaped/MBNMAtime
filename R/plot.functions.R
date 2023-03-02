@@ -710,6 +710,8 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$time)),
                         method="common", link="identity", lim="cred", plot.bins=TRUE, ...) {
 
+  checkmate::assertNumeric(overlay.nma, min.len = 2)
+
   # Ensure timebins are unique
   overlay.nma <- unique(overlay.nma)
 
