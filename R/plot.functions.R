@@ -740,7 +740,7 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
 
   colorvals <- c("Posterior median"="gray0")
 
-  capt <- paste0("Results relative to ", network$treatments[1],
+  capt <- paste0("Results versus ", network$treatments[1],
                  "\nWidth of 95% interval denotes range of follow-up times included in NMA")
 
   if (plot.bins==TRUE) {
@@ -754,7 +754,7 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
     ggplot2::scale_fill_manual(name="", values=c("95% Interval"="lightblue"))
 
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
-    ggplot2::labs(y="Relative effect (on link scale)", x="Time") +
+    ggplot2::labs(y="Treatment effect (on link scale)", x="Time") +
     ggplot2::scale_color_manual(name="", values=colorvals) +
     theme_mbnma()
 
