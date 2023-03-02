@@ -220,7 +220,7 @@ An object or `class("mb.network")` must be provided as the data for `mb.run()`. 
 A number of different time-course functions can be fitted within `MBNMAtime` and the specific forms of the time-course parameters are defined by arguments within these functions, and this allows for a wide variety of parameterizations and time-course shapes. For further details check the help files for each function (e.g. `?tloglin()`). These functions, are then used as inputs for the `fun` argument in `mb.run()`.
 
 * `tloglin()` - Log-linear function
-* `texp()` - Exponential function
+* `titp()` - Integrated Two-Component Prediction (ITP) function
 * `temax()` - Emax function
 * `tpoly()` - Polynomial function (e.g. linear, quadratic)
 * `tfpoly()` - Fractional polynomial function, as proposed previously for time-course NMA by Jansen [-@jansen2015].
@@ -857,7 +857,7 @@ This highlights the importance of testing for consistency *after* identifying an
 ```{r, eval=FALSE, echo=TRUE}
 # Nodesplit on emax of 1-parameter exponential MBNMA
 ns.exp <- mb.nodesplit(network.pain,
-                       fun=texp(pool.emax = "rel", method.emax="common"),
+                       fun=titp(pool.emax = "rel", method.emax="common"),
                        nodesplit.parameters="all")
 ```
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
