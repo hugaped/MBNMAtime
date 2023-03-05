@@ -24,7 +24,7 @@
 #' 2. Specify a suitable time-course function and analyse your data using \code{\link{mb.run}}
 #' 3. Test for consistency using \code{\link{mb.nodesplit}} or by fitting Unrelated Mean Effects models
 #' 4. Examine model results using forest plots and treatment rankings
-#' 5. Use your model to predict responses using \code{\link{predict.mbnma}}
+#' 5. Use your model to predict responses or estimate treatment effects at specific time-points using \code{\link{predict.mbnma}}
 #'
 #' At each of these stages there are a number of informative plots that can be generated to help make sense of your data and the models that you are fitting.
 #'
