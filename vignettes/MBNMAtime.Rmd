@@ -468,6 +468,19 @@ In addition to the arguments specific to `mb.run()` it is also possible to use a
 * `n.thin` The thinning rate which ensures that results are only saved for 1 in every `n.thin` iterations per chain. This can be increased to reduce autocorrelation in MCMC samples
 
 
+## Model Selection
+
+Detailed description of model selection based on statistical measures such as Deviance Information Criterion (DIC) and residual deviance is outside the scope of this vignette. However, the following approach for model identification and selection is recommended in Pedder et al. [-@pedder2020], which also gives details on model fit statistics used for comparison:
+
+1. Identify candidate time-course functions based on observed data and clinical/biological reasoning
+2. Compare candidate time-course functions fitted with common relative treatment effects on all time-course parameters
+3. If no candidate time-course functions converge successfully, absolute effects can be modeled on parameters for which convergence is problematic
+4. Compare selected common effects model to model(s) with random effects on different time-course parameters
+5. Compare model fitted with a univariate likelihood to one fitted with a multivariate likelihood
+
+Finally the validity of the consistency assumption should be explored in the selected final model (see [Consistency Testing]). 
+
+
 ## MCMC Convergence
 
 `MBNMAtime` runs Bayesian models in JAGS, which uses Markov Chain Monte Carlo (MCMC) simulation [@jags]. However, the validity of results is reliant on the MCMC chains having converged successfully on the posterior densities of all parameters in the model. For highly parameterised models run on relatively limited data, as is often the case with MBNMA models, convergence can often be an challenge. Note that convergence is *necessary* to be able to compare models and evaluate model fit. However, successful convergence *does not* imply good model fit.
