@@ -29,7 +29,7 @@ library(dplyr)
 
 ## Introduction
 
-This vignette demonstrates how to use `MBNMAtime` to perform meta-analysis of studies with multiple follow-up measurements in order to account for time-course relationships within single or multiple treatment comparisons. This can be performed by conducting Model-Based (Network) Meta-Analysis (MBNMA) to pool relative treatment effects.
+This vignette demonstrates how to use `MBNMAtime` to perform meta-analysis of studies with multiple follow-up measurements in order to account for time-course relationships within single or multiple treatment comparisons. This can be performed by conducting Model-Based (Network) Meta-Analysis (MBNMA) to pool relative treatment effects. MBNMA models therefore estimate treatment effects over time (e.g. days, weeks, months). 
 
 Including all available follow-up measurements within a study makes use of all the available evidence in a way that maintains connectivity between treatments and explains how the response of the treatment changes over time, thus accounting for heterogeneity and inconsistency that may be present from "lumping" together different time points in a standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS *(version 4.3.0 or later is required)* [@jags]. For full details of time-course MBNMA methodology see Pedder et al. [-@pedder2019], and a simulation study exploring the statistical properties of the method is reported in Pedder et al. [-@pedder2020].
 
@@ -113,7 +113,7 @@ print(network.pain)
 This takes a dataset with the columns:
 
 * `studyID` Study identifiers
-* `time` Numeric data indicating follow-up times
+* `time` Numeric data indicating continuous follow-up times (e.g. days, weeks, months)
 * `y` Numeric data indicating the mean response for a given observation
 * `se` Numeric data indicating the standard error for a given observation
 * `treatment` Treatment identifiers (can be numeric, factor or character)
@@ -185,7 +185,7 @@ suppressWarnings(plot(network.gout, level = "treatment", v.color = "class", labe
 
 ### Examining the time-course relationship
 
-In order to consider which functional forms may be appropriate for modelling the time-course relationship, it is important to look at the responses in each arm plotted over time. This can easily be done using the `timeplot()` function on an object of `class("mb.network")`
+In order to consider which functional forms may be appropriate for modeling the time-course relationship, it is important to look at the responses in each arm plotted over time. This can easily be done using the `timeplot()` function on an object of `class("mb.network")`
 
 ```{r pain.time}
 # Prepare data using the pain dataset
@@ -207,7 +207,9 @@ timeplot(network.gout, level="class", plotby="rel")
 
 Many of the profiles here appear to be quite different within the same class, which would suggest modelling class effects may be inappropriate for this dataset.
 
-Another approach to investigate the time-course relationship is to perform several standard "lumped" NMAs at different time "bins", time periods within which we are assuming treatment effects are constant over time. We can do this within a single plot using `binplot()` and specifying the boundaries of multiple time bins. Separate NMAs are then performed within each time bin on data points from studies that fall within the time bin (only a single follow-up time is taken from each study to avoid double counting). `"fixed"` or `"random"` effects can be specified for the NMA. Note that the wider the time bin boundaries specified by the user, the larger the potential range of included follow-up times and this can introduce heterogeneity or inconsistency.
+Another approach to investigate the time-course relationship is to perform several standard "lumped" NMAs at different time "bins", time periods within which we are assuming treatment effects are constant over time. This means that, for the purposes of this plot, rather than considering time as a continuous variable it is chunked up into segments.
+
+We can do this within a single plot using `binplot()` and specifying the boundaries of multiple time bins. Separate NMAs are then performed within each time bin on data points from studies that fall within the time bin (only a single follow-up time is taken from each study to avoid double counting). `"fixed"` or `"random"` effects can be specified for the NMA. Note that the wider the time bin boundaries specified by the user, the larger the potential range of included follow-up times and this can introduce heterogeneity or inconsistency.
 
 ```{r, pain.binplot}
 # Plot results for NMAs performed between 0-5, 5-10, 10-15 and 15-26 weeks
@@ -221,7 +223,7 @@ From this plot we can see that, whilst there clearly is a rapid onset of treatme
 
 ## Analysis using `mb.run()`
 
-MBNMA models are fitted using `mb.run()`. This can just as easily be performed on datasets with many different treatments (network meta-analysis) as it can on datasets comparing only two treatments (pairwise meta-analysis) - the syntax is the same.
+MBNMA models are fitted using `mb.run()` and they model treatment effects over time (e.g. days, weeks, months). This can just as easily be performed on datasets with many different treatments (network meta-analysis) as it can on datasets comparing only two treatments (pairwise meta-analysis) - the syntax is the same.
 
 An object or `class("mb.network")` must be provided as the data for `mb.run()`. The key arguments within `mb.run()` involve specifying the functional form used to model the time-course, and the time-course parameters that comprise that functional form.
 
