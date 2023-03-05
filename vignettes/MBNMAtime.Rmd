@@ -46,7 +46,7 @@ Functions within `MBNMAtime` follow a clear pattern of use:
 2. Specify a suitable time-course function and analyse your data using `mb.run()`
 3. Test for consistency using functions like `mb.nodesplit()`
 4. Examine model results using forest plots and treatment rankings
-5. Use your model to predict responses using `predict()`
+5. Use your model to predict responses or estimate treatment effects at specific time-points using `predict()`
 
 At each of these stages there are a number of informative graphs that can be generated to help understand the data and make decisions regarding model fitting.
 
@@ -226,9 +226,11 @@ MBNMA models are fitted using `mb.run()`. This can just as easily be performed o
 An object or `class("mb.network")` must be provided as the data for `mb.run()`. The key arguments within `mb.run()` involve specifying the functional form used to model the time-course, and the time-course parameters that comprise that functional form.
 
 
-#### Time-course functions
+### Time-course functions
 
-A number of different time-course functions can be fitted within `MBNMAtime` and the specific forms of the time-course parameters are defined by arguments within these functions, and this allows for a wide variety of parameterizations and time-course shapes. For further details check the help files for each function (e.g. `?tloglin()`). These functions, are then used as inputs for the `fun` argument in `mb.run()`.
+A number of different time-course functions can be fitted within `MBNMAtime` and the specific forms of the time-course parameters are defined by arguments within these functions, and this allows for a wide variety of parameterizations and time-course shapes. 
+
+For further details check the help files for each function (e.g. `?tloglin()`). These functions, are then used as inputs for the `fun` argument in `mb.run()`.
 
 * `tloglin()` - Log-linear function
 * `titp()` - Integrated Two-Component Prediction (ITP) function
@@ -253,6 +255,10 @@ Time-course parameters within time-course functions are each defined by two argu
 Specifying pooling relative effects on all time-course parameters would imply performing a contrast-based synthesis, whereas specifying pooling absolute effects on all of them would imply performing an arm-based synthesis. There has been substantial discussion in the literature regarding the strengths and limitations of both these approaches [@dias2016; @hong2016; @karahalios2017].
 
 Additional arguments within the function may also be used to specify the degree (e.g. for polynomials) or the number of knots or knot placement for splines.
+
+#### Choosing a time-course function
+
+Choice of time-course function involves a combination of data-driven, statistical information (plots, model fit statistics) and clinical/biological plausibility. `timeplot()` and `binplot()` functions can be used to observe the how the data differs at different time-points. This can help to understand, for example, whether the data monotonically increases or decreases, or whether there is a turning point or multiple turning-points within the time-course, and at which follow-up time(s) this might occur. This can also be guided by a clinical/biological knowledge/expectation of the shape of the time-course outside of the range of time-points for which data are available.
 
 
 ### Output
