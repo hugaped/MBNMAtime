@@ -52,7 +52,7 @@ Functions within `MBNMAtime` follow a clear pattern of use:
 2. Specify a suitable time-course function and analyse your data using `mb.run()`
 3. Test for consistency using functions like `mb.nodesplit()`
 4. Examine model results using forest plots and treatment rankings
-5. Use your model to predict responses using `predict()`
+5. Use your model to predict responses or estimate treatment effects at specific time-points using `predict()`
 
 At each of these stages there are a number of informative plots that can be generated to help make sense of your data and the models that you are fitting. Exported functions in the package are connected like so:
 
