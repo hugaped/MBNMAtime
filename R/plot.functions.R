@@ -685,7 +685,6 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 
 #' Plot relative effects from NMAs performed at multiple time-bins
 #'
-#' @param plot.bins Plot time bin boundaries as vertical dashed lines
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
 #'
@@ -770,7 +769,8 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
   if (plot.bins==TRUE) {
     capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
 
-    g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
+    g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5) +
+      ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
   }
 
   g <- g +
@@ -779,7 +779,6 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
 
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
     ggplot2::labs(y="Treatment effect (on link scale)", x="Time") +
-    ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma))) +
     ggplot2::scale_color_manual(name="", values=colorvals) +
     theme_mbnma() +
     ggplot2::theme(legend.position="none")

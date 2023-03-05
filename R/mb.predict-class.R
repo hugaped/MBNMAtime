@@ -21,6 +21,8 @@
 #'   a standard NMA. Length must be >=2, or can be left as `NULL` (the default) to indicate that no NMA
 #'   should be perfomed. `overlay.nma` can only be specified if `overlay.ref==TRUE`.
 #'   See Details for further information.
+#' @param plot.bins Plot time bin boundaries as vertical dashed lines. Setting `plot.bins=TRUE` if `overlay.nma`
+#'   is specified also sets x-axis ticks to time bin boundaries automatically.
 #' @param method Can take `"common"` or `"random"` to indicate the type of NMA model used to synthesise data points
 #'   given in `overlay.nma`. The default is `"random"` since this assumes different
 #'   time-points in `overlay.nma` have been lumped together to estimate the NMA.
@@ -102,7 +104,7 @@
 #' @export
 plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
                             overlay.nma=NULL, method="random",
-                            col="blue", max.col.scale=NULL, treat.labs=NULL, ...) {
+                            col="blue", max.col.scale=NULL, treat.labs=NULL, plot.bins=TRUE, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -215,17 +217,26 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
       g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
                                                fill="NMA (95% Interval)"),
-                                  alpha=0.5, data=predtrt) +
+                                  data=predtrt) +
         ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax, color="Predicted NMA"),
                               data=predtrt, size=0.8)
 
       colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
 
+      if (plot.bins==TRUE) {
+        capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
+
+        g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
+
+        if (bin==1) {
+          g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
+      }
+
     }
 
     g <- g +
       ggplot2::labs(caption=capt) +
-      ggplot2::scale_fill_manual(name="", values=c("NMA (95% Interval)"="grey"))
+      ggplot2::scale_fill_manual(name="", values=c("NMA (95% Interval)"="lightblue"))
   }
 
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
@@ -248,6 +259,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     out[["overlay.nma"]] <- nma
   }
   return(invisible(out))
+  }
 }
 
 
