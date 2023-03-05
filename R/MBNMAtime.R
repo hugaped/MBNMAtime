@@ -14,7 +14,7 @@
 #' present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented
 #' in a Bayesian framework, following an extension of the standard NMA methodology presented by
 #' \insertCite{lu2004}{MBNMAtime} and are run in JAGS \insertCite{jags}{MBNMAtime}. Correlation between
-#' time-points can be accounted for in the mdoelling framework. For full details of time-course MBNMA
+#' time-points can be accounted for in the modeling framework. For full details of time-course MBNMA
 #' methodology see \insertCite{pedder2019;textual}{MBNMAtime}.
 #'
 #' @section Workflow:
