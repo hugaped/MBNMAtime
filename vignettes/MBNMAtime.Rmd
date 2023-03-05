@@ -207,7 +207,7 @@ timeplot(network.gout, level="class", plotby="rel")
 
 Many of the profiles here appear to be quite different within the same class, which would suggest modelling class effects may be inappropriate for this dataset.
 
-Another approach to investigate the time-course relationship is to perform several standard NMAs at different time "bins", time periods within which we are assuming treatment effects are constant over time. We can do this within a single plot using `binplot()` and specifying the boundaries of multiple time bins. Separate NMAs are then performed within each time bin on data points from studies that fall within the time bin (only a single follow-up time is taken from each study to avoid double counting). `"fixed"` or `"random"` effects can be specified for the NMA. Note that the wider the time bin boundaries specified by the user, the larger the potential range of included follow-up times and this can introduce heterogeneity or inconsistency.
+Another approach to investigate the time-course relationship is to perform several standard "lumped" NMAs at different time "bins", time periods within which we are assuming treatment effects are constant over time. We can do this within a single plot using `binplot()` and specifying the boundaries of multiple time bins. Separate NMAs are then performed within each time bin on data points from studies that fall within the time bin (only a single follow-up time is taken from each study to avoid double counting). `"fixed"` or `"random"` effects can be specified for the NMA. Note that the wider the time bin boundaries specified by the user, the larger the potential range of included follow-up times and this can introduce heterogeneity or inconsistency.
 
 ```{r, pain.binplot}
 # Plot results for NMAs performed between 0-5, 5-10, 10-15 and 15-26 weeks
@@ -437,9 +437,11 @@ Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  w
 
 #### Correlation between time-course parameters
 
-`mb.run()` automatically models correlation between time-course parameters modelled using relative effects (though this can be prevented by setting `corparam=FALSE`). Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modelled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the scale matrix for the parameters that are modelled using relative effects, and by increasing the degrees of freedom of the inverse-Wishart prior $\Sigma_t$. 
+Since MBNMAtime version 0.2.2, `mb.run()` no longer automatically models correlation between time-course parameters modeled using relative effects. 
 
-`omega` can be used as an argument in `mb.run()` to represent this scale matrix. If specified, it must be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1 is used. The degrees of freedom can then be changed within the `priors` argument of `mb.run()` to make the prior more informative.
+However, this can be enabled by setting `corparam=TRUE`). Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modeled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the scale matrix for the parameters that are modeled using relative effects, and by increasing the degrees of freedom of the inverse-Wishart prior $\Sigma_t$. 
+
+`omega` can be used as an argument in `mb.run()` to represent this scale matrix. If specified, it must be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modeled using relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1 is used. The degrees of freedom can then be changed within the `priors` argument of `mb.run()` to make the prior more informative.
 
 For example, with the osteoarthritis dataset we might expect that for a piecewise linear time-course function, the parameter values (in this model the relative different in gradient vs placebo) for the first coefficient might be 10 times larger than for the second coefficient:
 
@@ -567,9 +569,9 @@ plot(mbnma)
 
 ### `get.relative()`: Calculating differences between treatments at a specified time-point
 
-Although `mb.run()` estimates the effects for different treatments on different time-course parameters, these are not necessarily easy to draw conclusions from, particularly for time-course functions with less easily interpretable parameters. `get.relative()` allows users to calculate mean differences between treatments at a specified time-point even if a subset, or even none of the treatments have been investigated at that time-point in included RCTs. 
+Although `mb.run()` estimates the effects for different treatments on different time-course parameters, these are not necessarily easy to draw conclusions from, particularly for time-course functions with less easily interpretable parameters. `get.relative()` allows users to calculate mean differences (or log-Ratio of Means if `mb.run(link="log")`) between treatments at a specified time-point even if a subset, or even none of the treatments have been investigated at that time-point in included RCTs. 
 
-These results will then be reported on the scale on which the data were modelled (i.e. depending on the link function specified in `mb.run()`), rather than that of the specific time-course parameters. Within the matrices of results, mean differences/relative effects are shown as the row-defined treatment versus the column-defined treatment.
+These results will then be reported on the scale on which the data were modeled (i.e. depending on the link function specified in `mb.run()`), rather than that of the specific time-course parameters. Within the matrices of results, mean differences/relative effects are shown as the row-defined treatment versus the column-defined treatment.
 
 ```{r}
 allres <- get.relative(mbnma, time=20,
@@ -629,13 +631,13 @@ cumrank(ranks)
 
 ### Prediction
 
-After performing an MBNMA, responses can be predicted from the parameter estimates using `predict()` on an `"mbnma"` object. A number of important parameters need to be identified to make robust predictions, though defaults can be used to generate a plot that gives a good indication of the time-course relationship assuming a reference treatment response of zero. For further information the help file can be accessed using `?predict.mbnma`.
+After performing an MBNMA, responses can be predicted from the parameter estimates using `predict()` on an `"mbnma"` object. A number of important parameters need to be identified to make robust predictions. However, default values can be used that set values of zero for the reference treatment baseline and time-course parameters which indicates that mean differences / relative treatment effects should be estimated. For further information the help file can be accessed using `?predict.mbnma`.
 
-One key parameter is `E0`, which defines what value(s) to use for the predicted response at time = 0. A single numeric value can be given for this to indicate a deterministic value, or a function representing a random number generator (RNG) distribution in R (stochastic) (e.g. `E0 = ~rnorm(n, 7, 0.2)`. These values can be identified for the population of interest from external data (e.g. observational/registry).
+One key parameter is `E0`, which defines what value(s) to use for the predicted mean at time = 0. A single numeric value can be given for `E0` to indicate a deterministic value, or a function representing a random number generator (RNG) distribution in R (stochastic) (e.g. `E0 = ~rnorm(n, 7, 0.2)`. These values can be identified for the population of interest from external data (e.g. observational/registry).
 
-The more challenging parameter(s) to identify are those for the network reference treatment response, supplied to `predict()` in the `ref.resp` argument. Typically in an MBNMA, relative effects are estimated and the network reference effect is modelled as a nuisance parameter. Therefore we need to provide an input for this reference treatment effect for all time-course parameters modelled using `pool="rel"` so that we can apply the relative effects estimated in our model to it. There are two options for providing these values.
+The more challenging parameter(s) to identify are those for the network reference treatment time-course, supplied to `predict()` in the `ref.resp` argument. For estimating mean differences / relative treatment effects over time this does not need to be specified since typically in an MBNMA, relative effects are estimated and the network reference effect is modeled as a nuisance parameter. However, for predicting mean responses over time we need to provide an input for the network reference treatment effect for all time-course parameters modeled using `pool="rel"` so that we can apply the relative effects estimated in our model to it. There are two options for providing these values.
 
-The first approach is to give values for each time-course parameter modelled using relative effects to `ref.resp`. This is given as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a function representing a random number generator distribution in R (stochastic).
+The first approach is to give values for each time-course parameter modeled using relative effects to `ref.resp`. This is given as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a function representing a random number generator distribution in R (stochastic).
 
 ```{r, results="hide", message=FALSE, eval=FALSE}
 # Run an Emax time-course MBNMA using the osteoarthritis dataset
@@ -681,11 +683,11 @@ pred <- predict(mbnma, treats=c("Pl_0", "Ce_200", "Du_90", "Et_60",
 print(pred)
 ```
 
-It is also possible specify the time points for which to predict responses (`times`), given as a vector of positive numbers. If left as the default then the maximum follow-up in the dataset will be used as the upper limit for the range of predicted time-points.
+It is also possible specify the time points for which to make predictions (`times`), given as a vector of positive numbers. If left as the default then the maximum follow-up in the dataset will be used as the upper limit for the range of predicted time-points.
 
 An object of class `"mb.predict"` is returned, which is a list of summary tables and MCMC prediction matrices for each treatment, in addition to the original `mbnma` object. The `summary()` method can be used to print mean posterior predictions at each time point for each treatment.
 
-Predicted responses can also be plotted using the `plot()` method on an object of `class("mb.predict")`. Within the default arguments, the median predicted network reference treatment response is overlaid on the predicted response for each treatment. Setting `overlay.ref = FALSE` prevents this and causes the network reference treatment predicted response to be plotted as a separate panel. Shaded counts of observations in the original dataset at each predicted time point can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`.
+Predicted values can also be plotted using the `plot()` method on an object of `class("mb.predict")`. Within the default arguments, the median predicted network reference treatment effect is overlaid on the predictions for each treatment. Setting `overlay.ref = FALSE` prevents this and causes the network reference treatment effect to be plotted as a separate panel. Shaded counts of observations in the original dataset at each predicted time point can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`.
 
 ```{r, message=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
 plot(pred, overlay.ref=TRUE, disp.obs=TRUE)
@@ -693,7 +695,7 @@ plot(pred, overlay.ref=TRUE, disp.obs=TRUE)
 
 This can be used to identify any extrapolation/interpretation of the time-course that might be occurring for a particular treatment, and where predictions might therefore be problematic.
 
-To illustrate a situation in which this could be very informative, we can look at predicted responses for a quadratic time-course function fitted to the Obesity dataset:
+To illustrate a situation in which this could be very informative, we can look at predictions for a quadratic time-course function fitted to the Obesity dataset:
 
 ```{r, fig.height=3, results="hide", eval=FALSE}
 # Fit a quadratic time-course MBNMA to the Obesity dataset
@@ -734,16 +736,16 @@ pred.obese <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
 plot(pred.obese, disp.obs = TRUE)
 ```
 
-As you can see, within the limits of the observed data the predicted responses appear reasonable. However, extrapolation beyond this for `dexf_30MG` leads to some rather strange results, suggesting an unrealistically huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
+As you can see, within the limits of the observed data the predicted values appear reasonable. However, extrapolation beyond this for `dexf_30MG` leads to some rather strange results, suggesting an unrealistically huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
 
 
 #### Plotting "lumped" NMA results
 
-As a further addition to the plots of MBNMA predictions, it is possible to add predicted results from an NMA model. This is one in which time-points within an interval (specified in `overlay.nma`) are "lumped" together to allow for analysis using standard NMA approaches [@lu2004]. Either a `"random"` (the default) or `"common"` effects NMA can be specified, and model fit statistics are reported below the resulting plot.
+As a further addition to the plots of MBNMA predictions, it is possible to add predicted results from an NMA model or multiple "lumped" NMA models performed a different time "bins" (specified in `overlay.nma`), time periods within which we are assuming treatment effects are constant over time. This is similar to the output generated by `binplot()`. Either a `"random"` (the default) or `"common"` effects NMA can be specified, and model fit statistics are reported below the resulting plot.
 
-This can be useful to assess if the MBNMA predictions are in agreement with predictions from a lumped NMA model over a specific set of time-points, and can be a general indicator of the fit of the time-course model. However, it is important to note that the NMA model is not necessarily the more robust model, since it ignores potential differences in treatment effects that may arise from lumping time-points together. The wider the range specified in `overlay.nma`, the greater the effect of lumping and the stronger the assumption of similarity between studies.
+This can be useful to assess if the MBNMA predictions are in agreement with predictions from lumped NMA models over a specific set of time-points, and can be a general indicator of the fit of the time-course model. However, it is important to note that the NMA model is not necessarily the more robust model, since it ignores potential differences in treatment effects that may arise from lumping time-points together. The wider the range specified in `overlay.nma`, the greater the effect of lumping and the stronger the assumption of similarity between studies.
 
-The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line, with the 95%CrI shown by a grey rectangle. The NMA predictions represent those for *any time-points within this range* since they lump together data at all these time-points. Predictions for treatments that are disconnected from the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
+The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line representing the posterior median, with the 95%CrI shown by a shaded rectangle. The NMA predictions represent those for *any time-points within this range* since they lump together data at all these time-points. Predictions for treatments that are disconnected from the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
 
 ```{r, results="hide", warning=FALSE}
 # Overlay predictions from lumped NMA between 8-10 weeks follow-up
