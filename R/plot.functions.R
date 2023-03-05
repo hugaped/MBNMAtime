@@ -683,11 +683,33 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 
 
 
-#' Plot relative effects from NMAs at multiple time-bins
+#' Plot relative effects from NMAs performed at multiple time-bins
 #'
 #' @param plot.bins Plot time bin boundaries as vertical dashed lines
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
+#'
+#' @details
+#' Performs several standard NMAs at different time "bins", time periods within
+#' which treatment effects are assumed to be constant over time. Separate NMAs
+#' are then performed within each time bin on data points from studies that fall
+#' within the time bin (only a single follow-up time is taken from each study
+#' to avoid double counting).
+#'
+#' Note that the wider the time bin boundaries specified by the user, the
+#' larger the potential range of included follow-up times and this can
+#' introduce heterogeneity or inconsistency.
+#'
+#' Results are plotted versus the network reference and are plotted on the
+#' specified link scale. Each time bin window is marked on the plot by
+#' vertical dashed lines. The NMA estimates within each time bin are plotted
+#' as a horizontal solid black line (the posterior median) with a shaded region
+#' indicating the 95% credible interval (prediction intervals can instead
+#' be plotted). The width of these shaded regions is equal to the range of study
+#' time-points included in the NMA performed within that timebin, which
+#' may therefore be more narrow than the time bin specified in the `binplot()`
+#' command due to the follow-up times at which data is available in included
+#' studies.
 #'
 #' @inheritSection plot.mb.predict Overlaying NMA results
 #'
@@ -757,8 +779,14 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
 
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
     ggplot2::labs(y="Treatment effect (on link scale)", x="Time") +
+    ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma))) +
     ggplot2::scale_color_manual(name="", values=colorvals) +
-    theme_mbnma()
+    theme_mbnma() +
+    ggplot2::theme(legend.position="none")
+
+  legend.png <- png::readPNG("man/figures/binplot.legend.PNG")
+  g2 <- grid::rasterGrob(legend.png, interpolate = TRUE)
+  g <- gridExtra::arrangeGrob(g, g2, ncol=2, widths=c(10, 1))
 
   graphics::plot(g)
 
