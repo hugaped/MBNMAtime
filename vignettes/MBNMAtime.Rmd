@@ -745,11 +745,11 @@ As a further addition to the plots of MBNMA predictions, it is possible to add p
 
 This can be useful to assess if the MBNMA predictions are in agreement with predictions from lumped NMA models over a specific set of time-points, and can be a general indicator of the fit of the time-course model. However, it is important to note that the NMA model is not necessarily the more robust model, since it ignores potential differences in treatment effects that may arise from lumping time-points together. The wider the range specified in `overlay.nma`, the greater the effect of lumping and the stronger the assumption of similarity between studies.
 
-The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line representing the posterior median, with the 95%CrI shown by a shaded rectangle. The NMA predictions represent those for *any time-points within this range* since they lump together data at all these time-points. Predictions for treatments that are disconnected from the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
+The NMA predictions are plotted over the range specified in `overlay.nma` as a horizontal line representing the posterior median, with the 95%CrI shown by a shaded rectangle. The NMA predictions in theory represent those for *any time-points within this range* since they lump together data at all these time-points, though the width (x-axis) of the shaded rectangle represents the range of time-points for studies included in each time bin. Predictions for treatments that are disconnected from the network reference treatment at data points specified within `overlay.nma` cannot be estimated so are not included.
 
 ```{r, results="hide", warning=FALSE}
-# Overlay predictions from lumped NMA between 8-10 weeks follow-up
-plot(pred, overlay.nma=c(8,10), n.iter=20000)
+# Overlay predictions from lumped NMAs between 5-8 and between 8-15 weeks follow-up
+plot(pred, overlay.nma=c(5,8,15), n.iter=20000)
 ```
 
 ## Consistency Testing
