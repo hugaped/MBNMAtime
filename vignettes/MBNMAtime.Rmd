@@ -247,7 +247,7 @@ Time-course parameters within time-course functions are each defined by two argu
 `pool` is used to define the approach used for the pooling of a given time-course parameter and can either of:
 
 * `"rel"` indicates that relative effects (or mean differences) should be pooled for this time-course parameter. This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by Lu and Ades [-@lu2004].
-* `"abs"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single absolute value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity.
+* `"abs"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single absolute value across the network for this time-course parameter, and may therefore be making strong assumptions of similarity between studies.
 
 `method` is used to define the model used for meta-analysis for a given time-course parameter and can take either of:
 
@@ -261,6 +261,8 @@ Additional arguments within the function may also be used to specify the degree 
 #### Choosing a time-course function
 
 Choice of time-course function involves a combination of data-driven, statistical information (plots, model fit statistics) and clinical/biological plausibility. `timeplot()` and `binplot()` functions can be used to observe the how the data differs at different time-points. This can help to understand, for example, whether the data monotonically increases or decreases, or whether there is a turning point or multiple turning-points within the time-course, and at which follow-up time(s) this might occur. This can also be guided by a clinical/biological knowledge/expectation of the shape of the time-course outside of the range of time-points for which data are available.
+
+However, once several potential candidate time-course functions have been identified, selection between them (and of the specific specification of the time-course parameters in terms of absolute or relative effects) is best achieved using model fit statistics (e.g. Deviance Information Criterion (DIC), residual deviance).
 
 
 ### Output
@@ -325,7 +327,7 @@ In this case, the parameters are named following the Emax function specification
 
 #### Correlation between time points
 
-Within-study correlation between time points can easily be modelled using `mb.run()`, though this requires some additional considerations. The simplest approach is to incorporate correlation by using a variance adjustment [@jansen2015]. This avoids the need to use a multivariate normal likelihood (which is slow to run), and it assumes a common correlation between neighbouring time-points. This is achieved by using the argument `covar="varadj"`, which is the default in `mb.run()`. 
+Within-study correlation between time points can easily be modeled using `mb.run()`, though this requires some additional considerations. The simplest approach is to incorporate correlation by using a variance adjustment [@jansen2015]. This avoids the need to use a multivariate normal likelihood (which is slow to run), and it assumes a common correlation between neighbouring time-points. This is achieved by using the argument `covar="varadj"`, which is the default in `mb.run()`. 
 
 There are two alternative covariance structures can be modelled, though these require fitting a multivariate normal likelihood and therefore take longer to run. `covar="CS"` specifies fitting a Compound Symmetry covariance structure, whilst `covar="AR1"` specifies fitting an autoregressive AR1 covariance structure to the multivariate normal likelihood used for modelling the correlation between multiple time points within a study [@covstruct].
 
@@ -466,40 +468,20 @@ In addition to the arguments specific to `mb.run()` it is also possible to use a
 * `n.thin` The thinning rate which ensures that results are only saved for 1 in every `n.thin` iterations per chain. This can be increased to reduce autocorrelation in MCMC samples
 
 
-## Model Convergence
+## MCMC Convergence
 
-`MBNMAtime` is run using JAGS, which performs Bayesian inference using Gibbs sampling [@jags]. This samples from the posterior distribution to obtain posterior densities for monitored parameters of interest. However, convergence of the MCMC algorithm on the posterior density is therefore critical for obtaining robust results.
+`MBNMAtime` runs Bayesian models in JAGS, which uses Markov Chain Monte Carlo (MCMC) simulation [@jags]. However, the validity of results is reliant on the MCMC chains having converged successfully on the posterior densities of all parameters in the model. For highly parameterised models run on relatively limited data, as is often the case with MBNMA models, convergence can often be an challenge. Note that convergence is *necessary* to be able to compare models and evaluate model fit. However, successful convergence *does not* imply good model fit.
 
-Multiple MCMC chains should always be run (default in `MBNMAtime` is 3) as this allows for traces of each chain to be examined. Consistent overlap between the traces in different chains, as well as low autocorrelation in MCMC samples suggests that convergence is likely to have been successful.
+A full explanation of how to facilitate and to check for convergence is outside the scope of this vignette, but below are some simple steps for checking convergence. None of these steps alone ensures convergence has been successful, but interpretation of them jointly can provide strong evidence of it.
 
-A simple output for assessing convergence is the Gelman-Rubin $\hat{R}$ statistic, which is the ratio of between- and within-chain standard deviations [@gelman2003]. Values of <1.05 are widely accepted as implying convergence for practical values, though some functions in `MBNMAtime` alerts users if $\hat{R}>1.02$. 
+* Rhat values close to 1 (<1.1 is considered acceptable by some). These are shown for monitored parameters in the summary statistics table when an `"mbnma"` or `"nma"` object is printed.
+* Trace plots that have a "fuzzy caterpillar" look that shows good mixing of MCMC chains
+* Density plots that show a smooth posterior distribution that is similar across all chains
+* Autocorrelation plots that show low autocorrelation between neighbouring MCMC iterations (i.e. low correlation at higher lags)
 
-`Rhat` values for each parameter are calculated automatically in `R2jags` and can be shown if `print()` is called on an object of `class("mbnma")`:
+An HTML document with all the above convergence plots can easily be generated for all parameters in the model simultaneously using `mcmcplots::mcmcplot()`.
 
-```{r}
-print(mbnma)
-```
-
-
-Two useful packages for investigating convergence of monitored parameters are the `mcmcplots` and `coda` packages. These can be used to generate plots that can provide information on MCMC chain overlap and autocorrelation:
-
-```{r, eval=FALSE}
-# Traceplots
-mcmcplots::traplot(mbnma, "sd.beta.1")
-
-# Running mean plots
-mcmcplots::rmeanplot(mbnma, "sd.beta.1")
-
-# Posterior densities
-mcmcplots::denplot(mbnma, "sd.beta.1")
-
-# Autocorrelation plots
-coda::autocorr.plot(mbnma)
-```
-
-A single function (`mcmcplots::mcmcplot()`) can also be used to generate an HTLM with all these plots for all monitored parameters.
-
-If there are problems with convergence, the first solution may be to run the model for more iterations (see [Arguments to be sent to JAGS]), which give the chains a greater number of calculations over which to converge. However, for models with a large number of parameters and relatively limited data, information may be too limited to allow convergence within a computationally reasonable number of iterations. In these situations there is not enough information in the data to support such a highly parameterised model, suggesting that a simpler model should be fitted. Alternatively, more informative priors can be used, but given the lack of information in the data relative to the model's complexity, results are likely to be sensitive to these priors.
+Two steps may improve convergence when using `MBNMAtime`. One step is to run models for more iterations (this can be done using the `n.iter` argument in `mb.run()`). It can take time for MCMC chains to converge, particularly for non-linear models with limited data. It is important to note that chains should only be monitored *after* they have converged - increasing the number of burn-in iterations ensures that this is the case (using the `n.burnin` argument in `mb.run()`). Another method to improve convergence is by providing more information to the model via informative priors.
 
 For a detailed review of MCMC convergence assessment see Sinharay [-@sinharay].
 
