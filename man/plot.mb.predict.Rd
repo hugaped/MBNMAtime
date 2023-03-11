@@ -13,6 +13,7 @@
   col = "blue",
   max.col.scale = NULL,
   treat.labs = NULL,
+  plot.bins = TRUE,
   ...
 )
 }
@@ -53,6 +54,9 @@ plotted}
 
 \item{treat.labs}{A vector of treatment labels in the same order as treatment codes.
 Easiest to use treatment labels stored by \code{mb.network()}}
+
+\item{plot.bins}{Plot time bin boundaries as vertical dashed lines. Setting \code{plot.bins=TRUE} if \code{overlay.nma}
+is specified also sets x-axis ticks to time bin boundaries automatically.}
 
 \item{...}{Arguments for \code{ggplot()} or \code{R2jags()}}
 }

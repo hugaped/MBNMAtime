@@ -11,7 +11,7 @@ temax(
   method.et50 = "common",
   pool.hill = NULL,
   method.hill = NULL,
-  p.expon = TRUE
+  p.expon = FALSE
 )
 }
 \arguments{
@@ -34,9 +34,9 @@ or should they be assigned a prior that restricts the posterior to positive valu
 An object of \code{class("timefun")}
 }
 \description{
-** Future update for version 0.2.3: to ensure positive posterior values, et50 and hill parameters will in
-the future be modeled on the natural scale using a half-normal prior rather than a symmetrical prior
-on the exponential scale **
+** For version 0.2.3: to ensure positive posterior values, et50 and hill parameters are now
+modeled on the natural scale using a half-normal prior rather than a symmetrical prior
+on the exponential scale to improve model stability **
 }
 \details{
 \itemize{

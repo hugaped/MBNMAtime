@@ -20,7 +20,7 @@ that explains time-course, thus explaining heterogeneity and inconsistency that 
 present in a standard Network Meta-Analysis (NMA). All models and analyses are implemented
 in a Bayesian framework, following an extension of the standard NMA methodology presented by
 \insertCite{lu2004}{MBNMAtime} and are run in JAGS \insertCite{jags}{MBNMAtime}. Correlation between
-time-points can be accounted for in the mdoelling framework. For full details of time-course MBNMA
+time-points can be accounted for in the modeling framework. For full details of time-course MBNMA
 methodology see \insertCite{pedder2019;textual}{MBNMAtime}.
 }
 
@@ -32,7 +32,7 @@ Functions within \code{MBNMAtime} follow a clear pattern of use:
 \item Specify a suitable time-course function and analyse your data using \code{\link{mb.run}}
 \item Test for consistency using \code{\link{mb.nodesplit}} or by fitting Unrelated Mean Effects models
 \item Examine model results using forest plots and treatment rankings
-\item Use your model to predict responses using \code{\link{predict.mbnma}}
+\item Use your model to predict responses or estimate treatment effects at specific time-points using \code{\link{predict.mbnma}}
 }
 
 At each of these stages there are a number of informative plots that can be generated to help make sense of your data and the models that you are fitting.

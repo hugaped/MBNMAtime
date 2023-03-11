@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.functions.R
 \name{binplot}
 \alias{binplot}
-\title{Plot relative effects from NMAs at multiple time-bins}
+\title{Plot relative effects from NMAs performed at multiple time-bins}
 \usage{
 binplot(
   network,
@@ -11,6 +11,7 @@ binplot(
   link = "identity",
   lim = "cred",
   plot.bins = TRUE,
+  legend = TRUE,
   ...
 )
 }
@@ -32,12 +33,37 @@ time-points in \code{overlay.nma} have been lumped together to estimate the NMA.
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
-\item{plot.bins}{Plot time bin boundaries as vertical dashed lines}
+\item{plot.bins}{Plot time bin boundaries as vertical dashed lines. Setting \code{plot.bins=TRUE} if \code{overlay.nma}
+is specified also sets x-axis ticks to time bin boundaries automatically.}
+
+\item{legend}{\code{TRUE}/\code{FALSE} to indicate whether a legend should be plotted.}
 
 \item{...}{Arguments to be sent to R2jags.}
 }
 \description{
-Plot relative effects from NMAs at multiple time-bins
+Plot relative effects from NMAs performed at multiple time-bins
+}
+\details{
+Performs several standard NMAs at different time "bins", time periods within
+which treatment effects are assumed to be constant over time. Separate NMAs
+are then performed within each time bin on data points from studies that fall
+within the time bin (only a single follow-up time is taken from each study
+to avoid double counting).
+
+Note that the wider the time bin boundaries specified by the user, the
+larger the potential range of included follow-up times and this can
+introduce heterogeneity or inconsistency.
+
+Results are plotted versus the network reference and are plotted on the
+specified link scale. Each time bin window is marked on the plot by
+vertical dashed lines. The NMA estimates within each time bin are plotted
+as a horizontal solid black line (the posterior median) with a shaded region
+indicating the 95\% credible interval (prediction intervals can instead
+be plotted). The width of these shaded regions is equal to the range of study
+time-points included in the NMA performed within that timebin, which
+may therefore be more narrow than the time bin specified in the \code{binplot()}
+command due to the follow-up times at which data is available in included
+studies.
 }
 \section{Overlaying NMA results}{
 

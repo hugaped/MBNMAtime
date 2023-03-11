@@ -27,7 +27,7 @@ predict mean responses for (or at which to conduct a node-split if used with \co
 \item{E0}{An object to indicate the value(s) to use for the response at time = 0
 in the prediction. This can take a number of different formats depending
 on how it will be used/calculated. The default is 0 but this may lead
-to non-sensical predictions.
+to non-sensical predictions if Ratio of Means are modeled.
 \itemize{
 \item \code{numeric()} A single numeric value representing the deterministic response at time = 0
 \item \code{formula()} A formula representing a stochastic distribution for the response
@@ -63,7 +63,8 @@ parameter modelled in \code{mbnma}. Their values can be either of the following:
 \itemize{
 \item \code{numeric()} A numeric value representing the deterministic value of the time-course parameter in
 question in individuals given the reference treatment. \code{0} is used as the default, which assumes no
-effect of time on the reference treatment.
+effect of time on the reference treatment (i.e. mean differences / relative effects versus the
+reference treatment are modeled).
 \item \code{formula()} A formula representing a stochastic distribution for the value of the time-course
 parameter in question. This is specified as a random number generator (RNG) given as a formula,
 and can take any RNG distribution for which a function exists in R. For example: \code{~rnorm(n, -3, 0.2)}.
@@ -99,6 +100,10 @@ relative treatment effects with a given reference treatment response
 (specific to the population of interest).
 }
 \details{
+By default the network reference treatment baseline (\code{E0}) and time-course
+parameter values are set to zero so that \code{predict()} estimates mean differences
+(/relative treatment effects) over time versus the network reference treatment.
+
 \code{ref.resp} only needs to be specified if \code{mbnma} has
 been estimated using consistency relative effects (\code{pool="rel"}) for
 any time-course parameters, as these inform the absolute values of the
