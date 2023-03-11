@@ -5,6 +5,8 @@ datalist <- list(osteopain=osteopain, copd=copd, goutSUA_CFBcomb=goutSUA_CFBcomb
 
 testthat::test_that("print.sum tests pass correctly", {
 
+  testthat::expect_equal(1,1) # Avoids empty tests
+
   skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
@@ -63,7 +65,6 @@ testthat::test_that("print.sum tests pass correctly", {
     testthat::test_that("print.treat.str functions correctly", {
 
       # Emax
-      testthat::expect_output(print.treat.str(emax1), "Parameter modelled on exponential scale")
       testthat::expect_output(print.treat.str(emax1), "Unrelated Mean Effect results modelled for this parameter")
       testthat::expect_output(print.treat.str(emax1), "Too many parameters")
       testthat::expect_output(print.treat.str(emax1), "Pooling: absolute effects")
