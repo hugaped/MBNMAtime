@@ -9,6 +9,8 @@ testthat::test_that("post-estimation tests pass correctly", {
   skip_on_ci()
   skip_on_cran()
 
+  testthat::expect_equal(1,1) # Avoids empty test
+
   for (i in seq_along(datalist)) {
 
     print(names(datalist)[i])
@@ -16,6 +18,7 @@ testthat::test_that("post-estimation tests pass correctly", {
 
     testthat::test_that(paste0(names(datalist)[i], ": predict.functions tests pass correctly"), {
 
+      testthat::expect_equal(1,1) # Avoids empty test
 
       loglin <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="common"))
 
