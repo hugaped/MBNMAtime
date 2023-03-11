@@ -216,7 +216,7 @@ We can do this within a single plot using `binplot()` and specifying the boundar
 binplot(network.pain, overlay.nma=c(0,5,10,15,26))
 ```
 
-Results are plotted versus the network reference and are plotted on the relevant link scale (in this case identity - i.e. mean differences versus Pl_0 are shown). Each time bin window is marked on the plot by vertical dashed lines. The NMA estimates within each time bin are plotted as a horizontal solid black line (the posterior median) with a shaded region indicating the 95% credible interval (prediction intervals can instead be plotted). The width of these shaded regions is equal to the range of study time-points included in the NMA performed within that time-bin, which may therefore be more narrow than the time bin specified in the `binplot()` command due to the follow-up times at which data is available in included studies. For example, for the time bin between 10-15 weeks, studies from the dataset included in this time bin have follow-ups between 12-13 weeks.
+Results are plotted versus the network reference and are plotted on the relevant scale depending on the function specified in `link` (in this case `"identity"` - i.e. mean differences versus Pl_0 are shown). Each time bin window is marked on the plot by vertical dashed lines. The NMA estimates within each time bin are plotted as a horizontal solid black line (the posterior median) with a shaded region indicating the 95% credible interval (prediction intervals can instead be plotted). The width of these shaded regions is equal to the range of study time-points included in the NMA performed within that time-bin, which may therefore be more narrow than the time bin specified in the `binplot()` command due to the follow-up times at which data is available in included studies. For example, for the time bin between 10-15 weeks, studies from the dataset included in this time bin have follow-ups between 12-13 weeks.
 
 From this plot we can see that, whilst there clearly is a rapid onset of treatment efficacy within the first 5 weeks, indicated by a treatment effect <0 for most treatments. This treatment effect then persists and remains more or less constant for some treatments within later time bins, though for others (e.g. Ce_200, Ro_25, Na_1000, Na_1500, Va_10) there appears to be a loss of efficacy for later time bins, suggesting a more complex time-course function may be required to fully capture this relationship.
 
@@ -350,6 +350,16 @@ mbnma <- mb.run(network.copd,
 
 It is important to note that the covariance matrix must be positive semi-definite. This may mean that in order to satisfy this requirement for particular covariance matrix structures, the values that `rho` can take are limited. `rho` must always be bounded by -1 and 1, but even within this range some negative values for `rho` can result in a non positive matrix, which can lead to an error in the evaluation of the multivariate likelihood. If so, it may be necessary to further restrict the prior distribution.
 
+### Link function
+
+Time-course MBNMA can only be used for continuous outcomes *or those that can be summarised as continuous outcomes* (e.g. binary data can be converted to log-odds for inclusion in the model). Typically this means that users will analyse data using an identity link function, the default given to the `link` argument in `mb.run()`m which assumes an additive treatment effect (e.g. mean difference).
+
+However, by specifying `link="log"` a user can model a log link and therefore assume a multiplicative treatment effect. For continuous data this models the treatment effect as a Ratio of Means (RoM) [@friedrich2011]. This also provides an advantage as the treatment effect is scale independent (i.e. studies measuring the same outcome using different measurement scales can be analysed simultaneously). However, within-study treatment effects must all be of the same direction (either positive or negative), and change from baseline measures must be adjusted so that they are also expressed as RoMs (log(follow-up) - log(baseline)) to avoid combining additive and multiplicative assumptions within the same analysis.
+
+An alternative approach for modeling a measurement scale-independent treatment effect whilst still assuming additive treatment effects is to perform the analysis using Standardised Mean Differences (SMD). Whilst not strictly a different link function, this can be specified using `link="smd"`. Currently, `MBNMAtime` standardises treatment effects using the pooled baseline standard deviation (SD) in each study, to limit bias from any effect the treatment might have on SD. The resulting treatment effects are reported in units of SD as SMDs.
+
+A more robust approach to minimise bias from estimation of within-study SD would be to use a single reference SD for standardisation of each scale included in the dataset. This is something `MBNMAtime` will incorporate in the future. For further details of analysis of continuous data that include discussion of both RoM and SMD see [@GMD2].
+
 
 ### Class effects
 
@@ -479,7 +489,6 @@ Detailed description of model selection based on statistical measures such as De
 5. Compare model fitted with a univariate likelihood to one fitted with a multivariate likelihood
 
 Finally the validity of the consistency assumption should be explored in the selected final model (see [Consistency Testing]). 
-
 
 ## MCMC Convergence
 
