@@ -29,6 +29,7 @@ Imports:
   stats,
   graphics,
   utils,
+  grid,
   dplyr (>= 0.7.4),
   R2jags (>= 0.5-7), 
   rjags (>= 4-8),
@@ -47,8 +48,9 @@ Suggests:
   splines (>= 4.0.2),
   Hmisc (>= 4.4-1),
   lspline(>= 1.0-0),
-  rmarkdown,
   zoo (>= 1.8-8),
+  rmarkdown,
+  png,
   testthat (>= 1.0.2),
   RColorBrewer (>= 1.1-2),
   mcmcplots (>= 0.4.3)
