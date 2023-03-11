@@ -5,6 +5,8 @@ datalist <- list(osteopain=osteopain, copd=copd, goutSUA_CFBcomb=goutSUA_CFBcomb
 
 testthat::test_that("rank.functions tests pass correctly", {
 
+  testthat::expect_equal(1,1) # Avoids empty tests
+
   skip_on_ci()
   skip_on_cran()
   skip_on_appveyor()
@@ -16,13 +18,11 @@ testthat::test_that("rank.functions tests pass correctly", {
 
     network <- mb.network(datalist[[i]])
 
-
-    ### REMOVE SUPPRESS WARNINGS AFTER v0.2.2
-    emax <- suppressWarnings(mb.run(network,
+    emax <- mb.run(network,
                    fun=temax(pool.emax="rel", method.emax="common",
                              pool.et50="rel", method.et50="random",
-                             pool.hill="abs", method.hill="common"),
-                   pd="pv", n.iter=1000))
+                             pool.hill="abs", method.hill=2),
+                   pd="pv", n.iter=1000)
 
     if ("n" %in% names(network$data.ab) & !any(is.na(network$data.ab[["n"]]))) {
       bs <- mb.run(network,
