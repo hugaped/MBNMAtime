@@ -356,14 +356,14 @@ overlay.nma <- function(pred, timebins, method="common", link="identity", lim="c
       edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
       g <- g + edges
 
-      discon <- check.network(g)
+      discon <- suppressWarnings(check.network(g))
 
       # Drop treatments disconnected to network reference
       if (length(discon)>0) {
         # message(paste("The following treatments are disconnected from the network reference for studies in 'incl.range' and will be excluded from overlay.nma:",
         #               paste(discon, collapse = "\n"), sep="\n"))
 
-        drops <- which(network$treatments %in% drops)
+        drops <- which(network$treatments %in% discon)
         nmanet <- nmanet[!nmanet$treatment %in% drops,]
 
         nodes <- unique(sort(nmanet$treatment))
@@ -685,6 +685,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 
 #' Plot relative effects from NMAs performed at multiple time-bins
 #'
+#' @param legend `TRUE`/`FALSE` to indicate whether a legend should be plotted.
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
 #'
@@ -729,7 +730,8 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #'
 #' @export
 binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$time)),
-                        method="common", link="identity", lim="cred", plot.bins=TRUE, ...) {
+                        method="common", link="identity", lim="cred", plot.bins=TRUE,
+                    legend=TRUE, ...) {
 
   checkmate::assertNumeric(overlay.nma, min.len = 2)
 
@@ -746,6 +748,10 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
 
   nma <- overlay.nma(pred, timebins=overlay.nma, method=method, link=link, lim=lim,
                      plottype="rel", ...)
+
+  if (length(nma)==0) {
+    stop("No NMA can be performed between time points specified in overlay.nma")
+  }
 
   # Bind data frames
   plot.df <- nma[[1]]$pred.df[0,]
@@ -783,9 +789,11 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
     theme_mbnma() +
     ggplot2::theme(legend.position="none")
 
-  legend.png <- png::readPNG("man/figures/binplot.legend.PNG")
-  g2 <- grid::rasterGrob(legend.png, interpolate = TRUE)
-  g <- gridExtra::arrangeGrob(g, g2, ncol=2, widths=c(10, 1))
+  if (legend==TRUE) {
+    legend.png <- png::readPNG("~/man/figures/binplot_legend.PNG")
+    g2 <- grid::rasterGrob(legend.png, interpolate = TRUE)
+    g <- gridExtra::arrangeGrob(g, g2, ncol=2, widths=c(10, 1))
+  }
 
   graphics::plot(g)
 
