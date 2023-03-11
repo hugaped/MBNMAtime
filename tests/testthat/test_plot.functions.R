@@ -14,6 +14,8 @@ testthat::test_that("plot function tests pass correctly", {
   n.burnin <- 100
   n.thin <- 1
 
+  testthat::expect_equal(1,1) # Avoids empty test
+
   for (dat in seq_along(datalist)) {
 
     print(names(datalist)[dat])
@@ -369,13 +371,18 @@ testthat::test_that("plot function tests pass correctly", {
 
     test_that(paste0("binplot functions correctly for ", names(datalist)[dat]), {
 
-      network <- mb.network(datalist[[dat]])
+      network <- suppressWarnings(mb.network(datalist[[dat]]))
 
-      expect_error(binplot(network), NA)
+      expect_error(binplot(network, legend=FALSE), NA)
 
-      expect_message(binplot(network, overlay.nma = c(0,5,5.001)), "not possible between")
+      if (names(datalist)[dat]=="diabetes") {
+        expect_error(binplot(network, overlay.nma = c(0,5), legend=FALSE), "No NMA can be performed between")
+      } else {
+        expect_message(binplot(network, overlay.nma = c(0,5,5.001), legend=FALSE), "not possible between")
+      }
 
-      expect_error(binplot(network, overlay.nma=10), "Must have length >= 2")
+
+      expect_error(binplot(network, overlay.nma=10, legend=FALSE), "Must have length >= 2")
 
     })
 
