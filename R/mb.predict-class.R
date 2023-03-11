@@ -167,7 +167,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   # Overlay reference treatment effect
   if (overlay.ref==TRUE) {
-    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Predicted reference"), size=0.8)
+    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Predicted reference"), linewidth=0.8)
     message(paste0("Reference treatment in plots is ", ref.treat))
   }
   colorvals <- c("Predicted reference"="red")
@@ -219,7 +219,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
                                                fill="NMA (95% Interval)"),
                                   data=predtrt) +
         ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax, color="Predicted NMA"),
-                              data=predtrt, size=0.8)
+                              data=predtrt, linewidth=0.8)
 
       colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
 
