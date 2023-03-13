@@ -1345,6 +1345,8 @@ return(model)
 #' @export
 default.priors <- function(fun=tloglin()) {
 
+  sufparams <- which(fun$apool=="rel")
+
   priors <- list(
     rho = "rho ~ dunif(0,1)",
     alpha = "alpha[i] ~ dnorm(0,0.0001)",
@@ -1364,10 +1366,6 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste0("sd.d.",i)]] <- paste0("sd.d.", i, " ~ dnorm(0,0.05) T(0,)")
     priors[[paste0("sd.D.",i)]] <- paste0("sd.D.", i, " ~ dnorm(0,0.05) T(0,)")
     priors[[paste0("sd.beta.",i)]] <- paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
-
-    # For rho correlation between parameters
-    priors[[paste0("mu.z.",i)]] <- paste0("mu.z[i,", i, "] ~ dnorm(0,0.0001)")
-    priors[[paste0("z.",i)]] <- paste0("z[", i, ",k] ~ dnorm(0,0.0001)")
   }
 
   if ((fun$name %in% c("itp") | (fun$name %in% "emax"))) {
@@ -1379,10 +1377,19 @@ default.priors <- function(fun=tloglin()) {
       priors[[paste0("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0.00001,0.001) T(0,)")
       priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
       priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0.00001,0.0001) T(0,)")
+    }
+  }
 
-      # For rho correlation between parameters
-      priors[[paste0("mu.z.",i)]] <- paste0("mu.z[i,", i, "] ~ dnorm(0,0.0001) T(-d.prior[", i, "],)")
-      priors[[paste0("z.",i)]] <- paste0("z[", i, ",k] ~ dnorm(0,0.0001) T(-d.prior[", i, "],)")
+  # For rho correlation between parameters
+  for (i in seq_along(sufparams)) {
+
+    if (((fun$name %in% c("itp") | (fun$name %in% "emax"))) & sufparams[i] %in% c(2:3)) {
+      priors[[paste0("mu.z.",sufparams[i])]] <- paste0("mu.z[i,", i, "] ~ dnorm(0,0.0001) T(-d.prior[", i, "],)")
+      priors[[paste0("z.",sufparams[i])]] <- paste0("z[", i, ",k] ~ dnorm(0,0.0001) T(-d.prior[", i, "],)")
+
+    } else {
+      priors[[paste0("mu.z.",sufparams[i])]] <- paste0("mu.z[i,", i, "] ~ dnorm(0,0.0001)")
+      priors[[paste0("z.",sufparams[i])]] <- paste0("z[", i, ",k] ~ dnorm(0,0.0001)")
     }
   }
 
