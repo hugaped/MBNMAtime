@@ -978,10 +978,10 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #'   "Lu_NA", "Et_5", "Ox_44")
 #'
 #' # Create a subnetwork of studies comparing these treatments
-#' sparse.df <- osteopain %>% group_by(studyID) %>%
-#'   filter(any(treatment %in% sparse.trt)) %>%
-#'   ungroup() %>%
-#'   subset(treatment %in% c("Pl_0", sparse.trt))
+#' sparse.df <- osteopain %>% dplyr::group_by(studyID) %>%
+#'   dplyr::filter(any(treatment %in% sparse.trt)) %>%
+#'   dplyr::ungroup() %>%
+#'   dplyr::subset(treatment %in% c("Pl_0", sparse.trt))
 #'
 #' sparse.net <- mb.network(sparse.df)
 #'
@@ -997,10 +997,10 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #'     "Lu_400", "Lu_NA", "Et_5", "Ox_44")]
 #'
 #' # Create a subnetwork of studies comparing these treatments
-#' rich.df <- osteopain %>% group_by(studyID) %>%
-#'   filter(any(treatment %in% rich.trt)) %>%
-#'   ungroup() %>%
-#'   subset(treatment %in% c("Pl_0", rich.trt))
+#' rich.df <- osteopain %>% dplyr::group_by(studyID) %>%
+#'   dplyr::filter(any(treatment %in% rich.trt)) %>%
+#'   dplyr::ungroup() %>%
+#'   dplyr::subset(treatment %in% c("Pl_0", rich.trt))
 #'
 #' rich.net <- mb.network(rich.df)
 #'
