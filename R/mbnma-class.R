@@ -981,7 +981,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' sparse.df <- osteopain %>% dplyr::group_by(studyID) %>%
 #'   dplyr::filter(any(treatment %in% sparse.trt)) %>%
 #'   dplyr::ungroup() %>%
-#'   dplyr::subset(treatment %in% c("Pl_0", sparse.trt))
+#'   subset(treatment %in% c("Pl_0", sparse.trt))
 #'
 #' sparse.net <- mb.network(sparse.df)
 #'
@@ -1000,7 +1000,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' rich.df <- osteopain %>% dplyr::group_by(studyID) %>%
 #'   dplyr::filter(any(treatment %in% rich.trt)) %>%
 #'   dplyr::ungroup() %>%
-#'   dplyr::subset(treatment %in% c("Pl_0", rich.trt))
+#'   subset(treatment %in% c("Pl_0", rich.trt))
 #'
 #' rich.net <- mb.network(rich.df)
 #'
@@ -1011,8 +1011,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' #### Calculate relative effects between models ####
 #'
 #' # At 10 weeks follow-up
-#' rels.sparse <- get.relative(itp, time=10)
-#' rels.rich <- get.relative(emax, time=10)
+#' rels.sparse <- get.relative(sparse.mbnma, time=10)
+#' rels.rich <- get.relative(rich.mbnma, time=10)
 #'
 #' rels.all <- get.relative(mbnma=rich.mbnma,
 #'   mbnma.add=sparse.mbnma, time=10)
