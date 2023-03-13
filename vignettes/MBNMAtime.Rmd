@@ -398,14 +398,12 @@ Default vague priors for the model are as follows:
 $$
 \begin{aligned}
   &\alpha_{i} \sim N(0,10000)\\
-  &\boldsymbol{\mu}_{i} \sim MVN(0,M_{i})\\
-  &\boldsymbol{d}_{t} \sim MVN(0,\Sigma_{t})\\
+  &\boldsymbol{\mu}_{i} \sim N(0,10000)\\
+  &\boldsymbol{d}_{t} \sim N(0,10000)\\
   &beta_{\phi} \sim N(0,10000)\\
   &D_{\phi,c} \sim N(0,1000)\\
   &\tau_{\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
   &\tau^D_{\phi} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
-  &M_{i} \sim Wish^{-1}(\Omega,k)\\
-  &\Sigma_{t} \sim Wish^{-1}(\Omega,k)\\
 \end{aligned}
 $$
 
@@ -416,8 +414,6 @@ $$
 * $D_{\phi,c}$ is the class relative effect for time-course parameter $\phi$ in class $c$
 * $\tau_{\phi}$ is the between-study SD for time-course parameter $\phi$
 * $\tau^D_{\phi}$ is the within-class SD for time-course parameter $\phi$
-* $\Omega$ is a diagonal scale matrix specified in `var.scale`
-* $k$ is the degrees of freedom for the inverse-Wishart distribution, equal to the number of time-course parameters
 
 Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
 
@@ -453,19 +449,7 @@ Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  w
 
 Since MBNMAtime version 0.2.2, `mb.run()` no longer automatically models correlation between time-course parameters modeled using relative effects. 
 
-However, this can be enabled by setting `corparam=TRUE`). Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modeled using a multivariate normal distribution with a vague inverse-Wishart prior on the covariance matrix $\Sigma_t$. This can be made more informative by indicating the scale matrix for the parameters that are modeled using relative effects, and by increasing the degrees of freedom of the inverse-Wishart prior $\Sigma_t$. 
-
-`omega` can be used as an argument in `mb.run()` to represent this scale matrix. If specified, it must be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modeled using relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1 is used. The degrees of freedom can then be changed within the `priors` argument of `mb.run()` to make the prior more informative.
-
-For example, with the osteoarthritis dataset we might expect that for a piecewise linear time-course function, the parameter values (in this model the relative different in gradient vs placebo) for the first coefficient might be 10 times larger than for the second coefficient:
-
-```{r, eval=FALSE}
-mbnma <- mb.run(network.pain,
-                fun=tspline(type="ls", knots=1,
-                            pool.1="rel", method.1="random",
-                            pool.2="rel", method.2="common"),
-                omega=matrix(c(10,3,3,1), nrow=2))
-```
+However, this can be enabled by setting `corparam=TRUE`). Time-course parameters are typically correlated and this allows information on each parameter to help inform the other(s). The correlation is modeled using a multivariate normal distribution whose covariance matrix $\Sigma_t$ is modelled using a correlation defined by the parameter `rhoparam`. In previous versions, an inverse Wishart prior was used, though this has since been considered to overly constrain the model.
 
 
 #### Arguments to be sent to JAGS
