@@ -177,7 +177,6 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% Interval")) +
     ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% Interval"))
 
-
   if (!is.null(overlay.nma)) {
 
     if (overlay.ref!=TRUE) {
@@ -230,6 +229,7 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
         if (bin==1) {
           g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
+        }
       }
 
     }
@@ -259,7 +259,6 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     out[["overlay.nma"]] <- nma
   }
   return(invisible(out))
-  }
 }
 
 
