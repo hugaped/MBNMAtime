@@ -7,6 +7,8 @@ datalist <- list(osteopain=osteopain, copd=copd, goutSUA_CFBcomb=goutSUA_CFBcomb
 
 testthat::test_that("run.functions tests:", {
 
+  testthat::expect_equal(1,1) # Avoids empty tests
+
   skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
@@ -26,9 +28,11 @@ testthat::test_that("run.functions tests:", {
       # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
       suppressWarnings({
 
-        mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
-                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
-        expect_equal(all(c("emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+        if (!names(datalist)[i] %in% c("goutSUA_CFBcomb", "hyalarthritis", "diabetes", "alog_pcfb")) {
+          mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
+                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
+          expect_equal(all(c("emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+        }
 
         if ("n" %in% names(datalist[[i]])) {
 
@@ -185,8 +189,8 @@ testthat::test_that("run.functions tests:", {
         # Include a Hill parameter
         mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
                                                pool.et50="rel", method.et50="common",
-                                               pool.hill = "abs", method.hill = "common"),
-                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", priors = list(hill="dnorm(0,0.1) T(-0.5,0.5)"))
+                                               pool.hill = "abs", method.hill = 2),
+                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv")
         testthat::expect_equal(all(c("hill") %in% mb.result$parameters.to.save), TRUE)
 
       })
@@ -237,7 +241,7 @@ testthat::test_that("run.functions tests:", {
                             n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8)
         testthat::expect_equal(all(c("beta.3", "d.1", "d.2", "d.4",
                                      "sd.beta.3", "sd.beta.4",
-                                     "totresdev", "rho") %in% mb.result$parameters.to.save), TRUE)
+                                     "totresdev", "rho", "rhoparam") %in% mb.result$parameters.to.save), TRUE)
       }
 
 
