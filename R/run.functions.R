@@ -39,7 +39,9 @@
 #'   * `"AR1"` - a multivariate normal likelihood with an
 #'     \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 #'
-#' @param omega A scale matrix for the inverse-Wishart prior for the covariance matrix used
+#' @param omega DEPRACATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
+#' rather than a Wishart prior).
+#' A scale matrix for the inverse-Wishart prior for the covariance matrix used
 #' to model the correlation between time-course parameters (see Details for time-course functions). `omega` must
 #' be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 #' relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
@@ -318,13 +320,14 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
       gen.parameters.to.save(fun=fun, model=model)
   }
 
+  # Removed in version 0.2.3
   # If multiple time-course parameters are relative effects then add omega default
-  if (is.null(omega)) {
-    relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
-    if (sum(relparam)>1 & corparam==TRUE) {
-      omega <- diag(rep(1,sum(relparam)))
-    }
-  }
+  # if (is.null(omega)) {
+  #   relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
+  #   if (sum(relparam)>1 & corparam==TRUE) {
+  #     omega <- diag(rep(1,sum(relparam)))
+  #   }
+  # }
 
   # Add nodes to monitor to calculate plugin pd
   if (pd=="plugin") {
@@ -555,6 +558,9 @@ gen.parameters.to.save <- function(fun, model) {
   # For MBNMAtime
   if (any(grepl("rho", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, "rho")
+  }
+  if (any(grepl("rhoparam", model))==TRUE) {
+    parameters.to.save <- append(parameters.to.save, "rhoparam")
   }
   if (any(grepl("totresdev", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
