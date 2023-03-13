@@ -3,6 +3,11 @@ network <- mb.network(osteopain)
 
 testthat::test_that("write functions pass correctly:", {
 
+  testthat::expect_equal(1,1) # Avoids empty tests
+
+  datalist <- list(osteopain=osteopain, copd=copd, goutSUA_CFBcomb=goutSUA_CFBcomb,
+                   hyalarthritis=hyalarthritis, diabetes=diabetes, alog_pcfb=alog_pcfb)
+
   skip_on_appveyor()
   skip_on_ci()
   skip_on_cran()
@@ -14,6 +19,8 @@ testthat::test_that("write functions pass correctly:", {
 
 
     testthat::test_that("testing prior writing functions", {
+
+      testthat::expect_equal(1,1) # Avoids empty tests
 
       emax1 <- suppressWarnings(mb.run(network,
                                        fun=temax(pool.emax="rel", method.emax="random",
@@ -29,12 +36,21 @@ testthat::test_that("write functions pass correctly:", {
 
       ############### Testing prior writing functions ###############
 
-      testthat::test_that("get.prior", {
-        testthat::expect_equal(sort(names(get.prior(emax1$model.arg$jagscode))), sort(c("muinv.R", "alpha", "sd.emax", "inv.R")))
+      testthat::test_that(paste0("get.prior for ", names(datalist)[i]), {
+
+        vars <- c("mu.z", "sd.emax", "z", "rhoparam")
+        vars2 <- c("mu.1", "mu.2", "sd.emax", "et50", "emax")
+
+        if (!names(datalist)[i] %in% c("goutSUA_CFBcomb", "hyalarthritis", "diabetes", "copd", "alog_pcfb")) {
+          vars <- append(vars, "alpha")
+          vars2 <- append(vars2, "alpha")
+        }
+        testthat::expect_equal(sort(names(get.prior(emax1$model.arg$jagscode))), sort(vars))
+
         testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)), "list")
         testthat::expect_equal(class(get.prior(emax1$model.arg$jagscode)[[1]]), "character")
 
-        testthat::expect_equal(sort(names(get.prior(emax2$model.arg$jagscode))), sort(c("mu.1", "mu.2", "alpha", "sd.emax", "et50", "emax")))
+        testthat::expect_equal(sort(names(get.prior(emax2$model.arg$jagscode))), sort(vars2))
 
         priors <- get.prior(emax1$model.arg$jagscode)
         for (i in seq_along(priors)) {
@@ -47,7 +63,7 @@ testthat::test_that("write functions pass correctly:", {
 
 
       testthat::test_that("replace.prior", {
-        priors <- list("alpha"="dnorm(-1, 0.01)",
+        priors <- list("z"="dnorm(-1, 0.01)",
                        "sd.emax"="dnorm(0,0.5) T(0,)")
 
         testthat::expect_equal(grep("T\\(0,\\)", MBNMAtime:::replace.prior(priors, mbnma=emax1)) %in% grep("sd.emax", emax1$model.arg$jagscode),
