@@ -667,7 +667,7 @@ write.cor <- function(model, fun, omega=NULL, class.effect=list()) {
     mat.size <- length(sufparams)
     if (mat.size>=2) {
       model <- write.cov.mat(model, sufparams=sufparams,
-                             cor="estimate", cor.prior="wishart",
+                             cor="estimate", cor.prior="rho",
                              omega=omega, fun=fun)
     }
   }
@@ -689,7 +689,7 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
 
   priors <- default.priors(fun)
 
-  if ("itp" %in% fun$name & FALSE %in% fun$p.expon) {
+  if (any(c("itp", "emax") %in% fun$name) & FALSE %in% fun$p.expon) {
     d.zero <- 0.00001
   } else {
     d.zero <- 0
@@ -703,16 +703,29 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     priors[["inv.R"]]
   )
 
+  # jagsrho <- c(
+  #   "for (r in 1:mat.size) {",
+  #   paste0("d.prior[r] <- ", d.zero),
+  #   "R[r,r] <- 1000    # Covariance matrix diagonals",
+  #   "}",
+  #   "",
+  #   "for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles",
+  #   "for (c in (r+1):mat.size) {",
+  #   "R[r,c] <- 1000*rho[1]   # Lower triangle",
+  #   "R[c,r] <- 1000*rho[1]   # Upper triangle",
+  #   "}",
+  #   "}"
+  # )
   jagsrho <- c(
     "for (r in 1:mat.size) {",
     paste0("d.prior[r] <- ", d.zero),
-    "R[r,r] <- 1000    # Covariance matrix diagonals",
-    "}",
-    "",
-    "for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles",
-    "for (c in (r+1):mat.size) {",
-    "R[r,c] <- 1000*rho[1]   # Lower triangle",
-    "R[c,r] <- 1000*rho[1]   # Upper triangle",
+    "R[r,r] <- 1    # Covariance matrix diagonals",
+    "L[r,r] <- pow(R[r,r],0.5) # Cholesky decomposition of covariance matrix",
+    "for (c in 1:(r-1)) {  # Covariance matrix upper/lower triangles",
+    "R[r,c] <- 1*rhoparam   # Lower triangle",
+    "R[c,r] <- 1*rhoparam   # Upper triangle",
+    "L[r,c] <- R[r,c] / L[c,c]",
+    "L[c,r] <- 0",
     "}",
     "}"
   )
@@ -726,12 +739,6 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
                   model
     )
 
-    # Add correlation for mu
-    # model <- gsub(paste0("mu\\.", sufparams[i], "\\[i\\]"),
-    #               paste0("mu\\[i,", sufparams[i], "\\]"),
-    #               model
-    # )
-    # model <- model[-grep(paste0("^mu\\[i,", sufparams[i], "\\]"), model)]
     model <- gsub(paste0("^mu\\.", sufparams[i], "\\[i\\].+$"),
                   #paste0("^mu\\.", sufparams[i], "\\[i\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
                   paste0("mu.", sufparams[i], "[i] <- mumult[i,", i, "]"),
@@ -749,27 +756,50 @@ write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
     # Insert multivariate normal dist for mu (Wishart)
     model <- model.insert(model, pos=which(names(model)=="study"),
                           x=paste0("mumult[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
-    # model <- model.insert(model, pos=which(names(model)=="study"),
-    #                       x=paste0("mu[i,1:", mat.size, "] ~ dmnorm(d.prior[], muinv.R[1:", mat.size, ", 1:", mat.size, "])"))
 
     model <- model.insert(model, pos=which(names(model)=="end"),
                           x=paste0("muinv.R ~ dwish(omega[,], ", mat.size, ")"))
 
-    # # Check that var.scale has correct length and add omega to code
-    # if (is.null(var.scale)) {
-    #   var.scale <- rep(1,mat.size)
-    # } else if (length(var.scale)!=mat.size) {
-    #   stop(paste0("`var.scale` must be a numeric vector whose length is the size of the covariance matrix for dose-response parameters.\nCovariance matrix size = ", mat.size))
-    # }
-    # for (i in seq_along(var.scale)) {
-    #
-    #   # Insert omega
-    #   model <- model.insert(model, pos=which(names(model)=="end"),
-    #                         x=paste0("omega[", i, ",", i, "] <- ", var.scale[i]))
-    #
-    # }
 
+  } else if (cor.prior=="rho") {
+    addcode <- jagsrho
+
+    jagsrho.mu <- c(
+      paste0("for (r in 1:", mat.size, ") {"),
+      "mumult[i,r] <- d.prior[r] + L[r,1:r] %*% mu.z[i,1:r]",
+      "}"
+    )
+
+    jagsrho.d <- c(
+      paste0("for (r in 1:", mat.size, ") {"),
+      "mult[r,k] <- d.prior[r] + L[r,1:r] %*% z[1:r,k]",
+      "}"
+    )
+
+    # Insert correlated univariate chunks
+    model <- model.insert(model, pos=which(names(model)=="study"),
+                          x=jagsrho.mu)
+    model <- model.insert(model, pos=which(names(model)=="trt.prior"),
+                          x=jagsrho.d)
+
+    # Insert prior for corparam
+    model <- model.insert(model, pos=which(names(model)=="end"),
+                          x=priors[["rhoparam"]])
+
+
+    for (i in seq_along(sufparams)) {
+
+      # Insert correlated univariate priors for mu
+      model <- model.insert(model, pos=which(names(model)=="study"),
+                            x=priors[[paste0("mu.z.",sufparams[i])]])
+
+      # Insert correlated univariate priors for d
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"),
+                            x=priors[[paste0("z.",sufparams[i])]])
+    }
   }
+
+
   addcode <- gsub("mat\\.size", mat.size, addcode)
 
   # Insert covariance matrix
@@ -1318,7 +1348,8 @@ default.priors <- function(fun=tloglin()) {
   priors <- list(
     rho = "rho ~ dunif(0,1)",
     alpha = "alpha[i] ~ dnorm(0,0.0001)",
-    inv.R = "inv.R ~ dwish(omega[,], mat.size)"
+    inv.R = "inv.R ~ dwish(omega[,], mat.size)",
+    rhoparam = "rhoparam ~ dunif(-1,1)"
   )
 
   for (i in 1:4) {
@@ -1333,6 +1364,10 @@ default.priors <- function(fun=tloglin()) {
     priors[[paste0("sd.d.",i)]] <- paste0("sd.d.", i, " ~ dnorm(0,0.05) T(0,)")
     priors[[paste0("sd.D.",i)]] <- paste0("sd.D.", i, " ~ dnorm(0,0.05) T(0,)")
     priors[[paste0("sd.beta.",i)]] <- paste0("sd.beta.", i, " ~ dnorm(0,0.05) T(0,)")
+
+    # For rho correlation between parameters
+    priors[[paste0("mu.z.",i)]] <- paste0("mu.z[i,", i, "] ~ dnorm(0,0.0001)")
+    priors[[paste0("z.",i)]] <- paste0("z[", i, ",k] ~ dnorm(0,0.0001)")
   }
 
   if ((fun$name %in% c("itp") | (fun$name %in% "emax"))) {
@@ -1344,6 +1379,10 @@ default.priors <- function(fun=tloglin()) {
       priors[[paste0("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0.00001,0.001) T(0,)")
       priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
       priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0.00001,0.0001) T(0,)")
+
+      # For rho correlation between parameters
+      priors[[paste0("mu.z.",i)]] <- paste0("mu.z[i,", i, "] ~ dnorm(0,0.0001) T(-d.prior[", i, "],)")
+      priors[[paste0("z.",i)]] <- paste0("z[", i, ",k] ~ dnorm(0,0.0001) T(-d.prior[", i, "],)")
     }
   }
 
