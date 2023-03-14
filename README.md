@@ -1,13 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- badges: start -->
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/MBNMAtime)](https://CRAN.R-project.org/package=MBNMAtime)
-[![Travis build
-status](https://travis-ci.org/hugaped/MBNMAtime.svg?branch=master)](https://travis-ci.org/hugaped/MBNMAtime)
-<!--[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)-->
+[![R-CMD-check](https://github.com/hugaped/MBNMAtime/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAtime/actions)
 <!-- badges: end -->
 
 # MBNMAtime
@@ -26,11 +23,18 @@ standard Network Meta-Analysis (NMA). All models and analyses are
 implemented in a Bayesian framework, following an extension of the
 standard NMA methodology presented by Lu and Ades (2004) and are run in
 JAGS (JAGS Computer Program 2017). For full details of time-course MBNMA
-methodology see Pedder et al. (2019).
+methodology see Pedder et al. (2019).
 
 ## Installation
 
-Currently the package can be installed directly from GitHub using the
+Currently the package is available on [CRAN](https://CRAN.R-project.org)
+and can can be installed using:
+
+``` r
+install.packages("MBNMAtime")
+```
+
+The development version can be installed directly from GitHub using the
 `devtools` R package:
 
 ``` r
@@ -39,14 +43,6 @@ install.packages("devtools")
 
 # Then install MBNMAtime directly from GitHub
 devtools::install_github("hugaped/MBNMAtime")
-```
-
-Once it is released on CRAN (i.e. **not yet\!**), you will (hopefully)
-be able to install the released version of `MBNMAtime` from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("MBNMAtime")
 ```
 
 ## Workflow
@@ -58,7 +54,8 @@ Functions within `MBNMAtime` follow a clear pattern of use:
     `mb.run()`
 3.  Test for consistency using functions like `mb.nodesplit()`
 4.  Examine model results using forest plots and treatment rankings
-5.  Use your model to predict responses using `predict()`
+5.  Use your model to predict responses or estimate treatment effects at
+    specific time-points using `predict()`
 
 At each of these stages there are a number of informative plots that can
 be generated to help make sense of your data and the models that you are
@@ -71,15 +68,15 @@ functions that can be applied to objects of specific classes*
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-jags">
+<div id="ref-jags" class="csl-entry">
 
 JAGS Computer Program. 2017. <https://mcmc-jags.sourceforge.io/>.
 
 </div>
 
-<div id="ref-lu2004">
+<div id="ref-lu2004" class="csl-entry">
 
 Lu, G., and A. E. Ades. 2004. “Combination of Direct and Indirect
 Evidence in Mixed Treatment Comparisons.” Journal Article. *Stat Med* 23
@@ -87,7 +84,7 @@ Evidence in Mixed Treatment Comparisons.” Journal Article. *Stat Med* 23
 
 </div>
 
-<div id="ref-pedder2019">
+<div id="ref-pedder2019" class="csl-entry">
 
 Pedder, H., S. Dias, M. Bennetts, M. Boucher, and N. J. Welton. 2019.
 “Modelling Time-Course Relationships with Multiple Treatments:
