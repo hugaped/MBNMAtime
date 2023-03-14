@@ -39,6 +39,8 @@ jobs:
           del wjags.exe
         shell: cmd
 
+      - uses: actions/checkout@v3
+
       - name: Set up jags for macos
         run: |
           if [ "${{ matrix.config.os }}" = "macos-latest" ]; then
