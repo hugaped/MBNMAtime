@@ -33,16 +33,13 @@ jobs:
 
       - name: Set up jags
         run: |
-          if [ "${{ matrix.config.os }}" = "windows-latest" ]
-          then
+          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
             curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
             wjags.exe /S
             del wjags.exe
-          elif [ "${{ matrix.config.os }}" = "macos-latest" ]
-          then
+          elif [ "${{ matrix.config.os }}" = "macos-latest" ]; then
             brew install jags
-          elif [ "${{ matrix.config.os }}" = "ubuntu-latest" ]
-          then
+          elif [ "${{ matrix.config.os }}" = "ubuntu-latest" ]; then
             sudo apt-get install jags
           fi
 
