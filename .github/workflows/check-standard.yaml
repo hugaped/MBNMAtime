@@ -33,11 +33,11 @@ jobs:
 
       - name: Set up jags for windows
         run: |
-          if ($env:matrix_config_os -eq "windows-latest") {
-            Invoke-WebRequest -Uri https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe -OutFile wjags.exe
-            Start-Process wjags.exe -ArgumentList '/S' -Wait
-            Remove-Item wjags.exe
-          }
+          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
+            curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
+            wjags.exe /S
+            del wjags.exe
+          fi
 
       - name: Set up jags for macos
         run: |
