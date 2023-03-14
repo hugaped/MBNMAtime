@@ -31,17 +31,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up jags
+      - name: Set up jags for windows
+        if: matrix.config.os == 'windows-latest'
         run: |
-          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
-            curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
-            wjags.exe /S
-            del wjags.exe
-          elif [ "${{ matrix.config.os }}" = "macos-latest" ]; then
-            brew install jags
-          elif [ "${{ matrix.config.os }}" = "ubuntu-latest" ]; then
-            sudo apt-get install jags
-          fi
+          curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
+          wjags.exe /S
+          del wjags.exe
+
+      - name: Set up jags for macos
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          brew install jags
+
+      - name: Set up jags for ubuntu
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get install jags
 
       - uses: r-lib/actions/setup-pandoc@v2
 
