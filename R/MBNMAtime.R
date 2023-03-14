@@ -55,18 +55,23 @@
 #' # Generate a forest plot for model results
 #' plot(result)
 #'
-#' # Predict responses
+#' decision.treats <- c("Pl_0", "Ce_100", "Lu_400", "Ro_125",
+#'   "Na_1000", "Na_1500", "Et_10")
+#'
+#' # Predict responses for selected treatments
 #' pred <- predict(result, time=c(0:10), E0=8,
+#'   treats=decision.treats,
 #'   ref.resp=subset(osteopain, treatment=="Pl_0"))
 #'
 #' # Plot predicted response
 #' plot(pred, disp.obs=TRUE)
 #'
 #' # Rank by Area Under the time-course Curve
-#' ranks <- rank(result, param="auc", lower_better=TRUE, n.iter=500)
+#' ranks <- rank(result, param="auc", lower_better=TRUE, n.iter=500,
+#'   treats=decision.treats)
 #'
-#' # Plot histogram of rankings
-#' plot(ranks)
+#' plot(ranks) # Plot histogram of rankings
+#' cumrank(ranks) # Plot cumulative rankograms
 #' }
 #'
 #' @keywords internal
