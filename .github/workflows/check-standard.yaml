@@ -33,11 +33,11 @@ jobs:
 
       - name: Set up jags for windows
         run: |
-          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
+          if "%{ matrix.config.os }%" == "windows-latest" (
             curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
             wjags.exe /S
             del wjags.exe
-          fi
+          )
 
       - name: Set up jags for macos
         run: |
