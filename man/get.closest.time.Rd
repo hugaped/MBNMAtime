@@ -4,7 +4,7 @@
 \alias{get.closest.time}
 \title{Create a dataset with a single time point from each study closest to specified time}
 \usage{
-get.closest.time(network, t = median(network$data.ab$time))
+get.closest.time(network, t = stats::median(network$data.ab$time))
 }
 \arguments{
 \item{network}{An object of class \code{"mb.network"}.}

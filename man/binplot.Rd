@@ -33,6 +33,8 @@ time-points in \code{overlay.nma} have been lumped together to estimate the NMA.
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
 
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
+
 \item{plot.bins}{Plot time bin boundaries as vertical dashed lines. Setting \code{plot.bins=TRUE} if \code{overlay.nma}
 is specified also sets x-axis ticks to time bin boundaries automatically.}
 
