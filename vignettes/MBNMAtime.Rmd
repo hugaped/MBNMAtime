@@ -211,7 +211,7 @@ Another approach to investigate the time-course relationship is to perform sever
 
 We can do this within a single plot using `binplot()` and specifying the boundaries of multiple time bins. Separate NMAs are then performed within each time bin on data points from studies that fall within the time bin (only a single follow-up time is taken from each study to avoid double counting). `"fixed"` or `"random"` effects can be specified for the NMA. Note that the wider the time bin boundaries specified by the user, the larger the potential range of included follow-up times and this can introduce heterogeneity or inconsistency.
 
-```{r, pain.binplot}
+```{r, pain.binplot, results="hide"}
 # Plot results for NMAs performed between 0-5, 5-10, 10-15 and 15-26 weeks
 binplot(network.pain, overlay.nma=c(0,5,10,15,26))
 ```
@@ -505,7 +505,7 @@ Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a ser
 mbnma <- mb.run(network.pain, 
                 fun=tfpoly(degree=1,
                           pool.1="rel", method.1="random",
-                          method.power1="common"))
+                          method.power1=0.5))
 
 # Plot a box-plot of deviance contributions (the default)
 devplot(mbnma, n.iter=1000)
@@ -515,13 +515,13 @@ devplot(mbnma, n.iter=1000)
 mbnma <- mb.run(network.pain, 
                 fun=tfpoly(degree=1,
                           pool.1="rel", method.1="random",
-                          method.power1="common"), n.iter=5000)
+                          method.power1=0.5), n.iter=5000)
 
 # Plot a box-plot of deviance contributions (the default)
 devplot(mbnma, n.iter=500)
 ```
 
-From these plots we can see that whilst the model fit is good at later time points, it frequently underestimates responses at earlier time points.
+From these plots we can see that whilst the model fit is typically better at later time points, it fits very poorly at earlier time points.
 
 A function that appropriately captures the time-course shape should show a reasonably flat shape of deviance contributions (i.e. contributions should be similar across all time points).
 
@@ -805,10 +805,10 @@ ume.slope.2 <- mb.run(network.pain,
               UME="beta.2")
 ```
 ```{r, echo=FALSE}
-print("Deviance for mbnma: -110.54")
-print("Deviance for ume on beta.1 and beta.2: -118.16")
-print("Deviance for ume on beta.1: -117.51")
-print("Deviance for uyme on beta.2: -118.04")
+print("Deviance for mbnma: -104.54")
+print("Deviance for ume on beta.1 and beta.2: -115.5")
+print("Deviance for ume on beta.1: -117.0")
+print("Deviance for ume on beta.2: -115.2")
 ```
 
 By comparing the deviance (or residual deviance) of models with UME fitted on different time-course parameters and the MBNMA model, we can see that there is some reduction in deviance in the different UME models. Given that deviance is lowest when UME is modelled only on `beta.1` this is suggestive of inconsistency between direct and indirect evidence on `beta.1`, but perhaps also on `beta.2` given that modelling UME on this also leads to a reduction in deviance.
