@@ -291,9 +291,14 @@ ref.synth <- function(data.ab, mbnma, synth="random",
 
   # Identify if data.ab contains cfb and specify intercept
   message("Studies reporting change from baseline automatically identified from ref.resp")
-  cfb.df <- data.ab %>% subset(fupcount==1) %>%
+  cfb.df <- data.ab %>% dplyr::arrange(studyID, time) %>%
+    dplyr::group_by(studyID) %>%
+    dplyr::mutate(fupcount=sequence(dplyr::n())) %>%
+    dplyr::ungroup() %>%
+    subset(fupcount==1) %>%
     dplyr::mutate(cfb=dplyr::case_when(time==0 ~ FALSE,
                                        time!=0 ~ TRUE))
+
   cfb <- cfb.df$cfb
   if (all(cfb==TRUE)) {
     intercept <- FALSE
