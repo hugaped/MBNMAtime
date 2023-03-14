@@ -1,8 +1,18 @@
-# MBNMAtime 0.2.2
+# MBNMAtime 0.2.3
 
-## Changes expected for version 0.2.3
-- Truncated priors will be the default priors for time-course parameters that can only take positive values (e.g. `et50`) for all functions
-- `texp()` will be removed - `titp()` is a more stable parameterisation of this function
+## Additions/changes
+- Truncated priors are used as the default priors for time-course parameters that can only take positive values (e.g. `et50`) for all functions
+- `texp()` has been removed - `titp()` is a more stable parameterisation of this function
+
+## Bug fixes
+
+### Major
+- Error fixed preventing natural splines from functioning, causing removal from CRAN
+
+### Minor
+
+
+# MBNMAtime 0.2.2
 
 ## Additions/changes
 - Can now specify numeric values for time-course parameters in the `method` argument. Can be useful for discrete values that cannot be estimated (e.g. fractional polynomial powers, Hill parameter).
@@ -15,8 +25,6 @@
 - `corparam` set to `FALSE` as default
 
 ## Bug fixes
-
-### Major
 
 ### Minor
 - Error with `overlay.nma` argument in `plot.mb.predict()` fixed
