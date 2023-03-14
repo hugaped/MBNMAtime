@@ -720,12 +720,12 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #'
 #' # Plot relative effects from NMAs calculated for a single time-bins
 #' # Do not plot time-bin boundaries
-#' binplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE, legend=FALSE)
+#' binplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE)
 #'
 #' # Plot relative effects from NMAs at multiple time-bins
 #' # With random treatment effects
 #' binplot(alognet, overlay.nma=c(5,10,15,20),
-#'   method="random", legend=FALSE)
+#'   method="random")
 #' }
 #'
 #' @export
@@ -790,7 +790,8 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
     ggplot2::theme(legend.position="none")
 
   if (legend==TRUE) {
-    legend.png <- png::readPNG("~/man/figures/binplot_legend.PNG")
+    # legend.png <- png::readPNG("man/figures/binplot_legend.PNG")
+    legend.png <- png::readPNG(system.file("figures/binplot_legend.PNG", package = "MBNMAtime"))
     g2 <- grid::rasterGrob(legend.png, interpolate = TRUE)
     g <- gridExtra::arrangeGrob(g, g2, ncol=2, widths=c(10, 1))
   }

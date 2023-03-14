@@ -373,16 +373,16 @@ testthat::test_that("plot function tests pass correctly", {
 
       network <- suppressWarnings(mb.network(datalist[[dat]]))
 
-      expect_error(binplot(network, legend=FALSE), NA)
+      expect_error(binplot(network), NA)
 
       if (names(datalist)[dat]=="diabetes") {
-        expect_error(binplot(network, overlay.nma = c(0,5), legend=FALSE), "No NMA can be performed between")
+        expect_error(binplot(network, overlay.nma = c(0,5)), "No NMA can be performed between")
       } else {
-        expect_message(binplot(network, overlay.nma = c(0,5,5.001), legend=FALSE), "not possible between")
+        expect_message(binplot(network, overlay.nma = c(0,5,5.001)), "not possible between")
       }
 
 
-      expect_error(binplot(network, overlay.nma=10, legend=FALSE), "Must have length >= 2")
+      expect_error(binplot(network, overlay.nma=10), "Must have length >= 2")
 
     })
 
