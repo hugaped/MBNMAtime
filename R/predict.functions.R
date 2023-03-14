@@ -124,7 +124,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
             # Store matrix of beta values generated from random distribution determined by model parameters
             mcmcarray <- array(dim=c(n, ncol(mcmcmat), 2))
             mcmcarray[,,1] <- mcmcmat
-            mcmcarray[,,2] <- median(sims.matrix[,grepl(paste0("^sd\\.", substr(findd, 2, nchar(findd))), colnames(sims.matrix))])
+            mcmcarray[,,2] <- stats::median(sims.matrix[,grepl(paste0("^sd\\.", substr(findd, 2, nchar(findd))), colnames(sims.matrix))])
             mcmcarray[,2:ncol(mcmcmat),] <-
               apply(mcmcarray[,2:ncol(mcmcmat),], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
@@ -145,7 +145,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
             len <- sum(grepl(findd, colnames(sims.matrix)))
             mat <- array(dim=c(n, len, 2))
             mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
-            mat[,,2] <- median(sims.matrix[,grepl(paste0("^sd\\.", substr(findd, 2, nchar(findd))), colnames(sims.matrix))])
+            mat[,,2] <- stats::median(sims.matrix[,grepl(paste0("^sd\\.", substr(findd, 2, nchar(findd))), colnames(sims.matrix))])
             mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
             model.vals[[paste0("d.", i)]] <- mat[,,1]
@@ -168,7 +168,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
           len <- sum(grepl(findd, colnames(sims.matrix)))
           mat <- array(dim=c(n, len, 2))
           mat[,,1] <- sims.matrix[,grepl(findd, colnames(sims.matrix))]
-          mat[,,2] <- median(sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))])
+          mat[,,2] <- stats::median(sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))])
           mat[,2:len,] <- apply(mat[,2:len,], MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
           model.vals[[paste0("d.", i)]] <- mat[,,1]
