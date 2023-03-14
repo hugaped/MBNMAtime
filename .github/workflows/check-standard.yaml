@@ -35,7 +35,9 @@ jobs:
         run: |
           if [ "${{ matrix.config.os }}" = "macos-latest" ]; then
             brew install jags
-          else
+          fi
+
+          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
             conda install -y jags
           fi
 
