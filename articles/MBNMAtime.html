@@ -1062,11 +1062,11 @@ performed as follows:</p>
 <span><span class="co">#&gt; |Treatment |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|-------:|-------:|-------:|</span></span>
 <span><span class="co">#&gt; |placebo   |d.1[1]    |  0.0000|  0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |alog_6.25 |d.1[2]    | -0.0347| -0.0375| -0.0319|</span></span>
-<span><span class="co">#&gt; |alog_12.5 |d.1[3]    | -0.0422| -0.0439| -0.0405|</span></span>
-<span><span class="co">#&gt; |alog_25   |d.1[4]    | -0.0449| -0.0467| -0.0432|</span></span>
-<span><span class="co">#&gt; |alog_50   |d.1[5]    | -0.0512| -0.0540| -0.0485|</span></span>
-<span><span class="co">#&gt; |alog_100  |d.1[6]    | -0.0485| -0.0670| -0.0308|</span></span>
+<span><span class="co">#&gt; |alog_6.25 |d.1[2]    | -0.0346| -0.0376| -0.0317|</span></span>
+<span><span class="co">#&gt; |alog_12.5 |d.1[3]    | -0.0422| -0.0440| -0.0404|</span></span>
+<span><span class="co">#&gt; |alog_25   |d.1[4]    | -0.0449| -0.0467| -0.0431|</span></span>
+<span><span class="co">#&gt; |alog_50   |d.1[5]    | -0.0511| -0.0539| -0.0483|</span></span>
+<span><span class="co">#&gt; |alog_100  |d.1[6]    | -0.0485| -0.0666| -0.0306|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1077,10 +1077,10 @@ performed as follows:</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 19</span></span>
+<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 20</span></span>
 <span><span class="co">#&gt; Deviance = 4502</span></span>
 <span><span class="co">#&gt; Residual deviance = 5449</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 4521</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 4522</span></span></code></pre></div>
 <p>For this model, the <code>d.1</code> parameters correspond to the 1st
 polynomial coefficient, and therefore are the linear gradient of the
 response over time for each treatment versus <code>placebo</code> -
@@ -1119,11 +1119,11 @@ we choose.</p>
 <span><span class="co">#&gt; |Treatment |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|-------:|-------:|-------:|</span></span>
 <span><span class="co">#&gt; |placebo   |emax[1]   |  0.0000|  0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |alog_6.25 |emax[2]   | -0.5882| -0.6580| -0.5249|</span></span>
-<span><span class="co">#&gt; |alog_12.5 |emax[3]   | -0.7773| -0.8192| -0.7387|</span></span>
-<span><span class="co">#&gt; |alog_25   |emax[4]   | -0.8465| -0.8896| -0.8064|</span></span>
-<span><span class="co">#&gt; |alog_50   |emax[5]   | -0.9675| -1.0393| -0.8985|</span></span>
-<span><span class="co">#&gt; |alog_100  |emax[6]   | -0.8383| -1.0922| -0.5705|</span></span>
+<span><span class="co">#&gt; |alog_6.25 |emax[2]   | -0.5864| -0.6561| -0.5212|</span></span>
+<span><span class="co">#&gt; |alog_12.5 |emax[3]   | -0.7758| -0.8179| -0.7369|</span></span>
+<span><span class="co">#&gt; |alog_25   |emax[4]   | -0.8453| -0.8869| -0.8034|</span></span>
+<span><span class="co">#&gt; |alog_50   |emax[5]   | -0.9661| -1.0327| -0.8987|</span></span>
+<span><span class="co">#&gt; |alog_100  |emax[6]   | -0.8334| -1.0972| -0.5653|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">et50 parameter</span></span></span>
@@ -1132,12 +1132,12 @@ we choose.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Treatment |Parameter | Median|   2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|------:|------:|------:|</span></span>
-<span><span class="co">#&gt; |placebo   |et50      | 5.2015| 4.8015| 5.6295|</span></span>
-<span><span class="co">#&gt; |alog_6.25 |et50      | 5.2015| 4.8015| 5.6295|</span></span>
-<span><span class="co">#&gt; |alog_12.5 |et50      | 5.2015| 4.8015| 5.6295|</span></span>
-<span><span class="co">#&gt; |alog_25   |et50      | 5.2015| 4.8015| 5.6295|</span></span>
-<span><span class="co">#&gt; |alog_50   |et50      | 5.2015| 4.8015| 5.6295|</span></span>
-<span><span class="co">#&gt; |alog_100  |et50      | 5.2015| 4.8015| 5.6295|</span></span>
+<span><span class="co">#&gt; |placebo   |et50      | 5.1963| 4.7993| 5.6197|</span></span>
+<span><span class="co">#&gt; |alog_6.25 |et50      | 5.1963| 4.7993| 5.6197|</span></span>
+<span><span class="co">#&gt; |alog_12.5 |et50      | 5.1963| 4.7993| 5.6197|</span></span>
+<span><span class="co">#&gt; |alog_25   |et50      | 5.1963| 4.7993| 5.6197|</span></span>
+<span><span class="co">#&gt; |alog_50   |et50      | 5.1963| 4.7993| 5.6197|</span></span>
+<span><span class="co">#&gt; |alog_100  |et50      | 5.1963| 4.7993| 5.6197|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1148,10 +1148,10 @@ we choose.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 19</span></span>
-<span><span class="co">#&gt; Deviance = 88</span></span>
-<span><span class="co">#&gt; Residual deviance = 1035</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 107</span></span></code></pre></div>
+<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 20</span></span>
+<span><span class="co">#&gt; Deviance = 87</span></span>
+<span><span class="co">#&gt; Residual deviance = 1034</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 108</span></span></code></pre></div>
 <p>In this case, the parameters are named following the Emax function
 specification. <code>emax</code> corresponds to the maximum effect for
 each treatment versus <code>placebo</code> (interpretable as a mean
@@ -1309,24 +1309,24 @@ class mean.</p>
 <span><span class="co">#&gt; |Treatment |Parameter |   Median|     2.5%|    97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|--------:|--------:|--------:|</span></span>
 <span><span class="co">#&gt; |Plac      |d.1[1]    |   0.0000|   0.0000|   0.0000|</span></span>
-<span><span class="co">#&gt; |Allo_100  |d.1[2]    |  -1.4871|  -2.8374|  -0.0347|</span></span>
-<span><span class="co">#&gt; |Allo_200  |d.1[3]    |  -2.9999|  -3.2386|  -2.7544|</span></span>
-<span><span class="co">#&gt; |Allo_289  |d.1[4]    |  -4.9145|  -5.0814|  -4.7381|</span></span>
-<span><span class="co">#&gt; |Allo_400  |d.1[5]    | -12.7037| -14.2960| -11.1274|</span></span>
-<span><span class="co">#&gt; |Arha_NA   |d.1[6]    |  -6.8309|  -7.5248|  -6.0836|</span></span>
-<span><span class="co">#&gt; |BCX4_140  |d.1[7]    |  -4.5738|  -4.9541|  -4.2146|</span></span>
-<span><span class="co">#&gt; |BCX4_18.5 |d.1[8]    |  -2.4441|  -2.8864|  -2.0041|</span></span>
-<span><span class="co">#&gt; |BCX4_240  |d.1[9]    |  -5.8842|  -6.3283|  -5.4283|</span></span>
-<span><span class="co">#&gt; |BCX4_80   |d.1[10]   |  -3.5988|  -4.0472|  -3.1311|</span></span>
-<span><span class="co">#&gt; |Benz_NA   |d.1[11]   | -15.4934| -16.7248| -14.3396|</span></span>
-<span><span class="co">#&gt; |Febu_140  |d.1[12]   |  -7.2850|  -7.4553|  -7.1051|</span></span>
-<span><span class="co">#&gt; |Febu_210  |d.1[13]   |  -8.8145|  -8.9124|  -8.7140|</span></span>
-<span><span class="co">#&gt; |Febu_25   |d.1[14]   |  -3.8399|  -4.0010|  -3.6696|</span></span>
-<span><span class="co">#&gt; |Febu_72.5 |d.1[15]   |  -6.1724|  -6.3449|  -5.9935|</span></span>
-<span><span class="co">#&gt; |RDEA_100  |d.1[16]   |  -2.3495|  -2.9103|  -1.8246|</span></span>
-<span><span class="co">#&gt; |RDEA_200  |d.1[17]   |  -4.1125|  -4.4743|  -3.7598|</span></span>
-<span><span class="co">#&gt; |RDEA_400  |d.1[18]   |  -5.2368|  -5.5840|  -4.9183|</span></span>
-<span><span class="co">#&gt; |RDEA_600  |d.1[19]   |  -8.0846|  -8.5179|  -7.6399|</span></span>
+<span><span class="co">#&gt; |Allo_100  |d.1[2]    |  -1.4800|  -2.9236|   0.0142|</span></span>
+<span><span class="co">#&gt; |Allo_200  |d.1[3]    |  -3.0021|  -3.2529|  -2.7544|</span></span>
+<span><span class="co">#&gt; |Allo_289  |d.1[4]    |  -4.9106|  -5.0843|  -4.7349|</span></span>
+<span><span class="co">#&gt; |Allo_400  |d.1[5]    | -12.7970| -14.3332| -11.2230|</span></span>
+<span><span class="co">#&gt; |Arha_NA   |d.1[6]    |  -6.8351|  -7.5679|  -6.1216|</span></span>
+<span><span class="co">#&gt; |BCX4_140  |d.1[7]    |  -4.5781|  -4.9520|  -4.2111|</span></span>
+<span><span class="co">#&gt; |BCX4_18.5 |d.1[8]    |  -2.4470|  -2.8806|  -2.0127|</span></span>
+<span><span class="co">#&gt; |BCX4_240  |d.1[9]    |  -5.8963|  -6.3429|  -5.4321|</span></span>
+<span><span class="co">#&gt; |BCX4_80   |d.1[10]   |  -3.6042|  -4.0498|  -3.1672|</span></span>
+<span><span class="co">#&gt; |Benz_NA   |d.1[11]   | -15.5857| -16.7040| -14.4162|</span></span>
+<span><span class="co">#&gt; |Febu_140  |d.1[12]   |  -7.2810|  -7.4607|  -7.1015|</span></span>
+<span><span class="co">#&gt; |Febu_210  |d.1[13]   |  -8.8135|  -8.9133|  -8.7112|</span></span>
+<span><span class="co">#&gt; |Febu_25   |d.1[14]   |  -3.8348|  -4.0078|  -3.6680|</span></span>
+<span><span class="co">#&gt; |Febu_72.5 |d.1[15]   |  -6.1694|  -6.3479|  -5.9895|</span></span>
+<span><span class="co">#&gt; |RDEA_100  |d.1[16]   |  -2.3565|  -2.9160|  -1.7946|</span></span>
+<span><span class="co">#&gt; |RDEA_200  |d.1[17]   |  -4.1134|  -4.4571|  -3.7548|</span></span>
+<span><span class="co">#&gt; |RDEA_400  |d.1[18]   |  -5.2392|  -5.5673|  -4.9104|</span></span>
+<span><span class="co">#&gt; |RDEA_600  |d.1[19]   |  -8.0743|  -8.5154|  -7.6328|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 parameter</span></span></span>
@@ -1337,30 +1337,30 @@ class mean.</p>
 <span><span class="co">#&gt; |Treatment |Parameter |  Median|     2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|-------:|--------:|-------:|</span></span>
 <span><span class="co">#&gt; |Plac      |d.2[1]    |  0.0000|   0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |Allo_100  |d.2[2]    | 17.6684|   4.6730| 30.2262|</span></span>
-<span><span class="co">#&gt; |Allo_200  |d.2[3]    | 17.6684|   4.6730| 30.2262|</span></span>
-<span><span class="co">#&gt; |Allo_289  |d.2[4]    | 17.6684|   4.6730| 30.2262|</span></span>
-<span><span class="co">#&gt; |Allo_400  |d.2[5]    | 17.6684|   4.6730| 30.2262|</span></span>
-<span><span class="co">#&gt; |Arha_NA   |d.2[6]    |  0.4767| -62.6116| 63.7872|</span></span>
-<span><span class="co">#&gt; |BCX4_140  |d.2[7]    | 10.0195|  -2.1498| 22.2719|</span></span>
-<span><span class="co">#&gt; |BCX4_18.5 |d.2[8]    | 10.0195|  -2.1498| 22.2719|</span></span>
-<span><span class="co">#&gt; |BCX4_240  |d.2[9]    | 10.0195|  -2.1498| 22.2719|</span></span>
-<span><span class="co">#&gt; |BCX4_80   |d.2[10]   | 10.0195|  -2.1498| 22.2719|</span></span>
-<span><span class="co">#&gt; |Benz_NA   |d.2[11]   | 19.0108|  -5.5173| 42.3444|</span></span>
-<span><span class="co">#&gt; |Febu_140  |d.2[12]   | 16.3168|   5.2369| 26.8605|</span></span>
-<span><span class="co">#&gt; |Febu_210  |d.2[13]   | 16.3168|   5.2369| 26.8605|</span></span>
-<span><span class="co">#&gt; |Febu_25   |d.2[14]   | 16.3168|   5.2369| 26.8605|</span></span>
-<span><span class="co">#&gt; |Febu_72.5 |d.2[15]   | 16.3168|   5.2369| 26.8605|</span></span>
-<span><span class="co">#&gt; |RDEA_100  |d.2[16]   | 20.4539|   3.8165| 37.5912|</span></span>
-<span><span class="co">#&gt; |RDEA_200  |d.2[17]   | 20.4539|   3.8165| 37.5912|</span></span>
-<span><span class="co">#&gt; |RDEA_400  |d.2[18]   | 20.4539|   3.8165| 37.5912|</span></span>
-<span><span class="co">#&gt; |RDEA_600  |d.2[19]   | 20.4539|   3.8165| 37.5912|</span></span>
+<span><span class="co">#&gt; |Allo_100  |d.2[2]    | 17.6452|   4.2036| 31.1983|</span></span>
+<span><span class="co">#&gt; |Allo_200  |d.2[3]    | 17.6452|   4.2036| 31.1983|</span></span>
+<span><span class="co">#&gt; |Allo_289  |d.2[4]    | 17.6452|   4.2036| 31.1983|</span></span>
+<span><span class="co">#&gt; |Allo_400  |d.2[5]    | 17.6452|   4.2036| 31.1983|</span></span>
+<span><span class="co">#&gt; |Arha_NA   |d.2[6]    | -1.8842| -64.0102| 60.9541|</span></span>
+<span><span class="co">#&gt; |BCX4_140  |d.2[7]    | 10.0428|  -1.7326| 22.4494|</span></span>
+<span><span class="co">#&gt; |BCX4_18.5 |d.2[8]    | 10.0428|  -1.7326| 22.4494|</span></span>
+<span><span class="co">#&gt; |BCX4_240  |d.2[9]    | 10.0428|  -1.7326| 22.4494|</span></span>
+<span><span class="co">#&gt; |BCX4_80   |d.2[10]   | 10.0428|  -1.7326| 22.4494|</span></span>
+<span><span class="co">#&gt; |Benz_NA   |d.2[11]   | 18.9996|  -5.7151| 42.7958|</span></span>
+<span><span class="co">#&gt; |Febu_140  |d.2[12]   | 16.3859|   5.2910| 26.8839|</span></span>
+<span><span class="co">#&gt; |Febu_210  |d.2[13]   | 16.3859|   5.2910| 26.8839|</span></span>
+<span><span class="co">#&gt; |Febu_25   |d.2[14]   | 16.3859|   5.2910| 26.8839|</span></span>
+<span><span class="co">#&gt; |Febu_72.5 |d.2[15]   | 16.3859|   5.2910| 26.8839|</span></span>
+<span><span class="co">#&gt; |RDEA_100  |d.2[16]   | 20.7632|   3.5684| 37.2719|</span></span>
+<span><span class="co">#&gt; |RDEA_200  |d.2[17]   | 20.7632|   3.5684| 37.2719|</span></span>
+<span><span class="co">#&gt; |RDEA_400  |d.2[18]   | 20.7632|   3.5684| 37.2719|</span></span>
+<span><span class="co">#&gt; |RDEA_600  |d.2[19]   | 20.7632|   3.5684| 37.2719|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Between-study SD modelled for this parameter:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Parameter |  Median|   2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|-------:|------:|-------:|</span></span>
-<span><span class="co">#&gt; |sd.beta.2 | 11.8167| 9.2347| 15.3556|</span></span>
+<span><span class="co">#&gt; |sd.beta.2 | 11.8294| 9.2002| 15.5185|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Class Effects</span></span></span>
@@ -1371,12 +1371,12 @@ class mean.</p>
 <span><span class="co">#&gt; |Class |Parameter |  Median|     2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:-----|:---------|-------:|--------:|-------:|</span></span>
 <span><span class="co">#&gt; |Plac  |D.2[1]    |  0.0000|   0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |Allo  |D.2[2]    | 17.6684|   4.6730| 30.2262|</span></span>
-<span><span class="co">#&gt; |Arha  |D.2[3]    |  0.4767| -62.6116| 63.7872|</span></span>
-<span><span class="co">#&gt; |BCX4  |D.2[4]    | 10.0195|  -2.1498| 22.2719|</span></span>
-<span><span class="co">#&gt; |Benz  |D.2[5]    | 19.0108|  -5.5173| 42.3444|</span></span>
-<span><span class="co">#&gt; |Febu  |D.2[6]    | 16.3168|   5.2369| 26.8605|</span></span>
-<span><span class="co">#&gt; |RDEA  |D.2[7]    | 20.4539|   3.8165| 37.5912|</span></span>
+<span><span class="co">#&gt; |Allo  |D.2[2]    | 17.6452|   4.2036| 31.1983|</span></span>
+<span><span class="co">#&gt; |Arha  |D.2[3]    | -1.8842| -64.0102| 60.9541|</span></span>
+<span><span class="co">#&gt; |BCX4  |D.2[4]    | 10.0428|  -1.7326| 22.4494|</span></span>
+<span><span class="co">#&gt; |Benz  |D.2[5]    | 18.9996|  -5.7151| 42.7958|</span></span>
+<span><span class="co">#&gt; |Febu  |D.2[6]    | 16.3859|   5.2910| 26.8839|</span></span>
+<span><span class="co">#&gt; |RDEA  |D.2[7]    | 20.7632|   3.5684| 37.2719|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Correlation between time points</span></span></span>
@@ -1386,10 +1386,10 @@ class mean.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 83</span></span>
+<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 84</span></span>
 <span><span class="co">#&gt; Deviance = 149881</span></span>
 <span><span class="co">#&gt; Residual deviance = 150575</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 149964</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 149965</span></span></code></pre></div>
 <p>Mean class effects are given in the output as <code>D.2</code>
 parameters. These can be interpreted as the relative effect of each
 class versus the <code>Plac</code> (Placebo), for the 2nd spline
@@ -1732,9 +1732,9 @@ treatment.</p>
 <span><span class="co"><span style="font-weight: bold;">#&gt; Treatment comparisons at time = 20</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; ========================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
-<span><span class="co">#&gt;      alog_100        0.89 (0.61, 1.2)    0.87 (-0.6, 2.3)  </span></span>
-<span><span class="co">#&gt; -0.89 (-1.2, -0.61)       alog_50       -0.016 (-1.5, 1.4) </span></span>
-<span><span class="co">#&gt;  -0.87 (-2.3, 0.6)   0.016 (-1.4, 1.5)        placebo</span></span></code></pre></div>
+<span><span class="co">#&gt;      alog_100        0.89 (0.61, 1.2)    0.89 (-0.5, 2.3)  </span></span>
+<span><span class="co">#&gt; -0.89 (-1.2, -0.61)       alog_50        -0.01 (-1.4, 1.4) </span></span>
+<span><span class="co">#&gt;  -0.89 (-2.3, 0.5)   0.01 (-1.4, 1.4)         placebo</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="rank-ranking">
@@ -1784,70 +1784,70 @@ that use class effects.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Treatment |  Mean| Median|  2.5%| 97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|-----:|------:|-----:|-----:|</span></span>
-<span><span class="co">#&gt; |Pl_0      |  7.76|      8|  4.00| 12.00|</span></span>
-<span><span class="co">#&gt; |Ce_100    | 16.59|     17|  6.00| 25.00|</span></span>
-<span><span class="co">#&gt; |Ce_200    | 14.89|     15| 10.00| 20.00|</span></span>
-<span><span class="co">#&gt; |Ce_400    | 17.20|     18|  7.00| 25.00|</span></span>
-<span><span class="co">#&gt; |Du_90     | 14.82|      4|  1.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Et_10     | 23.44|     26|  5.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Et_30     | 13.95|     14|  6.00| 22.00|</span></span>
-<span><span class="co">#&gt; |Et_5      |  4.91|      3|  1.00| 23.00|</span></span>
-<span><span class="co">#&gt; |Et_60     | 23.58|     24| 15.00| 28.00|</span></span>
-<span><span class="co">#&gt; |Et_90     | 20.40|     24|  3.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Lu_100    | 11.74|     12|  5.00| 19.00|</span></span>
-<span><span class="co">#&gt; |Lu_200    | 13.05|     13|  7.00| 20.00|</span></span>
-<span><span class="co">#&gt; |Lu_400    | 13.68|     13|  7.00| 21.00|</span></span>
-<span><span class="co">#&gt; |Lu_NA     | 14.57|      2|  1.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Na_1000   | 20.33|     20| 15.00| 25.00|</span></span>
-<span><span class="co">#&gt; |Na_1500   | 17.67|     18|  9.98| 24.00|</span></span>
-<span><span class="co">#&gt; |Na_250    | 20.08|     24|  2.98| 29.00|</span></span>
-<span><span class="co">#&gt; |Na_750    | 21.14|     22| 12.00| 27.00|</span></span>
-<span><span class="co">#&gt; |Ox_44     |  8.23|      4|  1.00| 26.00|</span></span>
-<span><span class="co">#&gt; |Ro_12     | 21.08|     24|  3.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Ro_125    | 13.95|     13|  1.00| 28.00|</span></span>
-<span><span class="co">#&gt; |Ro_25     | 24.06|     25| 13.00| 28.00|</span></span>
+<span><span class="co">#&gt; |Pl_0      |  7.82|      8|  4.00| 11.03|</span></span>
+<span><span class="co">#&gt; |Ce_100    | 16.42|     17|  6.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Ce_200    | 14.95|     15| 10.00| 20.00|</span></span>
+<span><span class="co">#&gt; |Ce_400    | 17.12|     18|  8.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Du_90     | 14.73|      3|  1.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Et_10     | 23.52|     26|  5.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Et_30     | 13.90|     14|  6.00| 22.00|</span></span>
+<span><span class="co">#&gt; |Et_5      |  5.00|      3|  1.00| 23.00|</span></span>
+<span><span class="co">#&gt; |Et_60     | 23.50|     24| 14.00| 28.00|</span></span>
+<span><span class="co">#&gt; |Et_90     | 20.50|     24|  3.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Lu_100    | 11.63|     12|  5.00| 19.00|</span></span>
+<span><span class="co">#&gt; |Lu_200    | 13.01|     13|  7.00| 20.00|</span></span>
+<span><span class="co">#&gt; |Lu_400    | 13.78|     14|  7.00| 21.00|</span></span>
+<span><span class="co">#&gt; |Lu_NA     | 14.87|      6|  1.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Na_1000   | 20.32|     20| 15.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Na_1500   | 17.80|     18| 10.00| 24.00|</span></span>
+<span><span class="co">#&gt; |Na_250    | 20.32|     24|  3.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Na_750    | 21.08|     22| 12.00| 27.00|</span></span>
+<span><span class="co">#&gt; |Ox_44     |  8.10|      4|  1.00| 26.00|</span></span>
+<span><span class="co">#&gt; |Ro_12     | 20.82|     24|  3.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Ro_125    | 13.90|     12|  1.00| 28.00|</span></span>
+<span><span class="co">#&gt; |Ro_25     | 24.19|     25| 13.00| 28.00|</span></span>
 <span><span class="co">#&gt; |Tr_100    |  5.42|      5|  2.00| 11.00|</span></span>
-<span><span class="co">#&gt; |Tr_200    |  6.67|      6|  2.00| 13.03|</span></span>
-<span><span class="co">#&gt; |Tr_300    |  9.02|      8|  3.00| 17.00|</span></span>
-<span><span class="co">#&gt; |Tr_400    |  6.42|      5|  2.00| 16.00|</span></span>
-<span><span class="co">#&gt; |Va_10     | 20.87|     22|  8.00| 28.00|</span></span>
-<span><span class="co">#&gt; |Va_20     | 16.18|     17|  4.00| 26.00|</span></span>
-<span><span class="co">#&gt; |Va_5      | 13.30|     13|  3.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Tr_200    |  6.70|      6|  2.00| 14.00|</span></span>
+<span><span class="co">#&gt; |Tr_300    |  9.02|      8|  3.98| 17.00|</span></span>
+<span><span class="co">#&gt; |Tr_400    |  6.37|      5|  2.00| 16.03|</span></span>
+<span><span class="co">#&gt; |Va_10     | 20.78|     22|  8.00| 28.00|</span></span>
+<span><span class="co">#&gt; |Va_20     | 16.17|     17|  4.00| 26.00|</span></span>
+<span><span class="co">#&gt; |Va_5      | 13.23|     13|  3.00| 25.00|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">auc ranking</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Treatment |  Mean| Median|  2.5%| 97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|-----:|------:|-----:|-----:|</span></span>
-<span><span class="co">#&gt; |Pl_0      | 26.13|     26| 24.00| 28.00|</span></span>
-<span><span class="co">#&gt; |Ce_100    | 21.29|     22| 15.98| 26.00|</span></span>
-<span><span class="co">#&gt; |Ce_200    | 13.82|     14| 10.00| 18.00|</span></span>
-<span><span class="co">#&gt; |Ce_400    | 13.07|     13|  6.00| 20.00|</span></span>
-<span><span class="co">#&gt; |Du_90     | 15.50|     19|  1.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Et_10     | 27.17|     28| 20.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Et_30     |  6.55|      6|  3.00| 12.00|</span></span>
-<span><span class="co">#&gt; |Et_5      | 13.96|     13|  2.00| 27.00|</span></span>
-<span><span class="co">#&gt; |Et_60     |  4.29|      4|  2.00|  8.02|</span></span>
-<span><span class="co">#&gt; |Et_90     |  7.99|      5|  1.00| 26.00|</span></span>
-<span><span class="co">#&gt; |Lu_100    | 13.56|     13|  9.00| 19.00|</span></span>
-<span><span class="co">#&gt; |Lu_200    | 15.46|     16| 10.00| 20.00|</span></span>
-<span><span class="co">#&gt; |Lu_400    |  9.68|      9|  5.00| 16.00|</span></span>
-<span><span class="co">#&gt; |Lu_NA     | 13.74|      7|  1.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Na_1000   |  8.13|      8|  5.00| 12.00|</span></span>
-<span><span class="co">#&gt; |Na_1500   |  9.08|      9|  4.00| 16.00|</span></span>
-<span><span class="co">#&gt; |Na_250    | 27.54|     28| 22.00| 29.00|</span></span>
-<span><span class="co">#&gt; |Na_750    | 19.19|     20| 11.00| 25.00|</span></span>
-<span><span class="co">#&gt; |Ox_44     |  5.26|      4|  1.00| 19.00|</span></span>
-<span><span class="co">#&gt; |Ro_12     | 21.08|     24|  5.00| 28.00|</span></span>
-<span><span class="co">#&gt; |Ro_125    |  2.63|      2|  1.00| 18.00|</span></span>
-<span><span class="co">#&gt; |Ro_25     | 17.02|     18|  5.00| 25.00|</span></span>
-<span><span class="co">#&gt; |Tr_100    | 23.08|     23| 19.00| 26.00|</span></span>
-<span><span class="co">#&gt; |Tr_200    | 22.24|     22| 18.00| 26.00|</span></span>
-<span><span class="co">#&gt; |Tr_300    | 15.31|     16|  7.00| 21.00|</span></span>
-<span><span class="co">#&gt; |Tr_400    | 11.27|     11|  4.00| 20.00|</span></span>
-<span><span class="co">#&gt; |Va_10     | 21.18|     22| 12.00| 26.00|</span></span>
-<span><span class="co">#&gt; |Va_20     | 13.54|     14|  5.00| 22.00|</span></span>
-<span><span class="co">#&gt; |Va_5      | 16.26|     17|  6.00| 24.00|</span></span></code></pre></div>
+<span><span class="co">#&gt; |Pl_0      | 26.11|     26| 24.00| 28.00|</span></span>
+<span><span class="co">#&gt; |Ce_100    | 21.17|     21| 15.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Ce_200    | 13.83|     14| 10.00| 18.00|</span></span>
+<span><span class="co">#&gt; |Ce_400    | 13.28|     14|  6.00| 20.00|</span></span>
+<span><span class="co">#&gt; |Du_90     | 15.43|     18|  1.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Et_10     | 27.18|     28| 20.98| 29.00|</span></span>
+<span><span class="co">#&gt; |Et_30     |  6.46|      6|  3.00| 11.00|</span></span>
+<span><span class="co">#&gt; |Et_5      | 13.85|     13|  2.00| 27.00|</span></span>
+<span><span class="co">#&gt; |Et_60     |  4.17|      4|  2.00|  8.00|</span></span>
+<span><span class="co">#&gt; |Et_90     |  8.19|      5|  1.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Lu_100    | 13.49|     13|  9.00| 19.00|</span></span>
+<span><span class="co">#&gt; |Lu_200    | 15.38|     15| 10.00| 20.00|</span></span>
+<span><span class="co">#&gt; |Lu_400    |  9.72|     10|  5.00| 15.00|</span></span>
+<span><span class="co">#&gt; |Lu_NA     | 14.66|     15|  1.00| 29.00|</span></span>
+<span><span class="co">#&gt; |Na_1000   |  8.11|      8|  5.00| 12.00|</span></span>
+<span><span class="co">#&gt; |Na_1500   |  9.05|      9|  4.00| 16.00|</span></span>
+<span><span class="co">#&gt; |Na_250    | 27.51|     28| 21.98| 29.00|</span></span>
+<span><span class="co">#&gt; |Na_750    | 19.25|     20| 12.00| 25.00|</span></span>
+<span><span class="co">#&gt; |Ox_44     |  4.94|      4|  1.00| 17.00|</span></span>
+<span><span class="co">#&gt; |Ro_12     | 20.46|     23|  4.00| 28.00|</span></span>
+<span><span class="co">#&gt; |Ro_125    |  2.48|      2|  1.00| 13.02|</span></span>
+<span><span class="co">#&gt; |Ro_25     | 17.40|     19|  5.00| 25.02|</span></span>
+<span><span class="co">#&gt; |Tr_100    | 23.19|     24| 18.00| 26.00|</span></span>
+<span><span class="co">#&gt; |Tr_200    | 22.28|     22| 17.00| 26.00|</span></span>
+<span><span class="co">#&gt; |Tr_300    | 15.37|     16|  8.00| 21.00|</span></span>
+<span><span class="co">#&gt; |Tr_400    | 11.30|     11|  4.00| 20.00|</span></span>
+<span><span class="co">#&gt; |Va_10     | 21.07|     22| 11.00| 26.00|</span></span>
+<span><span class="co">#&gt; |Va_20     | 13.49|     13|  5.00| 22.00|</span></span>
+<span><span class="co">#&gt; |Va_5      | 16.19|     17|  6.00| 24.00|</span></span></code></pre></div>
 <p>The output is an object of <code>class("mb.rank")</code>, containing
 a list for each ranked parameter in <code>params</code>, which consists
 of a summary table of rankings and raw information on treatment ranking
@@ -1876,16 +1876,16 @@ curve (SUCRA) are also returned for each treatment and ranked parameter
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 58 × 3</span></span></span>
 <span><span class="co">#&gt;    treatment parameter sucra</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Pl_0      auc        3.37</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Pl_0      auc        3.39</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Pl_0      d.2       21.7 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Ce_100    auc        8.21</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Ce_100    d.2       12.9 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Ce_100    auc        8.33</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Ce_100    d.2       13.1 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Ce_200    auc       15.7 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Ce_200    d.2       14.6 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Ce_400    auc       16.4 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Ce_400    d.2       12.3 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Du_90     auc       13.9 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Du_90     d.2       14.5 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Ce_200    d.2       14.5 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Ce_400    auc       16.2 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Ce_400    d.2       12.4 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Du_90     auc       14.0 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Du_90     d.2       14.6 </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># … with 48 more rows</span></span></span></code></pre>
 </div>
 <div class="section level3">
