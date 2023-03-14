@@ -770,7 +770,8 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
   colorvals <- c("Posterior median"="gray0")
 
   capt <- paste0("Results versus ", network$treatments[1],
-                 "\nWidth of 95% interval denotes range of follow-up times included in NMA")
+                 "\nWidth of shaded region denotes range of follow-up times included in data for each NMA",
+                 "\nHeight of shaded region denotes the 95% interval of the posterior distribution")
 
   if (plot.bins==TRUE) {
     capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
