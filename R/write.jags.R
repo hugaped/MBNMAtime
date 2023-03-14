@@ -1244,6 +1244,8 @@ write.nma <- function(method="common", link="identity") {
 #' data into different time-bins and assumes a random walk process for treatment
 #' effects between them.
 #'
+#' @param method A character object that can take the value `"common"` or `"random"` that
+#'   specifies the the type of pooling to use for synthesis.
 #' @inheritParams mb.run
 #'
 #' @return A single long character string containing the JAGS model generated

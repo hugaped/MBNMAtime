@@ -22,7 +22,7 @@ fulfil the criteria for testing for inconsistency via node-splitting, following 
 Valkenhoef \insertCite{vanvalkenhoef2016;textual}{MBNMAtime}.
 }
 \details{
-Similar to \code{\link[gemtc]{mtc.nodesplit}} but uses a fixed
+Similar to \code{gemtc::mtc.nodesplit()} but uses a fixed
 reference treatment and therefore suggests fewer loops in which to test for
 inconsistency. Heterogeneity can also be parameterised as inconsistency and
 so testing for inconsistency in additional loops whilst changing the

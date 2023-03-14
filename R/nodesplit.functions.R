@@ -12,7 +12,7 @@
 #' @param data A data frame containing variables `studyID` and `treatment` (as
 #'   numeric codes) that indicate which treatments are used in which studies.
 #'
-#' @details Similar to \code{\link[gemtc]{mtc.nodesplit}} but uses a fixed
+#' @details Similar to \code{gemtc::mtc.nodesplit()} but uses a fixed
 #'   reference treatment and therefore suggests fewer loops in which to test for
 #'   inconsistency. Heterogeneity can also be parameterised as inconsistency and
 #'   so testing for inconsistency in additional loops whilst changing the
