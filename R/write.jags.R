@@ -1056,7 +1056,7 @@ write.ref.synth <- function(fun=tpoly(degree = 1), link="identity",
   timecourse <- alphacode[["timecourse"]]
   model <- alphacode[["model"]]
 
-  model <- write.likelihood(model=model, timecourse=timecourse, rho=rho, covar=covar, link=link)
+  model <- write.likelihood(model=model, timecourse=timecourse, rho=rho, covar=covar, link=link, fun=fun)
 
   model <- write.beta.ref(model=model, timecourse=timecourse, fun=fun, mu.synth=mu.synth)
 
