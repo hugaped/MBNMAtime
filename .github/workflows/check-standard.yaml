@@ -31,13 +31,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up environment
+      - name: Set up jags for macos
         run: |
           if [ "${{ matrix.config.os }}" = "macos-latest" ]; then
             brew install jags
           fi
 
+      - name: Set up jags for windows
+        run: |
           if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
+            conda install -y jags
+          fi
+
+      - name: Set up jags for ubuntu
+        run: |
+          if [ "${{ matrix.config.os }}" = "ubuntu-latest" ]; then
             conda install -y jags
           fi
 
