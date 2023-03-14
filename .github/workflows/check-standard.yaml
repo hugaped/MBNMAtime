@@ -48,9 +48,6 @@ jobs:
       - name: Set up jags for ubuntu
         run: |
           if [ "${{ matrix.config.os }}" = "ubuntu-latest" ]; then
-            while read -r cmd
-            do
-              eval sudo $cmd
             sudo apt-get install jags
           fi
 
