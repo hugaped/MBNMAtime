@@ -198,7 +198,7 @@
 #' result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
 #'                                     pool.et50="abs", method.et50="common",
 #'                                     pool.hill="abs", method.hill="common"),
-#'                  priors=list(hill="dnorm(0, 0.1)"),
+#'                  priors=list(hill="dunif(0.5, 2)"),
 #'                  intercept=TRUE)
 #'
 #'
