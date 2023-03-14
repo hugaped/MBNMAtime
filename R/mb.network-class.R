@@ -118,7 +118,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
     data.early <- x$data.ab[x$data.ab$fupcount==1,]
     size.vec <- vector()
     for (i in seq_along(nodes)) {
-      size.vec <- append(size.vec, sum(data.early$N[data.early[[level]]==i]))
+      size.vec <- append(size.vec, sum(data.early$n[data.early[[level]]==i]))
     }
     # Scale size.vec by the max node.size
     size.vec <- size.vec/ (max(size.vec)/20)

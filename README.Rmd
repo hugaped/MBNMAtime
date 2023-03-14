@@ -28,7 +28,13 @@ Including all available follow-up measurements within a study makes use of all t
 
 ## Installation
 
-Currently the package can be installed directly from GitHub using the `devtools` R package:
+Currently the package is available on [CRAN](https://CRAN.R-project.org) and can can be installed using:
+
+``` r
+install.packages("MBNMAtime")
+```
+
+The development version can be installed directly from GitHub using the `devtools` R package:
 
 ``` r
 # First install devtools
@@ -36,12 +42,6 @@ install.packages("devtools")
 
 # Then install MBNMAtime directly from GitHub
 devtools::install_github("hugaped/MBNMAtime")
-```
-
-Once it is released on CRAN (i.e. **not yet!**), you will (hopefully) be able to install the released version of `MBNMAtime` from [CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("MBNMAtime")
 ```
 
 ## Workflow

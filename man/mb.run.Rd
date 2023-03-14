@@ -67,7 +67,9 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 }}
 
-\item{omega}{A scale matrix for the inverse-Wishart prior for the covariance matrix used
+\item{omega}{DEPRACATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
+rather than a Wishart prior).
+A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
 be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
 relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
@@ -239,7 +241,7 @@ mb.run(network, fun=tpoly(degree=1, pool.1="rel", method.1="random"))
 result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
                                     pool.et50="abs", method.et50="common",
                                     pool.hill="abs", method.hill="common"),
-                 priors=list(hill="dnorm(0, 0.1)"),
+                 priors=list(hill="dunif(0.5, 2)"),
                  intercept=TRUE)
 
 

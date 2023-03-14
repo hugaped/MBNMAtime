@@ -31,13 +31,15 @@ and models a random walk process between them, following the method
 of \insertCite{lu2007;textual}{MBNMAtime}.
 }
 \examples{
+# CURRENTLY COMMENTED OUT AS THE FUNCTION IS NOT EXPORTED
+
 # Using the alogliptin dataset
-network <- mb.network(alog_pcfb)
+#network <- mb.network(alog_pcfb)
 
 # Specify time bins to use for analysis
-timebins <- c(0,6,12,20,40)
+#timebins <- c(0,6,12,20,40)
 
 # Run a common effects non-parametric RW model
-nonparam.run(network, binvals=timebins, method="common")
+#nonparam.run(network, binvals=timebins, method="common")
 
 }

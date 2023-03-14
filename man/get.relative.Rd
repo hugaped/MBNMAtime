@@ -126,9 +126,9 @@ sparse.trt <- c("Ce_100", "Ce_400", "Du_90", "Lu_200", "Lu_400",
   "Lu_NA", "Et_5", "Ox_44")
 
 # Create a subnetwork of studies comparing these treatments
-sparse.df <- osteopain \%>\% group_by(studyID) \%>\%
-  filter(any(treatment \%in\% sparse.trt)) \%>\%
-  ungroup() \%>\%
+sparse.df <- osteopain \%>\% dplyr::group_by(studyID) \%>\%
+  dplyr::filter(any(treatment \%in\% sparse.trt)) \%>\%
+  dplyr::ungroup() \%>\%
   subset(treatment \%in\% c("Pl_0", sparse.trt))
 
 sparse.net <- mb.network(sparse.df)
@@ -145,9 +145,9 @@ rich.trt <- levels(osteopain$treatment)[!levels(osteopain$treatment) \%in\%
     "Lu_400", "Lu_NA", "Et_5", "Ox_44")]
 
 # Create a subnetwork of studies comparing these treatments
-rich.df <- osteopain \%>\% group_by(studyID) \%>\%
-  filter(any(treatment \%in\% rich.trt)) \%>\%
-  ungroup() \%>\%
+rich.df <- osteopain \%>\% dplyr::group_by(studyID) \%>\%
+  dplyr::filter(any(treatment \%in\% rich.trt)) \%>\%
+  dplyr::ungroup() \%>\%
   subset(treatment \%in\% c("Pl_0", rich.trt))
 
 rich.net <- mb.network(rich.df)
@@ -159,8 +159,8 @@ rich.mbnma <- mb.run(rich.net, temax(p.expon = FALSE))
 #### Calculate relative effects between models ####
 
 # At 10 weeks follow-up
-rels.sparse <- get.relative(itp, time=10)
-rels.rich <- get.relative(emax, time=10)
+rels.sparse <- get.relative(sparse.mbnma, time=10)
+rels.rich <- get.relative(rich.mbnma, time=10)
 
 rels.all <- get.relative(mbnma=rich.mbnma,
   mbnma.add=sparse.mbnma, time=10)
