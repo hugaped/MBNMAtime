@@ -44,7 +44,6 @@ jobs:
             wjags.exe /S
             del wjags.exe
           fi
-        shell: cmd
 
       - name: Set up jags for ubuntu
         run: |
