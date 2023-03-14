@@ -34,12 +34,12 @@ jobs:
       - name: Set up jags for windows
         if: runner.os == 'Windows'
         run: |
-          curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
-          wjags.exe /S
-          del wjags.exe
+          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
+            curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
+            wjags.exe /S
+            del wjags.exe
+          fi
         shell: cmd
-
-      - uses: actions/checkout@v3
 
       - name: Set up jags for macos
         run: |
