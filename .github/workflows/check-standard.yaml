@@ -40,13 +40,19 @@ jobs:
       - name: Set up jags for windows
         run: |
           if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
-            conda install -y jags
+            curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
+            wjags.exe /S
+            del wjags.exe
           fi
+        shell: cmd
 
       - name: Set up jags for ubuntu
         run: |
           if [ "${{ matrix.config.os }}" = "ubuntu-latest" ]; then
-            conda install -y jags
+            while read -r cmd
+            do
+              eval sudo $cmd
+            sudo apt-get install jags
           fi
 
       - uses: r-lib/actions/setup-pandoc@v2
