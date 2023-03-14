@@ -688,6 +688,7 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #' @param legend `TRUE`/`FALSE` to indicate whether a legend should be plotted.
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
+#' @inheritParams predict.mbnma
 #'
 #' @details
 #' Performs several standard NMAs at different time "bins", time periods within

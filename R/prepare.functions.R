@@ -669,7 +669,7 @@ get.earliest.time <- function(network) {
 #' get.closest.time(network, t=26)
 #'
 #' @export
-get.closest.time <- function(network, t=median(network$data.ab$time)) {
+get.closest.time <- function(network, t=stats::median(network$data.ab$time)) {
 
   checkmate::assertClass(network, "mb.network", null.ok=FALSE)
   checkmate::assertNumeric(t, len=1)

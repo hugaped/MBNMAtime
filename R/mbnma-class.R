@@ -466,7 +466,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   }
 
   # Check that distribution for E0 is of the correct format
-  if (class(E0)=="formula") {
+  if (inherits(E0,"formula")) {
     E0 <- as.character(E0)[2]
     if (grepl("r[A-z]+\\(n,.+\\)", E0)==FALSE) {
       stop(crayon::red(crayon::bold("Stochastic distribution for E0 must be expressed as a string in the form of a supported R distribution (e.g. '~rnorm(n, 5,2)')")))

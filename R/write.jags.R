@@ -1244,7 +1244,7 @@ write.nma <- function(method="common", link="identity") {
 #' data into different time-bins and assumes a random walk process for treatment
 #' effects between them.
 #'
-#' @inheritParams nonparam.run
+#' @inheritParams mb.run
 #'
 #' @return A single long character string containing the JAGS model generated
 #'   based on the arguments passed to the function.

@@ -885,6 +885,7 @@ nma.run <- function(data.ab, method="common", link="identity", ...) {
 #' # Run a common effects non-parametric RW model
 #' #nonparam.run(network, binvals=timebins, method="common")
 #'
+#' @noRd
 nonparam.run <- function(network, class=FALSE, method="common", link="identity",
                          binvals=bintime(network$data.ab), ...) {
 
@@ -915,7 +916,7 @@ nonparam.run <- function(network, class=FALSE, method="common", link="identity",
 
 
   # Get jags data
-  jagsdata <<- getrwdata(data.ab, link=link, class=class, binvals=binvals)
+  jagsdata <- getrwdata(data.ab, link=link, class=class, binvals=binvals)
   tempjags <- jagsdata
   tempjags[["studyID"]] <- NULL
   tempjags[["time"]] <- NULL

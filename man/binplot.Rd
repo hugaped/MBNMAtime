@@ -105,12 +105,12 @@ alognet <- mb.network(alog_pcfb)
 
 # Plot relative effects from NMAs calculated for a single time-bins
 # Do not plot time-bin boundaries
-binplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE, legend=FALSE)
+binplot(alognet, overlay.nma=c(0,5), plot.bins=FALSE)
 
 # Plot relative effects from NMAs at multiple time-bins
 # With random treatment effects
 binplot(alognet, overlay.nma=c(5,10,15,20),
-  method="random", legend=FALSE)
+  method="random")
 }
 
 }

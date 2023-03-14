@@ -7,4 +7,6 @@ if(getRversion() >= "2.15.1") utils::globalVariables(c("studyID", "time", "treat
                                                        "fup", "fups", "study", "arm", "fupcount", "y",
                                                        "2.5%", "50%", "97.5%", "ref.median",
                                                        "Var1", "value", "Parameter", ".",
-                                                       "int.fun", ".data"))
+                                                       "int.fun", ".data",
+                                                       "bins", "jagsdata", "n", "narm",
+                                                       "tbin", "tmax", "tmin"))
