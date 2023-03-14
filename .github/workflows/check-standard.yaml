@@ -31,6 +31,43 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install jags (windows-latest)
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
+          wjags.exe /S
+          del wjags.exe
+        shell: cmd
+
+      - name: Install jags (macOS-latest)
+        if: matrix.config.os == 'macos-latest'
+        run : |
+              rm '/usr/local/bin/gfortran'
+              brew install jags
+
+      - name: Install jags (Ubuntu)
+        if: matrix.config.os == 'ubuntu-latest'
+        run: sudo apt-get install jags
+
+      - name: Install dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          options(crayon.enabled = TRUE)
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@main
+
+
       - name: Set up environment
         run: |
           if [ "${{ matrix.config.os }}" = "macos-latest" ]; then
