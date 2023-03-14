@@ -33,7 +33,7 @@ jobs:
 
       - name: Set up environment
       run: |
-        if [ "${{ matrix.os }}" = "macos-latest" ]; then
+        if [ "${{ matrix.config.os }}" = "macos-latest" ]; then
           brew install jags
         else
           conda install -y jags
