@@ -34,7 +34,7 @@ jobs:
       - name: Set up jags for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          curl.exe -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.0.exe/download
+          curl.exe -L -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.0.exe/download
           wjags.exe /S
           del wjags.exe
 
