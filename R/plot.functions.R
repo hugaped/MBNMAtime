@@ -765,7 +765,7 @@ binplot <- function(network, overlay.nma=c(0, stats::quantile(network$data.ab$ti
                                            fill="95% Interval"),
                               alpha=1) +
     ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax, color="Posterior median"),
-                          size=0.8) +
+                          linewidth=0.8) +
     ggplot2::geom_hline(ggplot2::aes(yintercept=0), linetype="dotted")
 
   colorvals <- c("Posterior median"="gray0")
@@ -1183,7 +1183,7 @@ plot.timefun <- function(x=tpoly(degree=1), beta.1=0, beta.2=0,
   }
 
   g <- ggplot2::ggplot(df, ggplot2::aes(x=time, y=y)) +
-    ggplot2::geom_line(size=1) +
+    ggplot2::geom_line(linewidth=1) +
     ggplot2::labs(subtitle=paste(paste0("beta.", 1:nparam, " = ", vals), collapse="    ")) +
     ggplot2::xlab("Time") +
     theme_mbnma()
@@ -1298,7 +1298,7 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   df$Parameter <- factor(df$param)
 
   g <- ggplot2::ggplot(df, ggplot2::aes(x=Var1, y=value, linetype=Parameter, colour=Parameter), ...) +
-    ggplot2::geom_line(size=1)
+    ggplot2::geom_line(linewidth=1)
 
   g <- g + ggplot2::facet_wrap(~factor(Var2)) +
     ggplot2::xlab("Rank (1 = best)") +
