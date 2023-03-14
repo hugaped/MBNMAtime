@@ -1579,7 +1579,7 @@ getrwdata <- function(data.ab, link="identity", class=FALSE, binvals=bintime(dat
                                                         df$arm==k])
 
       if (link=="smd") {
-        tempdf <- df %>% group_by(studyID,arm) %>% dplyr::summarise(n = n[which(!is.na(n))[1]])
+        tempdf <- df %>% dplyr::group_by(studyID,arm) %>% dplyr::summarise(n = n[which(!is.na(n))[1]])
         datalist[["n"]][i,k] <- unique(tempdf$n[which(tempdf$studyID==df$studyID[i] &
                                               tempdf$arm==df$arm[k])])
       }

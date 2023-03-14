@@ -1253,7 +1253,7 @@ write.nma <- function(method="common", link="identity") {
 #' # Write a common effects non-paramtric random walk model
 #' write.rw(method="common")
 #'
-#' @export
+#' @noRd
 write.rw <- function(method="common", link="identity") {
 
   model <- c(

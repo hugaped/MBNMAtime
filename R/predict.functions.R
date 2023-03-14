@@ -77,7 +77,7 @@ get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
         len <- sum(grepl(paste0("^", params[i]), colnames(sims.matrix)))
         mat <- array(dim=c(n, len, 2))
         mat[,,1] <- sims.matrix[,grepl(paste0("^", params[i]), colnames(sims.matrix))]
-        mat[,,2] <- median(sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))])
+        mat[,,2] <- stats::median(sims.matrix[,grepl(paste0("^sd\\.", params[i]), colnames(sims.matrix))])
         mat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
         model.vals[[fun$bname[i]]] <- mat
