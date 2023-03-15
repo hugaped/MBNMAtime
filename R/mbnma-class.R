@@ -912,16 +912,14 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #' can then be estimated from MBNMA predicted effects versus a common comparator
 #' using the Bucher method and assuming consistency.
 #'
+#'
 #' \if{html}{
-#'
 #'   \out{<div style="text-align: center">}\figure{2stageMBNMA.png}{options: style="width:750px;max-width:75\%;"}\out{</div>}
-#'
 #' }
 #' \if{latex}{
-#'
 #'   \out{\begin{center}}\figure{2stageMBNMA.png}\out{\end{center}}
-#'
 #' }
+#'
 #'
 #' * Step 1: The network at a chosen network reference treatment (A) into subnetworks with
 #' rich and sparse time-course data.
