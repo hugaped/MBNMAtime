@@ -1,4 +1,4 @@
-New submission (package was recently archived on CRAN), having fixed notes regarding URL and implicit paragraphs.
+New submission (package was recently archived on CRAN), having fixed notes regarding implicit paragraphs.
 
 ## Test environments
 
