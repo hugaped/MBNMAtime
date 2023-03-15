@@ -20,7 +20,7 @@ A data frame in long format (one row per arm and study), with 28 rows and 7 vari
 diabetes
 }
 \description{
-A dataset from of trials for reduction of hsemoglobin A1c (HbA1c) in patients
+A dataset from of trials for reduction of haemoglobin A1c (HbA1c) in patients
 with type 2 diabetes\insertCite{dingfu2013}{MBNMAtime}.
 Data are reported in each study arm as mean change from baseline to follow-up.
 The dataset includes 4 Randomised-Controlled Trials (RCTs), comparing 4 treatments.

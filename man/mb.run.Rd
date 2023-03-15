@@ -67,7 +67,7 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 }}
 
-\item{omega}{DEPRACATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
+\item{omega}{DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
 rather than a Wishart prior).
 A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must

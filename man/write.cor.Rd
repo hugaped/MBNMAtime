@@ -12,7 +12,7 @@ write.cor(model, fun, omega = NULL, class.effect = list())
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
 \code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
 
-\item{omega}{DEPRACATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
+\item{omega}{DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
 rather than a Wishart prior).
 A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must

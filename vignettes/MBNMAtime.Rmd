@@ -185,7 +185,7 @@ suppressWarnings(plot(network.gout, level = "treatment", v.color = "class", labe
 
 ### Examining the time-course relationship
 
-In order to consider which functional forms may be appropriate for modeling the time-course relationship, it is important to look at the responses in each arm plotted over time. This can easily be done using the `timeplot()` function on an object of `class("mb.network")`
+In order to consider which functional forms may be appropriate for modelling the time-course relationship, it is important to look at the responses in each arm plotted over time. This can easily be done using the `timeplot()` function on an object of `class("mb.network")`
 
 ```{r pain.time}
 # Prepare data using the pain dataset
@@ -356,7 +356,7 @@ Time-course MBNMA can only be used for continuous outcomes *or those that can be
 
 However, by specifying `link="log"` a user can model a log link and therefore assume a multiplicative treatment effect. For continuous data this models the treatment effect as a Ratio of Means (RoM) [@friedrich2011]. This also provides an advantage as the treatment effect is scale independent (i.e. studies measuring the same outcome using different measurement scales can be analysed simultaneously). However, within-study treatment effects must all be of the same direction (either positive or negative), and change from baseline measures must be adjusted so that they are also expressed as RoMs (log(follow-up) - log(baseline)) to avoid combining additive and multiplicative assumptions within the same analysis.
 
-An alternative approach for modeling a measurement scale-independent treatment effect whilst still assuming additive treatment effects is to perform the analysis using Standardised Mean Differences (SMD). Whilst not strictly a different link function, this can be specified using `link="smd"`. Currently, `MBNMAtime` standardises treatment effects using the pooled baseline standard deviation (SD) in each study, to limit bias from any effect the treatment might have on SD. The resulting treatment effects are reported in units of SD as SMDs.
+An alternative approach for modelling a measurement scale-independent treatment effect whilst still assuming additive treatment effects is to perform the analysis using Standardised Mean Differences (SMD). Whilst not strictly a different link function, this can be specified using `link="smd"`. Currently, `MBNMAtime` standardises treatment effects using the pooled baseline standard deviation (SD) in each study, to limit bias from any effect the treatment might have on SD. The resulting treatment effects are reported in units of SD as SMDs.
 
 A more robust approach to minimise bias from estimation of within-study SD would be to use a single reference SD for standardisation of each scale included in the dataset. This is something `MBNMAtime` will incorporate in the future. For further details of analysis of continuous data that include discussion of both RoM and SMD see [@GMD2].
 

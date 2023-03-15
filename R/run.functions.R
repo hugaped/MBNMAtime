@@ -39,7 +39,7 @@
 #'   * `"AR1"` - a multivariate normal likelihood with an
 #'     \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 #'
-#' @param omega DEPRACATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
+#' @param omega DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
 #' rather than a Wishart prior).
 #' A scale matrix for the inverse-Wishart prior for the covariance matrix used
 #' to model the correlation between time-course parameters (see Details for time-course functions). `omega` must

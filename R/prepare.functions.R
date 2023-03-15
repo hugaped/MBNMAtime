@@ -692,7 +692,7 @@ get.closest.time <- function(network, t=stats::median(network$data.ab$time)) {
 
 
 
-# FUNCTION IS DEPRACATED!!!
+# FUNCTION IS DEPRECATED!!!
 makecontrast <- function(id, treatdose, y=NULL, sd=NULL, n, r=NULL) {
   ######################################################################
   #### Make contrast converts arm-level data to contrast-level data ####

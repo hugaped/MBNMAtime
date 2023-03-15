@@ -690,7 +690,7 @@ drop.comp <- function(df, comp) {
 
 
 
-# FUNCTION IS DEPRACATED!!!
+# FUNCTION IS DEPRECATED!!!
 check.design <- function(data, path) {
   # Ensure that no TWO comparisons in the loop share the same set of supporting studies
   # (not sure any of these steps are actually necessary)

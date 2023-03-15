@@ -153,7 +153,7 @@ disp.obs <- function(g, predict, col="blue", max.col.scale=NULL) {
 
 #' Generates a scale of colours
 #'
-#' FUNCTION IS DEPRACATED
+#' FUNCTION IS DEPRECATED
 #' @noRd
 col.scale <- function(n.cut, col="blue",
                       rgb.start=NULL, rgb.end=NULL) {

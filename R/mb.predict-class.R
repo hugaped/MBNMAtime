@@ -19,7 +19,7 @@
 #'   "lumps" time-points together within the time bin ranges specified in `overlay.nma`.
 #'   The numbers in `overlay.nma` define the boundaries of the time bins within which to perform
 #'   a standard NMA. Length must be >=2, or can be left as `NULL` (the default) to indicate that no NMA
-#'   should be perfomed. `overlay.nma` can only be specified if `overlay.ref==TRUE`.
+#'   should be performed. `overlay.nma` can only be specified if `overlay.ref==TRUE`.
 #'   See Details for further information.
 #' @param plot.bins Plot time bin boundaries as vertical dashed lines. Setting `plot.bins=TRUE` if `overlay.nma`
 #'   is specified also sets x-axis ticks to time bin boundaries automatically.
