@@ -23,11 +23,11 @@ are to be combined to perform a 2-stage MBNMA (see Details).}
 
 \item{time}{A numeric value for the time at which to estimate relative effects/mean differences.}
 
-\item{treats}{A character vector of treatment names for which to calculate relative effects/mean differences.
-Must be a subset of \code{mbnma$network$treatments}.}
+\item{treats}{A character vector of treatment names for which to calculate relative effects/mean
+differences. Must be a subset of \code{mbnma$network$treatments}.}
 
-\item{classes}{A character vector of class names for which to calculate relative effects/mean differences from.
-Must be a subset of \code{mbnma$network$classes}. Only works for class effect models.}
+\item{classes}{A character vector of class names for which to calculate relative effects/mean
+differences. Must be a subset of \code{mbnma$network$classes}. Only works for class effect models.}
 
 \item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 }
