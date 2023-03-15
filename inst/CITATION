@@ -1,6 +1,6 @@
 citHeader("To cite MBNMAtime in publications use:")
 
-bibentry(entry = "Article",
+bibentry(bibtype = "Article",
   title        = "Modelling time-course relationships with multiple treatments: Model-based network meta-analysis for continuous summary outcomes",
   author       = c(
                    as.person("Hugo Pedder"),
