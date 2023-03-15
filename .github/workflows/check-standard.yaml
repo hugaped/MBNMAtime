@@ -34,7 +34,7 @@ jobs:
       - name: Install jags (windows-latest)
         if: runner.os == 'Windows'
         run: |
-          curl.exe -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.0.exe/download
+          curl.exe -o wjags.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
           .\wjags.exe /S
           del wjags.exe
         shell: cmd
@@ -62,7 +62,7 @@ jobs:
           JAGS_HOME: "/usr/local/lib/JAGS"
         run: |
           if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
-            $Env:JAGS_HOME = "C:\\Program Files\\JAGS\\JAGS-4.3.0\\"
+            $Env:JAGS_HOME = "C:\\Program Files\\JAGS\\JAGS-4.2.0\\"
           fi
           Rscript -e "install.packages('rjags', repos='https://cloud.r-project.org')"
 
