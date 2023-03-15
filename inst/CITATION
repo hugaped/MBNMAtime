@@ -2,7 +2,7 @@ citHeader("To cite MBNMAtime in publications use:")
 
 citEntry(entry = "Article",
   title        = "Modelling time-course relationships with multiple treatments: Model-based network meta-analysis for continuous summary outcomes",
-  author       = personList(
+  author       = c(
                    as.person("Hugo Pedder"),
                    as.person("Sofia Dias"),
                    as.person("Margherita Bennetts"),
