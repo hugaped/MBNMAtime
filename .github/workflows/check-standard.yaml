@@ -57,6 +57,15 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Install rjags
+        env:
+          JAGS_HOME: "/usr/local/lib/JAGS"
+        run: |
+          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
+            $Env:JAGS_HOME = "C:\\Program Files\\JAGS\\JAGS-4.3.0\\"
+          fi
+          Rscript -e "install.packages('rjags', repos='https://cloud.r-project.org')"
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
