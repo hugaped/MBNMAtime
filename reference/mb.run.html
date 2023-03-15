@@ -16,7 +16,7 @@ applying a desired time-course function. Follows the methods of Pedder et al. (2
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3.900</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,7 +139,7 @@ time points (Jansen et al. 2015)
 
 
 <dt>omega</dt>
-<dd><p>DEPRACATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
+<dd><p>DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
 rather than a Wishart prior).
 A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between time-course parameters (see Details for time-course functions). <code>omega</code> must
@@ -355,75 +355,75 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpPNmS3o/file181e12e65434", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpHY4zxk/file18a26b34cd49", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[1]       0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]      -0.063   0.044   -0.150   -0.091   -0.063   -0.033    0.021 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]      -0.094   0.018   -0.129   -0.106   -0.094   -0.081   -0.059 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]      -0.095   0.045   -0.183   -0.125   -0.095   -0.065   -0.005 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]      -0.044   0.053   -0.149   -0.080   -0.045   -0.008    0.059 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]       0.004   0.069   -0.134   -0.043    0.003    0.048    0.141 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]      -0.148   0.036   -0.218   -0.171   -0.148   -0.124   -0.076 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]      -0.027   0.071   -0.174   -0.073   -0.026    0.021    0.107 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]      -0.289   0.048   -0.383   -0.319   -0.289   -0.257   -0.193 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]     -0.304   0.071   -0.440   -0.350   -0.303   -0.258   -0.161 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]     -0.076   0.037   -0.151   -0.101   -0.076   -0.052   -0.004 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]     -0.070   0.037   -0.144   -0.095   -0.070   -0.045    0.001 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]     -0.085   0.046   -0.172   -0.115   -0.085   -0.054    0.004 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]     -0.083   0.061   -0.203   -0.123   -0.083   -0.041    0.040 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]     -0.128   0.026   -0.180   -0.145   -0.127   -0.110   -0.078 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]     -0.135   0.039   -0.212   -0.160   -0.135   -0.108   -0.060 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]      0.112   0.066   -0.022    0.067    0.113    0.156    0.241 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]     -0.129   0.046   -0.225   -0.159   -0.129   -0.098   -0.040 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]     -0.123   0.078   -0.275   -0.175   -0.122   -0.071    0.026 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[20]     -0.113   0.050   -0.212   -0.147   -0.113   -0.079   -0.013 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[21]     -0.428   0.076   -0.577   -0.480   -0.429   -0.378   -0.276 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[22]     -0.171   0.043   -0.254   -0.200   -0.172   -0.143   -0.089 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[23]     -0.032   0.041   -0.113   -0.059   -0.032   -0.005    0.049 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[24]     -0.041   0.042   -0.127   -0.069   -0.042   -0.013    0.039 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[25]     -0.067   0.042   -0.150   -0.094   -0.067   -0.040    0.015 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[26]     -0.085   0.064   -0.214   -0.127   -0.084   -0.041    0.039 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[27]     -0.067   0.065   -0.195   -0.109   -0.067   -0.024    0.059 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[28]     -0.093   0.064   -0.218   -0.135   -0.093   -0.050    0.035 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[29]     -0.080   0.067   -0.207   -0.124   -0.080   -0.037    0.053 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]      -0.064   0.045   -0.156   -0.093   -0.065   -0.036    0.027 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]      -0.094   0.018   -0.130   -0.105   -0.094   -0.083   -0.059 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]      -0.095   0.045   -0.183   -0.126   -0.094   -0.064   -0.008 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]      -0.044   0.053   -0.150   -0.079   -0.044   -0.009    0.065 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]       0.002   0.070   -0.139   -0.044    0.004    0.048    0.140 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]      -0.146   0.035   -0.215   -0.170   -0.146   -0.122   -0.078 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]      -0.029   0.069   -0.169   -0.075   -0.028    0.019    0.099 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]      -0.290   0.048   -0.385   -0.322   -0.290   -0.257   -0.199 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]     -0.304   0.070   -0.448   -0.350   -0.303   -0.259   -0.169 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]     -0.077   0.037   -0.151   -0.102   -0.078   -0.052   -0.003 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]     -0.072   0.036   -0.144   -0.095   -0.072   -0.047   -0.001 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]     -0.084   0.046   -0.175   -0.115   -0.084   -0.054    0.005 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]     -0.085   0.062   -0.210   -0.124   -0.084   -0.044    0.038 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]     -0.129   0.026   -0.180   -0.146   -0.129   -0.111   -0.080 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]     -0.136   0.040   -0.216   -0.163   -0.137   -0.109   -0.058 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]      0.114   0.067   -0.017    0.071    0.114    0.157    0.245 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]     -0.128   0.047   -0.221   -0.160   -0.129   -0.097   -0.033 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]     -0.122   0.077   -0.279   -0.174   -0.120   -0.069    0.026 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[20]     -0.114   0.051   -0.214   -0.147   -0.115   -0.081   -0.015 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[21]     -0.426   0.075   -0.579   -0.475   -0.426   -0.374   -0.277 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[22]     -0.171   0.042   -0.255   -0.199   -0.170   -0.143   -0.090 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[23]     -0.031   0.041   -0.113   -0.058   -0.031   -0.004    0.047 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[24]     -0.039   0.041   -0.119   -0.066   -0.040   -0.013    0.043 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[25]     -0.067   0.041   -0.146   -0.095   -0.067   -0.041    0.016 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[26]     -0.084   0.064   -0.208   -0.126   -0.084   -0.040    0.045 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[27]     -0.068   0.066   -0.201   -0.111   -0.066   -0.024    0.057 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[28]     -0.092   0.067   -0.225   -0.136   -0.093   -0.050    0.041 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[29]     -0.078   0.066   -0.207   -0.122   -0.078   -0.033    0.052 1.001</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rho          0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1    0.073   0.009    0.057    0.066    0.072    0.078    0.093 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 9298.885  16.969 9268.163 9287.033 9297.973 9309.768 9333.578 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  8418.846  16.969 8388.124 8406.993 8417.933 8429.729 8453.539 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1    0.073   0.009    0.057    0.066    0.072    0.078    0.094 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 9298.799  17.215 9267.966 9286.787 9298.088 9309.705 9335.111 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  8418.760  17.215 8387.927 8406.748 8418.048 8429.666 8455.072 1.001</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[1]        1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]     2800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]     3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]     3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]      850</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]     3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]     3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]     1700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]     3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]     3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]     3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]     1700</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]    1900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]     3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]    1400</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]    1700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]    3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]    2100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]    1700</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[20]    2800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[21]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]    2100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]    1300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[20]    2200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[21]    2600</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[22]    3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[23]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[24]    2100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[25]    2300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[26]    1200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[24]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[25]    2700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[26]    2700</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[27]    3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[28]    3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[29]    3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rho           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1  2400</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> deviance   3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -431,7 +431,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 144.0 and DIC = 8562.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 148.3 and DIC = 8566.3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit an emax time-course MBNMA with:</span></span></span>
@@ -485,50 +485,50 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print R2jags output and summary</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpPNmS3o/file181e343aa1a6", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpHY4zxk/file18a217aeff9b", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> emax[1]     0.000   0.000   0.000   0.000   0.000   0.000   0.000 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[2]    -0.641   0.106  -0.861  -0.708  -0.639  -0.572  -0.440 1.002  1100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[3]    -0.933   0.046  -1.018  -0.964  -0.935  -0.902  -0.839 1.009   310</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[4]    -1.038   0.101  -1.241  -1.107  -1.036  -0.969  -0.843 1.003   950</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[5]    -0.639   0.195  -1.018  -0.770  -0.640  -0.511  -0.242 1.002  1400</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[6]    -0.116   0.147  -0.398  -0.215  -0.117  -0.018   0.163 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[7]    -1.228   0.074  -1.373  -1.278  -1.231  -1.179  -1.078 1.008   290</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[8]    -0.111   0.141  -0.390  -0.204  -0.111  -0.014   0.162 1.001  2200</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[9]    -1.896   0.112  -2.116  -1.971  -1.896  -1.820  -1.680 1.012   190</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[10]   -1.896   0.159  -2.206  -2.005  -1.898  -1.790  -1.580 1.016   150</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[11]   -0.876   0.063  -1.004  -0.918  -0.877  -0.834  -0.755 1.008   320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[12]   -0.860   0.064  -0.986  -0.906  -0.861  -0.816  -0.735 1.005   410</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[13]   -1.065   0.078  -1.217  -1.118  -1.066  -1.012  -0.910 1.002  2500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[14]   -0.989   0.128  -1.240  -1.072  -0.988  -0.902  -0.741 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[15]   -1.318   0.067  -1.448  -1.364  -1.321  -1.274  -1.185 1.014   180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[16]   -1.223   0.078  -1.373  -1.276  -1.223  -1.169  -1.071 1.006   490</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[17]    0.359   0.141   0.087   0.261   0.360   0.452   0.635 1.002  1600</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[18]   -0.928   0.090  -1.105  -0.988  -0.926  -0.867  -0.754 1.003   730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[19]   -1.285   0.242  -1.755  -1.451  -1.282  -1.119  -0.817 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[20]   -0.883   0.106  -1.099  -0.956  -0.881  -0.809  -0.680 1.002  1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[21]   -2.644   0.208  -3.052  -2.781  -2.646  -2.507  -2.235 1.007   310</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[22]   -1.313   0.116  -1.532  -1.393  -1.315  -1.235  -1.087 1.007   310</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[23]   -0.212   0.070  -0.350  -0.259  -0.211  -0.165  -0.074 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[24]   -0.330   0.071  -0.466  -0.379  -0.330  -0.281  -0.192 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[25]   -0.766   0.077  -0.917  -0.818  -0.765  -0.715  -0.619 1.002  1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[26]   -0.830   0.098  -1.024  -0.896  -0.828  -0.762  -0.644 1.001  2800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[27]   -0.788   0.120  -1.025  -0.869  -0.789  -0.706  -0.556 1.002  1200</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[28]   -1.016   0.123  -1.262  -1.102  -1.016  -0.932  -0.784 1.004   520</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax[29]   -0.833   0.123  -1.086  -0.916  -0.833  -0.749  -0.600 1.003   730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> et50        0.466   0.045   0.384   0.435   0.464   0.494   0.563 1.002  2400</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> hill        0.583   0.083   0.502   0.522   0.554   0.616   0.824 1.063    73</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[2]    -0.642   0.108  -0.852  -0.715  -0.641  -0.569  -0.429 1.006   400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[3]    -0.928   0.047  -1.017  -0.961  -0.931  -0.896  -0.832 1.025    89</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[4]    -1.037   0.104  -1.244  -1.103  -1.034  -0.966  -0.834 1.007   300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[5]    -0.636   0.187  -1.000  -0.767  -0.631  -0.508  -0.279 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[6]    -0.116   0.141  -0.388  -0.214  -0.120  -0.022   0.171 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[7]    -1.224   0.076  -1.371  -1.278  -1.224  -1.171  -1.079 1.015   150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[8]    -0.118   0.146  -0.401  -0.215  -0.119  -0.025   0.177 1.002  1400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[9]    -1.889   0.113  -2.105  -1.966  -1.891  -1.810  -1.664 1.020   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[10]   -1.886   0.160  -2.205  -1.992  -1.882  -1.777  -1.588 1.011   190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[11]   -0.872   0.063  -0.995  -0.916  -0.873  -0.830  -0.751 1.016   130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[12]   -0.857   0.066  -0.985  -0.901  -0.856  -0.810  -0.731 1.013   160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[13]   -1.058   0.079  -1.211  -1.109  -1.058  -1.004  -0.905 1.015   150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[14]   -0.982   0.128  -1.234  -1.068  -0.980  -0.896  -0.729 1.003   800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[15]   -1.313   0.069  -1.445  -1.361  -1.314  -1.266  -1.173 1.028    79</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[16]   -1.216   0.080  -1.374  -1.273  -1.215  -1.160  -1.058 1.010   220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[17]    0.361   0.138   0.091   0.268   0.360   0.451   0.635 1.003   850</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[18]   -0.921   0.091  -1.099  -0.981  -0.919  -0.857  -0.745 1.005   430</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[19]   -1.284   0.233  -1.744  -1.439  -1.284  -1.123  -0.826 1.002  1100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[20]   -0.880   0.106  -1.091  -0.949  -0.880  -0.807  -0.680 1.003   720</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[21]   -2.637   0.204  -3.025  -2.775  -2.641  -2.498  -2.235 1.015   140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[22]   -1.305   0.117  -1.537  -1.383  -1.305  -1.227  -1.078 1.007   290</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[23]   -0.212   0.070  -0.345  -0.260  -0.212  -0.165  -0.077 1.003   760</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[24]   -0.331   0.069  -0.467  -0.377  -0.331  -0.286  -0.194 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[25]   -0.763   0.075  -0.910  -0.814  -0.763  -0.715  -0.615 1.007   290</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[26]   -0.825   0.099  -1.017  -0.894  -0.826  -0.755  -0.632 1.004   530</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[27]   -0.782   0.120  -1.019  -0.860  -0.781  -0.698  -0.551 1.006   360</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[28]   -1.015   0.126  -1.263  -1.101  -1.013  -0.931  -0.772 1.006   350</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax[29]   -0.832   0.120  -1.070  -0.911  -0.832  -0.753  -0.598 1.003   800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> et50        0.465   0.045   0.388   0.434   0.461   0.490   0.565 1.004   540</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> hill        0.594   0.090   0.502   0.526   0.566   0.638   0.822 1.061    44</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rho         0.000   0.000   0.000   0.000   0.000   0.000   0.000 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 837.846  13.642 812.041 828.797 837.317 846.366 865.768 1.003   820</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  -42.194  13.642 -67.998 -51.242 -42.723 -33.673 -14.272 1.003   830</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 837.610  14.268 812.133 827.769 836.628 846.872 866.697 1.007   310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  -42.430  14.268 -67.906 -52.270 -43.411 -33.167 -13.342 1.007   310</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 92.9 and DIC = 50.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 101.2 and DIC = 57.8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
@@ -545,34 +545,34 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment |Parameter |  Median|    2.5%|   97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|:---------|-------:|-------:|-------:|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      |emax[1]   |  0.0000|  0.0000|  0.0000|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    |emax[2]   | -0.6391| -0.8609| -0.4401|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    |emax[3]   | -0.9349| -1.0181| -0.8393|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    |emax[4]   | -1.0360| -1.2414| -0.8428|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     |emax[5]   | -0.6401| -1.0176| -0.2418|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     |emax[6]   | -0.1171| -0.3977|  0.1627|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |emax[7]   | -1.2311| -1.3735| -1.0784|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      |emax[8]   | -0.1115| -0.3896|  0.1620|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |emax[9]   | -1.8961| -2.1156| -1.6799|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |emax[10]  | -1.8982| -2.2064| -1.5801|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    |emax[11]  | -0.8773| -1.0039| -0.7548|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    |emax[12]  | -0.8608| -0.9857| -0.7355|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    |emax[13]  | -1.0665| -1.2166| -0.9095|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     |emax[14]  | -0.9876| -1.2398| -0.7412|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |emax[15]  | -1.3211| -1.4480| -1.1855|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |emax[16]  | -1.2231| -1.3728| -1.0710|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    |emax[17]  |  0.3595|  0.0874|  0.6348|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    |emax[18]  | -0.9262| -1.1051| -0.7538|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |emax[19]  | -1.2819| -1.7554| -0.8174|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     |emax[20]  | -0.8812| -1.0989| -0.6799|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |emax[21]  | -2.6456| -3.0521| -2.2353|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |emax[22]  | -1.3152| -1.5323| -1.0874|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    |emax[23]  | -0.2107| -0.3505| -0.0740|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    |emax[24]  | -0.3295| -0.4655| -0.1920|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    |emax[25]  | -0.7650| -0.9168| -0.6192|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    |emax[26]  | -0.8279| -1.0241| -0.6443|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     |emax[27]  | -0.7891| -1.0252| -0.5563|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     |emax[28]  | -1.0156| -1.2618| -0.7838|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      |emax[29]  | -0.8332| -1.0859| -0.5999|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    |emax[2]   | -0.6407| -0.8515| -0.4294|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    |emax[3]   | -0.9308| -1.0165| -0.8321|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    |emax[4]   | -1.0345| -1.2442| -0.8341|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     |emax[5]   | -0.6313| -1.0004| -0.2787|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     |emax[6]   | -0.1200| -0.3875|  0.1712|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |emax[7]   | -1.2239| -1.3706| -1.0793|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      |emax[8]   | -0.1190| -0.4011|  0.1773|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |emax[9]   | -1.8907| -2.1055| -1.6637|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |emax[10]  | -1.8820| -2.2052| -1.5884|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    |emax[11]  | -0.8731| -0.9948| -0.7512|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    |emax[12]  | -0.8564| -0.9849| -0.7315|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    |emax[13]  | -1.0584| -1.2107| -0.9051|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     |emax[14]  | -0.9798| -1.2335| -0.7292|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |emax[15]  | -1.3142| -1.4447| -1.1734|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |emax[16]  | -1.2151| -1.3735| -1.0575|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    |emax[17]  |  0.3596|  0.0910|  0.6353|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    |emax[18]  | -0.9188| -1.0991| -0.7451|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |emax[19]  | -1.2835| -1.7444| -0.8262|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     |emax[20]  | -0.8803| -1.0913| -0.6795|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |emax[21]  | -2.6408| -3.0250| -2.2351|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |emax[22]  | -1.3053| -1.5365| -1.0777|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    |emax[23]  | -0.2118| -0.3450| -0.0767|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    |emax[24]  | -0.3306| -0.4674| -0.1941|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    |emax[25]  | -0.7630| -0.9098| -0.6151|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    |emax[26]  | -0.8261| -1.0167| -0.6317|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     |emax[27]  | -0.7806| -1.0191| -0.5512|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     |emax[28]  | -1.0129| -1.2632| -0.7717|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      |emax[29]  | -0.8318| -1.0699| -0.5979|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">et50 parameter</span></span>
@@ -581,35 +581,35 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|:---------|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     |et50      | 0.4639| 0.3845| 0.5629|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      |et50      | 0.4639| 0.3845| 0.5629|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     |et50      | 0.4606| 0.3875| 0.5651|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      |et50      | 0.4606| 0.3875| 0.5651|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">hill parameter</span></span>
@@ -618,35 +618,35 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|:---------|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     |hill      | 0.5543| 0.5017| 0.8243|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      |hill      | 0.5543| 0.5017| 0.8243|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     |hill      | 0.5656| 0.5021| 0.8221|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      |hill      | 0.5656| 0.5021| 0.8221|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -657,12 +657,15 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Effective number of parameters:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD (pV) calculated using the rule, pD = var(deviance)/2 = 93</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD (pV) calculated using the rule, pD = var(deviance)/2 = 101</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = -43</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 837</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 50 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 58 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">The following parameters have Rhat values &gt; 1.02 which could be due to convergence issues:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">emax[3]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">emax[9]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">emax[15]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">hill</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot forest plot of results</span></span></span>
@@ -699,115 +702,115 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpPNmS3o/file181ee1837fe", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpHY4zxk/file18a21d8598da", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               mu.vect sd.vect        2.5%         25%         50%         75%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> D.1[1]          0.000   0.000       0.000       0.000       0.000       0.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[2]         -0.845  18.033     -31.591     -13.486      -3.059      11.256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[3]        -27.068  21.946     -76.566     -39.250     -23.218     -10.954</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[4]         -9.588  26.526     -88.345     -23.276      -6.265       8.898</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[5]        -11.235  26.638     -67.047     -27.976      -9.334       5.516</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[6]        -12.643  17.840     -47.589     -24.569     -11.369      -0.757</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[7]        -19.407  31.255    -114.667     -29.257     -11.345       0.208</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[2]          9.680  21.389     -39.286      -2.484      11.714      21.512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[3]        -12.467  28.874     -65.142     -31.605     -11.460       3.956</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[4]        -15.508  25.439     -75.823     -32.984     -14.532       4.438</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[5]        -17.681  26.093     -71.540     -34.772     -15.175      -0.895</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[6]        -15.765  24.146     -66.685     -32.884     -10.743       3.193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[7]        -24.813  16.665     -61.783     -35.409     -21.967     -12.986</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[1]          0.000   0.000       0.000       0.000       0.000       0.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]         -0.845  18.033     -31.591     -13.486      -3.059      11.256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]         -0.845  18.033     -31.591     -13.486      -3.059      11.256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]         -0.845  18.033     -31.591     -13.486      -3.059      11.256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]         -0.845  18.033     -31.591     -13.486      -3.059      11.256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]        -27.068  21.946     -76.566     -39.250     -23.218     -10.954</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]         -9.588  26.526     -88.345     -23.276      -6.265       8.898</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]         -9.588  26.526     -88.345     -23.276      -6.265       8.898</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]         -9.588  26.526     -88.345     -23.276      -6.265       8.898</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]        -9.588  26.526     -88.345     -23.276      -6.265       8.898</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]       -11.235  26.638     -67.047     -27.976      -9.334       5.516</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]       -12.643  17.840     -47.589     -24.569     -11.369      -0.757</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]       -12.643  17.840     -47.589     -24.569     -11.369      -0.757</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]       -12.643  17.840     -47.589     -24.569     -11.369      -0.757</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]       -12.643  17.840     -47.589     -24.569     -11.369      -0.757</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]       -19.407  31.255    -114.667     -29.257     -11.345       0.208</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]       -19.407  31.255    -114.667     -29.257     -11.345       0.208</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]       -19.407  31.255    -114.667     -29.257     -11.345       0.208</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]       -19.407  31.255    -114.667     -29.257     -11.345       0.208</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]          9.680  21.389     -39.286      -2.484      11.714      21.512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]          9.680  21.389     -39.286      -2.484      11.714      21.512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]          9.680  21.389     -39.286      -2.484      11.714      21.512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]          9.680  21.389     -39.286      -2.484      11.714      21.512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]        -12.467  28.874     -65.142     -31.605     -11.460       3.956</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]        -15.508  25.439     -75.823     -32.984     -14.532       4.438</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]        -15.508  25.439     -75.823     -32.984     -14.532       4.438</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]        -15.508  25.439     -75.823     -32.984     -14.532       4.438</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]       -15.508  25.439     -75.823     -32.984     -14.532       4.438</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]       -17.681  26.093     -71.540     -34.772     -15.175      -0.895</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]       -15.765  24.146     -66.685     -32.884     -10.743       3.193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]       -15.765  24.146     -66.685     -32.884     -10.743       3.193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]       -15.765  24.146     -66.685     -32.884     -10.743       3.193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]       -15.765  24.146     -66.685     -32.884     -10.743       3.193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]       -24.813  16.665     -61.783     -35.409     -21.967     -12.986</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]       -24.813  16.665     -61.783     -35.409     -21.967     -12.986</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]       -24.813  16.665     -61.783     -35.409     -21.967     -12.986</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]       -24.813  16.665     -61.783     -35.409     -21.967     -12.986</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.2[1]          0.000   0.000       0.000       0.000       0.000       0.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[2]         -4.077  29.252     -63.505     -22.800      -2.822      15.544</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[3]          3.928  30.712     -57.205     -17.568       4.807      25.094</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[4]        -16.562  10.671     -43.664     -21.964     -13.736      -8.377</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[5]          3.791  30.610     -56.020     -16.976       3.634      23.991</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[6]         -7.287  28.942     -62.242     -26.859      -7.993      12.288</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[7]         -2.597  30.248     -61.487     -23.206      -1.316      18.083</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[8]         -8.704  28.034     -65.167     -27.299      -7.595       9.951</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[9]         -2.594  29.602     -62.374     -21.548      -1.636      17.615</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[10]        -5.130  28.416     -64.669     -22.906      -4.246      14.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[11]       -17.054  25.680     -67.457     -33.442     -16.924       0.195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[12]       -10.862  26.857     -65.148     -28.865      -9.831       6.954</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[13]       -21.325  25.344     -72.047     -36.467     -21.212      -9.796</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[14]       -15.546  22.343     -62.248     -29.031     -14.662      -1.100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[15]       -15.562  25.349     -68.027     -31.724     -14.072       1.866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[16]         4.033  30.313     -54.020     -16.224       4.017      24.245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[17]       -21.672  23.400     -69.485     -35.397     -20.293      -8.904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[18]       -19.796  22.268     -65.673     -33.193     -18.763      -7.746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[19]       -20.714  24.722     -69.640     -35.840     -19.955      -7.964</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[2]         -5.016  29.651     -63.125     -23.958      -5.133      14.486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[3]          3.119  30.464     -55.422     -17.743       2.413      23.463</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[4]        -16.050  10.063     -41.756     -21.260     -13.490      -8.369</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[5]          3.142  30.399     -54.405     -17.708       2.997      23.485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[6]        -22.196  25.507     -73.040     -36.669     -21.715     -10.460</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[7]         -3.386  29.828     -62.843     -23.165      -2.349      17.136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[8]         -8.202  27.040     -63.447     -25.822      -7.360      10.140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[9]         -3.736  29.627     -62.646     -23.437      -3.710      16.457</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[10]        -6.204  28.838     -63.097     -25.066      -5.120      12.131</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[11]       -17.315  25.868     -69.553     -33.567     -17.223      -0.862</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[12]       -12.213  27.162     -68.333     -29.626     -11.321       5.756</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[13]       -22.080  24.943     -70.799     -36.948     -22.160     -10.561</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[14]       -15.481  22.212     -61.952     -28.515     -14.540      -1.225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[15]       -16.696  25.455     -72.458     -32.788     -15.100       0.493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[16]         3.950  30.020     -53.884     -16.663       4.165      24.212</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[17]       -19.812  24.051     -67.435     -34.749     -18.693      -6.919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[18]       -18.515  22.056     -64.718     -31.795     -17.494      -6.137</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[19]       -19.488  25.334     -70.761     -34.640     -19.155      -6.393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rho             0.000   0.000       0.000       0.000       0.000       0.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1       3.528   2.846       0.238       1.410       2.823       4.783</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 2013068.075   7.409 2013057.209 2013063.219 2013065.837 2013070.929</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  2012373.887   7.409 2012363.021 2012369.031 2012371.648 2012376.741</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1       3.362   2.533       0.131       1.453       2.803       4.736</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 2013067.455   6.469 2013057.748 2013063.332 2013065.782 2013069.717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  2012373.267   6.469 2012363.559 2012369.143 2012371.593 2012375.529</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 97.5%  Rhat n.eff</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> D.1[1]          0.000 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[2]         37.704 1.147    21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[3]          5.055 1.015   140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[4]         29.165 1.288    14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[5]         39.504 1.203    17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[6]         18.159 1.485     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[7]         19.693 1.417     9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[2]         51.252 1.032   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[3]         48.583 1.111    26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[4]         27.200 1.026   160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[5]         30.881 1.101    25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[6]         18.482 1.140    20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D.1[7]         -0.666 1.242    12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.1[1]          0.000 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]         37.704 1.147    21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]         37.704 1.147    21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]         37.704 1.147    21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]         37.704 1.147    21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]          5.055 1.015   140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]         29.165 1.288    14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]         29.165 1.288    14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]         29.165 1.288    14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]        29.165 1.288    14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]        39.504 1.203    17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]        18.159 1.485     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]        18.159 1.485     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]        18.159 1.485     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]        18.159 1.485     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]        19.693 1.417     9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]        19.693 1.417     9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]        19.693 1.417     9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]        19.693 1.417     9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[2]         51.252 1.032   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[3]         51.252 1.032   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[4]         51.252 1.032   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[5]         51.252 1.032   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[6]         48.583 1.111    26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[7]         27.200 1.026   160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[8]         27.200 1.026   160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[9]         27.200 1.026   160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[10]        27.200 1.026   160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[11]        30.881 1.101    25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[12]        18.482 1.140    20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[13]        18.482 1.140    20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[14]        18.482 1.140    20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[15]        18.482 1.140    20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[16]        -0.666 1.242    12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[17]        -0.666 1.242    12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[18]        -0.666 1.242    12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.1[19]        -0.666 1.242    12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d.2[1]          0.000 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[2]         52.641 1.002  1300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[3]         64.201 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[4]         -4.345 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[5]         64.683 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[6]         51.091 1.006   380</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[7]         55.584 1.002  1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[8]         45.130 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[9]         53.591 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[10]        49.787 1.001  2900</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[11]        31.618 1.001  2000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[12]        40.321 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[13]        35.451 1.023   100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[14]        26.843 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[15]        31.326 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[16]        64.884 1.002  1100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[17]        26.099 1.126    24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[18]        26.594 1.138    22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[19]        31.413 1.146    22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[2]         55.091 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[3]         63.988 1.002  1300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[4]         -4.295 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[5]         64.210 1.002  1100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[6]         36.280 1.275    13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[7]         52.555 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[8]         43.017 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[9]         53.317 1.001  2100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[10]        51.425 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[11]        33.404 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[12]        38.938 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[13]        34.225 1.029   100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[14]        26.591 1.003   860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[15]        29.469 1.003   850</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[16]        63.597 1.002  1500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[17]        30.573 1.121    24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[18]        26.418 1.098    27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d.2[19]        33.342 1.117    25</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rho             0.000 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1      10.940 1.044   240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 2013085.392 1.000     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  2012391.203 1.000     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd.beta.1       9.518 1.247    15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev 2013083.241 1.000     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  2012389.053 1.000     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 25.2 and DIC = 2012396.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 20.7 and DIC = 2012392.3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit a log-linear MBNMA</span></span></span>
