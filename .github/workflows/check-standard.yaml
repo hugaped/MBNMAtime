@@ -62,8 +62,9 @@ jobs:
         env:
           JAGS_HOME: 'C:\Program Files\JAGS\JAGS-4.2.0\'
         run: |
-          SET PATH=%PATH%;C:\Program Files\JAGS\JAGS-4.2.0\bin
           Rscript -e "install.packages('rjags', repos='https://cloud.r-project.org')"
+          powershell Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' -Name Path -Value ('{0}\bin' -f $env:JAGS_HOME) -Type ExpandString
+          powershell RefreshEnv.cmd
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
