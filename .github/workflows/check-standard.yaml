@@ -31,12 +31,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up jags for windows
-        if: matrix.config.os == 'windows-latest'
+      - name: Cache JAGS installer on Windows
+        id: cache-jags
+        uses: actions/cache@v2
+        with:
+          path: C:\JAGS
+          key: jags-installer-${{ runner.os }}-${{ hashFiles('path/to/JAGS-4.2.0-Rtools33.exe') }}
+          restore-keys: jags-installer-${{ runner.os }}-
+        if: ${{ runner.os == 'Windows' }}
+
+      - name: Set up JAGS on Windows
         run: |
-          curl.exe -L -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.0.exe/download
-          wjags.exe
-          del wjags.exe
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            if [ -f "C:\JAGS\JAGS-4.2.0-Rtools33.exe" ]; then
+              C:\JAGS\JAGS-4.2.0-Rtools33.exe /S
+            else
+              curl.exe -o JAGS-4.2.0-Rtools33.exe --url https://deac-fra.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.2.0-Rtools33.exe
+              C:\JAGS\JAGS-4.2.0-Rtools33.exe /S
+            fi
+          fi
 
       - name: Set up jags for macos
         if: matrix.config.os == 'macos-latest'
