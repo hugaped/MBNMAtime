@@ -34,7 +34,7 @@ jobs:
       - name: Install jags (windows-latest)
         if: runner.os == 'Windows'
         run: |
-          curl.exe -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download
+          curl.exe -L -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/latest/download
           .\wjags.exe /S
           del wjags.exe
         shell: cmd
@@ -56,14 +56,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-
-      - name: Install rjags on Windows
-        if: runner.os == 'Windows'
-        env:
-          JAGS_HOME: 'C:\Program Files\JAGS\JAGS-4.3.1\'
-        run: |
-          Rscript -e "install.packages('rjags', repos='https://cloud.r-project.org')"
-          Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name PATH -Value "`"$env:JAGS_HOME\bin`";`$env:PATH" -Force
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
