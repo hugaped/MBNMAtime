@@ -61,9 +61,9 @@ jobs:
         env:
           JAGS_HOME: "/usr/local/lib/JAGS"
         run: |
-          if [ "${{ matrix.config.os }}" = "windows-latest" ]; then
+          if ("windows-latest" -eq "windows-latest") {
             $Env:JAGS_HOME = "C:\\Program Files\\JAGS\\JAGS-4.2.0\\"
-          fi
+          }
           Rscript -e "install.packages('rjags', repos='https://cloud.r-project.org')"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
