@@ -44,6 +44,10 @@ install.packages("devtools")
 devtools::install_github("hugaped/MBNMAtime")
 ```
 
+Note that JAGS (Just Another Gibbs Sampler) must be installed for `MBNMAtime` to function correctly. The latest version can be downloaded from: https://sourceforge.net/projects/mcmc-jags/files/latest/download
+
+Note that if using Windows OS with R version >= 4.2, the JAGS version must be >= 4.3.1.
+
 ## Workflow
 
 Functions within `MBNMAtime` follow a clear pattern of use:
