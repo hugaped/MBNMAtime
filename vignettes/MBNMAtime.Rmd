@@ -570,6 +570,20 @@ print(allres)
 ```
 
 
+`get.relative()` can also be used to perform a 2-stage MBNMA that allows synthesis of results from two different MBNMA models via a single common comparator. In an MBNMA model, all treatments must share the same time-course function. However, a 2-stage approach can enable fitting of different time-course functions to different sets ("subnetworks") of treatments. For example, some treatments may have rich time-course information, allowing for a more complex time-course function to be used, whereas others may be sparse, requiring a simpler time-course function.
+
+Relative comparisons between treatments in the two datasets at specific follow-up times can then be estimated from MBNMA predicted effects versus a common comparator using the Bucher method and assuming consistency.
+
+```{r, echo=FALSE, results='asis', fig.cap="2-stage MBNMA: For clarity, 95%CrIs are not shown in the plots or tables but these are calculated and computed in `get.relative()`. Thick connecting lines in network plots indicate comparisons with rich time-course data that can be modelled with a more complex function (e.g. B-spline), thin connecting lines in network plots indicate comparisons with sparse time-course data that can only be modelled with a less complex function (e.g. BEST-ITP). Comparisons between treatments in different subnetworks that are not the network reference must be excluded (red dashed line in network plot)."}
+knitr::include_graphics("figures/2stageMBNMA.png", dpi=250)
+```
+
+
+* Step 1: The network at a chosen network reference treatment (A) into subnetworks with rich and sparse time-course data.
+* Step 2: Separate time-course MBNMAs are fitted to each subnetwork using a different time-course function, and relative effects versus the network reference treatment are predicted over time.
+* Step 3: Bucher method is used to calculate predicted relative effects between all treatments at specific time-points of interest (e.g. ${S_{1}}$, ${S_{2}}$ and ${S_{3}}$). This can be done with `get.relative()` using the output from both MBNMA models in `mbnma` and `mbnma.add` arguments. For more details and an example see the function help file (`?get.relative`). 
+
+
 ### `rank()`: Ranking
 
 ```{r, include=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
@@ -872,7 +886,7 @@ ns.itp <- mb.nodesplit(network.pain,
 ```{r, echo=FALSE, eval=FALSE, include=FALSE}
 save(ns.itp, file="inst/extdata/ns.itp.rda")
 ```
-```{r, fig.height=2.5}
+```{r}
 print(ns.itp)
 
 plot(ns.itp, plot.type="forest")

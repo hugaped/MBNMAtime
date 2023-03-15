@@ -910,35 +910,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
 #'
 #' Relative comparisons between treatments in the two datasets at specific follow-up times
 #' can then be estimated from MBNMA predicted effects versus a common comparator
-#' using the Bucher method and assuming consistency.
-#'
-#'
-#' \if{html}{
-#'   \out{<div style="text-align: center">}\figure{2stageMBNMA.png}{options: style="width:750px;max-width:75\%;"}\out{</div>}
-#' }
-#' \if{latex}{
-#'   \out{\begin{center}}\figure{2stageMBNMA.png}\out{\end{center}}
-#' }
-#'
-#'
-#' * Step 1: The network at a chosen network reference treatment (A) into subnetworks with
-#' rich and sparse time-course data.
-#' * Step 2: Separate time-course MBNMAs are fitted to each subnetwork using a different
-#' time-course function, and relative effects versus the network reference treatment
-#' are predicted over time.
-#' * Step 3: Bucher method is used to calculate predicted relative effects between
-#' all treatments at specific time-points of interest (e.g. \eqn{S_{1}}, \eqn{S_{2}} and \eqn{S_{3}}).
-#'
-#' For clarity, 95%CrIs are not shown in the plots or tables but are calculated and computed
-#' in `get.relative()`. Thick connecting lines in network plots indicate comparisons with rich
-#' time-course data that can be modelled with a more complex function (e.g. B-spline),
-#' thin connecting lines in network plots indicate comparisons with sparse time-course
-#' data that can only be modelled with a less complex function (e.g. BEST-ITP). Comparisons
-#' between treatments in different subnetworks that are not the network reference must be
-#' excluded (red dashed line in network plot).
-#'
-#'
-#'
+#' using the Bucher method and assuming consistency. See the MBNMAtime vignette for further details.
 #'
 #' @examples
 #' \donttest{
