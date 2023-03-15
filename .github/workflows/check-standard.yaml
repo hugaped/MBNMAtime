@@ -62,7 +62,8 @@ jobs:
         env:
           JAGS_HOME: 'C:\Program Files\JAGS\JAGS-4.2.0\'
         run: |
-          Rscript -e "install.packages('rjags', type='source')"
+          SET PATH=%PATH%;C:\Program Files\JAGS\JAGS-4.2.0\bin
+          Rscript -e "install.packages('rjags', repos='https://cloud.r-project.org')"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
