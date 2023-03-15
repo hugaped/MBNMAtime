@@ -31,15 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache JAGS installer
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.temp }}/jags-installer.exe
-          key: jags-installer-Windows-${{ hashFiles('JAGS-4.2.0-Rtools33.exe') }}
-          restore-keys: jags-installer-Windows-
-        if: matrix.config.os == 'windows-latest'
-
       - name: Set up JAGS on Windows
         run: |
           if [ "${{ runner.os }}" = "Windows" ]; then
@@ -50,6 +41,15 @@ jobs:
               C:\JAGS\JAGS-4.2.0-Rtools33.exe /S
             fi
           fi
+
+      - name: Cache JAGS installer
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ runner.temp }}/jags-installer.exe
+          key: jags-installer-Windows-${{ hashFiles('JAGS-4.2.0-Rtools33.exe') }}
+          restore-keys: jags-installer-Windows-
+        if: matrix.config.os == 'windows-latest'
 
       - name: Set up jags for macos
         if: matrix.config.os == 'macos-latest'
