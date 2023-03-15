@@ -257,186 +257,186 @@ excluded (red dashed line in network plot).</p>
 <span class="r-in"><span>  mbnma.add<span class="op">=</span><span class="va">sparse.mbnma</span>, time<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rels.all</span><span class="op">$</span><span class="va">median</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                Pl_0      Ce_200         Et_10       Et_30      Et_60      Et_90</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0             NA  0.95944067  0.4749055733  1.23285006  1.6491215  1.7243025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.95944067          NA -0.4832528529  0.27299397  0.6889204  0.7638519</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10   -0.47490557  0.48325285            NA  0.75696143  1.1760457  1.2536499</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -1.23285006 -0.27299397 -0.7569614287          NA  0.4155110  0.4909362</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -1.64912153 -0.68892042 -1.1760457356 -0.41551101         NA  0.0747872</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -1.72430250 -0.76385185 -1.2536499247 -0.49093618 -0.0747872         NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.91647378  0.04384954 -0.4407715682  0.31642378  0.7308618  0.8081528</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -1.19884824 -0.23730999 -0.7229406970  0.03487267  0.4512507  0.5263580</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -1.12730944 -0.16779557 -0.6480278905  0.10663170  0.5198744  0.6012462</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250  -0.01134032  0.94742160  0.4642056826  1.22439052  1.6349774  1.7176384</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  -0.87585700  0.08475101 -0.3981700345  0.35603513  0.7736199  0.8526879</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.94271290  0.01874401 -0.4705818529  0.28475869  0.7035495  0.7820686</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -2.35533129 -1.39888197 -1.8822228664 -1.12324761 -0.7117869 -0.6284694</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -1.29654862 -0.33878586 -0.8196985912 -0.06524615  0.3471821  0.4268625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100  -0.47724240  0.48184012 -0.0001406462  0.75685877  1.1686326  1.2478314</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200  -0.48013947  0.47945263 -0.0077814015  0.75233271  1.1693975  1.2457187</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300  -0.83885998  0.12047231 -0.3711853782  0.39419413  0.8077638  0.8863768</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.92449331  0.03626121 -0.4516242864  0.30763474  0.7221895  0.7952950</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10   -0.75193987  0.21143551 -0.2730351952  0.48165918  0.8967313  0.9775439</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.99162001 -0.02902121 -0.5109325078  0.24245509  0.6588296  0.7368576</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    -0.84390164  0.11467345 -0.3645859370  0.38901277  0.8049432  0.8866645</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100  -0.54838424  0.40949324 -0.0704366677  0.68444977  1.1002185  1.1766054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -0.89744854  0.06159341 -0.4216101211  0.33495898  0.7483036  0.8318273</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90   -0.55602662  0.40446040 -0.0843259430  0.67785817  1.0929036  1.1727890</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -1.02649325 -0.06566189 -0.5422475319  0.20784884  0.6246554  0.7011285</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200  -0.54615683  0.41376071 -0.0725659147  0.68714111  1.1026693  1.1762766</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400  -0.70945350  0.24934042 -0.2334127845  0.52002300  0.9376625  1.0121889</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA   -0.79664691  0.16277024 -0.3238209667  0.43670325  0.8512401  0.9314186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -1.08623040 -0.12569987 -0.6044312496  0.14949133  0.5562808  0.6385238</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Lu_100     Na_1000     Na_1500      Na_250      Na_750       Ro_12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.91647378  1.19884824  1.12730944  0.01134032  0.87585700  0.94271290</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.04384954  0.23730999  0.16779557 -0.94742160 -0.08475101 -0.01874401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.44077157  0.72294070  0.64802789 -0.46420568  0.39817003  0.47058185</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.31642378 -0.03487267 -0.10663170 -1.22439052 -0.35603513 -0.28475869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.73086184 -0.45125074 -0.51987438 -1.63497737 -0.77361990 -0.70354953</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -0.80815283 -0.52635802 -0.60124618 -1.71763842 -0.85268789 -0.78206858</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100           NA  0.28183384  0.21066040 -0.90253869 -0.04283499  0.02737887</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.28183384          NA -0.07075297 -1.18919860 -0.32412243 -0.25258886</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.21066040  0.07075297          NA -1.11770784 -0.25175507 -0.18621487</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.90253869  1.18919860  1.11770784          NA  0.86364293  0.93229436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750   0.04283499  0.32412243  0.25175507 -0.86364293          NA  0.06776325</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.02737887  0.25258886  0.18621487 -0.93229436 -0.06776325          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.44064103 -1.15716468 -1.22561070 -2.34404947 -1.48103067 -1.41500625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.38214957 -0.09763564 -0.16792777 -1.28579540 -0.42239766 -0.35742782</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.44030187  0.71982443  0.64948211 -0.47436778  0.39834427  0.46766440</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.43596750  0.71670728  0.64846691 -0.46533447  0.39290369  0.46176086</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300   0.07688212  0.35757831  0.28905639 -0.83381535  0.03472681  0.10465838</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.01110808  0.27512634  0.20165087 -0.91314829 -0.05063479  0.01821154</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.16393005  0.44855274  0.37828467 -0.73685215  0.12643285  0.19789290</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.07509562  0.20608611  0.13704342 -0.98000422 -0.11724639 -0.04646881</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5     0.07157979  0.35652445  0.27900276 -0.83025707  0.03291110  0.09930894</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.36587725  0.64987907  0.57967887 -0.53955774  0.32621916  0.39442633</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400   0.01954047  0.30022097  0.22693253 -0.88857185 -0.02372542  0.04682976</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.36363146  0.64479220  0.56935259 -0.54277118  0.32046699  0.39049534</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.10726736  0.17216117  0.10275184 -1.01293215 -0.14963718 -0.07606968</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.37290697  0.65329611  0.58204039 -0.53708422  0.32778749  0.39953735</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   0.20655509  0.48682535  0.41777359 -0.70010783  0.16307474  0.23475739</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA    0.12086315  0.40076309  0.33048082 -0.78735604  0.08049348  0.15167312</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.16928505  0.11172834  0.04197504 -1.06608043 -0.20951998 -0.13772511</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            Ro_125       Ro_25        Tr_100        Tr_200      Tr_300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0    2.3553313  1.29654862  0.4772423979  0.4801394658  0.83885998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  1.3988820  0.33878586 -0.4818401178 -0.4794526288 -0.12047231</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10   1.8822229  0.81969859  0.0001406462  0.0077814015  0.37118538</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   1.1232476  0.06524615 -0.7568587659 -0.7523327111 -0.39419413</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   0.7117869 -0.34718210 -1.1686326244 -1.1693975129 -0.80776384</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   0.6284694 -0.42686251 -1.2478314334 -1.2457186789 -0.88637677</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  1.4406410  0.38214957 -0.4403018702 -0.4359674987 -0.07688212</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 1.1571647  0.09763564 -0.7198244259 -0.7167072789 -0.35757831</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 1.2256107  0.16792777 -0.6494821073 -0.6484669096 -0.28905639</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250  2.3440495  1.28579540  0.4743677750  0.4653344659  0.83381535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  1.4810307  0.42239766 -0.3983442740 -0.3929036894 -0.03472681</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   1.4150062  0.35742782 -0.4676644015 -0.4617608612 -0.10465838</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125         NA -1.04985818 -1.8799854115 -1.8779880147 -1.51268278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   1.0498582          NA -0.8183342601 -0.8194843328 -0.45794523</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100  1.8799854  0.81833426            NA  0.0008727188  0.36438003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200  1.8779880  0.81948433 -0.0008727188            NA  0.36089767</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300  1.5126828  0.45794523 -0.3643800262 -0.3608976664          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  1.4335759  0.37343752 -0.4488311887 -0.4411152353 -0.08443676</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10   1.6086384  0.54724597 -0.2737627272 -0.2700828423  0.08732245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   1.3700096  0.31084238 -0.5104881694 -0.5095522734 -0.14458135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    1.5161040  0.45580075 -0.3684000795 -0.3630932677 -0.00311272</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100  1.8041263  0.74933434 -0.0706405428 -0.0689952969  0.29144116</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  1.4625374  0.39911855 -0.4220377914 -0.4229215525 -0.05539067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90   1.7973237  0.74409221 -0.0745120481 -0.0728728812  0.28417637</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    1.3333328  0.27021448 -0.5477481125 -0.5478186004 -0.18656503</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200  1.8069601  0.75452789 -0.0689452317 -0.0679890444  0.29372635</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400  1.6444119  0.58848702 -0.2282317871 -0.2307766709  0.13220037</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA   1.5597044  0.49982742 -0.3198309903 -0.3205948333  0.04436763</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   1.2744120  0.21189068 -0.6058706719 -0.6031224735 -0.24414195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Tr_400       Va_10       Va_20        Va_5       Ce_100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.92449331  0.75193987  0.99162001  0.84390164  0.548384238</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.03626121 -0.21143551  0.02902121 -0.11467345 -0.409493241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.45162429  0.27303520  0.51093251  0.36458594  0.070436668</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.30763474 -0.48165918 -0.24245509 -0.38901277 -0.684449775</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.72218947 -0.89673130 -0.65882957 -0.80494324 -1.100218548</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -0.79529497 -0.97754391 -0.73685761 -0.88666452 -1.176605422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100   0.01110808 -0.16393005  0.07509562 -0.07157979 -0.365877245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.27512634 -0.44855274 -0.20608611 -0.35652445 -0.649879069</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.20165087 -0.37828467 -0.13704342 -0.27900276 -0.579678870</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.91314829  0.73685215  0.98000422  0.83025707  0.539557740</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750   0.05063479 -0.12643285  0.11724639 -0.03291110 -0.326219164</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.01821154 -0.19789290  0.04646881 -0.09930894 -0.394426328</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.43357588 -1.60863843 -1.37000961 -1.51610401 -1.804126260</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.37343752 -0.54724597 -0.31084238 -0.45580075 -0.749334343</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.44883119  0.27376273  0.51048817  0.36840008  0.070640543</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.44111524  0.27008284  0.50955227  0.36309327  0.068995297</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300   0.08443676 -0.08732245  0.14458135  0.00311272 -0.291441162</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400           NA -0.17542841  0.06687233 -0.08321413 -0.378587859</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.17542841          NA  0.23801680  0.09559327 -0.208008514</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.06687233 -0.23801680          NA -0.14776571 -0.443253352</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5     0.08321413 -0.09559327  0.14776571          NA -0.294496470</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.37858786  0.20800851  0.44325335  0.29449647           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400   0.02529036 -0.14734626  0.09475135 -0.05358786 -0.350566463</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.37263504  0.18709765  0.43653967  0.28837221 -0.006006876</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.10302932 -0.27299461 -0.03593291 -0.18039647 -0.476844007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.37969813  0.20442813  0.44542084  0.30098728  0.001804918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   0.21466605  0.04163824  0.27950902  0.13431097 -0.160798773</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA    0.12931597 -0.04353575  0.19823085  0.04871823 -0.250913831</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.15682666 -0.33163389 -0.09272123 -0.24177308 -0.538381093</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Ce_400        Du_90        Et_5       Lu_200      Lu_400</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.89744854  0.556026625  1.02649325  0.546156831  0.70945350</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.06159341 -0.404460405  0.06566189 -0.413760712 -0.24934042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.42161012  0.084325943  0.54224753  0.072565915  0.23341278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.33495898 -0.677858172 -0.20784884 -0.687141109 -0.52002300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.74830363 -1.092903582 -0.62465535 -1.102669296 -0.93766252</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -0.83182733 -1.172789009 -0.70112848 -1.176276559 -1.01218891</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.01954047 -0.363631463  0.10726736 -0.372906969 -0.20655509</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.30022097 -0.644792204 -0.17216117 -0.653296109 -0.48682535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.22693253 -0.569352590 -0.10275184 -0.582040388 -0.41777359</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.88857185  0.542771183  1.01293215  0.537084220  0.70010783</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750   0.02372542 -0.320466986  0.14963718 -0.327787495 -0.16307474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.04682976 -0.390495335  0.07606968 -0.399537349 -0.23475739</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.46253742 -1.797323701 -1.33333284 -1.806960107 -1.64441187</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.39911855 -0.744092211 -0.27021448 -0.754527885 -0.58848702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.42203779  0.074512048  0.54774811  0.068945232  0.22823179</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.42292155  0.072872881  0.54781860  0.067989044  0.23077667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300   0.05539067 -0.284176366  0.18656503 -0.293726350 -0.13220037</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.02529036 -0.372635044  0.10302932 -0.379698128 -0.21466605</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.14734626 -0.187097650  0.27299461 -0.204428128 -0.04163824</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.09475135 -0.436539671  0.03593291 -0.445420843 -0.27950902</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5     0.05358786 -0.288372213  0.18039647 -0.300987276 -0.13431097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.35056646  0.006006876  0.47684401 -0.001804918  0.16079877</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400           NA -0.344659971  0.12877144 -0.351996753 -0.19019401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.34465997           NA  0.46817332 -0.010777403  0.15079822</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.12877144 -0.468173321          NA -0.477111853 -0.31435974</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.35199675  0.010777403  0.47711185           NA  0.16526643</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   0.19019401 -0.150798218  0.31435974 -0.165266427          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA    0.10482599 -0.236906567  0.23002758 -0.252572879 -0.08916163</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.18700445 -0.529903160 -0.06369180 -0.539833907 -0.37254570</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               Lu_NA       Ox_44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.79664691  1.08623040</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.16277024  0.12569987</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.32382097  0.60443125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.43670325 -0.14949133</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.85124014 -0.55628083</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -0.93141860 -0.63852375</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.12086315  0.16928505</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.40076309 -0.11172834</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.33048082 -0.04197504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.78735604  1.06608043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  -0.08049348  0.20951998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.15167312  0.13772511</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.55970443 -1.27441198</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.49982742 -0.21189068</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.31983099  0.60587067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.32059483  0.60312247</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300  -0.04436763  0.24414195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.12931597  0.15682666</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.04353575  0.33163389</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.19823085  0.09272123</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    -0.04871823  0.24177308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.25091383  0.53838109</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -0.10482599  0.18700445</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.23690657  0.52990316</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.23002758  0.06369180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.25257288  0.53983391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   0.08916163  0.37254570</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA            NA  0.28663051</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.28663051          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 Pl_0      Ce_200        Et_10       Et_30       Et_60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0              NA  0.95982112  0.480202852  1.22827875  1.65321957</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.959821124          NA -0.477766839  0.26936785  0.69410397</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10   -0.480202852  0.47776684           NA  0.75113895  1.17293363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -1.228278749 -0.26936785 -0.751138947          NA  0.42329536</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -1.653219571 -0.69410397 -1.172933634 -0.42329536          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -1.726681430 -0.76766720 -1.255046544 -0.50201505 -0.07435107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.920009648  0.03951698 -0.440498643  0.31018195  0.73163200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -1.199663207 -0.24094151 -0.719038943  0.02947695  0.45247878</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -1.125635489 -0.16582477 -0.649114493  0.10302742  0.52420657</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250  -0.005328731  0.95256750  0.470393738  1.22341512  1.64747943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  -0.874787132  0.08454868 -0.391793056  0.35162451  0.77775159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.946270373  0.01317811 -0.471239148  0.28561022  0.70445387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -2.374491409 -1.41083205 -1.894227639 -1.14385011 -0.72297298</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -1.301799519 -0.34199104 -0.818131080 -0.07741245  0.34873185</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100  -0.484575559  0.47509416 -0.004790527  0.74495768  1.16833531</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200  -0.488892825  0.47155933 -0.003741213  0.74276089  1.16376022</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300  -0.836301185  0.12123567 -0.357163719  0.39140962  0.81688204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.928013674  0.03108083 -0.442746112  0.29855847  0.72384530</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10   -0.751550756  0.20794227 -0.272637183  0.47870142  0.89933610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.993418939 -0.03545871 -0.509308977  0.23562019  0.66292855</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    -0.849831013  0.10979075 -0.370518227  0.38315606  0.80092871</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100  -0.548938181  0.41145518 -0.067195188  0.68282947  1.10287110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -0.898450274  0.06187714 -0.416396084  0.33316384  0.75251038</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90   -0.552635048  0.40698121 -0.065631406  0.67472708  1.09918850</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -1.029233665 -0.07126490 -0.538230182  0.20326714  0.62294403</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200  -0.547092902  0.40998758 -0.069625187  0.68082965  1.10454555</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400  -0.708900236  0.24943385 -0.231872508  0.52123414  0.94351198</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA   -0.799386322  0.16070965 -0.314041714  0.42932639  0.85600137</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -1.078641655 -0.11792312 -0.594629154  0.15041699  0.57178847</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Et_90       Lu_100     Na_1000     Na_1500       Na_250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     1.72668143  0.920009648  1.19966321  1.12563549  0.005328731</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200   0.76766720 -0.039516975  0.24094151  0.16582477 -0.952567496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    1.25504654  0.440498643  0.71903894  0.64911449 -0.470393738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30    0.50201505 -0.310181952 -0.02947695 -0.10302742 -1.223415124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60    0.07435107 -0.731632000 -0.45247878 -0.52420657 -1.647479426</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90            NA -0.807782383 -0.52828868 -0.60333153 -1.714455917</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100   0.80778238           NA  0.28047862  0.20826912 -0.912419997</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000  0.52828868 -0.280478620          NA -0.07310857 -1.192183955</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500  0.60333153 -0.208269115  0.07310857          NA -1.115746791</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   1.71445592  0.912419997  1.19218396  1.11574679           NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750   0.85208276  0.046283817  0.32397816  0.25215125 -0.869294919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12    0.78402556 -0.022951047  0.25372891  0.18315681 -0.937216375</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -0.64989030 -1.456446168 -1.17563818 -1.24418656 -2.361349394</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25    0.42799069 -0.383924321 -0.10265907 -0.17733942 -1.296000175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   1.24551533  0.438041626  0.71276807  0.64220754 -0.474208221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   1.23961096  0.431463190  0.70868509  0.63728448 -0.477890457</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300   0.89445519  0.080928262  0.36076130  0.28968451 -0.825182527</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400   0.80170146 -0.008473098  0.26909600  0.19954267 -0.921630544</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.97457557  0.167656994  0.44590346  0.37462711 -0.748244604</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20    0.74173848 -0.070844237  0.20849666  0.13740874 -0.984417856</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5     0.87948213  0.069754234  0.35156647  0.27330516 -0.842569043</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   1.17921216  0.370467909  0.65197070  0.58125354 -0.543600014</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400   0.83169529  0.021560843  0.30215637  0.22949061 -0.887108578</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    1.17523264  0.369741387  0.64592942  0.57217164 -0.542644629</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5     0.70527186 -0.109382635  0.16791462  0.09761747 -1.017285940</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   1.18270200  0.371871430  0.65145560  0.58009933 -0.540491190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   1.02293124  0.210384126  0.49020878  0.41767112 -0.698213018</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA    0.93582558  0.120379520  0.40267945  0.32967419 -0.791382759</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44    0.65539813 -0.160282917  0.12280509  0.05483822 -1.068682453</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              Na_750       Ro_12    Ro_125       Ro_25       Tr_100       Tr_200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.87478713  0.94627037 2.3744914  1.30179952  0.484575559  0.488892825</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.08454868 -0.01317811 1.4108321  0.34199104 -0.475094159 -0.471559328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.39179306  0.47123915 1.8942276  0.81813108  0.004790527  0.003741213</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.35162451 -0.28561022 1.1438501  0.07741245 -0.744957676 -0.742760893</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.77775159 -0.70445387 0.7229730 -0.34873185 -1.168335307 -1.163760215</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -0.85208276 -0.78402556 0.6498903 -0.42799069 -1.245515327 -1.239610958</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.04628382  0.02295105 1.4564462  0.38392432 -0.438041626 -0.431463190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.32397816 -0.25372891 1.1756382  0.10265907 -0.712768069 -0.708685088</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.25215125 -0.18315681 1.2441866  0.17733942 -0.642207539 -0.637284478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.86929492  0.93721638 2.3613494  1.29600018  0.474208221  0.477890457</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750           NA  0.07064759 1.4965389  0.42475401 -0.389189532 -0.387912927</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.07064759          NA 1.4231375  0.35615226 -0.464992521 -0.456870322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.49653892 -1.42313750        NA -1.07362689 -1.890427796 -1.883926415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.42475401 -0.35615226 1.0736269          NA -0.817200697 -0.810318336</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.38918953  0.46499252 1.8904278  0.81720070           NA  0.007771708</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.38791293  0.45687032 1.8839264  0.81031834 -0.007771708           NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300   0.03724157  0.10994517 1.5301943  0.46381235 -0.352415247 -0.348626750</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.05475339  0.01612656 1.4437982  0.37425961 -0.449472158 -0.440756110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.12564039  0.19167807 1.6175041  0.54936515 -0.266744666 -0.263919844</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.11511723 -0.04147764 1.3835190  0.31446222 -0.505456634 -0.500422206</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5     0.02505458  0.09503660 1.5210167  0.45152823 -0.366917405 -0.362278559</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.32463228  0.39593373 1.8272196  0.75174206 -0.068263241 -0.066029918</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -0.02462814  0.05249023 1.4768540  0.40556248 -0.413144135 -0.410997073</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.31982724  0.39877789 1.8244947  0.75171833 -0.071911402 -0.064791244</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.15136175 -0.07692205 1.3469490  0.27866501 -0.545581521 -0.540115830</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.32772537  0.40099422 1.8274767  0.75574648 -0.062589626 -0.059861522</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   0.16689780  0.23901994 1.6652347  0.59516123 -0.220467651 -0.222532426</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA    0.07987760  0.14784646 1.5706824  0.50376919 -0.317842819 -0.313403855</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.20089534 -0.12675851 1.2948353  0.22121489 -0.597096480 -0.586895200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Tr_300       Tr_400       Va_10       Va_20         Va_5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.836301185  0.928013674  0.75155076  0.99341894  0.849831013</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.121235674 -0.031080833 -0.20794227  0.03545871 -0.109790755</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.357163719  0.442746112  0.27263718  0.50930898  0.370518227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.391409619 -0.298558473 -0.47870142 -0.23562019 -0.383156057</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.816882038 -0.723845296 -0.89933610 -0.66292855 -0.800928709</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -0.894455191 -0.801701459 -0.97457557 -0.74173848 -0.879482131</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.080928262  0.008473098 -0.16765699  0.07084424 -0.069754234</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.360761303 -0.269096004 -0.44590346 -0.20849666 -0.351566474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.289684514 -0.199542668 -0.37462711 -0.13740874 -0.273305160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.825182527  0.921630544  0.74824460  0.98441786  0.842569043</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  -0.037241571  0.054753394 -0.12564039  0.11511723 -0.025054584</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.109945172 -0.016126561 -0.19167807  0.04147764 -0.095036597</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.530194330 -1.443798164 -1.61750405 -1.38351902 -1.521016662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.463812347 -0.374259610 -0.54936515 -0.31446222 -0.451528231</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.352415247  0.449472158  0.26674467  0.50545663  0.366917405</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.348626750  0.440756110  0.26391984  0.50042221  0.362278559</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300            NA  0.093138640 -0.08620809  0.14965559  0.007847778</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.093138640           NA -0.17952285  0.05708411 -0.083392426</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10    0.086208090  0.179522848          NA  0.23790656  0.095251686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.149655594 -0.057084107 -0.23790656          NA -0.137823306</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    -0.007847778  0.083392426 -0.09525169  0.13782331           NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.287511412  0.377885352  0.20366401  0.44075812  0.296425898</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -0.060609927  0.034541129 -0.14332455  0.09171819 -0.049260478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.287142224  0.382030685  0.20507443  0.43938430  0.297868846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.189872515 -0.092752999 -0.27571965 -0.03974171 -0.176788582</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.290042439  0.381132035  0.20541541  0.44232210  0.300370707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400   0.127642049  0.220202729  0.04353547  0.28438445  0.140951239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA    0.039582407  0.131796099 -0.04559914  0.18969532  0.053501183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.241266148 -0.147433216 -0.32263684 -0.08637049 -0.229556091</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                Ce_100      Ce_400        Du_90        Et_5        Lu_200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     5.489382e-01  0.89845027  0.552635048  1.02923367  5.470929e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -4.114552e-01 -0.06187714 -0.406981208  0.07126490 -4.099876e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    6.719519e-02  0.41639608  0.065631406  0.53823018  6.962519e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -6.828295e-01 -0.33316384 -0.674727082 -0.20326714 -6.808296e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -1.102871e+00 -0.75251038 -1.099188501 -0.62294403 -1.104546e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -1.179212e+00 -0.83169529 -1.175232644 -0.70527186 -1.182702e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -3.704679e-01 -0.02156084 -0.369741387  0.10938263 -3.718714e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -6.519707e-01 -0.30215637 -0.645929420 -0.16791462 -6.514556e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -5.812535e-01 -0.22949061 -0.572171636 -0.09761747 -5.800993e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   5.436000e-01  0.88710858  0.542644629  1.01728594  5.404912e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  -3.246323e-01  0.02462814 -0.319827240  0.15136175 -3.277254e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -3.959337e-01 -0.05249023 -0.398777892  0.07692205 -4.009942e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.827220e+00 -1.47685404 -1.824494729 -1.34694903 -1.827477e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -7.517421e-01 -0.40556248 -0.751718332 -0.27866501 -7.557465e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   6.826324e-02  0.41314414  0.071911402  0.54558152  6.258963e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   6.602992e-02  0.41099707  0.064791244  0.54011583  5.986152e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300  -2.875114e-01  0.06060993 -0.287142224  0.18987252 -2.900424e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -3.778854e-01 -0.03454113 -0.382030685  0.09275300 -3.811320e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10   -2.036640e-01  0.14332455 -0.205074427  0.27571965 -2.054154e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -4.407581e-01 -0.09171819 -0.439384300  0.03974171 -4.423221e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    -2.964259e-01  0.04926048 -0.297868846  0.17678858 -3.003707e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100             NA  0.35009045  0.006930412  0.47635256 -2.628595e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -3.500905e-01          NA -0.343584336  0.12536880 -3.480461e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90   -6.930412e-03  0.34358434           NA  0.47240362 -6.834153e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -4.763526e-01 -0.12536880 -0.472403616          NA -4.834212e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   2.628595e-05  0.34804615  0.006834153  0.48342124            NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400  -1.618763e-01  0.18911947 -0.152549553  0.32331543 -1.601536e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA   -2.454317e-01  0.09886115 -0.242171088  0.22929671 -2.505429e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -5.304603e-01 -0.18195802 -0.527003438 -0.04596049 -5.296389e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              Lu_400       Lu_NA       Ox_44</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pl_0     0.70890024  0.79938632  1.07864166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_200  -0.24943385 -0.16070965  0.11792312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_10    0.23187251  0.31404171  0.59462915</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_30   -0.52123414 -0.42932639 -0.15041699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_60   -0.94351198 -0.85600137 -0.57178847</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_90   -1.02293124 -0.93582558 -0.65539813</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_100  -0.21038413 -0.12037952  0.16028292</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1000 -0.49020878 -0.40267945 -0.12280509</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_1500 -0.41767112 -0.32967419 -0.05483822</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_250   0.69821302  0.79138276  1.06868245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Na_750  -0.16689780 -0.07987760  0.20089534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_12   -0.23901994 -0.14784646  0.12675851</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_125  -1.66523469 -1.57068236 -1.29483526</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ro_25   -0.59516123 -0.50376919 -0.22121489</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_100   0.22046765  0.31784282  0.59709648</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_200   0.22253243  0.31340386  0.58689520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_300  -0.12764205 -0.03958241  0.24126615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tr_400  -0.22020273 -0.13179610  0.14743322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_10   -0.04353547  0.04559914  0.32263684</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_20   -0.28438445 -0.18969532  0.08637049</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Va_5    -0.14095124 -0.05350118  0.22955609</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_100   0.16187633  0.24543170  0.53046028</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ce_400  -0.18911947 -0.09886115  0.18195802</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Du_90    0.15254955  0.24217109  0.52700344</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Et_5    -0.32331543 -0.22929671  0.04596049</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_200   0.16015360  0.25054287  0.52963885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_400           NA  0.09110730  0.36833661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Lu_NA   -0.09110730          NA  0.27652897</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ox_44   -0.36833661 -0.27652897          NA</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
