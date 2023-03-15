@@ -85,6 +85,13 @@ cumrank(ranks) # Plot cumulative rankograms
 \references{
 \insertAllCited{}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://hugaped.github.io/MBNMAtime/}
+}
+
+}
 \author{
 \strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com} (\href{https://orcid.org/0000-0002-7813-3749}{ORCID})
 
