@@ -501,10 +501,13 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
 
 
 
-#' Automatically generate parameters to save for a dose-response MBNMA model
+#' Automatically generate parameters to save for a time-course MBNMA model
 #'
 #' @inheritParams mb.run
 #' @param model A JAGS model written as a character object
+#'
+#' @return A character vector of parameter names that should be monitored in the model
+#'
 gen.parameters.to.save <- function(fun, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
@@ -608,6 +611,8 @@ gen.parameters.to.save <- function(fun, model) {
 #' * `binomial` (does not work with time-course MBNMA models)
 #' * `multivar.normal` (does not work with time-course MBNMA models)
 #' @param type The type of MBNMA model fitted. Can be either `"time"` or `"dose"`
+#'
+#' @return A numeric value for the effective number of parameters, pD, calculated via the plugin method
 #'
 #' @details Method for calculating pD via the plugin method proposed by
 #'   \insertCite{spiegelhalter2002}{MBNMAtime}. Standard errors / covariance matrices must be assumed

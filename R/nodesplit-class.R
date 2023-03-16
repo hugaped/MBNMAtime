@@ -126,6 +126,8 @@ plot.nodesplit <- function(x, plot.type=NULL, params=NULL, ...) {
 #' results grouped by treatment comparison.
 #' @param ... arguments to be sent to `knitr::kable()`
 #'
+#' @return Prints summary details of nodesplit results to the console
+#'
 #' @export
 print.nodesplit <- function(x, groupby="time.param", ...) {
 

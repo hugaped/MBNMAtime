@@ -208,6 +208,8 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
 #' @inheritParams predict.mbnma
 #' @param ... further arguments passed to `knitr::kable`
 #'
+#' @return Prints summary details of the model results to the console
+#'
 #' @export
 summary.mbnma <- function(object, ...) {
   checkmate::assertClass(object, "mbnma")

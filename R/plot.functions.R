@@ -690,6 +690,10 @@ timeplot <- function(network, level="treatment", plotby="arm", link="identity", 
 #' @inheritParams plot.mb.predict
 #' @inheritParams predict.mbnma
 #'
+#' @return Plots treatment effects from NMAs performed within discrete time bins. The
+#' object returned is a list containing the plot and a sublist of NMA results and
+#' predictions from each time bin specified in `overlay.nma`.
+#'
 #' @details
 #' Performs several standard NMAs at different time "bins", time periods within
 #' which treatment effects are assumed to be constant over time. Separate NMAs

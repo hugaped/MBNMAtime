@@ -8,6 +8,8 @@
 #' @param x An object on which to apply the rank method
 #' @param ... Arguments to be passed to methods
 #'
+#' @return Uses the rank method
+#'
 #' @export
 rank <- function (x, ...) {
   UseMethod("rank", x)

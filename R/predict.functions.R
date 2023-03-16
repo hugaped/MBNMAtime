@@ -351,9 +351,13 @@ ref.synth <- function(data.ab, mbnma, synth="random",
 #' Checks the validity of ref.resp if given as data frame
 #'
 #' Ensures `ref.resp` takes the correct form to allow for synthesis of network
-#' reference treatment response if data is provided for meta-analysis
+#' reference treatment effect if data is provided for meta-analysis
 #'
 #' @inheritParams ref.synth
+#'
+#' @return Returns `data.ab`, the data frame used to estimate the network reference treatment
+#' time-course function, with additional required indices added.
+#'
 ref.validate <- function(data.ab) {
 
   argcheck <- checkmate::makeAssertCollection()

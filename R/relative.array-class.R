@@ -10,6 +10,8 @@
 #' @param digits An integer indicating the number of significant digits to be used.
 #' @param ... further arguments passed to `knitr::kable`
 #'
+#' @return Prints a league table of treatment effects to the console
+#'
 #' @export
 print.relative.array <- function(x, digits=2, ...) {
 

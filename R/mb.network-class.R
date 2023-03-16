@@ -41,6 +41,10 @@
 #'   a numeric co-ordinate.
 #' @param ... Options for plotting in `igraph`.
 #'
+#' @return Returns an object of class `"igraph"`, which can be modified by other
+#' functions within the `igraph` package.
+#'
+#'
 #' @details The S3 method `plot()` on an `mb.network` object generates a
 #'   network plot that shows how different treatments are connected within the
 #'   network via study comparisons. This can be used to identify how direct and
@@ -203,6 +207,8 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
 #' @param x An object of class `mb.network`.
 #' @param ... further arguments passed to or from other methods
 #'
+#' @return Prints the contents of `x` to the console.
+#'
 #' @export
 print.mb.network <- function(x,...) {
   nn <- names(x)
@@ -228,6 +234,8 @@ print.mb.network <- function(x,...) {
 #'
 #' @param object An object of class `mb.network`.
 #' @param ... further arguments passed to or from other methods
+#'
+#' @return Prints summary details of `x` to the console.
 #'
 #' @export
 summary.mb.network <- function(object,...) {

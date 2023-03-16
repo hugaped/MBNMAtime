@@ -105,6 +105,8 @@ plot.mb.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 #' @inheritParams plot.mb.rank
 #' @param ... further arguments passed to or from other methods
 #'
+#' @return Prints summary details of treatment rankings to the console
+#'
 #' @export
 print.mb.rank <- function(x, ...) {
 
