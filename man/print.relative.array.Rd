@@ -14,6 +14,9 @@ differences between treatments/classes}
 
 \item{...}{further arguments passed to \code{knitr::kable}}
 }
+\value{
+Prints a league table of treatment effects to the console
+}
 \description{
 Print posterior medians (95\% credible intervals) for table of relative effects/mean
 differences between treatments/classes

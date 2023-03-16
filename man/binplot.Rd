@@ -42,6 +42,11 @@ is specified also sets x-axis ticks to time bin boundaries automatically.}
 
 \item{...}{Arguments to be sent to R2jags.}
 }
+\value{
+Plots treatment effects from NMAs performed within discrete time bins. The
+object returned is a list containing the plot and a sublist of NMA results and
+predictions from each time bin specified in \code{overlay.nma}.
+}
 \description{
 Plot relative effects from NMAs performed at multiple time-bins
 }

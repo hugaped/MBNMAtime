@@ -41,8 +41,7 @@ genmaxcols <- function() {
 #' @param direction Either `1` for clockwise numbering (based on the order of `x`) or `-1` for
 #' anti-clockwise.
 #'
-#' @examples
-#' MBNMAtime:::radian.rescale(c(1:10), start=0, direction=1)
+#' @return A numeric vector of rescaled values
 #'
 #' @references
 #' https://gist.github.com/kjhealy/834774/a4e677401fd6e4c319135dabeaf9894393f9392c

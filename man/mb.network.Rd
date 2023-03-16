@@ -92,6 +92,9 @@ at \code{time=0} reports change-from-baseline.}
 \item{description}{Optional. Short description of the network.}
 }
 \value{
+Returns an object of class \code{"igraph"}, which can be modified by other
+functions within the \code{igraph} package.
+
 An object of \code{class("mb.network")} which is a list containing:
 \itemize{
 \item \code{description} A short description of the network

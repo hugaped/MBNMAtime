@@ -29,11 +29,3 @@ dataset in which treatments \code{t1} and \code{t2} are compared.
 Identify unique contrasts relative to each study reference within a network.
 Repetitions of the same treatment comparison are grouped together.
 }
-\examples{
-data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
-  treatment=c(1,2,1,3,2,3,3,4,1,2,4)
-  )
-
-# Identify comparisons informed by direct and indirect evidence
-MBNMAtime:::ref.comparisons(data)
-}

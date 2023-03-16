@@ -16,7 +16,11 @@ columns:
 \item \code{se} Numeric data indicating the standard error for a given observation
 }}
 }
+\value{
+Returns \code{data.ab}, the data frame used to estimate the network reference treatment
+time-course function, with additional required indices added.
+}
 \description{
 Ensures \code{ref.resp} takes the correct form to allow for synthesis of network
-reference treatment response if data is provided for meta-analysis
+reference treatment effect if data is provided for meta-analysis
 }

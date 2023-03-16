@@ -11,6 +11,9 @@ rank(x, ...)
 
 \item{...}{Arguments to be passed to methods}
 }
+\value{
+Uses the rank method
+}
 \description{
 Set rank as a method
 }

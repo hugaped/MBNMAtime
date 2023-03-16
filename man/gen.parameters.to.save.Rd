@@ -2,7 +2,7 @@
 % Please edit documentation in R/run.functions.R
 \name{gen.parameters.to.save}
 \alias{gen.parameters.to.save}
-\title{Automatically generate parameters to save for a dose-response MBNMA model}
+\title{Automatically generate parameters to save for a time-course MBNMA model}
 \usage{
 gen.parameters.to.save(fun, model)
 }
@@ -12,6 +12,9 @@ gen.parameters.to.save(fun, model)
 
 \item{model}{A JAGS model written as a character object}
 }
+\value{
+A character vector of parameter names that should be monitored in the model
+}
 \description{
-Automatically generate parameters to save for a dose-response MBNMA model
+Automatically generate parameters to save for a time-course MBNMA model
 }

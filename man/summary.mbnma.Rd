@@ -12,6 +12,9 @@ a time-course MBNMA model}
 
 \item{...}{further arguments passed to \code{knitr::kable}}
 }
+\value{
+Prints summary details of the model results to the console
+}
 \description{
 Print summary MBNMA results to the console
 }

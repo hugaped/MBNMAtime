@@ -54,6 +54,9 @@ study. This will be estimated by the JAGS model.}
 
 \item{type}{The type of MBNMA model fitted. Can be either \code{"time"} or \code{"dose"}}
 }
+\value{
+A numeric value for the effective number of parameters, pD, calculated via the plugin method
+}
 \description{
 Uses results from MBNMA JAGS models to calculate pD via the
 plugin method \insertCite{spiegelhalter2002}{MBNMAtime}. Can only be used for models with known

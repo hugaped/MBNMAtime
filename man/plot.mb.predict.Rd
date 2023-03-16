@@ -60,6 +60,12 @@ is specified also sets x-axis ticks to time bin boundaries automatically.}
 
 \item{...}{Arguments for \code{ggplot()} or \code{R2jags()}}
 }
+\value{
+An object of class \code{"mb.predict"}. The returned object is a list containing
+a summary of the posterior distribution of predictions, a matrix of MCMC samples
+of the predictions, the \code{"mb.network"} object on which the model was run, and details
+regarding the times and link function used for the predictions.
+}
 \description{
 Plots predicted responses from a time-course MBNMA model
 }

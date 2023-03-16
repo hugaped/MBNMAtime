@@ -122,13 +122,6 @@ inconsistency.loops <- function(data)
 #'   MBNMAtime) `nr` will represent the number of time points in the
 #'   dataset in which treatments `t1` and `t2` are compared.
 #'
-#' @examples
-#' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
-#'   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
-#'   )
-#'
-#' # Identify comparisons informed by direct and indirect evidence
-#' MBNMAtime:::ref.comparisons(data)
 ref.comparisons <- function(data)
 {
   # Assert checks

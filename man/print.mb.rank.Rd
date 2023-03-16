@@ -11,6 +11,9 @@
 
 \item{...}{further arguments passed to or from other methods}
 }
+\value{
+Prints summary details of treatment rankings to the console
+}
 \description{
 Prints a summary of rankings for each parameter
 }

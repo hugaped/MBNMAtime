@@ -11,6 +11,9 @@
 
 \item{...}{further arguments passed to or from other methods}
 }
+\value{
+Prints the contents of \code{x} to the console.
+}
 \description{
 Print mb.network information to the console
 }

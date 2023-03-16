@@ -14,15 +14,14 @@ radian.rescale(x, start = 0, direction = 1)
 \item{direction}{Either \code{1} for clockwise numbering (based on the order of \code{x}) or \code{-1} for
 anti-clockwise.}
 }
+\value{
+A numeric vector of rescaled values
+}
 \description{
 Useful for graphs drawn using \code{igraph} to reposition labels relative to vertices when vertices
 are laid out in a circle (as is common in network plots). \code{igraph} interprets position within
 \code{vertex.label.degree} as radians, so it is necessary to convert locations into radian values. This
 is the main role of this function.
-}
-\examples{
-MBNMAtime:::radian.rescale(c(1:10), start=0, direction=1)
-
 }
 \references{
 https://gist.github.com/kjhealy/834774/a4e677401fd6e4c319135dabeaf9894393f9392c

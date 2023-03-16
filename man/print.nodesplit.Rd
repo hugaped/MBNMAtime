@@ -15,6 +15,9 @@ results grouped by treatment comparison.}
 
 \item{...}{arguments to be sent to \code{knitr::kable()}}
 }
+\value{
+Prints summary details of nodesplit results to the console
+}
 \description{
 Prints basic results from a node-split to the console
 }
