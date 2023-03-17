@@ -575,7 +575,7 @@ print(allres)
 Relative comparisons between treatments in the two datasets at specific follow-up times can then be estimated from MBNMA predicted effects versus a common comparator using the Bucher method and assuming consistency.
 
 ```{r, echo=FALSE, results='asis', fig.cap="2-stage MBNMA: For clarity, 95%CrIs are not shown in the plots or tables but these are calculated and computed in `get.relative()`. Thick connecting lines in network plots indicate comparisons with rich time-course data that can be modelled with a more complex function (e.g. B-spline), thin connecting lines in network plots indicate comparisons with sparse time-course data that can only be modelled with a less complex function (e.g. BEST-ITP). Comparisons between treatments in different subnetworks that are not the network reference must be excluded (red dashed line in network plot)."}
-knitr::include_graphics("figures/2stageMBNMA.png", dpi=250)
+knitr::include_graphics("2stageMBNMA.png", dpi=250)
 ```
 
 
