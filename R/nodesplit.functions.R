@@ -405,7 +405,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
 
   ########### CHECKS OF DATASET FOR VALIDITY OF NODE-SPLITTING (possibly use Val Valkenhoef automation) ############
-  print("running checks")
+  message("running checks")
 
   # Ensure lowest treatment code in t1
   comparisons[["t1"]] <- as.numeric(comparisons[["t1"]])
@@ -417,7 +417,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
   ############# Run NMA model #############
 
-  print("Running NMA model")
+  message("Running NMA model")
 
   result.nma <- do.call(mb.run, args=list(network=network, fun=fun,
                                          ...))
@@ -432,10 +432,11 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
     comp <- as.numeric(c(comparisons[["t1"]][row], comparisons[["t2"]][row]))
 
-    print(paste0("Comparison ", row,"/",nrow(comparisons)))
-    print(paste0("Calculating nodesplit for: ", network$treatments[comp[1]], " vs ", network$treatments[comp[2]]))
-    print(paste0("Treatment code: ", comp[1], " vs ", comp[2]))
-
+    message(paste0("Comparison ", row,"/",nrow(comparisons),"\n",
+                   "Calculating nodesplit for: ", network$treatments[comp[1]], " vs ", network$treatments[comp[2]], "\n",
+                   "Treatment code: ", comp[1], " vs ", comp[2]
+                   )
+            )
 
 
     #######################################
@@ -519,7 +520,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
         result.dir$BUGSoutput$sims.matrix[,colnames(result.dir$BUGSoutput$sims.matrix)==node]
     }
 
-    print("Direct complete")
+    message("Direct complete")
 
 
 
@@ -580,7 +581,7 @@ mb.nodesplit <- function(network, comparisons=mb.nodesplit.comparisons(network),
 
 
 
-    print("Indirect complete")
+    message("Indirect complete")
 
     #########################################
     ######### Calculate Differences ##########
