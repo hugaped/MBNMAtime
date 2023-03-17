@@ -84,25 +84,6 @@ MBNMAtime) <code>nr</code> will represent the number of time points in the
 dataset in which treatments <code>t1</code> and <code>t2</code> are compared.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>studyID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  treatment<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Identify comparisons informed by direct and indirect evidence</span></span></span>
-<span class="r-in"><span><span class="fu">MBNMAtime</span><span class="fu">:::</span><span class="fu">ref.comparisons</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Groups:   t1, t2 [5]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      t1    t2    nr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     1     4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     2     3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     3     4     1</span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

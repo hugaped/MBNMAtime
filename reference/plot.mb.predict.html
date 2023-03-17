@@ -126,6 +126,15 @@ is specified also sets x-axis ticks to time bin boundaries automatically.</p></d
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>An object of class <code>"mb.predict"</code>. The returned object is a list containing
+a summary of the posterior distribution of predictions, a matrix of MCMC samples
+of the predictions, the <code>"mb.network"</code> object on which the model was run, and details
+regarding the times and link function used for the predictions.</p>
+    </div>
+    <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For the S3 method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, if <code>disp.obs</code> is set to <code>TRUE</code> it is
 advisable to ensure predictions in <code>predict</code> are estimated using an even
