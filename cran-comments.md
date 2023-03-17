@@ -1,4 +1,4 @@
-New submission (package was recently archived on CRAN), having fixed notes regarding implicit paragraphs and recompiled documentation.
+New submission (package was recently archived on CRAN), having addressed issues regarding missing value .Rd tags, use of ::: in documentation, and use of print() in functions in which it cannot easily be suppressed.
 
 ## Test environments
 

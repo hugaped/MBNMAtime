@@ -10,7 +10,7 @@
 - Error fixed preventing natural splines from functioning, causing removal from CRAN
 
 ### Minor
-
+- Return values added to documentation for functions in which they were missing
 
 # MBNMAtime 0.2.2
 
