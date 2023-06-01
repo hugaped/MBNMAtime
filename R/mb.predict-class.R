@@ -172,15 +172,19 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   # Overlay reference treatment effect
   if (overlay.ref==TRUE) {
-    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Predicted reference"), linewidth=0.8)
+    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Reference"), linewidth=0.8)
     message(paste0("Reference treatment in plots is ", ref.treat))
   }
-  colorvals <- c("Predicted reference"="red")
 
   # Add overlayed lines and legends
-  g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted MBNMA")) +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% Interval")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% Interval"))
+  if (disp.obs==TRUE) {
+    g <- g + ggplot2::geom_line(ggplot2::aes(linetype="MBNMA")) +
+      ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% Interval")) +
+      ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% Interval"))
+  } else {
+    g <- g + ggplot2::geom_line(ggplot2::aes(linetype="MBNMA")) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, fill="MBNMA", alpha="MBNMA"))
+  }
 
   if (!is.null(overlay.nma)) {
 
@@ -194,66 +198,85 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     }
 
     # Run split NMA
-    nma <- overlay.nma(x, timebins=overlay.nma, method=method, link=x$link, lim=x$lim, plottype = "pred",
+    nma <- overlay.nma(x, timebins=overlay.nma, method=method,
+                       link=x$link, lim=x$lim, plottype = "pred",
                        ...)
 
     predlist <- list()
 
     capt <- "" # Ensure variable is present to avoid error
 
+    predtrt <- nma[[1]]$pred.df[0,]
+
     for (bin in seq_along(nma)) {
 
-      predtrt <- nma[[bin]]$pred.df
-
-      # Write caption
-      if (length(overlay.nma)==2) {
-        capt <- paste0(" effects NMA model\nResDev = ", nma[[bin]]$totresdev,
-                       "; Ndat = ", nma[[bin]]$ndat,
-                       "; DIC = ", nma[[bin]]$dic)
-        if (method=="common") {
-          capt <- paste0("Common", capt)
-        } else if (method=="random") {
-          capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[bin]]$sd)
-        }
-      } else {
-        capt <- "Results for each NMA in overlay.nma are stored in output"
-      }
-
-      g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
-                                               fill="NMA (95% Interval)"),
-                                  data=predtrt) +
-        ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax, color="Predicted NMA"),
-                              data=predtrt, linewidth=0.8)
-
-      colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
-
-      if (plot.bins==TRUE) {
-        capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
-
-        g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
-
-        if (bin==1) {
-          g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
-        }
-      }
+      predtrt <- rbind(predtrt, nma[[bin]]$pred.df)
 
     }
 
+    # Write caption
+    if (length(overlay.nma)==2) {
+      capt <- paste0(" effects NMA model\nResDev = ", nma[[1]]$totresdev,
+                     "; Ndat = ", nma[[1]]$ndat,
+                     "; DIC = ", nma[[1]]$dic)
+      if (method=="common") {
+        capt <- paste0("Common", capt)
+      } else if (method=="random") {
+        capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[1]]$sd)
+      }
+    } else {
+      capt <- "Results for each NMA in overlay.nma are stored in output"
+    }
+
+    g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
+                                             fill="NMA", alpha="NMA"),
+                                data=predtrt) +
+      ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax,
+                                         linetype="NMA"),
+                            data=predtrt, linewidth=0.8)
+
+    if (plot.bins==TRUE) {
+      capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
+
+      g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
+
+      g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
+    }
+
     g <- g +
-      ggplot2::labs(caption=capt) +
-      ggplot2::scale_fill_manual(name="", values=c("NMA (95% Interval)"="lightblue"))
+      ggplot2::labs(caption=capt)
   }
 
-  g <- g + ggplot2::facet_wrap(~factor(treat)) +
-    ggplot2::labs(y="Predicted response", x="Time")
-
-  linetypevals <- c("Predicted MBNMA"="solid",
+  # Define aesthetics
+  linetypevals <- c("MBNMA"="solid",
+                    "Reference"="solid",
+                    "NMA"="solid",
                     "MBNMA 95% Interval"="dashed")
-  g <- g + ggplot2::scale_linetype_manual(name="",
-                                          values=linetypevals)
 
-  g <- g + ggplot2::scale_color_manual(name="",
-                                       values=colorvals) +
+  colorvals <- c("MBNMA"="black",
+                 "Reference"="red",
+                 "NMA"="gray0",
+                 "MBNMA 95% Interval"="black")
+
+  fillvals <- c("MBNMA"=col,
+                "Reference"="red",
+                "NMA"="grey",
+                "MBNMA 95% Interval"="black")
+
+  alphavals <- c("MBNMA"=0.2,
+                 "Reference"=1,
+                 "NMA"=1,
+                 "MBNMA 95% Interval"=1)
+
+  g <- g +
+    ggplot2::scale_linetype_manual(name="", values=linetypevals) +
+    ggplot2::scale_fill_manual(name="", values=fillvals) +
+    ggplot2::scale_color_manual(name="", values=colorvals) +
+    ggplot2::scale_alpha_manual(name="", values=alphavals)
+
+  # Add facets and theme
+  g <- g + ggplot2::facet_wrap(~factor(treat)) +
+    ggplot2::labs(y="Predicted response", x="Time") +
     theme_mbnma()
 
   graphics::plot(g)
