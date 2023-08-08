@@ -1,0 +1,183 @@
+---
+title: "Outputs: Relative effects, forest plots and rankings"
+author: "Hugo Pedder"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: REFERENCES.bib
+vignette: >
+  %\VignetteIndexEntry{Outputs: Relative effects, forest plots and rankings}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  eval=rmarkdown::pandoc_available("1.12.3")
+)
+
+library(MBNMAtime)
+library(rmarkdown)
+library(knitr)
+library(dplyr)
+#load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
+```
+
+## Estimating relatived effects between treatments at a specified time-point
+
+Although `mb.run()` estimates the effects for different treatments on different time-course parameters, these are not necessarily easy to draw conclusions from, particularly for time-course functions with less easily interpretable parameters. `get.relative()` allows users to calculate mean differences (or log-Ratio of Means if `mb.run(link="log")`) between treatments at a specified time-point even if a subset, or even none of the treatments have been investigated at that time-point in included RCTs.
+
+These results will then be reported on the scale on which the data were modeled (i.e. depending on the link function specified in `mb.run()`), rather than that of the specific time-course parameters. Within the matrices of results, mean differences/relative effects are shown as the row-defined treatment versus the column-defined treatment.
+
+```{r, result="hide"}
+# Run a quadratic time-course MBNMA using the alogliptin dataset
+network.along <- mb.network(alog_pcfb)
+
+mbnma <- mb.run(network.alog, 
+                fun=tpoly(degree=2,
+                          pool.1="rel", method.1="random",
+                          pool.2="rel", method.2="common"
+                          )
+)
+```
+```{r}
+# Calculate relative effects between 3 treatments
+allres <- get.relative(mbnma, time=20,
+                       treats = c("alog_100", "alog_50", "placebo"))
+print(allres)
+```
+
+`get.relative()` can also be used to perform a 2-stage MBNMA that allows synthesis of results from two different MBNMA models via a single common comparator. In an MBNMA model, all treatments must share the same time-course function. However, a 2-stage approach can enable fitting of different time-course functions to different sets ("subnetworks") of treatments. For example, some treatments may have rich time-course information, allowing for a more complex time-course function to be used, whereas others may be sparse, requiring a simpler time-course function.
+
+Relative comparisons between treatments in the two datasets at specific follow-up times can then be estimated from MBNMA predicted effects versus a common comparator using the Bucher method and assuming consistency.
+
+```{r, echo=FALSE, results='asis', fig.cap="2-stage MBNMA: For clarity, 95%CrIs are not shown in the plots or tables but these are calculated and computed in `get.relative()`. Thick connecting lines in network plots indicate comparisons with rich time-course data that can be modelled with a more complex function (e.g. B-spline), thin connecting lines in network plots indicate comparisons with sparse time-course data that can only be modelled with a less complex function (e.g. BEST-ITP). Comparisons between treatments in different subnetworks that are not the network reference must be excluded (red dashed line in network plot)."}
+knitr::include_graphics("2stageMBNMA.png", dpi=250)
+```
+
+-   Step 1: The network at a chosen network reference treatment (A) into subnetworks with rich and sparse time-course data.
+-   Step 2: Separate time-course MBNMAs are fitted to each subnetwork using a different time-course function, and relative effects versus the network reference treatment are predicted over time.
+-   Step 3: Bucher method is used to calculate predicted relative effects between all treatments at specific time-points of interest (e.g. ${S_{1}}$, ${S_{2}}$ and ${S_{3}}$). This can be done with `get.relative()` using the output from both MBNMA models in `mbnma` and `mbnma.add` arguments. For more details and an example see the function help file (`?get.relative`).
+
+
+## Deviance plots
+
+To assess how well a model fits the data, it can be useful to look at a plot of the contributions of each data point to the total deviance or residual deviance. This can be done using `devplot()`. As individual deviance contributions are not automatically monitored in the model, this might require the model to be run for additional iterations.
+
+Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a series of boxplots (`plot.type="box"`).
+
+```{r, results="hide", fig.show="hold", eval=FALSE}
+# Run a first-order fractional polynomial time-course MBNMA
+mbnma <- mb.run(network.pain, 
+                fun=tfpoly(degree=1,
+                          pool.1="rel", method.1="random",
+                          method.power1=0.5))
+
+# Plot a box-plot of deviance contributions (the default)
+devplot(mbnma, n.iter=1000)
+```
+
+```{r, echo=FALSE, results="hide", fig.show="hold"}
+# Run a first-order fractional polynomial time-course MBNMA
+mbnma <- mb.run(network.pain, 
+                fun=tfpoly(degree=1,
+                          pool.1="rel", method.1="random",
+                          method.power1=0.5), n.iter=5000)
+
+# Plot a box-plot of deviance contributions (the default)
+devplot(mbnma, n.iter=500)
+```
+
+From these plots we can see that whilst the model fit is typically better at later time points, it fits very poorly at earlier time points.
+
+A function that appropriately captures the time-course shape should show a reasonably flat shape of deviance contributions (i.e. contributions should be similar across all time points).
+
+If saved to an object, the output of `devplot()` contains the results for individual deviance contributions, and this can be used to identify any extreme outliers.
+
+## Fitted values
+
+Another approach for assessing model fit can be to plot the fitted values, using `fitplot()`. As with `devplot()`, this may require running additional model iterations to monitor `theta`.
+
+```{r, eval=FALSE}
+# Plot fitted and observed values with treatment labels
+fitplot(mbnma, n.iter=1000)
+```
+
+Fitted values are plotted as connecting lines and observed values in the original dataset are plotted as points. These plots can be used to identify if the model fits the data well for different treatments and at different parts of the time-course.
+
+## Forest plots
+
+Forest plots can be easily generated from MBNMA models using the `plot()` method on an `"mbnma"` object. By default this will plot a separate panel for each time-course parameter in the model. Forest plots can only be generated for parameters which vary by treatment/class.
+
+```{r, results="hide"}
+# Run a quadratic time-course MBNMA using the alogliptin dataset
+mbnma <- mb.run(network.alog, 
+                fun=tpoly(degree=2,
+                          pool.1="rel", method.1="random",
+                          pool.2="rel", method.2="common"
+                          )
+)
+
+plot(mbnma)
+```
+
+
+## `rank()`: Ranking
+
+```{r, include=FALSE, eval=rmarkdown::pandoc_available("1.12.3")}
+load(system.file("extdata", "ranks.rda", package="MBNMAtime", mustWork = TRUE))
+```
+
+Rankings can be calculated for different time-course parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked. A vector of these is assigned to `params`. `lower_better` indicates whether negative scores should be ranked as "better" (`TRUE`) or "worse" (`FALSE`)
+
+In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
+
+```{r, results="hide", eval=rmarkdown::pandoc_available("1.12.3")}
+# Using the osteoarthritis dataset
+network.pain <- mb.network(osteopain, reference = "Pl_0")
+
+# Identify quantile for knot at 1 week
+timequant <- 1/max(network.pain$data.ab$time)
+
+# Run a piecewise linear time-course MBNMA with a knot at 1 week
+mbnma <- mb.run(network.pain,
+                fun=tspline(type="ls", knots = timequant,
+                            pool.1 = "rel", method.1="common",
+                            pool.2 = "rel", method.2="common"))
+
+
+# Rank results based on AUC (calculated 0-10 weeks), more negative slopes considered to be "better"
+ranks <- rank(mbnma, params=c("auc", "d.2"), 
+                    int.range=c(0,10),  lower_better = TRUE, n.iter=1000)
+```
+
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
+save(ranks, file="inst/extdata/ranks.rda")
+```
+
+```{r, eval=rmarkdown::pandoc_available("1.12.3")}
+print(ranks)
+```
+
+The output is an object of `class("mb.rank")`, containing a list for each ranked parameter in `params`, which consists of a summary table of rankings and raw information on treatment ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using `print()`.
+
+Histograms for ranking results can also be plotted using the `plot()` method, which takes the raw MCMC ranking results given in `rank.matrix` and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.
+
+```{r, eval=rmarkdown::pandoc_available("1.12.3")}
+# Ranking histograms for AUC
+plot(ranks, params = "auc")
+```
+
+Cumulative rankograms indicating the probability of each treatment being ranked 1st, 2nd, etc. for each ranked parameter can also be plotted using `cumrank()`. These can be used to easily compare how different treatments rank for each ranked parameter simultaneously. By default, the Surface Under the Cumulative Ranking curve (SUCRA) are also returned for each treatment and ranked parameter [@salanti2011].
+
+```{r, eval=rmarkdown::pandoc_available("1.12.3")}
+# Cumulative ranking for all ranked parameters
+cumrank(ranks)
+```
+
+
+## References
