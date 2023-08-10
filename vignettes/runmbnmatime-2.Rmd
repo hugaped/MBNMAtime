@@ -255,6 +255,37 @@ mbnma <- mb.run(network.copd,
                 priors=list(rate="dnorm(0,2) T(0,)"))
 ```
 
+Different prior distributions can be assigned for different indices of a parameter by specifying the list element for a parameter as a character vector. This allows (for example) for the user to fit specific priors for specific treatments. The length of this vector must be equal to the number of indices of the parameter. The ordering will also be important - for example for treatment-specific priors the order of the elements within the vector must match the order of the treatments in the network.
+
+For example we might have differnt beliefs about the long-term efficacy of a treatment for which there is no long-term data available in the dataset. In the COPD dataset we have longer term data (up to 52 weeks) on Tiotropium, but much shorter follow-up data (up to 26 weeks) on Aclidinium.
+
+We might believe (e.g. based on clincial opinion) that the efficacy of Aclidinium returns towards baseline at longer follow-up. We could model this using a B-spline and providing informative priors only to the parameters controlling the spline for Aclidinium at later follow-up: 
+
+```{r, results="hide"}
+# Define informative priors for spline parameters
+spline.priors <- list(
+  d.3 = c(
+  Aclidinium="dnorm(-0.5, 100)", 
+  Tiotropium="dnorm(0, 0.0001)"
+  ),
+  d.4 = c(
+  Aclidinium="dnorm(0, 100)", 
+  Tiotropium="dnorm(0, 0.0001)"
+  ))
+
+# Using the COPD dataset with a B-spline MBNMA
+mbnma <- mb.run(network.copd, fun=tspline(degree=2, knots=c(0.1,0.5)),
+                priors=spline.priors)
+```
+
+```{r}
+# Predict and plot time-course relative effect
+pred <- predict(mbnma)
+plot(pred)
+```
+
+As can be seen from the predicted time-course, using informative priors for Aclidinium in this way allows us to predict it's efficacy at longer-term follow-up than the data alone can inform.
+
 
 #### pD (effective number of parameters)
 
