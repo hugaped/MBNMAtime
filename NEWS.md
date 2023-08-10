@@ -1,3 +1,11 @@
+# MBNMAtime 0.2.4
+
+## Additions/changes
+- Reference SDs can now be used when modelling using SMDs to avoid using study-specific SDs which can lead to imprecision and heterogeneity.
+
+## Bug fixes
+- Error in nma.run when using `link="smd"` - a log link function was previously used but has now been fixed
+
 # MBNMAtime 0.2.3
 
 ## Additions/changes
