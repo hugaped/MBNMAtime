@@ -166,19 +166,22 @@ mbnma <- mb.run(network.copd,
 
 It is important to note that the covariance matrix must be positive semi-definite. This may mean that in order to satisfy this requirement for particular covariance matrix structures, the values that `rho` can take are limited. `rho` must always be bounded by -1 and 1, but even within this range some negative values for `rho` can result in a non positive matrix, which can lead to an error in the evaluation of the multivariate likelihood. If so, it may be necessary to further restrict the prior distribution.
 
-### Link function
+#### Link function
 
 Time-course MBNMA can only be used for continuous outcomes *or those that can be summarised as continuous outcomes* (e.g. binary data can be converted to log-odds for inclusion in the model). Typically this means that users will analyse data using an identity link function, the default given to the `link` argument in `mb.run()`m which assumes an additive treatment effect (e.g. mean difference).
 
 However, by specifying `link="log"` a user can model a log link and therefore assume a multiplicative treatment effect. For continuous data this models the treatment effect as a Ratio of Means (RoM) [@friedrich2011]. This also provides an advantage as the treatment effect is scale independent (i.e. studies measuring the same outcome using different measurement scales can be analysed simultaneously). However, within-study treatment effects must all be of the same direction (either positive or negative), and change from baseline measures must be adjusted so that they are also expressed as RoMs (log(follow-up) - log(baseline)) to avoid combining additive and multiplicative assumptions within the same analysis.
 
-An alternative approach for modelling a measurement scale-independent treatment effect whilst still assuming additive treatment effects is to perform the analysis using Standardised Mean Differences (SMD). Whilst not strictly a different link function, this can be specified using `link="smd"`. Currently, `MBNMAtime` standardises treatment effects using the pooled baseline standard deviation (SD) in each study, to limit bias from any effect the treatment might have on SD. The resulting treatment effects are reported in units of SD as SMDs.
+An alternative approach for modelling a measurement scale-independent treatment effect whilst still assuming additive treatment effects is to perform the analysis using Standardised Mean Differences (SMD). Whilst not strictly a different link function, this can be specified using `link="smd"`. 
 
-A more robust approach to minimise bias from estimation of within-study SD would be to use a single reference SD for standardisation of each scale included in the dataset. This is something `MBNMAtime` will incorporate in the future. 
+By default, `MBNMAtime` standardises treatment effects using the pooled standard deviation (SD) at baseline in each study ("study-specific" SDs). However, a more robust approach to minimise bias from estimation of study-specific SD is to use a "reference" SD that is the same for each scale included in the dataset. Such a reference could be estimated from all the included studies within the dataset that report outcomes on the scale (an "internal reference SD"), but the best approach is to obtain a SD from an observational study *that is specific to the target population of interest*.
+
+Once this has been obtained for each scale, it can be included in the original data frame as an additional variable, `standsd`. For the analysis to be meaningful, `stansd` should be the same for all arms within a study and for all studies that report the same outcome. If this has been included in the dataset used to create an `"mb.network"` object, then `sdscale=TRUE` argument can be specified in `mbnma.run()` to indicate that this variable should be used to standardise SMDs. 
 
 Note that for outputting results from a model using SMDs, results should be back-transformed to a clinically relevant scale to make robust interpretation. This can be done by multiplying the effect estimates or predictions by the standard deviation of the relevant scale in the population of interest. For further details of analysis of continuous data that include discussion of both RoM and SMD see [@GMD2].
 
-### Class effects
+
+#### Class effects
 
 Shared effects between treatments within the network can be modelled using class effects. This requires assuming that different treatments have some sort of shared class effect, perhaps due to different (yet clinically similar) doses of the same agent or different treatments with a similar mechanism of action. One advantage of this is that class effects can be used to connect relative effects between treatments in a network that would be disconnected at the treatment level, but can be connected via classes at the class level. However, it is important to ensure that such an effect is clinically justifiable, as making these assumptions risks introducing heterogeneity/inconsistency.
 
