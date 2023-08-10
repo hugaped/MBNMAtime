@@ -234,7 +234,7 @@ $$
 -   $\tau_{\phi}$ is the between-study SD for time-course parameter $\phi$
 -   $\tau^D_{\phi}$ is the within-class SD for time-course parameter $\phi$
 
-Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models.
+Users may wish to change these, perhaps in order to use more/less informative priors or different prior distributions (e.g. log-normal prior rather than a truncated normal for ET50 in an Emax model). However, it may also be because the default prior distributions in some models can lead to errors when compiling/updating models if the prior includes extremely implausible values.
 
 This can be more likely for certain types of models. For example some prior distributions may generate results that are too extreme for JAGS to compute, such as for time-course parameters that are powers (e.g. Emax functions with a Hill parameter or power parameters in fractional polynomials).
 
@@ -251,6 +251,7 @@ mbnma <- mb.run(network.copd,
                 fun=tloglin(pool.rate="rel", method.rate="random"),
                 priors=list(rate="dnorm(0,2) T(0,)"))
 ```
+
 
 #### pD (effective number of parameters)
 
