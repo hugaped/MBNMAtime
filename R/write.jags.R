@@ -957,14 +957,38 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
       #   stop("Prior named ", names(priors)[i], " has matched on multiple instances in the model code. Check priors currently present in model code using get.prior()")
     }
 
-    if (!grepl("^d[a-z.]*\\(", priors[[i]])) {
+    if (!all(grepl("^d[a-z.]*\\(", priors[[i]]))) {
       stop("Prior named ", names(priors)[i], " does not follow JAGS distribution syntax\nSee JAGS manual: https://people.stat.sc.edu/hansont/stat740/jags_user_manual.pdf")
     }
 
-    #line <- grep(paste0("^( +)?", names(priors)[i]), model)
     line <- grep(paste0("^( +)?", names(priors)[i], ".+~"), model)
     state <- model[line]
-    model[line] <- gsub("(^.+~ )(.+$)", paste0("\\1", priors[[i]]), state)
+
+    if (length(priors[[i]])==1) {
+      model[line] <- gsub("(^.+~ )(.+$)", paste0("\\1", priors[[i]]), state)
+
+    } else {
+      # What if length of priors[[i]]>1 ?
+      # Find previous { in code and add priors as new lines there
+
+      # Identifies loop above which to insert
+      insert <- max(grep("\\{", model)[grep("\\{", model) < line])
+
+      # Indentifies starting index in the loop (e.g. from 1: or 2:)
+      loopind <- as.numeric(gsub("\\D", "", model[insert]))
+
+      # Creates vector of priors
+      priors.insert <- paste0(names(priors)[i], "[",
+                              loopind:(length(priors[[i]])+loopind-1),
+                              "] ~ ", priors[[i]])
+
+      # Drop previous prior line
+      model <- model[-line]
+      model <- c(model[1:(insert-1)],
+                 priors.insert,
+                 model[insert:length(model)])
+
+    }
   }
 
   # Cut irrelevant section from JAGS code
