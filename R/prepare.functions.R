@@ -18,6 +18,8 @@
 #' identifier must also have the same class identifier.
 #' * `n` An optional column indicating the number of participants used to calculate the
 #' response at a given observation (required if modelling using Standardised Mean Differences)
+#' * `standsd` An optional column of numeric data indicating reference SDs used to standardise
+#' treatment effects when modelling using Standardised Mean Differences (SMD).
 #' @param reference A number or character (depending on the format of `treatment` within `data.ab`)
 #' indicating the reference treatment in the network (i.e. those for which estimated relative treatment
 #' effects estimated by the model will be compared to).
@@ -353,7 +355,9 @@ add_index <- function(data.ab, reference=1) {
 #' jagsdat <- getjagsdata(painnet$data.ab, rho="dunif(0,1)", covstruct="AR1")
 #'
 #' @export
-getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS", link="identity", cfb=NULL) {
+getjagsdata <- function(data.ab, fun=NULL, class=FALSE,
+                        rho=NULL, covstruct="CS",
+                        link="identity", sdscale=FALSE, cfb=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -362,35 +366,32 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   checkmate::assertChoice(covstruct, choices=c("varadj", "CS", "AR1"), null.ok=TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(cfb, len=length(unique(data.ab$studyID)), null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(sdscale, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
 
-  # dataset = factor indicating which data is required for the analysis (treatment univariate, treatment multivariate, class univariate, class multivariate)
-  # if (class==FALSE & is.null(rho)) {
-  #   dataset <- 1
-  # } else if (class==TRUE & is.null(rho)) {
-  #   dataset <- 2
-  # } else if (class==FALSE & !is.null(rho)) {
-  #   dataset <- 3
-  # } else if (class==TRUE & !is.null(rho)) {
-  #   dataset <- 4
-  # }
-
   varnames <- c("studyID", "y", "se", "treatment", "time", "arm", "fupcount")
-
-  if (link=="smd") {
-    varnames <- append(varnames, "n")
-
-    # Check all values of n are present
-    if (any(is.na(data.ab$n))) {
-      stop("Missing values in n - cannot use link='smd'")
-    }
-  }
 
   if (class==TRUE) {
     varnames <- append(varnames, "class")
   }
+
+  if (link=="smd") {
+    if (sdscale==TRUE) {
+      # Use refernce SD for standardising
+      varnames <- append(varnames, "standsd")
+    } else {
+      # Use pooled study-specific SD for standardising
+      datavars <- append(datavars, "n")
+
+      # Check all values of n are present
+      if (any(is.na(data.ab$n))) {
+        stop("Missing values in n - cannot estimate study-specific SDs")
+      }
+    }
+  }
+  varnames <- append(varnames, datavars)
 
   # Check correct variables are present
   if (!all(varnames %in% names(df))) {
@@ -473,6 +474,10 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
     datalist[["class"]] <- classcode
   }
 
+  if (sdscale==TRUE) {
+    datalist[["pool.sd"]] <- vector()
+  }
+
   # Generate empty spline matrix
   if (!is.null(fun)) {
     if (any(c("ns", "bs", "ls") %in% fun$name)) {
@@ -507,6 +512,11 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE, rho=NULL, covstruct="CS"
   # Add data to datalist elements
   for (i in 1:max(as.numeric(df$studyID))) {
     datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i][1])
+
+    if (sdscale==TRUE) {
+      datalist[["pool.sd"]] <- append(datalist[["pool.sd"]], df$standsd[as.numeric(df$studyID)==i &
+                                                                          df$arm==1 & df$fupcount==1])
+    }
 
     for (k in 1:max(df$arm[df$studyID==i])) {
 
@@ -1030,6 +1040,7 @@ mb.make.contrast <- function(network, datatype=NULL, format="wide") {
 #' * Checks that class codes are consistent within each treatment
 #' * Checks that treatment codes are consistent across different time points within a study
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
+#' * Checks that standsd values are consistent within a study
 #'
 #' @return An error or warnings if checks are not passed. Runs silently if checks are passed
 #'
@@ -1186,6 +1197,16 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
     if (length(unique(class.mismatch))>0) {
       stop(paste0("Class codes are different within the same treatment for the following treatments:\n",
                  paste(unique(class.mismatch), collapse="\n")))
+    }
+  }
+
+  # Check that standardising SDs are consistent within each study
+  if ("standsd" %in% names(data.ab)) {
+    stansd.df <- data.ab %>% dplyr::select(studyID, standsd) %>%
+      unique(.)
+
+    if (nrow(stansd.df)!=length(unique(stansd.df$studyID))) {
+      stop("Standardising SDs in `data.ab$standsd` must be identical within each study")
     }
   }
 

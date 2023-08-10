@@ -25,6 +25,9 @@
 #' @param link Can take either `"identity"` (the default),
 #'   `"log"` (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 #'   `"smd"` (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).
+#' @param sdscale Logical object to indicate whether to write a model that specifies a reference SD
+#'  for standardising when modelling using Standardised Mean Differences. Specifying `sdscale=TRUE`
+#'  will therefore only modify the model if link function is set to SMD (`link="smd"`).
 #'
 #' @param rho The correlation coefficient when modelling within-study correlation between time points. The default is a string representing a
 #'   prior distribution in JAGS, indicating that it be estimated from the data (e.g. `rho="dunif(0,1)"`). `rho` also be assigned a
@@ -255,7 +258,7 @@
 #' }
 #' @export
 mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, intercept=NULL,
-                      link="identity",
+                      link="identity", sdscale=FALSE,
                       parameters.to.save=NULL,
                       rho=0, covar="varadj",
                       omega=NULL, corparam=FALSE,
@@ -277,8 +280,6 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  message("Change from version 0.2.2 onwards: corparam=FALSE as default")
-
   # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
   if (n.iter==n.burnin) {
     n.burnin <- n.burnin - 1
@@ -296,9 +297,17 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
     }
   }
 
+  # Check sdscale
+  if (sdscale==TRUE) {
+    if (link!="smd") {
+      sdscale <- FALSE
+    }
+  }
+
 
   if (is.null(model.file)) {
     model <- mb.write(fun=fun, link=link,
+                      sdscale=sdscale,
                       positive.scale=positive.scale, intercept=intercept,
                       rho=rho, covar=covar,
                       class.effect=class.effect, UME=UME,
@@ -355,7 +364,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   data.ab <- network[["data.ab"]]
   result.jags <- mb.jags(data.ab, model, fun=fun, link=link, cfb=network$cfb,
                        class=class, rho=rho, covar=covar, omega=omega,
-                       jagsdata=jagsdata,
+                       jagsdata=jagsdata, sdscale=sdscale,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
                        n.burnin=n.burnin, n.thin=n.thin,
@@ -388,7 +397,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
                     "fun"=fun,
                     "jagscode"=model, "jagsdata"=jagsdata,
-                    "link"=link,
+                    "link"=link, "sdscale"=sdscale,
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
@@ -415,7 +424,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                        class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
-                       cfb=NULL, omega=NULL,
+                       cfb=NULL, omega=NULL, sdscale=FALSE,
                        jagsdata=NULL,
                        warn.rhat=FALSE, ...) {
 
@@ -429,12 +438,16 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   checkmate::assertClass(fun, "timefun", add=argcheck)
   checkmate::assertLogical(cfb, null.ok=TRUE, add=argcheck)
   checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(sdscale, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
   if (is.null(jagsdata)) {
     # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar, fun=fun, link=link, cfb=cfb) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    jagsdata <- getjagsdata(data.ab, class=class,
+                            rho=rho, covstruct=covar,
+                            fun=fun, link=link, sdscale=sdscale,
+                            cfb=cfb) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
 
     if (!is.null(omega)) {
       jagsdata[["omega"]] <- omega
@@ -810,13 +823,20 @@ mb.update <- function(mbnma, param="theta",
 #' nma.run(df, method="random")
 #'
 #' @export
-nma.run <- function(data.ab, method="common", link="identity", ...) {
+nma.run <- function(data.ab, method="common", link="identity", sdscale=FALSE, ...) {
+
+  # Check sdscale
+  if (sdscale==TRUE) {
+    if (link!="smd") {
+      sdscale <- FALSE
+    }
+  }
 
   # Write NMA model for common/random effects
-  model <- write.nma(method=method, link=link)
+  model <- write.nma(method=method, link=link, sdscale=sdscale)
 
   # Get jags data
-  tempjags <- getnmadata(data.ab, link=link)
+  tempjags <- getnmadata(data.ab, link=link, sdscale=sdscale)
   tempjags[["studyID"]] <- NULL
 
   parameters.to.save <- c("d", "totresdev")
