@@ -31,9 +31,16 @@ library(dplyr)
 
 After performing an MBNMA, predictions can be calculated from the parameter estimates using `predict()` on an `"mbnma"` object. A number of important parameters need to be identified to make robust predictions. However, default values can be used that set values of zero for the reference treatment baseline and time-course parameters which indicates that mean differences / relative treatment effects should be estimated. For further information the help file can be accessed using `?predict.mbnma`.
 
+### E0 (time=0)
+
 One key parameter is `E0`, which defines what value(s) to use for the predicted mean at time = 0. A single numeric value can be given for `E0` to indicate a deterministic value, or a function representing a random number generator (RNG) distribution in R (stochastic) (e.g. `E0 = ~rnorm(n, 7, 0.2)`. These values can be identified for the population of interest from external data (e.g. observational/registry).
 
-The more challenging parameter(s) to identify are those for the network reference treatment time-course, supplied to `predict()` in the `ref.resp` argument. For estimating mean differences / relative treatment effects over time this does not need to be specified since typically in an MBNMA, relative effects are estimated and the network reference effect is modeled as a nuisance parameter. However, for predicting mean responses over time we need to provide an input for the network reference treatment effect for all time-course parameters modeled using `pool="rel"` so that we can apply the relative effects estimated in our model to it. There are two options for providing these values.
+
+### Baseline (reference treatment) time-course
+
+The more challenging parameter(s) to identify are those for the network reference treatment time-course, supplied to `predict()` in the `ref.resp` argument. For estimating mean differences / relative treatment effects over time this does not need to be specified since typically in an MBNMA, relative effects are estimated and the network reference effect is modeled as a nuisance parameter. 
+
+However, for predicting mean responses over time we need to provide an input for the network reference treatment effect for all time-course parameters modeled using `pool="rel"` so that we can apply the relative effects estimated in our model to it. There are two options for providing these values.
 
 The first approach is to give values for each time-course parameter modeled using relative effects to `ref.resp`. This is given as a list, with a separate named element for each time-course parameter. Each element can take either a single numeric value (deterministic), or a function representing a random number generator distribution in R (stochastic).
 
@@ -85,6 +92,9 @@ print(pred)
 
 It is also possible specify the time points for which to make predictions (`times`), given as a vector of positive numbers. If left as the default then the maximum follow-up in the dataset will be used as the upper limit for the range of predicted time-points.
 
+
+### Exploring predictions
+
 An object of class `"mb.predict"` is returned, which is a list of summary tables and MCMC prediction matrices for each treatment, in addition to the original `mbnma` object. The `summary()` method can be used to print mean posterior predictions at each time point for each treatment.
 
 Predicted values can also be plotted using the `plot()` method on an object of `class("mb.predict")`. Within the default arguments, the median predicted network reference treatment effect is overlaid on the predictions for each treatment. Setting `overlay.ref = FALSE` prevents this and causes the network reference treatment effect to be plotted as a separate panel. Shaded counts of observations in the original dataset at each predicted time point can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`.
@@ -109,7 +119,7 @@ mbnma <- mb.run(network.obese,
 # Define stochastic values centred at zero for network reference treatment
 ref.params <- list(beta.1=~rnorm(n, 0, 0.05), beta.2=~rnorm(n, 0, 0.0001))
 
-# Predict responses over the
+# Predict responses within the range of the data
 pred.obese <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
                         ref.resp=ref.params)
 
@@ -129,7 +139,7 @@ mbnma <- mb.run(network.obese,
 # Define stochastic values centred at zero for network reference treatment
 ref.params <- list(beta.1=~rnorm(n, 0, 0.05), beta.2=~rnorm(n, 0, 0.0001))
 
-# Predict responses over the
+# Predict responses within the range of the data
 pred.obese <- predict(mbnma, times=c(0:50), E0=100, treats = c(1,4,15),
                         ref.resp=ref.params)
 
@@ -139,7 +149,7 @@ plot(pred.obese, disp.obs = TRUE)
 
 As you can see, within the limits of the observed data the predicted values appear reasonable. However, extrapolation beyond this for `dexf_30MG` leads to some rather strange results, suggesting an unrealistically huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
 
-### Plotting "lumped" NMA results
+#### Plotting "lumped" NMA results
 
 As a further addition to the plots of MBNMA predictions, it is possible to add predicted results from an NMA model or multiple "lumped" NMA models performed a different time "bins" (specified in `overlay.nma`), time periods within which we are assuming treatment effects are constant over time. This is similar to the output generated by `binplot()`. Either a `"random"` (the default) or `"common"` effects NMA can be specified, and model fit statistics are reported below the resulting plot.
 
@@ -152,5 +162,23 @@ The NMA predictions are plotted over the range specified in `overlay.nma` as a h
 plot(pred, overlay.nma=c(5,8,15), n.iter=20000)
 ```
 
+
+#### Ranking
+
+Predictions can also be ranked, allowing for ranking of predicted efficacy at a single time-point. We will illustrate this by ranking mean differences from the network reference treatment (i.e. by setting `ref.resp=NULL` and `E0=0`).
+
+```{r}
+# Predict responses within the range of data
+pred.obese <- predict(mbnma, times=c(0:50),
+                      E0=0, ref.resp = NULL)
+
+# Rank predictions at 50 weeks follow-up
+ranks <- rank(pred.obese, time=50)
+
+summary(ranks)
+plot(ranks)
+```
+
+The results indicate that dexf_60MG (Dexfenfluramine 60mg) is the highest ranked treatment.
 
 ## References
