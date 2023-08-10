@@ -1201,7 +1201,8 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 
   # Check that standardising SDs are consistent within each study
   if ("standsd" %in% names(data.ab)) {
-    stansd.df <- data.ab %>% dplyr::select(studyID, standsd) %>%
+    stansd.df <- data.ab %>% dplyr::ungroup(.) %>%
+      dplyr::select(studyID, standsd) %>%
       unique(.)
 
     if (nrow(stansd.df)!=length(unique(stansd.df$studyID))) {
