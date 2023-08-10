@@ -1369,12 +1369,13 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x), bounda
 #' getnmadata(data.ab)
 #'
 #' @export
-getnmadata <- function(data.ab, link="identity") {
+getnmadata <- function(data.ab, link="identity", sdscale=FALSE) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertChoice(link, choices = c("identity", "smd", "log"), null.ok = FALSE, add=argcheck)
+  checkmate::assertLogical(sdscale, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
@@ -1382,7 +1383,11 @@ getnmadata <- function(data.ab, link="identity") {
   varnames <- c("y", "se", "treatment", "arm")
 
   if (link=="smd") {
-    varnames <- append(varnames, "n")
+    if (sdscale==TRUE) {
+      varnames <- append(varnames, "pool.sd")
+    } else {
+      varnames <- append(varnames, "n")
+    }
   }
 
   # Check correct variables are present
@@ -1402,7 +1407,9 @@ getnmadata <- function(data.ab, link="identity") {
   # Prepare list variables at each level
   datavars <- c("y", "se", "treat")
   if (link=="smd") {
-    datavars <- append(datavars, "n")
+    if (sdscale==FALSE) {
+      datavars <- append(datavars, "n")
+    }
   }
 
   # Create a separate object for each datavars
@@ -1425,9 +1432,17 @@ getnmadata <- function(data.ab, link="identity") {
     datalist[[datavars[i]]] <- get(datavars[i])
   }
 
+  if (sdscale==TRUE) {
+    datalist[["pool.sd"]] <- vector()
+  }
+
   # Add data to datalist elements
   for (i in 1:max(as.numeric(df$studyID))) {
     datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i][1])
+
+    if (sdscale==TRUE) {
+      datalist[["pool.sd"]] <- append(datalist[["pool.sd"]], unique(df$standsd[as.numeric(df$studyID)==i]))
+    }
 
     for (k in 1:max(df$arm[df$studyID==i])) {
 
