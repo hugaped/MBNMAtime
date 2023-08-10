@@ -315,6 +315,25 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
     )
 
     if (!is.null(priors)) {
+      # Check that order is correct if names in priors match network$treatments
+      for (i in seq_along(priors)) {
+        if (length(priors[[i]])>1) {
+          if (!is.null(names(priors[[i]]))) { # If treatment-specific priors are named
+            if (length(class.effect)>0) {
+              warning("MBNMAtime defaults to treatment-specific priors if multiple priors are specified for a parameter")
+            }
+
+            priornam <- names(priors[[i]])
+
+            # If at least 2 names match those in network$treatments then sort priors to match network order
+            if (sum(priornam %in% network$treatments)>=2) {
+              priors[[i]] <- priors[[i]][match(network$treatments, priornam, nomatch=0)]
+            }
+          }
+        }
+        prior <- priors[[i]]
+      }
+
       model <- replace.prior(priors=priors, model=model)
     }
 
@@ -328,15 +347,6 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
     parameters.to.save <-
       gen.parameters.to.save(fun=fun, model=model)
   }
-
-  # Removed in version 0.2.3
-  # If multiple time-course parameters are relative effects then add omega default
-  # if (is.null(omega)) {
-  #   relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
-  #   if (sum(relparam)>1 & corparam==TRUE) {
-  #     omega <- diag(rep(1,sum(relparam)))
-  #   }
-  # }
 
   # Add nodes to monitor to calculate plugin pd
   if (pd=="plugin") {
@@ -406,10 +416,6 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                     "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
   result[["network"]] <- network
-  # result[["treatments"]] <- network[["treatments"]]
-  # if ("classes" %in% names(network)) {
-  #   result[["classes"]] <- network[["classes"]]
-  # }
   result[["type"]] <- "time"
 
   if (!("error" %in% names(result))) {
