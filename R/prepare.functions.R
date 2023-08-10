@@ -383,7 +383,7 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE,
       varnames <- append(varnames, "standsd")
     } else {
       # Use pooled study-specific SD for standardising
-      datavars <- append(datavars, "n")
+      varnames <- append(varnames, "n")
 
       # Check all values of n are present
       if (any(is.na(data.ab$n))) {
@@ -391,7 +391,6 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE,
       }
     }
   }
-  varnames <- append(varnames, datavars)
 
   # Check correct variables are present
   if (!all(varnames %in% names(df))) {
