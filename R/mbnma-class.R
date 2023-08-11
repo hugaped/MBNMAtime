@@ -783,16 +783,6 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
     }
   }
 
-  # # Compile parameter data into one data frame
-  # mb.sum <- as.data.frame(x[["BUGSoutput"]][["summary"]])
-  # plotdata <- mb.sum[0,]
-  # for (i in seq_along(params)) {
-  #   paramdata <- mb.sum[grepl(paste0("^", params[i]),rownames(mb.sum)),]
-  #   paramdata[["timeparam"]] <- rep(params[i], nrow(paramdata))
-  #   plotdata <- rbind(plotdata, paramdata)
-  # }
-  # plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
-
   # Compile parameter data into one data frame
   mcmc <- x$BUGSoutput$sims.list
   plotdata <- data.frame(Var2=NA, value=NA, timeparam=NA)
@@ -826,7 +816,7 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
       classcodes <- classdat$Var2
       c.labs <- class.labs[classcodes]
     } else if ("classes" %in% names(x$network)) {
-      c.labs <- x$network[["classes"]][x$network[["classes"]]!="Placebo"]
+      c.labs <- x$network[["classes"]]
     } else {
       c.labs <- sort(unique(classdat$param))
     }
@@ -858,8 +848,8 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
     ggplot2::facet_wrap(~timeparam, scales="free")
 
   # Axis labels
-  g <- g + ggplot2::xlab("Treatment / Class") +
-    ggplot2::ylab("Effect size") +
+  g <- g + ggplot2::xlab("Effect size") +
+    ggplot2::ylab("Treatment / Class") +
     theme_mbnma()
 
   g <- g + do.call(ggdist::stat_halfeye, args = list(...))
