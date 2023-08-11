@@ -285,7 +285,7 @@ add_index <- function(data.ab, reference=1) {
     classes <- as.character(unique(classdata$class))
 
     # Recode classes
-    newdat$class <- as.numeric(factor(newdat$class, levels=classes))
+    outlist$data.ab$class <- as.numeric(factor(newdat$class, levels=classes))
 
     # Generate class key
     classkey <- unique(classdata)
