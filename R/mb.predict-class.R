@@ -473,12 +473,16 @@ rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE
   colnames(rank.mat) <- treats
 
   # Store rankings
-  rank.result <- list(temp=
-                        list("summary"=sumrank(rank.mat),
-                             "prob.matrix"=calcprob(rank.mat, treats=treats),
-                             "rank.matrix"=rank.mat)
-  )
-  names(rank.result) <- paste0("Predictions at time = ", time)
+  # rank.result <- list(temp=
+  #                       list("summary"=sumrank(rank.mat),
+  #                            "prob.matrix"=calcprob(rank.mat, treats=treats),
+  #                            "rank.matrix"=rank.mat)
+  # )
+  # names(rank.result) <- paste0("Predictions at time = ", time)
+  rank.result <- list("param"=paste0("Predictions at time = ", time),
+                      "summary"=sumrank(rank.mat),
+                      "prob.matrix"=calcprob(rank.mat, treats=treats),
+                      "rank.matrix"=rank.mat)
 
   class(rank.result) <- "mb.rank"
   return(rank.result)

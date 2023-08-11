@@ -12,11 +12,11 @@
 #'
 #' @inheritParams plot.mb.predict
 #' @inheritParams stats::integrate
-#' @param params A character vector containing any model parameters monitored
+#' @param param A character object containing any model parameter monitored
 #'   in `mbnma` for which ranking is desired (e.g. `"beta.1"`, `"emax"`).
-#'   Parameters must vary by treatment for ranking to be possible. Can include
+#'   Parameters must vary by treatment for ranking to be possible. Can also be specified as
 #'   `"auc"` (see details).
-#' @param treats A character vector of treatment/class names (depending on the value of `level`) or
+#' @param treats A character vector of treatment/class names (depending on the parameter to be ranked) or
 #'   a numeric vector of treatment/class codes (as coded in `mbnma`)
 #'   that indicate which treatments/classes to calculate rankings for. If left `NULL``
 #'   then rankings will be calculated for all treatments/classes.
@@ -26,22 +26,19 @@
 #'   over which to calculate AUC. Takes the form c(lower bound, upper bound). If left
 #'   as `NULL` (the default) then the range will be between zero and the maximum follow-up
 #'   time in the dataset.
-#' @param level A character object to indicate whether the parameters to be ranked are at the treatment
-#'   level (`"treatment"`) or class level (`"class"`).
 #' @param n.iter The number of iterations for which to calculate AUC (if `"auc"` is included in `params`).
 #'   Must be a positive integer. Default is the value used in `mbnma`.
 #' @param ... Arguments to be sent to `integrate()`
 #'
-#' @return A named list whose elements correspond to parameters given in
-#'   `params`. Each element contains:
+#' @return A named list whose elements include:
 #'   * `summary.rank` A data frame containing
 #'   mean, sd, and quantiles for the ranks of each treatment given in `treats`
 #'   * `prob.matrix` A matrix of the proportions of MCMC results for which each
-#'   treatment in `treats` ranked in which position for the given parameter
-#'   * `rank.matrix` A matrix of the ranks of MCMC results for each treatment in
+#'   treatment/class in `treats` ranked in which position for the given parameter
+#'   * `rank.matrix` A matrix of the ranks of MCMC results for each treatment/class in
 #'   `treats` for the given parameter.
 #'
-#' @details `"auc"` can be included in `params` to rank treatments based on
+#' @details `"auc"` can be specified in `param` to rank treatments based on
 #'   Area Under the Curve (AUC). This accounts for the effect of multiple
 #'   time-course parameters simultaneously on the treatment response, but will
 #'   be impacted by the range of time over which AUC is calculated (`int.range`).
@@ -65,7 +62,7 @@
 #'   intercept=FALSE)
 #'
 #' # Rank treatments by time-course parameter from the model with lower scores being better
-#' rank(emax, params=c("emax", "et50"), lower_better=TRUE)
+#' rank(emax, param=c("emax"), lower_better=TRUE)
 #'
 #' # Rank treatments 1-3 by AUC
 #' rank(emax, params="auc", treats=c(1:3), lower_better=TRUE,
@@ -73,7 +70,7 @@
 #' }
 #'
 #' @export
-rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
+rank.mbnma <- function(x, param="auc", lower_better=FALSE, treats=NULL,
                        int.range=NULL,
                        level="treatment", n.iter=x$BUGSoutput$n.sims,
                        ...) {
@@ -81,7 +78,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mbnma", add=argcheck)
-  checkmate::assertCharacter(params, any.missing=FALSE, unique=TRUE, add=argcheck)
+  checkmate::assertCharacter(param, any.missing=FALSE, unique=TRUE, len=1, add=argcheck)
   checkmate::assertLogical(lower_better, null.ok=FALSE, len=1, add=argcheck)
   checkmate::assertNumeric(int.range, lower=0, finite=TRUE, any.missing=FALSE, len=2, null.ok=TRUE,
                            sorted=TRUE, add=argcheck)
@@ -89,20 +86,29 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
   checkmate::assertInt(n.iter, lower=1, upper=x$BUGSoutput$n.sims, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Check level
-  if (level=="class" & length(x$model.arg$class.effect)==0) {
-    stop("`level` has been specified as `class` yet `x` is not a class effect model")
+  # Check param is monitored
+  if (!"auc" %in% param) {
+    if (!param %in% x$parameters.to.save) {
+      stop(paste0(param, " is not a valid paramter saved from the MBNMA model"))
+    }
   }
-  level <- ifelse(level=="treatment", "treatments", "classes")
 
-  # Ensure AUC is the last estimate to be called
-  if ("auc" %in% params) {
-    params <- c(params[params!="auc"], "auc")
-
-    # if (length(x$model.arg$class.effect)>0) {
-    #   stop("AUC cannot currently be calculated for class effect models")
-    # }
+  # Set level
+  if (grepl("[[:upper:]]", param)) {
+    level <- "classes"
+  } else {
+    level <- "treatments"
   }
+
+  # if (level=="class" & length(x$model.arg$class.effect)==0) {
+  #   stop("`level` has been specified as `class` yet `x` is not a class effect model")
+  # }
+  # level <- ifelse(level=="treatment", "treatments", "classes")
+
+  # # Ensure AUC is the last estimate to be called
+  # if ("auc" %in% param) {
+  #   params <- c(params[params!="auc"], "auc")
+  # }
 
   # If treats have not been specified then select all of them
   if (is.null(treats)) {
@@ -121,7 +127,7 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
   }
 
   # Provide int.range default values
-  if ("auc" %in% params) {
+  if ("auc" %in% param) {
 
     if (is.null(int.range)) {
 
@@ -137,63 +143,118 @@ rank.mbnma <- function(x, params="auc", lower_better=FALSE, treats=NULL,
 
   # Change beta to d (if present) so that it is identified in mcmc output
   for (i in 1:4) {
-    if (paste0("beta.",i) %in% params) {
+    if (paste0("beta.",i) %in% param) {
       if (!paste0("beta.",i) %in% x[["parameters.to.save"]]) {
-        params[which(params==paste0("beta.",i))] <- paste0("d.",i)
+        param[which(param==paste0("beta.",i))] <- paste0("d.",i)
       }
     }
   }
 
-  rank.result <- list()
-  for (i in seq_along(params)) {
-    if (params[i] %in% x[["parameters.to.save"]]) {
-      param.mod <- x[["BUGSoutput"]][["sims.list"]][[params[i]]]
-
-      # Check that selected parameter is different over multiple treatments
-      if (!is.matrix(param.mod) | ncol(param.mod)<=1) {
-        msg <- paste0(params[i], " does not vary by treatment and therefore cannot be ranked by treatment")
-        stop(msg)
-      }
-
-      param.mod <- param.mod[,which(x$network[[level]] %in% treats)]
-
-      rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
-        order(order(x, decreasing = !lower_better), decreasing=FALSE)
-      }))
-      colnames(rank.mat) <- treats
-
-      # Ranking probabilityes
-      prob.mat <- calcprob(rank.mat, treats=treats)
-
-      # Calculate cumulative ranking probabilities
-      cum.mat <- apply(prob.mat, MARGIN=2,
-                       FUN=function(col) {cumsum(col)})
-
-      rank.result[[params[i]]] <-
-        list("summary"=sumrank(rank.mat),
-             "prob.matrix"=prob.mat,
-             "rank.matrix"=rank.mat,
-             "cum.matrix"=cum.mat,
-             "lower_better"=lower_better
-             )
-
-    } else if (params[i]=="auc") {
-
-      auc <- rankauc(x, lower_better=lower_better,
-                     treats=treats, level=level,
-                     int.range=int.range, n.iter=n.iter, ...)
-
-      # Calculate cumulative ranking probs for aux
-      auc[["cum.matrix"]] <- apply(auc$prob.matrix, MARGIN=2,
-                                   FUN=function(col) {cumsum(col)})
-      auc[["lower_better"]] <- lower_better
-
-      rank.result[["auc"]] <- auc
-    } else {
-      stop(paste0(params[i],
-                  " is not a valid paramter saved from the MBNMA model"))
-    }
+  if (level=="class" & !grepl("[[:upper:]]", param)) {
+    stop(paste0("`level` has been specified as `class` but ", param, " is not modelled at the class level"))
   }
+
+  if (param %in% x[["parameters.to.save"]]) {
+    param.mod <- x[["BUGSoutput"]][["sims.list"]][[param]]
+
+    # Check that selected parameter is different over multiple treatments
+    if (!is.matrix(param.mod) | ncol(param.mod)<=1) {
+      msg <- paste0(param, " does not vary by treatment and therefore cannot be ranked by treatment")
+      stop(msg)
+    }
+
+    param.mod <- param.mod[,which(x$network[[level]] %in% treats)]
+
+    rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
+      order(order(x, decreasing = !lower_better), decreasing=FALSE)
+    }))
+    colnames(rank.mat) <- treats
+
+    # Ranking probabilityes
+    prob.mat <- calcprob(rank.mat, treats=treats)
+
+    # Calculate cumulative ranking probabilities
+    cum.mat <- apply(prob.mat, MARGIN=2,
+                     FUN=function(col) {cumsum(col)})
+
+    rank.result <-
+      list("param"=param,
+           "summary"=sumrank(rank.mat),
+           "prob.matrix"=prob.mat,
+           "rank.matrix"=rank.mat,
+           "cum.matrix"=cum.mat,
+           "lower_better"=lower_better
+      )
+
+  } else if (param=="auc") {
+
+    auc <- rankauc(x, lower_better=lower_better,
+                   treats=treats, level=level,
+                   int.range=int.range, n.iter=n.iter, ...)
+
+    # Calculate cumulative ranking probs for aux
+    auc[["cum.matrix"]] <- apply(auc$prob.matrix, MARGIN=2,
+                                 FUN=function(col) {cumsum(col)})
+    auc[["lower_better"]] <- lower_better
+    auc[["param"]] <- "auc"
+
+    rank.result <- auc
+  }
+
+  # rank.result <- list()
+  # for (i in seq_along(params)) {
+  #   if (level=="class" & !grepl("[[:upper:]]", params[i])) {
+  #     stop(paste0("`level` has been specified as `class` but ", param[i], " is not modelled at the class level"))
+  #   }
+  #
+  #   if (params[i] %in% x[["parameters.to.save"]]) {
+  #     param.mod <- x[["BUGSoutput"]][["sims.list"]][[params[i]]]
+  #
+  #     # Check that selected parameter is different over multiple treatments
+  #     if (!is.matrix(param.mod) | ncol(param.mod)<=1) {
+  #       msg <- paste0(params[i], " does not vary by treatment and therefore cannot be ranked by treatment")
+  #       stop(msg)
+  #     }
+  #
+  #     param.mod <- param.mod[,which(x$network[[level]] %in% treats)]
+  #
+  #     rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
+  #       order(order(x, decreasing = !lower_better), decreasing=FALSE)
+  #     }))
+  #     colnames(rank.mat) <- treats
+  #
+  #     # Ranking probabilityes
+  #     prob.mat <- calcprob(rank.mat, treats=treats)
+  #
+  #     # Calculate cumulative ranking probabilities
+  #     cum.mat <- apply(prob.mat, MARGIN=2,
+  #                      FUN=function(col) {cumsum(col)})
+  #
+  #     rank.result[[params[i]]] <-
+  #       list("summary"=sumrank(rank.mat),
+  #            "prob.matrix"=prob.mat,
+  #            "rank.matrix"=rank.mat,
+  #            "cum.matrix"=cum.mat,
+  #            "lower_better"=lower_better
+  #            )
+  #
+  #   } else if (params[i]=="auc") {
+  #
+  #     auc <- rankauc(x, lower_better=lower_better,
+  #                    treats=treats, level=level,
+  #                    int.range=int.range, n.iter=n.iter, ...)
+  #
+  #     # Calculate cumulative ranking probs for aux
+  #     auc[["cum.matrix"]] <- apply(auc$prob.matrix, MARGIN=2,
+  #                                  FUN=function(col) {cumsum(col)})
+  #     auc[["lower_better"]] <- lower_better
+  #
+  #     rank.result[["auc"]] <- auc
+  #   } else {
+  #     stop(paste0(params[i],
+  #                 " is not a valid paramter saved from the MBNMA model"))
+  #   }
+  # }
 
   class(rank.result) <- "mb.rank"
   return(rank.result)

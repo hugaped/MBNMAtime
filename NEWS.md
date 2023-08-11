@@ -2,9 +2,12 @@
 
 ## Additions/changes
 - Reference SDs can now be used when modelling using SMDs to avoid using study-specific SDs which can lead to imprecision and heterogeneity.
+- `rank.mbnma()` can now only rank a single parameter (e.g. `param` argument must be length 1). This facilitates differentiation between treatment and class parameters.
 
 ## Bug fixes
 - Error in nma.run when using `link="smd"` - a log link function was previously used but has now been fixed
+- Class models did not work properly with character class labels - now fixed
+
 
 # MBNMAtime 0.2.3
 
