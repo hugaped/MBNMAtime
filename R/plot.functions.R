@@ -536,7 +536,9 @@ nodesplit.plotdata <- function(nodesplit, type) {
 #' }
 #'
 #' @export
-timeplot <- function(network, level="treatment", plotby="arm", link="identity", ...) {
+timeplot <- function(network, level="treatment",
+                     plotby="arm", link="identity",
+                     ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "mb.network", add=argcheck)
