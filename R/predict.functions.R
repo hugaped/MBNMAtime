@@ -14,6 +14,7 @@
 #'
 #' @inheritParams predict.mbnma
 #' @inheritParams ref.synth
+#' @inheritParams mb.run
 #'
 #' @return A list containing named elements that correspond to different
 #'   time-course parameters in `mbnma`. These elements contain MCMC results
@@ -30,7 +31,7 @@
 #'   the prediction
 #'
 #'   @noRd
-get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
+get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred", link="identity") {
 
   # Check that correct parameters are monitored
   genparams <- gen.parameters.to.save(fun=mbnma$model.arg$fun, model=mbnma$model.arg$jagscode)
@@ -55,8 +56,12 @@ get.model.vals <- function(mbnma, E0=0, level="treatments", lim="cred") {
   # Remove indices from timecourse for betas and time
   timecourse <- gsub("\\[i\\,[a-z]\\]", "", mbnma$model.arg$fun$jags) # Remove [i,k] from betas and [i,m] from time
   timecourse <- gsub("i\\.", "", timecourse) # Remove i from time and spline
-  timecourse <- paste0("alpha + ", timecourse)
 
+  if ("log" %in% link) {
+    timecourse <- paste0("alpha + exp(", timecourse, ")")
+  } else {
+    timecourse <- paste0("alpha + ", timecourse)
+  }
 
   sims.matrix <- mbnma$BUGSoutput$sims.matrix
 
