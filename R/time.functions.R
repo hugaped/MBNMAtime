@@ -392,7 +392,7 @@ temax <- function(pool.emax="rel", method.emax="common", pool.et50="rel", method
   } else {
     if (ehill) {
       fun <- ~ (emax * (time ^ hill)) / ((et50 ^ hill) + (time ^ hill))
-      jags <- "(beta.1 * (time[i,m] ^ beta.3)) / ((beta.2 ^ beta.3) + (time[i,m] ^ beta.3))"
+      jags <- "(beta.1 * (abs(time[i,m]) ^ beta.3)) / ((abs(beta.2) ^ beta.3) + (abs(time[i,m]) ^ beta.3))"
       latex <- "$\\frac{\\beta_1 \\times x_m^{\\beta_3}}{{\\beta_2}^{\\beta_3} + x_m^{\\beta_3}}$"
     } else {
       fun <- ~ (emax * time) / (et50 + time)
