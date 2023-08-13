@@ -131,11 +131,13 @@ rank.mbnma <- function(x, param="auc", lower_better=FALSE, treats=NULL,
 
     if (is.null(int.range)) {
 
-      treatsnum <- which(x$network[[level]] %in% treats)
-      fupdata <- x$model.arg$jagsdata
+      # treatsnum <- which(x$network[[level]] %in% treats)
+      # fupdata <- x$model.arg$jagsdata
+      #
+      # int.max <- max(fupdata$time,
+      #                na.rm = TRUE)
 
-      int.max <- max(fupdata$time,
-                     na.rm = TRUE)
+      int.max <- round(max(x$network$data.ab$time, na.rm = TRUE))
 
       int.range <- c(0, int.max)
     }
