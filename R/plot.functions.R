@@ -379,12 +379,6 @@ overlay.nma <- function(pred, timebins, method="common", link="identity", lim="c
       nma <- nma.run(data.ab=nmanet, method=method, link=link,
                      ...)
 
-      # if (any(nma$BUGSoutput$summary[,"Rhat"]>1.02)) {
-      #   warn <- rownames(nma$BUGSoutput$summary)[which(nma$BUGSoutput$summary[,"Rhat"]>1.02)]
-      #   warning(crayon::bold(crayon::red(paste0("Rhat values for the following parameters are >1.02 - suggests problems with NMA model convergence:\n",
-      #                                           paste(warn, collapse="\n")))))
-      # }
-
       if (method=="common" | "cred" %in% lim) {
         predtrt <- sample(predref, size=nma$BUGSoutput$n.sims, replace=TRUE) + nma$BUGSoutput$sims.list$d[,-1]
       } else if (method=="random" & "pred" %in% lim) {
