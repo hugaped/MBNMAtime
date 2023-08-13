@@ -270,7 +270,7 @@ mb.nodesplit.comparisons <- function(network)
   checkmate::assertClass(network, classes="mb.network", null.ok=FALSE)
 
   # First identify loops of evidence
-  data <- get.latest.time(network)
+  data <- get.latest.time(network)$data.ab
   #data$treatment <- factor(data[["treatment"]], labels=network[["treatments"]])
   #data$treatment <- factor(as.numeric(data[["treatment"]]), labels=network[["treatments"]])
   #levels(data$treatment) <- treatments
