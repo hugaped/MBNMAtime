@@ -297,10 +297,15 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
     }
   }
 
-  # Check sdscale
+  # Check sdscale and link
   if (sdscale==TRUE) {
     if (link!="smd") {
       sdscale <- FALSE
+    }
+  }
+  if (link=="log") {
+    if (any(network$data.ab$y<0)) {
+      stop("link='log' cannot be used with means (y) that take negative values in network$data.ab")
     }
   }
 
