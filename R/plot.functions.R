@@ -1244,8 +1244,8 @@ theme_mbnma <- function(...) {
 #' @param ... Arguments to be sent to `ggplot::geom_line()`
 #' @inheritParams rank.mbnma
 #'
-#' @return Line plots showing the cumulative ranking probabilities for each agent/class and
-#' dose-response parameter in `x`. The object returned is a list which contains the plot
+#' @return Line plots showing the cumulative ranking probabilities for each agent/class for
+#' the ranked dose response paramtere in `x`. The object returned is a list which contains the plot
 #' (an object of `class(c("gg", "ggplot")`) and a data frame of SUCRA values
 #' if `sucra = TRUE`.
 #'
@@ -1256,43 +1256,52 @@ theme_mbnma <- function(...) {
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
 #' emax <- mb.run(network, fun=temax())
-#' ranks <- rank(emax, params=c("emax", "et50", "auc"))
+#' ranks <- rank(emax, param=c("emax"))
 #'
 #' # Plot cumulative rankings for both dose-response parameters simultaneously
 #' # Note that SUCRA values are also returned
 #' cumrank(ranks)
 #' }
 #' @export
-cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
+cumrank <- function(x, sucra=TRUE, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mb.rank", add=argcheck)
-  checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(sucra, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   output <- list()
 
-  if (is.null(params)) {
-    params <- names(x)
-  }
+  # if (is.null(params)) {
+  #   params <- names(x)
+  # }
+  params <- x$param
 
   df <- data.frame()
-  for (param in seq_along(params)) {
-    if (!params[param] %in% names(x)) {
-      stop(paste0(params[param], " is not a ranked parameter in x"))
-    }
 
-    cum.mat <- x[[params[param]]]$cum.matrix
-    treats <- colnames(cum.mat)
+  cum.mat <- x$cum.matrix
+  treats <- colnames(cum.mat)
 
-    melt <- reshape2::melt(cum.mat)
-    melt$param <- params[param]
+  melt <- reshape2::melt(cum.mat)
+  melt$param <- params
 
-    df <- rbind(df, melt)
+  df <- rbind(df, melt)
 
-  }
+  # for (param in seq_along(params)) {
+  #   if (!params[param] %in% x$param) {
+  #     stop(paste0(params[param], " is not a ranked parameter in x"))
+  #   }
+  #
+  #   cum.mat <- x[[params[param]]]$cum.matrix
+  #   treats <- colnames(cum.mat)
+  #
+  #   melt <- reshape2::melt(cum.mat)
+  #   melt$param <- params[param]
+  #
+  #   df <- rbind(df, melt)
+  #
+  # }
 
   df$Parameter <- factor(df$param)
 

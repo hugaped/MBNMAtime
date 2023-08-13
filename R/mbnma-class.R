@@ -65,7 +65,7 @@
 #' rank(emax, param=c("emax"), lower_better=TRUE)
 #'
 #' # Rank treatments 1-3 by AUC
-#' rank(emax, params="auc", treats=c(1:3), lower_better=TRUE,
+#' rank(emax, param="auc", treats=c(1:3), lower_better=TRUE,
 #'   int.range=c(0,20))
 #' }
 #'
