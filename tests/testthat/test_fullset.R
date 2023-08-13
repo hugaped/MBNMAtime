@@ -215,6 +215,8 @@ for (dat in seq_along(alldfs)) {
       expect_error(suppressWarnings(summary(result)), NA)
       expect_error(get.relative(result), NA)
 
+
+
       result <- mb.run(network, fun=tspline(type="ns", knots=c(0.2,0.5),
                                             pool.1="abs", pool.2="rel", pool.3="abs",
                                             method.1="common", method.2 = "common", method.3="random"),
@@ -227,6 +229,7 @@ for (dat in seq_along(alldfs)) {
       expect_error(predict(result), NA)
       expect_error(suppressWarnings(summary(result)), NA)
 
+
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="abs",
                                           method.1="common", method.2 = "random", method.3="random"),
@@ -236,6 +239,7 @@ for (dat in seq_along(alldfs)) {
       expect_error(rank(result, param=c("d.2", "auc")[samp]), NA)
       expect_error(predict(result), NA)
       expect_error(suppressWarnings(summary(result)), NA)
+
 
       # Test different covariances
       result <- mb.run(network, fun=tpoly(degree=3,
