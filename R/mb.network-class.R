@@ -96,7 +96,7 @@ plot.mb.network <- function(x, edge.scale=1, label.distance=0,
   checkmate::reportAssertions(argcheck)
 
   # Generate comparisons (using get.latest.time and mb.contrast?
-  df <- get.latest.time(x)
+  df <- get.latest.time(x)$data.ab
 
 
   # Check if level="class" that classes are present in dataset
