@@ -86,6 +86,11 @@ rank.mbnma <- function(x, param="auc", lower_better=FALSE, treats=NULL,
   checkmate::assertInt(n.iter, lower=1, upper=x$BUGSoutput$n.sims, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Stop UME models
+  if (!FALSE %in% x$model.arg$UME) {
+    stop("rank.mbnma() cannot be used with UME models")
+  }
+
   # Check param is monitored
   if (!"auc" %in% param) {
     if (!param %in% x$parameters.to.save) {
@@ -354,7 +359,8 @@ summary.mbnma <- function(object, ...) {
 #'   2. Values for the reference treatment response can be assigned to different time-course parameters
 #'   within the model that have been modelled using consistency relative effects (`pool="rel"`).
 #'   These are given as a list, in which each named element corresponds to a time-course
-#'   parameter modelled in `mbnma`. Their values can be either of the following:
+#'   parameter modelled in `mbnma`, specified on the corresponding scale (i.e. specified on the log scale if modelled
+#'   on the log scale using Ratios of Means). Their values can be either of the following:
 #'   * `numeric()` A numeric value representing the deterministic value of the time-course parameter in
 #'   question in individuals given the reference treatment. `0` is used as the default, which assumes no
 #'   effect of time on the reference treatment (i.e. mean differences / relative effects versus the
@@ -441,9 +447,9 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   #checkmate::assertClass(treats, classes=c("numeric", "character"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (object$model.arg$link=="log") {
-    stop("'predict()' cannot currently be used with MBNMAs modelled using ratios of means (link='log')")
-  }
+  # if (object$model.arg$link=="log") {
+  #   stop("'predict()' cannot currently be used with MBNMAs modelled using ratios of means (link='log')")
+  # }
 
   # Check if level="class" that class effect model was fitted
   if (level=="class") {
@@ -569,7 +575,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   # timecourse <- paste0("alpha + ", object$model.arg$fun$jags)
 
   # Extract parameter values from MBNMA result
-  model.vals <- get.model.vals(mbnma=object, E0=E0, level=level, lim=lim)
+  model.vals <- get.model.vals(mbnma=object, E0=E0, level=level, lim=lim, link=object$model.arg$link)
   timecourse <- model.vals[["timecourse"]]
   time.params <- model.vals[["time.params"]]
 
@@ -660,7 +666,6 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
   # Assign E0 to alpha in model
   #alpha <- eval(parse(text=E0)) # TO BE REMOVED
   alpha <- model.vals$alpha
-
 
   beta.params <- time.params[grepl("^beta.", time.params)]
   # Assign single beta results to beta values in model
@@ -792,6 +797,10 @@ plot.mbnma <- function(x, params=NULL, treat.labs=NULL, class.labs=NULL, ...) {
   Var2 <- NULL
   value <- NULL
   ndistinct <- NULL
+
+  if (!FALSE %in% x$model.arg$UME) {
+    stop("plot.mbnma() cannot be used with UME models")
+  }
 
   # Change beta to d (if present) so that it is identified in mcmc output
   for (i in 1:4) {
@@ -1073,6 +1082,10 @@ get.relative <- function(mbnma, mbnma.add=NULL, time=max(mbnma$model.arg$jagsdat
     levels <- "treatments"
   }
 
+  if (!FALSE %in% mbnma$model.arg$UME) {
+    stop("get.relative() cannot be used with UME models\nEstimation of relative effects uses consistency assumption")
+  }
+
   if (is.null(mbnma.add)) {
     pred <- suppressMessages(predict.mbnma(mbnma, times=time,
                                            treats = treats, level = level, lim=lim))
@@ -1081,6 +1094,10 @@ get.relative <- function(mbnma, mbnma.add=NULL, time=max(mbnma$model.arg$jagsdat
     mat <- do.call(cbind, pred$pred.mat)
 
   } else if (!is.null(mbnma.add)) {
+
+    if (!FALSE %in% mbnma.add$model.arg$UME) {
+      stop("get.relative() cannot be used with UME models\nEstimation of relative effects uses consistency assumption")
+    }
 
     # Identify common treatment to be the reference
     match1 <- which(treats %in% mbnma$network[[levels]])
