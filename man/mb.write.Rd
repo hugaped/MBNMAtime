@@ -13,6 +13,7 @@ mb.write(
   covar = "varadj",
   omega = NULL,
   corparam = TRUE,
+  sdscale = FALSE,
   class.effect = list(),
   UME = FALSE
 )
@@ -63,6 +64,10 @@ between relative effect time-course parameters. Default is \code{FALSE} and this
 Setting it to \code{TRUE} models correlation between time-course parameters. This can help identify parameters
 that are estimated poorly for some treatments by allowing sharing of information between
 parameters for different treatments in the network, but may also cause some shrinkage.}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be

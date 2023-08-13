@@ -10,8 +10,15 @@ get.latest.time(network)
 \item{network}{An object of class \code{"mb.network"}.}
 }
 \value{
-A data frame in long format of responses at the latest time point in
-each arm of each study.
+A list containing:
+\itemize{
+\item a data frame in long format of responses at the latest time point in
+each arm of each study
+\item a vector of studyIDs
+\item a vector of treatment names
+\item a vector of class names (if included in \code{network})
+\item a data frame of treatment -> class codings (if included in \code{network})
+}
 }
 \description{
 Takes the latest time point from each arm in each study within an

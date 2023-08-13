@@ -78,6 +78,8 @@ a numeric co-ordinate.}
 identifier must also have the same class identifier.
 \item \code{n} An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
 
 \item{reference}{A number or character (depending on the format of \code{treatment} within \code{data.ab})

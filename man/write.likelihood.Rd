@@ -11,6 +11,7 @@ write.likelihood(
   rho = 0,
   covar = "varadj",
   link = "identity",
+  sdscale = FALSE,
   fun
 )
 }
@@ -38,6 +39,10 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
 \code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}

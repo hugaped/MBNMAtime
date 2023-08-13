@@ -18,6 +18,8 @@ mb.validate.data(data.ab, single.arm = FALSE, CFB = TRUE)
 identifier must also have the same class identifier.
 \item \code{n} An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
 
 \item{single.arm}{A boolean object to indicate whether or not function should allow singe arm studies to
@@ -44,5 +46,6 @@ Checks done within the validation:
 \item Checks that class codes are consistent within each treatment
 \item Checks that treatment codes are consistent across different time points within a study
 \item Checks that studies have at least two arms (if \code{single.arm = FALSE})
+\item Checks that standsd values are consistent within a study
 }
 }

@@ -11,6 +11,7 @@ getjagsdata(
   rho = NULL,
   covstruct = "CS",
   link = "identity",
+  sdscale = FALSE,
   cfb = NULL
 )
 }
@@ -26,6 +27,8 @@ getjagsdata(
 identifier must also have the same class identifier.
 \item \code{n} An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
@@ -47,6 +50,10 @@ this determines some of the data. Can be either \code{"CS"} (compound symmetry),
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{cfb}{A logical vector whose length is equal to the unique number of studies in \code{data.ab}, where each
 element is \code{TRUE} if the study data reported is change-from-baseline and \code{FALSE} otherwise. If left as \code{NULL}

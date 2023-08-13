@@ -4,7 +4,14 @@
 \alias{nma.run}
 \title{Run an NMA model}
 \usage{
-nma.run(data.ab, method = "common", link = "identity", ...)
+nma.run(
+  data.ab,
+  treatments = NULL,
+  method = "common",
+  link = "identity",
+  sdscale = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -18,7 +25,12 @@ nma.run(data.ab, method = "common", link = "identity", ...)
 identifier must also have the same class identifier.
 \item \code{n} An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
+
+\item{treatments}{A vector of treatment names. If left as \code{NULL} it will use
+the treatment coding given in \code{data.ab}}
 
 \item{method}{Can take \code{"common"} or \code{"random"} to indicate the type of NMA model used to synthesise data points
 given in \code{overlay.nma}. The default is \code{"random"} since this assumes different
@@ -27,6 +39,10 @@ time-points in \code{overlay.nma} have been lumped together to estimate the NMA.
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{...}{Options for plotting in \code{igraph}.}
 }
@@ -40,12 +56,13 @@ Run an NMA model
 network <- mb.network(osteopain)
 
 # Get the latest time point
-df <- get.latest.time(network)
+late.time <- get.latest.time(network)
 
 # Get the closest time point to a given value (t)
-df <- get.closest.time(network, t=7)
+early.time <- get.closest.time(network, t=7)
 
 # Run NMA on the data
-nma.run(df, method="random")
+nma.run(late.time$data.ab, treatments=late.time$treatments,
+  method="random")
 
 }

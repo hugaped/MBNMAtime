@@ -1242,7 +1242,6 @@ theme_mbnma <- function(...) {
 #' values should be calculated and returned as a data frame. Areas calculated
 #' using trapezoid approach.
 #' @param ... Arguments to be sent to `ggplot::geom_line()`
-#' @inheritParams rank.mbnma
 #'
 #' @return Line plots showing the cumulative ranking probabilities for each agent/class for
 #' the ranked dose response paramtere in `x`. The object returned is a list which contains the plot

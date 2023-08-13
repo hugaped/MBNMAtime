@@ -10,6 +10,7 @@ mb.run(
   positive.scale = FALSE,
   intercept = NULL,
   link = "identity",
+  sdscale = FALSE,
   parameters.to.save = NULL,
   rho = 0,
   covar = "varadj",
@@ -47,6 +48,10 @@ studies reporting change from baseline (as indicated in \code{network$cfb}).}
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}

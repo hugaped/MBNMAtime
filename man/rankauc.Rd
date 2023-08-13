@@ -42,14 +42,13 @@ Must be a positive integer. Default is the value used in \code{mbnma}.}
 reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 }
 \value{
-A named list whose elements correspond to parameters given in
-\code{params}. Each element contains:
+A named list whose elements include:
 \itemize{
 \item \code{summary.rank} A data frame containing
 mean, sd, and quantiles for the ranks of each treatment given in \code{treats}
 \item \code{prob.matrix} A matrix of the proportions of MCMC results for which each
-treatment in \code{treats} ranked in which position for the given parameter
-\item \code{rank.matrix} A matrix of the ranks of MCMC results for each treatment in
+treatment/class in \code{treats} ranked in which position for the given parameter
+\item \code{rank.matrix} A matrix of the ranks of MCMC results for each treatment/class in
 \code{treats} for the given parameter.
 }
 }
@@ -57,7 +56,7 @@ treatment in \code{treats} ranked in which position for the given parameter
 Calculates ranking probabilities for AUC from a time-course MBNMA
 }
 \details{
-\code{"auc"} can be included in \code{params} to rank treatments based on
+\code{"auc"} can be specified in \code{param} to rank treatments based on
 Area Under the Curve (AUC). This accounts for the effect of multiple
 time-course parameters simultaneously on the treatment response, but will
 be impacted by the range of time over which AUC is calculated (\code{int.range}).

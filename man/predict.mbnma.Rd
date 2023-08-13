@@ -58,7 +58,8 @@ that investigate the reference treatment. The data should be provided to \code{r
 \item Values for the reference treatment response can be assigned to different time-course parameters
 within the model that have been modelled using consistency relative effects (\code{pool="rel"}).
 These are given as a list, in which each named element corresponds to a time-course
-parameter modelled in \code{mbnma}. Their values can be either of the following:
+parameter modelled in \code{mbnma}, specified on the corresponding scale (i.e. specified on the log scale if modelled
+on the log scale using Ratios of Means). Their values can be either of the following:
 }
 \itemize{
 \item \code{numeric()} A numeric value representing the deterministic value of the time-course parameter in

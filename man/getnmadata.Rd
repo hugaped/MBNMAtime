@@ -4,7 +4,7 @@
 \alias{getnmadata}
 \title{Prepares NMA data for JAGS}
 \usage{
-getnmadata(data.ab, link = "identity")
+getnmadata(data.ab, link = "identity", sdscale = FALSE)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -18,11 +18,17 @@ getnmadata(data.ab, link = "identity")
 identifier must also have the same class identifier.
 \item \code{n} An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
 
 \item{link}{Can take either \code{"identity"} (the default),
 \code{"log"} (for modelling Ratios of Means \insertCite{friedrich2011}{MBNMAtime}) or
 \code{"smd"} (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

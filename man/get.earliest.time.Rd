@@ -10,8 +10,15 @@ get.earliest.time(network)
 \item{network}{An object of class \code{"mb.network"}.}
 }
 \value{
-A data frame in long format of responses at the earliest time point in
-each arm of each study.
+A list containing:
+\itemize{
+\item a data frame in long format of responses at the earliest time point in
+each arm of each study
+\item a vector of studyIDs
+\item a vector of treatment names
+\item a vector of class names (if included in \code{network})
+\item a data frame of treatment -> class codings (if included in \code{network})
+}
 }
 \description{
 Takes the earliest time point from each arm in each study within an
@@ -21,7 +28,7 @@ Takes the earliest time point from each arm in each study within an
 # Using the alogliptin dataset
 network <- mb.network(alog_pcfb)
 
-# Generate a data frame with only the earliest time point included in each study
+# Generate a data set with only the earliest time point included in each study
 get.earliest.time(network)
 
 }
