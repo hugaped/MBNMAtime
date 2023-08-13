@@ -132,9 +132,9 @@ plot(mbnma)
 load(system.file("extdata", "ranks.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
-Rankings can be calculated for different time-course parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked. A vector of these is assigned to `params`. `lower_better` indicates whether negative scores should be ranked as "better" (`TRUE`) or "worse" (`FALSE`)
+Rankings can be calculated for different time-course parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked by passing its name to the `params` argument. `lower_better` indicates whether negative scores should be ranked as "better" (`TRUE`) or "worse" (`FALSE`)
 
-In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
+In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by specifying `param="auc"` (this is the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials), nor with MBNMA models that use class effects.
 
 ```{r, results="hide", eval=rmarkdown::pandoc_available("1.12.3")}
 # Using the osteoarthritis dataset
@@ -151,7 +151,7 @@ mbnma <- mb.run(network.pain,
 
 
 # Rank results based on AUC (calculated 0-10 weeks), more negative slopes considered to be "better"
-ranks <- rank(mbnma, params=c("auc", "d.2"), 
+ranks <- rank(mbnma, param=c("auc"), 
                     int.range=c(0,10),  lower_better = TRUE, n.iter=1000)
 ```
 
@@ -163,13 +163,13 @@ save(ranks, file="inst/extdata/ranks.rda")
 print(ranks)
 ```
 
-The output is an object of `class("mb.rank")`, containing a list for each ranked parameter in `params`, which consists of a summary table of rankings and raw information on treatment ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using `print()`.
+The output is an object of `class("mb.rank")`, containing a list for the ranked parameter which consists of a summary table of rankings and raw information on treatment ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using `print()`.
 
 Histograms for ranking results can also be plotted using the `plot()` method, which takes the raw MCMC ranking results given in `rank.matrix` and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.
 
 ```{r, eval=rmarkdown::pandoc_available("1.12.3")}
 # Ranking histograms for AUC
-plot(ranks, params = "auc")
+plot(ranks)
 ```
 
 Cumulative rankograms indicating the probability of each treatment being ranked 1st, 2nd, etc. for each ranked parameter can also be plotted using `cumrank()`. These can be used to easily compare how different treatments rank for each ranked parameter simultaneously. By default, the Surface Under the Cumulative Ranking curve (SUCRA) are also returned for each treatment and ranked parameter [@salanti2011].
