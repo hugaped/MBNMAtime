@@ -810,6 +810,8 @@ mb.update <- function(mbnma, param="theta",
 
 #' Run an NMA model
 #'
+#' @param treatments A vector of treatment names. If left as `NULL` it will use
+#' the treatment coding given in `data.ab`
 #' @inheritParams mb.network
 #' @inheritParams mb.run
 #' @inheritParams plot.mb.predict
@@ -820,16 +822,17 @@ mb.update <- function(mbnma, param="theta",
 #' network <- mb.network(osteopain)
 #'
 #' # Get the latest time point
-#' df <- get.latest.time(network)
+#' late.time <- get.latest.time(network)
 #'
 #' # Get the closest time point to a given value (t)
-#' df <- get.closest.time(network, t=7)
+#' early.time <- get.closest.time(network, t=7)
 #'
 #' # Run NMA on the data
-#' nma.run(df, method="random")
+#' nma.run(late.time$data.ab, treatments=late.time$treatments,
+#'   method="random")
 #'
 #' @export
-nma.run <- function(data.ab, method="common", link="identity", sdscale=FALSE, ...) {
+nma.run <- function(data.ab, treatments=NULL, method="common", link="identity", sdscale=FALSE, ...) {
 
   # Check sdscale
   if (sdscale==TRUE) {
@@ -881,6 +884,13 @@ nma.run <- function(data.ab, method="common", link="identity", sdscale=FALSE, ..
     return(list("error"=cond))
   }
   )
+
+  if (!is.null(treatments)) {
+    out[["treatments"]] <- treatments
+  } else {
+    out[["treatments"]] <- sort(unique(data.ab$treatment))
+  }
+
   class(out) <- c("nma", "rjags")
 
   return(out)
