@@ -585,8 +585,14 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE,
 #'
 #' @inheritParams mb.run
 #'
-#' @return A data frame in long format of responses at the latest time point in
-#'   each arm of each study.
+#' @return A list containing:
+#'
+#' * a data frame in long format of responses at the latest time point in
+#'   each arm of each study
+#' * a vector of studyIDs
+#' * a vector of treatment names
+#' * a vector of class names (if included in `network`)
+#' * a data frame of treatment -> class codings (if included in `network`)
 #'
 #' @examples
 #' # Using the alogliptin dataset
@@ -608,7 +614,18 @@ get.latest.time <- function(network) {
 
   df <- dplyr::arrange(df, studyID, arm, time)
 
-  return(df)
+  out <- list(
+    data.ab=df,
+    studyID=network$studyID,
+    treatments=network$treatments
+  )
+
+  if ("classes" %in% names(network)) {
+    out[["classes"]] <- network$classes
+    out[["classkey"]] <- network$classkey
+  }
+
+  return(out)
 }
 
 
@@ -623,14 +640,20 @@ get.latest.time <- function(network) {
 #'
 #' @inheritParams mb.run
 #'
-#' @return A data frame in long format of responses at the earliest time point in
-#'   each arm of each study.
+#' @return A list containing:
+#'
+#' * a data frame in long format of responses at the earliest time point in
+#'   each arm of each study
+#' * a vector of studyIDs
+#' * a vector of treatment names
+#' * a vector of class names (if included in `network`)
+#' * a data frame of treatment -> class codings (if included in `network`)
 #'
 #' @examples
 #' # Using the alogliptin dataset
 #' network <- mb.network(alog_pcfb)
 #'
-#' # Generate a data frame with only the earliest time point included in each study
+#' # Generate a data set with only the earliest time point included in each study
 #' get.earliest.time(network)
 #'
 #' @export
@@ -644,7 +667,18 @@ get.earliest.time <- function(network) {
 
   df <- dplyr::arrange(df, studyID, arm, time)
 
-  return(df)
+  out <- list(
+    data.ab=df,
+    studyID=network$studyID,
+    treatments=network$treatments
+  )
+
+  if ("classes" %in% names(network)) {
+    out[["classes"]] <- network$classes
+    out[["classkey"]] <- network$classkey
+  }
+
+  return(out)
 }
 
 
