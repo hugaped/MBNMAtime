@@ -1402,9 +1402,9 @@ default.priors <- function(fun=tloglin()) {
     for (i in 2:3) {
       priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0.00001,0.0001) T(0,)")
       priors[[paste0("m.mu.",i)]] <- paste0("mu.", i, " ~ dnorm(0.00001,0.0001) T(0,)")
-      priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
-      priors[[paste0("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0.00001,0.001) T(0,)")
-      priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0.00001,0.001) T(0,)")
+      priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0.00001,0.0001) T(0,)")
+      priors[[paste0("dume.",i)]] <- paste0("d.", i, "[c,k] ~ dnorm(0.00001,0.0001) T(0,)")
+      priors[[paste0("D.",i)]] <- paste0("D.", i, "[k] ~ dnorm(0.00001,0.0001) T(0,)")
       priors[[paste0("beta.",i)]] <- paste0("beta.", i, " ~ dnorm(0.00001,0.0001) T(0,)")
     }
   }
