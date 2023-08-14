@@ -70,7 +70,7 @@ for (dat in seq_along(alldfs)) {
       expect_error(rank(result), NA)
       expect_error(predict(result), NA)
       expect_error(suppressWarnings(summary(result)), NA)
-      expect_identical(sort(network$studyID), sort(result$model.arg$jagsdata$studyID))
+      expect_identical(sort(network$studyID), sort(as.character(result$model.arg$jagsdata$studyID)))
 
 
 
@@ -319,8 +319,8 @@ for (dat in seq_along(alldfs)) {
       if (datanam %in% c("osteopain", "diabetes", "hyalarthritis")) {
 
         if (datanam %in% c("diabetes", "hyalarthritis")) {
-          expect_error(mbnma.run(network, link="log", n.iter=n.iter, pd=pd),
-                       "cannot be used with means (y) that take negative values")
+          expect_error(mb.run(network, link="log", n.iter=n.iter, pd=pd),
+                       "cannot be used with means")
         }
 
         absdat <- dataset
