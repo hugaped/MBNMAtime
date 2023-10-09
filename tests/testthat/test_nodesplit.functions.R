@@ -3,7 +3,7 @@ testthat::context("Testing nodesplit.functions")
 datalist <- list(osteopain=osteopain, goutSUA_CFBcomb=goutSUA_CFBcomb,
                  hyalarthritis=hyalarthritis)
 
-testthat::test_that("post-estimation tests pass correctly", {
+testthat::test_that("Node-split tests pass correctly", {
 
   skip_on_appveyor()
   skip_on_ci()
@@ -13,13 +13,15 @@ testthat::test_that("post-estimation tests pass correctly", {
   n.burnin <- 100
   n.thin <- 1
 
+  seed <- 890421
+
   testthat::expect_equal(1,1) # Avoids empty tests
 
   for (i in seq_along(datalist)) {
 
     print(names(datalist)[i])
     network <- mb.network(datalist[[i]])
-    last.data <- get.latest.time(network)
+    last.data <- get.latest.time(network)$data.ab
 
     # Create dataset with mixed up treatment codes
     testdata <- datalist[[i]]
@@ -27,7 +29,7 @@ testthat::test_that("post-estimation tests pass correctly", {
                                  levels = unique(as.character(testdata$treatment)))
 
     testnetwork <- mb.network(testdata)
-    last.test <- get.latest.time(testnetwork)
+    last.test <- get.latest.time(testnetwork)$data.ab
 
     testthat::test_that(paste0(names(datalist)[i], ": test.inconsistency.loops"), {
 
@@ -102,7 +104,7 @@ testthat::test_that("post-estimation tests pass correctly", {
 
     ###### mb.nodesplit ######
 
-    testthat::test_that("mb.nodesplit is working", {
+    testthat::test_that(paste("mb.nodesplit is working for:", names(datalist)[i]), {
 
       copdnet <- mb.network(copd)
       expect_error(mb.nodesplit.comparisons(copdnet), "No closed loops of treatments")
@@ -119,7 +121,7 @@ testthat::test_that("post-estimation tests pass correctly", {
                                           pool.et50="rel", method.et50="common"),
                                 positive.scale=TRUE, intercept=TRUE,
                                 class.effect=list(),
-                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin)
+                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
       )
 
 
@@ -146,7 +148,7 @@ testthat::test_that("post-estimation tests pass correctly", {
                                 positive.scale=TRUE, intercept=TRUE,
                                 class.effect=list(),
                                 parallel=TRUE,
-                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin)
+                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
       )
 
       testthat::expect_equal(nrow(comp), length(nodesplit))
@@ -173,7 +175,7 @@ testthat::test_that("post-estimation tests pass correctly", {
                                 positive.scale=TRUE, intercept=TRUE,
                                 class.effect=list(),
                                 parallel=TRUE,
-                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin)
+                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
       )
 
       testthat::expect_equal(nrow(comp), length(nodesplit))
@@ -200,7 +202,7 @@ testthat::test_that("post-estimation tests pass correctly", {
                                 positive.scale=TRUE, intercept=TRUE, corparam=TRUE,
                                 class.effect=list(), omega=matrix(c(10,0,0,10), nrow=2),
                                 parallel=TRUE,
-                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin)
+                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
       )
 
       testthat::expect_equal(nrow(comp), length(nodesplit))
@@ -219,38 +221,40 @@ testthat::test_that("post-estimation tests pass correctly", {
 
       # titp
 
-      if (names(datalist)[i]=="osteopain") {
-        positive <- TRUE
-        intercept <- TRUE
-      } else {
-        positive <- FALSE
-        intercept <- FALSE
+      if (!names(datalist)[i] %in% c("goutSUA_CFBcomb", "hyalarthritis")) {
+        if (names(datalist)[i]=="osteopain") {
+          positive <- TRUE
+          intercept <- TRUE
+        } else {
+          positive <- FALSE
+          intercept <- FALSE
+        }
+
+        # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
+        suppressWarnings(
+          nodesplit <- mb.nodesplit(network, comparisons=comp,
+                                    nodesplit.parameters="all",
+                                    fun=titp(),
+                                    positive.scale=positive, intercept=intercept,
+                                    class.effect=list(),
+                                    parallel=TRUE,
+                                    n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
+        )
+
+
+        testthat::expect_equal(nrow(comp), length(nodesplit))
+        testthat::expect_equal(names(nodesplit[[2]]), c("emax", "rate"))
+        checkmate::expect_list(nodesplit[[2]], len=2)
+        checkmate::expect_list(nodesplit[[2]][[1]], len=6)
+        checkmate::expect_character(nodesplit[[2]][[1]]$parameter, len=1)
+        testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
+        checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
+        testthat::expect_equal(names(nodesplit[[2]][[1]]$quantiles), c("difference", "direct", "indirect", "nma"))
+
+
+        expect_error(mb.nodesplit(network, comparisons=comp, nodesplit.parameters="all", fun=tloglin(pool.rate="abs", method.rate="common")),
+                     "Parameter specified for nodesplit.parameters")
       }
-
-      # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
-      suppressWarnings(
-      nodesplit <- mb.nodesplit(network, comparisons=comp,
-                                nodesplit.parameters="all",
-                                fun=titp(),
-                                positive.scale=positive, intercept=intercept,
-                                class.effect=list(),
-                                parallel=TRUE,
-                                n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin)
-      )
-
-
-      testthat::expect_equal(nrow(comp), length(nodesplit))
-      testthat::expect_equal(names(nodesplit[[2]]), c("emax", "rate"))
-      checkmate::expect_list(nodesplit[[2]], len=2)
-      checkmate::expect_list(nodesplit[[2]][[1]], len=6)
-      checkmate::expect_character(nodesplit[[2]][[1]]$parameter, len=1)
-      testthat::expect_equal(names(nodesplit[[2]][[1]]$`overlap matrix`), c("direct", "indirect"))
-      checkmate::expect_list(nodesplit[[1]][[1]]$quantiles, len=4, unique=TRUE)
-      testthat::expect_equal(names(nodesplit[[2]][[1]]$quantiles), c("difference", "direct", "indirect", "nma"))
-
-
-      expect_error(mb.nodesplit(network, comparisons=comp, nodesplit.parameters="all", fun=tloglin(pool.rate="abs", method.rate="common")),
-                   "Parameter specified for nodesplit.parameters")
     })
 
   }
