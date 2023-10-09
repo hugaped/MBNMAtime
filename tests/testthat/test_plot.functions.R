@@ -13,6 +13,7 @@ testthat::test_that("plot function tests pass correctly", {
   n.iter <- 200
   n.burnin <- 100
   n.thin <- 1
+  seed <- 890421
 
   testthat::expect_equal(1,1) # Avoids empty test
 
@@ -26,17 +27,17 @@ testthat::test_that("plot function tests pass correctly", {
     suppressWarnings({
     emax <- mb.run(network, fun=temax(pool.emax="rel", method.emax="random",
                                       pool.et50="rel", method.et50="common"),
-                   n.chain=3, n.iter=1200, n.burnin=800)
+                   n.chain=3, n.iter=1200, n.burnin=800, jags.seed=seed)
 
     bs <- mb.run(network, fun=tspline(type="bs", knots=2,
                                       pool.1="abs", method.1="random",
                                       pool.2="rel", method.2="common",
                                       pool.3="rel", method.3="common"
     ), omega=matrix(c(10,0,0,10), nrow=2),
-    n.chain=3, n.iter=1200, n.burnin=800, intercept = FALSE)
+    n.chain=3, n.iter=1200, n.burnin=800, intercept = FALSE, jags.seed=seed)
 
     loglin <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="random"),
-                     n.chain=3, n.iter=1200, n.burnin=800, intercept = FALSE)
+                     n.chain=3, n.iter=1200, n.burnin=800, intercept = FALSE, jags.seed=seed)
 
 
     if ("class" %in% names(datalist[[dat]])) {
@@ -46,7 +47,7 @@ testthat::test_that("plot function tests pass correctly", {
                fun=temax(pool.emax="rel", method.emax="common",
                          pool.et50="rel", method.et50="common"),
                positive.scale=TRUE,
-               n.chain=3, n.iter=1200, n.burnin=800,
+               n.chain=3, n.iter=1200, n.burnin=800, jags.seed=seed,
                class.effect=list("et50"="random")
         )
       )
@@ -254,23 +255,22 @@ testthat::test_that("plot function tests pass correctly", {
 
     test_that(paste0("plot.mb.rank functions correctly for ", names(datalist)[dat]), {
 
-      ranks <- rank(emax, params=c("auc", "emax"), direction=-1, n.iter=10)
+      ranks <- rank(emax, param=c("auc"), direction=-1, n.iter=10)
       g <- plot(ranks)
-      expect_equal(length(g), 2)
-      expect_identical(class(g[[1]]), c("gg", "ggplot"))
+      expect_s3_class(g, "ggplot")
       expect_silent(plot(ranks))
 
-      ranks <- rank(emax, params=c("emax"), direction=-1)
+      ranks <- rank(emax, param=c("emax"), direction=-1)
       g <- plot(ranks)
-      expect_equal(length(levels(g$emax$data$treat)), length(network$treatments))
+      expect_equal(length(levels(g$data$treat)), length(network$treatments))
 
-      ranks <- rank(bs, params=c("auc", "d.2"), direction=-1, n.iter=10)
+      ranks <- rank(bs, param=c("d.2"), direction=-1, n.iter=10)
       expect_silent(plot(ranks))
 
       if ("class" %in% names(datalist[[dat]])) {
-        ranks <- rank(emax.class.random, params=c("ET50"), direction=-1, level="class")
+        ranks <- rank(emax.class.random, param=c("ET50"), direction=-1, level="class")
         g <- plot(ranks)
-        expect_equal(length(levels(g$ET50$data$treat)), length(network$classes))
+        expect_equal(length(levels(g$data$treat)), length(network$classes))
 
         expect_silent(plot(ranks, treat.labs = paste0("badger", 1:length(network$classes))))
         expect_error(plot(ranks, treat.labs = c(network$classes, "extra")), "must be the same length")
@@ -295,7 +295,7 @@ testthat::test_that("plot function tests pass correctly", {
                                             method.emax="common", method.et50="common"),
                                   positive.scale=TRUE, intercept=TRUE,
                                   class.effect=list(),
-                                  n.iter=200, n.burnin=100, n.thin=1, n.chain=2)
+                                  n.iter=200, n.burnin=100, n.thin=1, n.chain=2, jags.seed=seed)
         )
 
         g <- plot.nodesplit(nodesplit)

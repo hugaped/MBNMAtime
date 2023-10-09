@@ -282,7 +282,6 @@ overlay.nma <- function(pred, timebins, method="common", link="identity", lim="c
   checkmate::assertChoice(plottype, choices=c("rel", "pred"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-
   # Declare global variable
   cor <- NULL
   dif <- NULL
@@ -316,23 +315,24 @@ overlay.nma <- function(pred, timebins, method="common", link="identity", lim="c
       predref <- 0
     }
 
+    if (skip==FALSE) {
+      nmanet <- network$data.ab[network$data.ab$time>incl.range[1] & network$data.ab$time<=incl.range[2],]
 
-    nmanet <- network$data.ab[network$data.ab$time>incl.range[1] & network$data.ab$time<=incl.range[2],]
+      # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
+      nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
+        #dplyr::mutate(dif=time-mean(incl.range)) %>%
+        dplyr::mutate(dif=time-ifelse(plottype=="pred", pred$times[timeindex], mean(incl.range))) %>%
+        dplyr::arrange(dif) %>%
+        dplyr::group_by(studyID, arm) %>%
+        dplyr::slice_head()
 
-    # Take the follow-up closes to mean(incl.range) if multiple fups are within the range
-    nmanet <- nmanet %>% dplyr::group_by(studyID) %>%
-      #dplyr::mutate(dif=time-mean(incl.range)) %>%
-      dplyr::mutate(dif=time-ifelse(plottype=="pred", pred$times[timeindex], mean(incl.range))) %>%
-      dplyr::arrange(dif) %>%
-      dplyr::group_by(studyID, arm) %>%
-      dplyr::slice_head()
+      if (!1 %in% nmanet$treatment) {
+        message(paste(c("overlay.nma not possible between ", str.incl.range,
+                        ". Data for network reference (treatment=1) not available in this time bin"),
+                      collapse = ""))
 
-    if (!1 %in% nmanet$treatment) {
-      message(paste(c("overlay.nma not possible between ", str.incl.range,
-                    ". Data for network reference (treatment=1) not available in this time bin"),
-                    collapse = ""))
-
-      skip <- TRUE
+        skip <- TRUE
+      }
     }
 
     if (skip==FALSE) {

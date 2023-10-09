@@ -202,49 +202,51 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
                        link=x$link, lim=x$lim, plottype = "pred",
                        ...)
 
-    predlist <- list()
+    if (length(nma)>0) {
+      predlist <- list()
 
-    capt <- "" # Ensure variable is present to avoid error
+      capt <- "" # Ensure variable is present to avoid error
 
-    predtrt <- nma[[1]]$pred.df[0,]
+      predtrt <- nma[[1]]$pred.df[0,]
 
-    for (bin in seq_along(nma)) {
+      for (bin in seq_along(nma)) {
 
-      predtrt <- rbind(predtrt, nma[[bin]]$pred.df)
+        predtrt <- rbind(predtrt, nma[[bin]]$pred.df)
 
-    }
-
-    # Write caption
-    if (length(overlay.nma)==2) {
-      capt <- paste0(" effects NMA model\nResDev = ", nma[[1]]$totresdev,
-                     "; Ndat = ", nma[[1]]$ndat,
-                     "; DIC = ", nma[[1]]$dic)
-      if (method=="common") {
-        capt <- paste0("Common", capt)
-      } else if (method=="random") {
-        capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[1]]$sd)
       }
-    } else {
-      capt <- "Results for each NMA in overlay.nma are stored in output"
+
+      # Write caption
+      if (length(overlay.nma)==2) {
+        capt <- paste0(" effects NMA model\nResDev = ", nma[[1]]$totresdev,
+                       "; Ndat = ", nma[[1]]$ndat,
+                       "; DIC = ", nma[[1]]$dic)
+        if (method=="common") {
+          capt <- paste0("Common", capt)
+        } else if (method=="random") {
+          capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[1]]$sd)
+        }
+      } else {
+        capt <- "Results for each NMA in overlay.nma are stored in output"
+      }
+
+      g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
+                                               fill="NMA", alpha="NMA"),
+                                  data=predtrt) +
+        ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax,
+                                           linetype="NMA"),
+                              data=predtrt, linewidth=0.8)
+
+      if (plot.bins==TRUE) {
+        capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
+
+        g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
+
+        g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
+      }
+
+      g <- g +
+        ggplot2::labs(caption=capt)
     }
-
-    g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
-                                             fill="NMA", alpha="NMA"),
-                                data=predtrt) +
-      ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax,
-                                         linetype="NMA"),
-                            data=predtrt, linewidth=0.8)
-
-    if (plot.bins==TRUE) {
-      capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
-
-      g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
-
-      g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
-    }
-
-    g <- g +
-      ggplot2::labs(caption=capt)
   }
 
   # Define aesthetics
