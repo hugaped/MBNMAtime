@@ -6,6 +6,7 @@ datalist <- list(osteopain=osteopain, copd=copd, goutSUA_CFBcomb=goutSUA_CFBcomb
 n.iter <- 2000
 seed <- 890421
 
+# Iterations start at 2 so that they are compared to osteopain
 for (i in 2:length(datalist)) {
 
   print(names(datalist)[i])
@@ -101,7 +102,7 @@ for (i in 2:length(datalist)) {
 
     netnew <- mb.network(netnew)
 
-    if (names(datalist)[i-1] %in% c("diabetes")) {
+    if (names(datalist)[i-1] %in% c("diabetes", "hyalarthritis")) {
 
       # WARNING CAN BE REMOVED AFTER v0.2.2
       itp2 <- suppressWarnings(mb.run(netnew, temax(), corparam = TRUE, n.iter=n.iter, jags.seed=seed))
