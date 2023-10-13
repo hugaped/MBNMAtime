@@ -36,7 +36,7 @@ treatment properly.
 "lumps" time-points together within the time bin ranges specified in \code{overlay.nma}.
 The numbers in \code{overlay.nma} define the boundaries of the time bins within which to perform
 a standard NMA. Length must be >=2, or can be left as \code{NULL} (the default) to indicate that no NMA
-should be performed. \code{overlay.nma} can only be specified if \code{overlay.ref==TRUE}.
+should be perfomed. \code{overlay.nma} can only be specified if \code{overlay.ref==TRUE}.
 See Details for further information.}
 
 \item{method}{Can take \code{"common"} or \code{"random"} to indicate the type of NMA model used to synthesise data points
@@ -59,12 +59,6 @@ Easiest to use treatment labels stored by \code{mb.network()}}
 is specified also sets x-axis ticks to time bin boundaries automatically.}
 
 \item{...}{Arguments for \code{ggplot()} or \code{R2jags()}}
-}
-\value{
-An object of class \code{"mb.predict"}. The returned object is a list containing
-a summary of the posterior distribution of predictions, a matrix of MCMC samples
-of the predictions, the \code{"mb.network"} object on which the model was run, and details
-regarding the times and link function used for the predictions.
 }
 \description{
 Plots predicted responses from a time-course MBNMA model

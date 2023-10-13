@@ -7,6 +7,8 @@ testthat::test_that("rank.functions tests pass correctly", {
 
   testthat::expect_equal(1,1) # Avoids empty tests
 
+  seed <- 890421
+
   skip_on_ci()
   skip_on_cran()
   skip_on_appveyor()
@@ -22,20 +24,20 @@ testthat::test_that("rank.functions tests pass correctly", {
                    fun=temax(pool.emax="rel", method.emax="common",
                              pool.et50="rel", method.et50="random",
                              pool.hill="abs", method.hill=2),
-                   pd="pv", n.iter=1000)
+                   pd="pv", n.iter=1000, jags.seed=seed)
 
     if ("n" %in% names(network$data.ab) & !any(is.na(network$data.ab[["n"]]))) {
       bs <- mb.run(network,
                    fun=tspline(type = "bs", degree=2, knots = 2,
-                               pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", link="smd")
+                               pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", link="smd", jags.seed=seed)
     } else {
       bs <- mb.run(network,
                    fun=tspline(type = "bs", degree=2, knots = 2,
-                               pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv")
+                               pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", jags.seed=seed)
     }
 
 
-    resdev <- mb.run(network, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv")
+    resdev <- mb.run(network, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv", jags.seed=seed)
 
 
     ############# Rank AUC ###########
@@ -99,20 +101,20 @@ testthat::test_that("rank.functions tests pass correctly", {
 
       i <- 1
 
-      rank <- rank(emax, params=c("emax", "et50"),
+      rank <- rank(emax, param=c("et50"),
                    direction=-1, treats=treats.list[[i]])
 
-      testthat::expect_equal(names(rank), c("emax", "et50"))
-      testthat::expect_equal(names(rank$et50), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
-      testthat::expect_equal(nrow(rank$et50[["summary"]]), length(treats.list[[i]]))
-      testthat::expect_equal(nrow(rank$emax[["prob.matrix"]]), ncol(rank$emax[["prob.matrix"]]))
-      testthat::expect_equal(nrow(rank$emax[["prob.matrix"]]), length(treats.list[[i]]))
-      testthat::expect_equal(nrow(rank$emax[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
+      testthat::expect_equal(rank$param, c("et50"))
+      testthat::expect_equal(names(rank), c("param", "summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
+      testthat::expect_equal(nrow(rank[["summary"]]), length(treats.list[[i]]))
+      testthat::expect_equal(nrow(rank[["prob.matrix"]]), ncol(rank[["prob.matrix"]]))
+      testthat::expect_equal(nrow(rank[["prob.matrix"]]), length(treats.list[[i]]))
+      testthat::expect_equal(nrow(rank[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
 
       # Check that treatment codes can be character or numeric when estimating AUC
-      expect_error(rank(emax, params="auc",
+      expect_error(rank(emax, param="auc",
                         direction=-1, treats=treats.list[[1]], n.iter=100), NA)
-      expect_error(rank(emax, params="auc",
+      expect_error(rank(emax, param="auc",
                         direction=-1, treats=c("Badgers"), n.iter=100), "includes treatments/classes not included")
 
       if (is.numeric(treats.list[[i]])) {
@@ -120,32 +122,31 @@ testthat::test_that("rank.functions tests pass correctly", {
       } else if (is.character(treats.list[[i]])) {
         matchtreat <- treats.list[[i]]
       }
-      testthat::expect_equal(colnames(rank$et50[["rank.matrix"]]), matchtreat)
+      testthat::expect_equal(colnames(rank[["rank.matrix"]]), matchtreat)
 
 
 
 
       i <- 2
-      rank <- rank(bs, params=c("d.4", "d.1"),
+      rank <- rank(bs, param=c("d.4"),
                    direction=-1, treats=treats.list[[i]])
 
-      testthat::expect_equal(sort(names(rank)), sort(c("d.4", "d.1")))
-      testthat::expect_equal(names(rank$d.1), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
-      testthat::expect_equal(nrow(rank$d.1[["summary"]]), length(treats.list[[i]]))
-      testthat::expect_equal(nrow(rank$d.1[["prob.matrix"]]), ncol(rank$d.1[["prob.matrix"]]))
-      testthat::expect_equal(nrow(rank$d.4[["prob.matrix"]]), length(treats.list[[i]]))
-      testthat::expect_equal(nrow(rank$d.4[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
+      testthat::expect_equal(rank$param, c("d.4"))
+      testthat::expect_equal(names(rank), c("param", "summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
+      testthat::expect_equal(nrow(rank[["summary"]]), length(treats.list[[i]]))
+      testthat::expect_equal(nrow(rank[["prob.matrix"]]), ncol(rank[["prob.matrix"]]))
+      testthat::expect_equal(nrow(rank[["prob.matrix"]]), length(treats.list[[i]]))
+      testthat::expect_equal(nrow(rank[["rank.matrix"]]), model.list[[i]]$BUGSoutput$n.sims)
 
       if (is.numeric(treats.list[[i]])) {
         matchtreat <- bs$network$treatments[treats.list[[i]]]
       } else if (is.character(treats.list[[i]])) {
         matchtreat <- treats.list[[i]]
       }
-      testthat::expect_equal(colnames(rank$d.4[["rank.matrix"]]), matchtreat)
-      testthat::expect_equal(colnames(rank$d.1[["rank.matrix"]]), matchtreat)
+      testthat::expect_equal(colnames(rank[["rank.matrix"]]), matchtreat)
 
 
-      expect_error(rank(bs, params=c("beta.2"),
+      expect_error(rank(bs, param=c("beta.2"),
                         direction=-1, treats=treats.list[[i]]), "does not vary by treatment")
 
 
@@ -153,22 +154,21 @@ testthat::test_that("rank.functions tests pass correctly", {
       if ("classes" %in% names(network)) {
         fpoly <- mb.run(network, fun=tfpoly(degree=2),
                         class.effect = list("beta.2"="random"), pd="pv",
-                        rho="dunif(0,1)", n.iter=1000)
+                        rho="dunif(0,1)", n.iter=1000, jags.seed=seed)
 
         testthat::expect_error(rank(fpoly,
-                                    direction=-1, param="D.2", treats=c("1","wer"), level="class"), "classes not included")
+                                    direction=-1, param="D.2", treats=c("1","wer")), "classes not included")
 
         testthat::expect_error(rank(fpoly,
-                                    direction=-1, treats=fpoly$network$classes[c(2,3)], param="auc", level="class"), NA)
+                                    direction=-1, treats=fpoly$network$classes[c(2,3)], param="auc"))
 
         testthat::expect_silent(rank(fpoly,
-                                     direction=-1, treats=c(1,2), param="D.2", level="class"))
+                                     direction=-1, treats=c(1,2), param="D.2"))
 
         expect_silent(rank(fpoly,
-                           direction=-1, treats=fpoly$network$classes[c(2,3)], param="D.2", level="class"))
+                           direction=-1, treats=fpoly$network$classes[c(2,3)], param="D.2"))
       }
 
-      expect_error(rank(emax, direction=-1, level="class"), "not a class effect model")
     })
 
 
@@ -182,15 +182,17 @@ testthat::test_that("rank.functions tests pass correctly", {
                        ref.resp=list(emax=~rnorm(n, -0.5, 0.05), et50=-0.2))
 
       ranks <- rank(preds, lower_better=TRUE, treat=emax$network$treatments[1:3])
-      expect_equal(length(ranks[[1]]), 3)
-      expect_equal(ranks[[1]]$summary$treatment, emax$network$treatments[1:3])
+      expect_equal(names(ranks), c("param", "summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
+      expect_equal(ranks$summary$treatment, emax$network$treatments[1:3])
       expect_error(plot(ranks), NA)
+      expect_error(cumrank(ranks), NA)
 
       preds <- predict(bs)
-      ranks <- rank(preds, lower_better=FALSE)
-      expect_equal(length(ranks[[1]]), 3)
-      expect_equal(ranks[[1]]$summary$treatment, bs$network$treatments)
+      ranks <- rank(preds, lower_better=FALSE, time=preds$times[3])
+      expect_equal(names(ranks), c("param", "summary", "prob.matrix", "rank.matrix", "cum.matrix", "lower_better"))
+      expect_equal(ranks$param, paste0("Predictions at time = ", preds$times[3]))
       expect_error(plot(ranks), NA)
+      expect_error(cumrank(ranks), NA)
 
       expect_error(rank(preds, lower_better=TRUE, time=preds$times), "Must have length 1")
 

@@ -11,9 +11,6 @@
 
 \item{...}{further arguments passed to or from other methods}
 }
-\value{
-Prints posterior mean predictions to the console
-}
 \description{
 Print summary information from an mb.predict object
 }

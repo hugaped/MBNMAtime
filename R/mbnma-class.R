@@ -10,7 +10,6 @@
 #' Ranks desired parameters saved from a time-course MBNMA model from "best" to
 #' "worst".
 #'
-#' @inheritParams plot.mb.predict
 #' @inheritParams stats::integrate
 #' @param param A character object containing any model parameter monitored
 #'   in `mbnma` for which ranking is desired (e.g. `"beta.1"`, `"emax"`).
@@ -44,6 +43,7 @@
 #'   be impacted by the range of time over which AUC is calculated (`int.range`).
 #'   This requires integration over `int.range` and can take some time to run (particularly)
 #'   for spline functions as this uses the trapezoid method rather than adaptive quadrature).
+#'   Note that `"auc"` can only be calculated at the treatment-level in class effect models.
 #'
 #'   As with other post-estimation functions, `rank()` should only be performed on
 #'   models which have successfully converged. Note that rankings can be very sensitive to
@@ -82,7 +82,7 @@ rank.mbnma <- function(x, param="auc", lower_better=FALSE, treats=NULL,
   checkmate::assertLogical(lower_better, null.ok=FALSE, len=1, add=argcheck)
   checkmate::assertNumeric(int.range, lower=0, finite=TRUE, any.missing=FALSE, len=2, null.ok=TRUE,
                            sorted=TRUE, add=argcheck)
-  checkmate::assertChoice(level, choices=c("treatment", "class"), add=argcheck)
+  #checkmate::assertChoice(level, choices=c("treatment", "class"), add=argcheck)
   checkmate::assertInt(n.iter, lower=1, upper=x$BUGSoutput$n.sims, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -120,6 +120,7 @@ rank.mbnma <- function(x, param="auc", lower_better=FALSE, treats=NULL,
     treats <- x$network[[level]]
   } else if (!is.null(treats)) {
     if (is.character(treats)) {
+
       if (!all(treats %in% x$network[[level]])) {
         stop("`treats` includes treatments/classes not included in `x`")
       }

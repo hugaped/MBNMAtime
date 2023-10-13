@@ -3,6 +3,8 @@ testthat::context("Testing predict.functions")
 datalist <- list(osteopain=osteopain, copd=copd, goutSUA_CFBcomb=goutSUA_CFBcomb,
                  hyalarthritis=hyalarthritis, diabetes=diabetes, alog_pcfb=alog_pcfb)
 
+seed <- 890421
+
 testthat::test_that("post-estimation tests pass correctly", {
 
   skip_on_appveyor()
@@ -20,14 +22,14 @@ testthat::test_that("post-estimation tests pass correctly", {
 
       testthat::expect_equal(1,1) # Avoids empty test
 
-      loglin <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="common"))
+      loglin <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="common"), jags.seed=seed)
 
 
       # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
       suppressWarnings({
 
         emax <- mb.run(network, fun=temax(pool.emax="rel", method.emax="random",
-                                          pool.et50="abs", method.et50="common"), pd="pv")
+                                          pool.et50="abs", method.et50="common"), pd="pv", jags.seed=seed)
 
       })
 
@@ -35,16 +37,16 @@ testthat::test_that("post-estimation tests pass correctly", {
       bs <- mb.run(network, fun=tspline(type="bs", degree=1, knots=3,
                                         pool.1="rel", method.1="common",
                                         pool.2="abs", method.2="random",
-                                        pool.3 = "rel", method.3="random"), pd="pv")
+                                        pool.3 = "rel", method.3="random"), pd="pv", jags.seed=seed)
 
 
       ls <- mb.run(network, fun=tspline(type="ls", knots = 25/250),
-                   rho="dunif(0,1)", covar="varadj", pd="pv")
+                   rho="dunif(0,1)", covar="varadj", pd="pv", jags.seed=seed)
 
       loglin.ar1 <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="common"), covar="AR1",
-                           rho="dunif(0,1)", n.iter=1500, pd="pv")
+                           rho="dunif(0,1)", n.iter=1500, pd="pv", jags.seed=seed)
 
-      resdev <- mb.run(network, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv")
+      resdev <- mb.run(network, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv", jags.seed=seed)
 
 
       model.list <- list(loglin, emax, bs, ls, loglin.ar1)
@@ -147,14 +149,14 @@ testthat::test_that("post-estimation tests pass correctly", {
 
           class <- mb.run(network, fun=tfpoly(degree=2, method.1="common", pool.1="rel",
                                               method.2="random", pool.2="rel"),
-                          class.effect = list(beta.1="random"), pd="pv"
+                          class.effect = list(beta.1="random"), pd="pv", jags.seed=seed
           )
 
           expect_error(predict(class, level="class"), "all relative effects must be modelled with class")
 
           class2 <- mb.run(network, fun=tpoly(degree=2, method.1="common", pool.1="rel",
                                               method.2="random", pool.2="rel"),
-                           class.effect = list(beta.1="random", beta.2="common"), pd="pv"
+                           class.effect = list(beta.1="random", beta.2="common"), pd="pv", jags.seed=seed
           )
 
           pred <- predict(class2, level="class")

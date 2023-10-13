@@ -22,7 +22,7 @@ binplot(
 "lumps" time-points together within the time bin ranges specified in \code{overlay.nma}.
 The numbers in \code{overlay.nma} define the boundaries of the time bins within which to perform
 a standard NMA. Length must be >=2, or can be left as \code{NULL} (the default) to indicate that no NMA
-should be performed. \code{overlay.nma} can only be specified if \code{overlay.ref==TRUE}.
+should be perfomed. \code{overlay.nma} can only be specified if \code{overlay.ref==TRUE}.
 See Details for further information.}
 
 \item{method}{Can take \code{"common"} or \code{"random"} to indicate the type of NMA model used to synthesise data points

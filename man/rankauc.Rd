@@ -62,6 +62,7 @@ time-course parameters simultaneously on the treatment response, but will
 be impacted by the range of time over which AUC is calculated (\code{int.range}).
 This requires integration over \code{int.range} and can take some time to run (particularly)
 for spline functions as this uses the trapezoid method rather than adaptive quadrature).
+Note that \code{"auc"} can only be calculated at the treatment-level in class effect models.
 
 As with other post-estimation functions, \code{rank()} should only be performed on
 models which have successfully converged. Note that rankings can be very sensitive to

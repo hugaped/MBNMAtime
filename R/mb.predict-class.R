@@ -19,7 +19,7 @@
 #'   "lumps" time-points together within the time bin ranges specified in `overlay.nma`.
 #'   The numbers in `overlay.nma` define the boundaries of the time bins within which to perform
 #'   a standard NMA. Length must be >=2, or can be left as `NULL` (the default) to indicate that no NMA
-#'   should be performed. `overlay.nma` can only be specified if `overlay.ref==TRUE`.
+#'   should be perfomed. `overlay.nma` can only be specified if `overlay.ref==TRUE`.
 #'   See Details for further information.
 #' @param plot.bins Plot time bin boundaries as vertical dashed lines. Setting `plot.bins=TRUE` if `overlay.nma`
 #'   is specified also sets x-axis ticks to time bin boundaries automatically.
@@ -35,11 +35,6 @@
 #'   plotted
 #' @param ... Arguments for `ggplot()` or `R2jags()`
 #' @inheritParams plot.mb.rank
-#'
-#' @return An object of class `"mb.predict"`. The returned object is a list containing
-#'   a summary of the posterior distribution of predictions, a matrix of MCMC samples
-#'   of the predictions, the `"mb.network"` object on which the model was run, and details
-#'   regarding the times and link function used for the predictions.
 #'
 #' @details For the S3 method `plot()`, if `disp.obs` is set to `TRUE` it is
 #'   advisable to ensure predictions in `predict` are estimated using an even
@@ -172,19 +167,15 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 
   # Overlay reference treatment effect
   if (overlay.ref==TRUE) {
-    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Reference"), linewidth=0.8)
+    g <- g + ggplot2::geom_line(ggplot2::aes(y=ref.median, colour="Predicted reference"), linewidth=0.8)
     message(paste0("Reference treatment in plots is ", ref.treat))
   }
+  colorvals <- c("Predicted reference"="red")
 
   # Add overlayed lines and legends
-  if (disp.obs==TRUE) {
-    g <- g + ggplot2::geom_line(ggplot2::aes(linetype="MBNMA")) +
-      ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% Interval")) +
-      ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% Interval"))
-  } else {
-    g <- g + ggplot2::geom_line(ggplot2::aes(linetype="MBNMA")) +
-      ggplot2::geom_ribbon(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, fill="MBNMA", alpha="MBNMA"))
-  }
+  g <- g + ggplot2::geom_line(ggplot2::aes(linetype="Predicted MBNMA")) +
+    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="MBNMA 95% Interval")) +
+    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="MBNMA 95% Interval"))
 
   if (!is.null(overlay.nma)) {
 
@@ -198,87 +189,66 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
     }
 
     # Run split NMA
-    nma <- overlay.nma(x, timebins=overlay.nma, method=method,
-                       link=x$link, lim=x$lim, plottype = "pred",
+    nma <- overlay.nma(x, timebins=overlay.nma, method=method, link=x$link, lim=x$lim, plottype = "pred",
                        ...)
 
-    if (length(nma)>0) {
-      predlist <- list()
+    predlist <- list()
 
-      capt <- "" # Ensure variable is present to avoid error
+    capt <- "" # Ensure variable is present to avoid error
 
-      predtrt <- nma[[1]]$pred.df[0,]
+    for (bin in seq_along(nma)) {
 
-      for (bin in seq_along(nma)) {
-
-        predtrt <- rbind(predtrt, nma[[bin]]$pred.df)
-
-      }
+      predtrt <- nma[[bin]]$pred.df
 
       # Write caption
       if (length(overlay.nma)==2) {
-        capt <- paste0(" effects NMA model\nResDev = ", nma[[1]]$totresdev,
-                       "; Ndat = ", nma[[1]]$ndat,
-                       "; DIC = ", nma[[1]]$dic)
+        capt <- paste0(" effects NMA model\nResDev = ", nma[[bin]]$totresdev,
+                       "; Ndat = ", nma[[bin]]$ndat,
+                       "; DIC = ", nma[[bin]]$dic)
         if (method=="common") {
           capt <- paste0("Common", capt)
         } else if (method=="random") {
-          capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[1]]$sd)
+          capt <- paste0("Random", capt, "\nBetween-study SD = ", nma[[bin]]$sd)
         }
       } else {
         capt <- "Results for each NMA in overlay.nma are stored in output"
       }
 
       g <- g + ggplot2::geom_rect(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, xmin=tmin, xmax=tmax,
-                                               fill="NMA", alpha="NMA"),
+                                               fill="NMA (95% Interval)"),
                                   data=predtrt) +
-        ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax,
-                                           linetype="NMA"),
+        ggplot2::geom_segment(ggplot2::aes(y=`50%`, yend=`50%`, x=tmin, xend=tmax, color="Predicted NMA"),
                               data=predtrt, linewidth=0.8)
+
+      colorvals <- c("Predicted reference"="red", "Predicted NMA"="gray0")
 
       if (plot.bins==TRUE) {
         capt <- paste0(capt, "\nVertical dashed lines indicate time bin boundaries")
 
         g <- g + ggplot2::geom_vline(xintercept=overlay.nma, linetype="dashed", alpha=0.5)
 
-        g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
+        if (bin==1) {
+          g <- g + ggplot2::scale_x_continuous(breaks=unique(c(0, overlay.nma)))
+        }
       }
 
-      g <- g +
-        ggplot2::labs(caption=capt)
     }
+
+    g <- g +
+      ggplot2::labs(caption=capt) +
+      ggplot2::scale_fill_manual(name="", values=c("NMA (95% Interval)"="lightblue"))
   }
 
-  # Define aesthetics
-  linetypevals <- c("MBNMA"="solid",
-                    "Reference"="solid",
-                    "NMA"="solid",
-                    "MBNMA 95% Interval"="dashed")
-
-  colorvals <- c("MBNMA"="black",
-                 "Reference"="red",
-                 "NMA"="gray0",
-                 "MBNMA 95% Interval"="black")
-
-  fillvals <- c("MBNMA"=col,
-                "Reference"="red",
-                "NMA"="grey",
-                "MBNMA 95% Interval"="black")
-
-  alphavals <- c("MBNMA"=0.2,
-                 "Reference"=1,
-                 "NMA"=1,
-                 "MBNMA 95% Interval"=1)
-
-  g <- g +
-    ggplot2::scale_linetype_manual(name="", values=linetypevals) +
-    ggplot2::scale_fill_manual(name="", values=fillvals) +
-    ggplot2::scale_color_manual(name="", values=colorvals) +
-    ggplot2::scale_alpha_manual(name="", values=alphavals)
-
-  # Add facets and theme
   g <- g + ggplot2::facet_wrap(~factor(treat)) +
-    ggplot2::labs(y="Predicted response", x="Time") +
+    ggplot2::labs(y="Predicted response", x="Time")
+
+  linetypevals <- c("Predicted MBNMA"="solid",
+                    "MBNMA 95% Interval"="dashed")
+  g <- g + ggplot2::scale_linetype_manual(name="",
+                                          values=linetypevals)
+
+  g <- g + ggplot2::scale_color_manual(name="",
+                                       values=colorvals) +
     theme_mbnma()
 
   graphics::plot(g)
@@ -299,8 +269,6 @@ plot.mb.predict <- function(x, disp.obs=FALSE, overlay.ref=TRUE,
 #'
 #' @param x An object of `class("mb.predict")` generated by `predict.mbnma()`
 #' @param ... further arguments passed to or from other methods
-#'
-#' @return Prints posterior mean predictions to the console
 #'
 #' @export
 print.mb.predict <- function(x, ...) {
@@ -474,17 +442,22 @@ rank.mb.predict <- function(x, time=max(x$summary[[1]]$time), lower_better=FALSE
   }))
   colnames(rank.mat) <- treats
 
-  # Store rankings
-  # rank.result <- list(temp=
-  #                       list("summary"=sumrank(rank.mat),
-  #                            "prob.matrix"=calcprob(rank.mat, treats=treats),
-  #                            "rank.matrix"=rank.mat)
-  # )
-  # names(rank.result) <- paste0("Predictions at time = ", time)
-  rank.result <- list("param"=paste0("Predictions at time = ", time),
-                      "summary"=sumrank(rank.mat),
-                      "prob.matrix"=calcprob(rank.mat, treats=treats),
-                      "rank.matrix"=rank.mat)
+
+  # Ranking probabilityes
+  prob.mat <- calcprob(rank.mat, treats=treats)
+
+  # Calculate cumulative ranking probabilities
+  cum.mat <- apply(prob.mat, MARGIN=2,
+                   FUN=function(col) {cumsum(col)})
+
+  rank.result <-
+    list("param"=paste0("Predictions at time = ", time),
+         "summary"=sumrank(rank.mat),
+         "prob.matrix"=prob.mat,
+         "rank.matrix"=rank.mat,
+         "cum.matrix"=cum.mat,
+         "lower_better"=lower_better
+    )
 
   class(rank.result) <- "mb.rank"
   return(rank.result)

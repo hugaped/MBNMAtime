@@ -15,6 +15,8 @@ testthat::test_that("print.sum tests pass correctly", {
   n.burnin <- 100
   n.thin <- 1
 
+  seed <- 890421
+
   for (i in seq_along(datalist)) {
 
     print(names(datalist)[i])
@@ -26,7 +28,7 @@ testthat::test_that("print.sum tests pass correctly", {
     emax1 <- mb.run(network,
                     fun=temax(pool.emax="abs", method.emax="random",
                               pool.et50="rel", method.et50="common"),
-                    n.chain=3, n.iter=200, n.burnin=100,
+                    n.chain=3, n.iter=200, n.burnin=100, jags.seed=seed,
                     rho="dunif(0,1)", covar="AR1",
                     positive.scale = TRUE, intercept = TRUE,
                     UME=TRUE)
@@ -41,7 +43,7 @@ testthat::test_that("print.sum tests pass correctly", {
                                                pool.1="abs", method.1="random",
                                                pool.2="rel", method.2="common"),
                      intercept=FALSE,
-                     n.chain=3, n.iter=200, n.burnin=100,
+                     n.chain=3, n.iter=200, n.burnin=100, jags.seed=seed,
                      rho=0.2, covar="CS", pd="popt",
                      class.effect = list(beta.2="random"))
     )
