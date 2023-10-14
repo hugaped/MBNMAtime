@@ -1399,7 +1399,7 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x), bounda
 #' network <- mb.network(alog_pcfb)
 #'
 #' # Construct a dataset with the latest time point in each study
-#' data.ab <- get.latest.time(network)
+#' data.ab <- get.latest.time(network)$data.ab
 #' getnmadata(data.ab)
 #'
 #' @export

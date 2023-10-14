@@ -50,7 +50,7 @@ Converts data frame to a list for use in JAGS NMA model
 network <- mb.network(alog_pcfb)
 
 # Construct a dataset with the latest time point in each study
-data.ab <- get.latest.time(network)
+data.ab <- get.latest.time(network)$data.ab
 getnmadata(data.ab)
 
 }
