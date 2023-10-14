@@ -71,6 +71,9 @@ To assess how well a model fits the data, it can be useful to look at a plot of 
 Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a series of boxplots (`plot.type="box"`).
 
 ```{r, results="hide", fig.show="hold", eval=FALSE}
+# Using the osteoarthritis dataset
+network.pain <- mb.network(osteopain, reference = "Pl_0")
+
 # Run a first-order fractional polynomial time-course MBNMA
 mbnma <- mb.run(network.pain, 
                 fun=tfpoly(degree=1,
@@ -82,6 +85,9 @@ devplot(mbnma, n.iter=1000)
 ```
 
 ```{r, echo=FALSE, results="hide", fig.show="hold"}
+# Using the osteoarthritis dataset
+network.pain <- mb.network(osteopain, reference = "Pl_0")
+
 # Run a first-order fractional polynomial time-course MBNMA
 mbnma <- mb.run(network.pain, 
                 fun=tfpoly(degree=1,
