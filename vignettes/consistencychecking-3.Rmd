@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{Checking for consistencys}
+  %\VignetteIndexEntry{Checking for consistency}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -39,6 +39,7 @@ Consistency testing can only be performed in networks in which closed loops of t
 
 ```{r, warning=FALSE}
 # Loops of evidence within the alogliptin dataset
+network.alog <- mb.network(alog_pcfb)
 splits.alog <- mb.nodesplit.comparisons(network.alog)
 print(splits.alog)
 ```
