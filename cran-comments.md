@@ -1,4 +1,15 @@
-This is a submission for a version update.
+This is a re-submission. 
+
+The following ERROR has been addressed:
+
+* Error: processing vignette 'outputs-4.Rmd' failed with diagnostics:
+  object 'network.pain' not found
+  
+The following NOTEs have been addressed:
+
+* NOTE Mismatches for apparent methods not registered
+* NOTE Found the following (possibly) invalid file URI
+
 
 ## Test environments
 
