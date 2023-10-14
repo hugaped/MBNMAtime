@@ -3,15 +3,11 @@ Type: Package
 Title: Run Time-Course Model-Based Network Meta-Analysis (MBNMA) Models
 Version: 0.2.4
 Language: en-GB
-Date: 2023-03-13
+Date: 2023-10-14
 Authors@R: c(person("Hugo", "Pedder", 
     email = "hugopedder@gmail.com", 
     role = c("aut", "cre"),
-    comment = c(ORCID = "0000-0002-7813-3749")),
-  person("Nicky", "Welton", role = c("ctb", "rev")),
-  person("Sofia", "Dias", role = c("ctb", "rev")),
-  person("Meg", "Bennetts", role = c("ctb", "rev")),
-  person("Martin", "Boucher", role = c("ctb", "rev")))
+    comment = c(ORCID = "0000-0002-7813-3749")))
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
 Description: Fits Bayesian time-course models for model-based network meta-analysis (MBNMA) that allows inclusion of multiple
   time-points from studies. Repeated measures over time are accounted for within studies by applying different time-course functions,
