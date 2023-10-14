@@ -12,7 +12,7 @@ Model-Based Network Meta-Analysis (MBNMA)."><!-- mathjax --><script src="https:/
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,11 +20,19 @@ Model-Based Network Meta-Analysis (MBNMA)."><!-- mathjax --><script src="https:/
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -98,11 +106,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p><strong>Maintainer</strong>: Hugo Pedder <a href="mailto:hugopedder@gmail.com">hugopedder@gmail.com</a> (<a href="https://orcid.org/0000-0002-7813-3749" class="external-link">ORCID</a>)</p>
-<p>Other contributors:</p><ul><li><p>Nicky Welton [contributor, reviewer]</p></li>
-<li><p>Sofia Dias [contributor, reviewer]</p></li>
-<li><p>Meg Bennetts [contributor, reviewer]</p></li>
-<li><p>Martin Boucher [contributor, reviewer]</p></li>
-</ul></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -117,7 +121,6 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Analyse data using mb.run()</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="tloglin.html">tloglin</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> module glm loaded</span>
 <span class="r-plt img"><img src="MBNMAtime-package-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -139,7 +142,6 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-in"><span>  rho<span class="op">=</span><span class="st">"dunif(0,1)"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'et50' parameters must take positive values.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Default half-normal prior restricts posterior to positive values.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -198,13 +200,13 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   treatment parameter sucra</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Pl_0      auc        0.5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Ce_100    auc        2.37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Lu_400    auc        1.63</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Ro_125    auc        3.78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Na_1000   auc        5.28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Na_1500   auc        4.44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Et_10     auc        6   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Pl_0      auc       0.502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Ce_100    auc       2.32 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Lu_400    auc       1.68 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Ro_125    auc       3.77 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Na_1000   auc       5.33 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Na_1500   auc       4.41 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Et_10     auc       6    </span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

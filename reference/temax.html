@@ -14,7 +14,7 @@ on the exponential scale to improve model stability **"><!-- mathjax --><script 
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,11 +22,19 @@ on the exponential scale to improve model stability **"><!-- mathjax --><script 
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -155,7 +163,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~(emax * time)/(et50 + time)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8aea7a790&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557ae0a2b340&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $f</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (time, beta.1, beta.2, beta.3, p.expon) </span>
@@ -170,8 +178,8 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(y)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d8b08481c8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8aea7a790&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x557ad7d84630&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557ae0a2b340&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "$\\frac{\\beta_1 \\times x_m}{{\\beta_2} + x_m}$"</span>
@@ -222,7 +230,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~(emax * (time^hill))/((et50^hill) + (time^hill))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8ae9476c0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557add0ffb58&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $f</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (time, beta.1, beta.2, beta.3, p.expon) </span>
@@ -237,8 +245,8 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(y)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d8b08481c8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8ae9476c0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x557ad7d84630&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557add0ffb58&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "$\\frac{\\beta_1 \\times x_m^{\\beta_3}}{{\\beta_2}^{\\beta_3} + x_m^{\\beta_3}}$"</span>
@@ -250,7 +258,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(beta.1[i,k] * (time[i,m] ^ beta.3)) / ((beta.2[i,k] ^ beta.3) + (time[i,m] ^ beta.3))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(beta.1[i,k] * (abs(time[i,m]) ^ beta.3)) / ((abs(beta.2[i,k]) ^ beta.3) + (abs(time[i,m]) ^ beta.3))"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  emax  et50  hill </span>

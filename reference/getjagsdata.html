@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,11 +18,19 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -55,6 +63,7 @@
 <span>  rho <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  covstruct <span class="op">=</span> <span class="st">"CS"</span>,</span>
 <span>  link <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>  sdscale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cfb <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -71,6 +80,8 @@
 identifier must also have the same class identifier.</p></li>
 <li><p><code>n</code> An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)</p></li>
+<li><p><code>standsd</code> An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).</p></li>
 </ul></dd>
 
 
@@ -103,6 +114,12 @@ this determines some of the data. Can be either <code>"CS"</code> (compound symm
 <code>"log"</code> (for modelling Ratios of Means (Friedrich et al. 2011)
 ) or
 <code>"smd"</code> (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).</p></dd>
+
+
+<dt>sdscale</dt>
+<dd><p>Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying <code>sdscale=TRUE</code>
+will therefore only modify the model if link function is set to SMD (<code>link="smd"</code>).</p></dd>
 
 
 <dt>cfb</dt>

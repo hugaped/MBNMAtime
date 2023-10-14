@@ -2,8 +2,13 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  MBNMAtime: MBNMAtime.html
-last_built: 2023-06-01T12:54Z
+  consistencychecking-3: consistencychecking-3.html
+  dataexploration-1: dataexploration-1.html
+  mbnmatime-overview: mbnmatime-overview.html
+  outputs-4: outputs-4.html
+  predictions-5: predictions-5.html
+  runmbnmatime-2: runmbnmatime-2.html
+last_built: 2023-10-14T14:58Z
 urls:
   reference: https://hugaped.github.io/MBNMAtime/reference
   article: https://hugaped.github.io/MBNMAtime/articles

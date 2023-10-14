@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,11 +18,19 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -104,7 +112,6 @@ in <code>x</code> As default, rankings will be calculated for all treatments/cla
 <span class="r-in"><span>    pool.et50<span class="op">=</span><span class="st">"abs"</span>, method.et50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'et50' parameters must take positive values.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Default half-normal prior restricts posterior to positive values.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -134,35 +141,35 @@ in <code>x</code> As default, rankings will be calculated for all treatments/cla
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment |  Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|-----:|------:|----:|-----:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      | 27.60|     28|   26|    28|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    | 21.86|     22|   18|    23|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    | 13.74|     14|   11|    17|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    | 10.96|     11|    7|    18|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     | 20.91|     22|   11|    25|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     | 26.35|     26|   24|    28|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |  6.92|      7|    4|     9|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Pl_0      | 27.61|     28|   26|    28|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_100    | 21.82|     22|   18|    23|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_200    | 13.76|     14|   11|    17|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ce_400    | 10.92|     10|    7|    17|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Du_90     | 20.90|     22|   11|    25|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_10     | 26.31|     26|   24|    28|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_30     |  6.88|      7|    4|     9|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Et_5      | 26.29|     26|   24|    28|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |  2.48|      2|    2|     3|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |  2.54|      3|    2|     3|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_60     |  2.51|      3|    2|     3|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Et_90     |  2.51|      2|    2|     3|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_100    | 16.13|     16|   12|    20|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    | 16.72|     17|   12|    21|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    | 10.09|     10|    7|    14|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     | 12.23|     11|    7|    20|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_200    | 16.85|     17|   12|    21|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_400    | 10.16|     10|    7|    14|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Lu_NA     | 12.34|     12|    7|    21|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000   |  5.11|      5|    4|     7|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |  7.08|      7|    5|    10|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1500   |  7.05|      7|    5|    10|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Na_250    | 28.98|     29|   29|    29|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    | 14.37|     14|    9|    20|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |  6.95|      6|    4|    18|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     | 16.06|     16|   10|    22|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_750    | 14.35|     14|    9|    20|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ox_44     |  6.97|      6|    4|    18|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_12     | 16.01|     16|   10|    22|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_125    |  1.00|      1|    1|     1|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |  5.60|      5|    4|     9|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    | 25.50|     25|   24|    27|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    | 24.17|     24|   23|    26|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    | 19.89|     20|   15|    23|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    | 17.73|     18|   11|    22|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     | 18.75|     20|   12|    23|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     | 11.53|     11|    7|    19|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      | 17.48|     18|   10|    23|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25     |  5.59|      5|    4|     9|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_100    | 25.49|     25|   24|    27|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_200    | 24.18|     24|   23|    26|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_300    | 19.84|     20|   15|    23|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Tr_400    | 17.75|     18|   11|    22|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_10     | 18.76|     20|   11|    23|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_20     | 11.52|     11|    7|    19|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Va_5      | 17.42|     18|   10|    23|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>

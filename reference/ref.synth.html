@@ -18,7 +18,7 @@ as in the MBNMA."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,11 +26,19 @@ as in the MBNMA."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -164,7 +172,6 @@ treatment responses.</p>
 <span class="r-in"><span>    pool.et50<span class="op">=</span><span class="st">"abs"</span>, method.et50<span class="op">=</span><span class="st">"random"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'et50' parameters must take positive values.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Default half-normal prior restricts posterior to positive values.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -193,18 +200,18 @@ treatment responses.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/Rtmp8eQnMe/file178d5508e58", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpfcAta0/file1a4051cc8f13", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          mu.vect sd.vect    2.5%     25%     50%    75%   97.5%  Rhat n.eff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu.1      -2.105   0.080  -2.264  -2.157  -2.102  -2.05  -1.954 1.001  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance -38.770  12.576 -61.874 -47.309 -39.512 -30.61 -13.121 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu.1      -2.103   0.081  -2.266  -2.158  -2.103  -2.048  -1.947 1.001  3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance -38.895  12.170 -61.401 -47.661 -39.272 -31.389 -13.903 1.003   810</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 79.1 and DIC = 40.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 73.9 and DIC = 35.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate the network reference treatment effect using random effects meta-analysis</span></span></span>
@@ -221,23 +228,23 @@ treatment responses.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/Rtmp8eQnMe/file178d6873b026", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpfcAta0/file1a403ca9a206", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu.1       -1.652   0.143   -1.935   -1.746   -1.653   -1.558   -1.368 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd.mu.1     0.719   0.114    0.531    0.637    0.706    0.790    0.967 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance -130.350  11.642 -151.468 -138.503 -130.878 -122.668 -105.505 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu.1       -1.653   0.149   -1.946   -1.747   -1.651   -1.557   -1.357 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd.mu.1     0.726   0.115    0.533    0.643    0.713    0.794    0.978 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance -130.991  11.971 -152.354 -139.511 -131.842 -123.328 -106.285 1.003</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          n.eff</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mu.1      3000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sd.mu.1   3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  2600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance   970</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 67.8 and DIC = -62.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 71.5 and DIC = -59.4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

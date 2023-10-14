@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,11 +18,19 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -95,7 +103,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~rate * log(time + 1)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8ac561dc0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557ade925da8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $f</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (time, beta.1) </span>
@@ -103,8 +111,8 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span>     y &lt;- beta.1 * log(time + 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(y)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d8a9ca1da8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8ac561dc0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x557acf207d30&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557ade925da8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\beta_1 * log(x_m + 1)"</span>
@@ -146,7 +154,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~rate * log(time + 1)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8ac4c9298&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557ad4f01c70&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $f</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (time, beta.1) </span>
@@ -154,8 +162,8 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span>     y &lt;- beta.1 * log(time + 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(y)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d8a9ca1da8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d8ac4c9298&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x557acf207d30&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557ad4f01c70&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\beta_1 * log(x_m + 1)"</span>

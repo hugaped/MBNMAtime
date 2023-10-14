@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,11 +18,19 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -48,7 +56,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nma.run</span><span class="op">(</span><span class="va">data.ab</span>, method <span class="op">=</span> <span class="st">"common"</span>, link <span class="op">=</span> <span class="st">"identity"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nma.run</span><span class="op">(</span></span>
+<span>  <span class="va">data.ab</span>,</span>
+<span>  treatments <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  link <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>  sdscale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,7 +78,14 @@
 identifier must also have the same class identifier.</p></li>
 <li><p><code>n</code> An optional column indicating the number of participants used to calculate the
 response at a given observation (required if modelling using Standardised Mean Differences)</p></li>
+<li><p><code>standsd</code> An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).</p></li>
 </ul></dd>
+
+
+<dt>treatments</dt>
+<dd><p>A vector of treatment names. If left as <code>NULL</code> it will use
+the treatment coding given in <code>data.ab</code></p></dd>
 
 
 <dt>method</dt>
@@ -77,6 +99,12 @@ time-points in <code>overlay.nma</code> have been lumped together to estimate th
 <code>"log"</code> (for modelling Ratios of Means (Friedrich et al. 2011)
 ) or
 <code>"smd"</code> (for modelling Standardised Mean Differences - although this also corresponds to an identity link function).</p></dd>
+
+
+<dt>sdscale</dt>
+<dd><p>Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying <code>sdscale=TRUE</code>
+will therefore only modify the model if link function is set to SMD (<code>link="smd"</code>).</p></dd>
 
 
 <dt>...</dt>
@@ -99,98 +127,99 @@ time-points in <code>overlay.nma</code> have been lumped together to estimate th
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Studies reporting change from baseline automatically identified from the data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get the latest time point</span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.latest.time.html">get.latest.time</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">late.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.latest.time.html">get.latest.time</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get the closest time point to a given value (t)</span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.closest.time.html">get.closest.time</a></span><span class="op">(</span><span class="va">network</span>, t<span class="op">=</span><span class="fl">7</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">early.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.closest.time.html">get.closest.time</a></span><span class="op">(</span><span class="va">network</span>, t<span class="op">=</span><span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run NMA on the data</span></span></span>
-<span class="r-in"><span><span class="fu">nma.run</span><span class="op">(</span><span class="va">df</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">nma.run</span><span class="op">(</span><span class="va">late.time</span><span class="op">$</span><span class="va">data.ab</span>, treatments<span class="op">=</span><span class="va">late.time</span><span class="op">$</span><span class="va">treatments</span>,</span></span>
+<span class="r-in"><span>  method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 104</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 133</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 1451</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 1452</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/Rtmp8eQnMe/file178d64a8482a", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpfcAta0/file1a40a5e4536", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 2000 iterations (first 1000 discarded)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]        -0.091   0.107   -0.259   -0.169   -0.110   -0.019    0.160 1.248</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]        -0.031   0.037   -0.110   -0.054   -0.028   -0.008    0.040 1.053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]         0.053   0.094   -0.141    0.004    0.043    0.114    0.250 1.022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]        -0.018   0.145   -0.281   -0.113   -0.039    0.067    0.248 1.070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[6]         0.262   0.238   -0.103    0.057    0.236    0.442    0.719 1.056</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[7]         0.060   0.082   -0.127    0.008    0.066    0.116    0.211 1.017</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[8]         0.067   0.243   -0.354   -0.099    0.053    0.234    0.486 1.044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[9]        -0.157   0.115   -0.407   -0.214   -0.157   -0.088    0.087 1.018</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[10]        0.022   0.223   -0.433   -0.118    0.033    0.155    0.510 1.013</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[11]       -0.028   0.059   -0.131   -0.070   -0.031    0.010    0.095 1.023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[12]       -0.016   0.059   -0.134   -0.054   -0.019    0.022    0.102 1.029</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[13]       -0.147   0.068   -0.282   -0.188   -0.149   -0.100   -0.015 1.034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[14]       -0.071   0.100   -0.266   -0.142   -0.068   -0.003    0.123 1.120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[15]       -0.041   0.071   -0.170   -0.093   -0.044    0.007    0.107 1.222</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[16]        0.118   0.078   -0.016    0.066    0.117    0.162    0.291 1.113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[17]        0.219   0.185   -0.134    0.105    0.216    0.343    0.577 1.102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[18]        0.154   0.097   -0.020    0.090    0.160    0.218    0.340 1.075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[19]        0.239   0.357   -0.521    0.008    0.311    0.469    0.899 1.058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[20]        0.057   0.119   -0.172   -0.031    0.054    0.148    0.273 1.135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[21]       -0.048   0.251   -0.587   -0.220   -0.013    0.143    0.333 1.069</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[22]        0.166   0.117   -0.083    0.095    0.155    0.256    0.390 1.195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[23]       -0.002   0.120   -0.209   -0.084   -0.007    0.074    0.247 1.167</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[24]        0.052   0.102   -0.140   -0.021    0.055    0.118    0.247 1.135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[25]        0.089   0.091   -0.116    0.046    0.091    0.132    0.294 1.144</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[26]       -0.117   0.149   -0.386   -0.230   -0.136   -0.010    0.199 1.041</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[27]        0.137   0.144   -0.112    0.025    0.138    0.234    0.433 1.025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[28]       -0.002   0.152   -0.291   -0.113    0.014    0.114    0.267 1.032</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[29]       -0.003   0.160   -0.296   -0.119    0.003    0.101    0.315 1.394</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.037   0.027    0.002    0.016    0.032    0.054    0.098 1.426</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   99.953  10.841   80.142   92.330   99.764  107.154  122.273 1.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  -141.094  10.841 -160.905 -148.717 -141.283 -133.894 -118.775 1.038</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%     75%   97.5%  Rhat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[1]         0.000   0.000    0.000    0.000    0.000   0.000   0.000 1.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]        -0.408   0.191   -0.788   -0.531   -0.411  -0.282  -0.042 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]        -0.687   0.077   -0.838   -0.738   -0.686  -0.635  -0.539 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]        -0.712   0.191   -1.095   -0.843   -0.710  -0.584  -0.345 1.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]        -0.565   0.252   -1.055   -0.729   -0.565  -0.400  -0.081 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[6]        -0.086   0.309   -0.702   -0.293   -0.084   0.114   0.502 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[7]        -1.027   0.156   -1.344   -1.130   -1.026  -0.921  -0.729 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[8]        -0.484   0.322   -1.127   -0.699   -0.484  -0.273   0.140 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[9]        -1.620   0.223   -2.059   -1.769   -1.620  -1.474  -1.177 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[10]       -1.491   0.318   -2.133   -1.696   -1.482  -1.277  -0.882 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[11]       -0.673   0.150   -0.967   -0.772   -0.672  -0.572  -0.377 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[12]       -0.604   0.151   -0.899   -0.701   -0.604  -0.503  -0.299 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[13]       -0.754   0.182   -1.096   -0.880   -0.752  -0.636  -0.391 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[14]       -0.788   0.255   -1.282   -0.955   -0.791  -0.624  -0.290 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[15]       -0.856   0.114   -1.080   -0.932   -0.853  -0.780  -0.634 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[16]       -0.850   0.170   -1.185   -0.957   -0.847  -0.739  -0.508 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[17]        0.321   0.301   -0.285    0.119    0.324   0.529   0.900 1.005</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[18]       -0.689   0.211   -1.099   -0.831   -0.694  -0.549  -0.267 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[19]       -1.055   0.494   -2.005   -1.386   -1.070  -0.737  -0.030 1.005</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[20]       -0.618   0.212   -1.022   -0.764   -0.618  -0.480  -0.179 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[21]       -1.937   0.353   -2.643   -2.172   -1.930  -1.703  -1.250 1.011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[22]       -0.872   0.208   -1.278   -1.011   -0.871  -0.731  -0.453 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[23]       -0.337   0.190   -0.708   -0.459   -0.337  -0.216   0.039 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[24]       -0.392   0.193   -0.765   -0.523   -0.396  -0.260  -0.009 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[25]       -0.584   0.187   -0.969   -0.709   -0.583  -0.455  -0.228 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[26]       -0.658   0.285   -1.228   -0.849   -0.655  -0.471  -0.104 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[27]       -0.406   0.293   -0.996   -0.606   -0.402  -0.201   0.141 1.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[28]       -0.655   0.295   -1.251   -0.845   -0.657  -0.456  -0.079 1.012</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[29]       -0.555   0.293   -1.127   -0.750   -0.555  -0.363   0.027 1.012</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.261   0.044    0.184    0.230    0.258   0.288   0.354 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  107.476  14.770   80.922   97.153  106.607 116.693 139.134 1.009</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  -107.312  14.770 -133.866 -117.635 -108.181 -98.095 -75.654 1.009</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d[1]          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]         14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]        420</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]        220</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]         48</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[6]         81</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[7]        630</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[8]        460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[9]        130</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[10]       170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[11]       140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[12]       120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[13]       130</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[14]        21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[15]        13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[16]        23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[17]        31</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[18]        34</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[19]       190</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[20]        20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[21]        34</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[22]        15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[23]        21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[24]        25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[25]       170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[26]        69</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[27]        97</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[28]       120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[29]         9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd            8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev    65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance     71</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]       1400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]       3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]        650</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]       1300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[6]       2300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[7]       1200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[8]       1400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[9]       1200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[10]       890</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[11]      1700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[12]      1600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[13]      3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[14]      1200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[15]       780</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[16]      2100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[17]       480</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[18]      1400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[19]       440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[20]      3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[21]       190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[22]      2400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[23]      1100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[24]      1000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[25]      3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[26]      1400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[27]       520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[28]       170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[29]       170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd         1100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   230</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    240</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 57.1 and DIC = -84.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 108.2 and DIC = 0.9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -18,7 +18,7 @@ van Valkenhoef van Valkenhoef et al. (2016)
     
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,11 +26,19 @@ van Valkenhoef van Valkenhoef et al. (2016)
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/MBNMAtime.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
+    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
+    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
+    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
+    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
+    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -183,7 +191,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> running checks</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running NMA model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -197,7 +204,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison 1/2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating nodesplit for: Ce_200 vs Ro_25</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Treatment code: 3 vs 22</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -211,7 +217,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Direct complete</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reference treatment is `Pl_0`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Studies reporting change from baseline automatically identified from the data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -226,7 +231,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison 2/2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating nodesplit for: Ce_200 vs Na_1000</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Treatment code: 3 vs 15</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -240,14 +244,13 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Direct complete</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reference treatment is `Pl_0`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Studies reporting change from baseline automatically identified from the data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 408</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 89</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 7152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 7149</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -261,7 +264,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Default half-normal prior restricts posterior to positive values.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> running checks</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running NMA model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -275,7 +277,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison 1/2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating nodesplit for: Ce_200 vs Ro_25</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Treatment code: 3 vs 22</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -289,7 +290,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Direct complete</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reference treatment is `Pl_0`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Studies reporting change from baseline automatically identified from the data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -304,7 +304,6 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison 2/2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating nodesplit for: Ce_200 vs Na_1000</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Treatment code: 3 vs 15</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -318,14 +317,13 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Direct complete</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reference treatment is `Pl_0`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Studies reporting change from baseline automatically identified from the data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Change from version 0.2.2 onwards: corparam=FALSE as default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 408</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 146</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 8121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 8118</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -341,20 +339,20 @@ ISSN 1759-2887 (Electronic) 1759-2879 (Linking), <a href="https://doi.org/10.100
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Comparison        | p-value| Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:-----------------|-------:|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25 vs Ce_200   |   0.084|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct         |        |  0.367| -1.293|  6.664|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect       |        | -0.420| -0.744| -0.164|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Ro_25 vs Ce_200   |   0.480|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct         |        | -0.458| -2.452|  5.710|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect       |        | -0.413| -0.720| -0.165|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                  |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000 vs Ce_200 |   0.005|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct         |        | -0.093| -0.253|  0.076|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect       |        | -0.354| -0.476| -0.234|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Na_1000 vs Ce_200 |   0.461|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct         |        | -0.470| -1.050|  0.017|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect       |        | -0.437| -0.571| -0.305|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                  |        |       |       |       |</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Comparison Time.Param Evidence Median   2.5%  97.5% p.value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Ro_25 vs Ce_200       emax   Direct  0.367 -1.293  6.664   0.084</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Ro_25 vs Ce_200       emax Indirect -0.420 -0.744 -0.164   0.084</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Na_1000 vs Ce_200       emax   Direct -0.093 -0.253  0.076   0.005</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Na_1000 vs Ce_200       emax Indirect -0.354 -0.476 -0.234   0.005</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Ro_25 vs Ce_200       emax   Direct -0.458 -2.452  5.710   0.480</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Ro_25 vs Ce_200       emax Indirect -0.413 -0.720 -0.165   0.480</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Na_1000 vs Ce_200       emax   Direct -0.470 -1.050  0.017   0.461</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Na_1000 vs Ce_200       emax Indirect -0.437 -0.571 -0.305   0.461</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
