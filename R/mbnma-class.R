@@ -72,7 +72,7 @@
 #' @export
 rank.mbnma <- function(x, param="auc", lower_better=FALSE, treats=NULL,
                        int.range=NULL,
-                       level="treatment", n.iter=x$BUGSoutput$n.sims,
+                       n.iter=x$BUGSoutput$n.sims,
                        ...) {
 
   # Run checks
