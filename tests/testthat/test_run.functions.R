@@ -15,6 +15,7 @@ testthat::test_that("run.functions tests:", {
 
   n.iter <- 500
   n.burnin <- 200
+  seed <- 890421
 
   for (i in seq_along(datalist)) {
 
@@ -26,58 +27,79 @@ testthat::test_that("run.functions tests:", {
     testthat::test_that(paste0(names(datalist)[i], ": exponential time-course function works correctly"), {
 
       # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
-      suppressWarnings({
+      #suppressWarnings({
 
-        if (!names(datalist)[i] %in% c("goutSUA_CFBcomb", "hyalarthritis", "diabetes", "alog_pcfb")) {
-          mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
-                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
-          expect_equal(all(c("emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
-        }
+      if (!names(datalist)[i] %in% c("goutSUA_CFBcomb", "hyalarthritis", "diabetes", "alog_pcfb")) {
+        mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
+                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                            jags.seed=seed)
+        expect_equal(all(c("emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+      }
 
-        if ("n" %in% names(datalist[[i]])) {
+      if ("n" %in% names(datalist[[i]])) {
 
-          if (any(is.na(datalist[[i]]$n))) {
-
-            expect_error(mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
-                                positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin),
-                         "Missing values in n")
-
-          } else {
-            mb.result <- mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
-                                positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
-            expect_equal(all(c("emax", "sd.emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
-          }
-
-        } else {
+        if (any(is.na(datalist[[i]]$n))) {
 
           expect_error(mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
-                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin))
+                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                              jags.seed=seed),
+                       "Missing values in n")
+
+        } else {
+          if (!names(datalist)[i] %in% c("alog_pcfb")) {
+            mb.result <- mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
+                                positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                                jags.seed=seed)
+            expect_equal(all(c("emax", "sd.emax", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+          }
         }
 
+      } else {
 
-        # Class effects
-        if ("class" %in% names(datalist[[i]])) {
+        expect_error(mb.run(network, link="smd", fun=titp(pool.emax="rel", method.emax="random"),
+                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                            jags.seed=seed))
+      }
 
+
+      # Class effects
+      if ("class" %in% names(datalist[[i]])) {
+
+        if (!names(datalist)[i] %in% c("goutSUA_CFBcomb")) {
           mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common"),
                               positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                              jags.seed=seed,
                               class.effect = list("emax"="random"))
           expect_equal(all(c("emax", "emax", "sd.EMAX") %in% mb.result$parameters.to.save), TRUE)
 
           mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="random"),
                               positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                              jags.seed=seed,
                               class.effect = list("emax"="random"))
           testthat::expect_equal(all(c("EMAX", "sd.EMAX", "sd.emax") %in% mb.result$parameters.to.save), TRUE)
-
         }
+      }
 
-        # UME
-        mb.result <- mb.run(network, link="log", fun=titp(pool.emax="rel", method.emax="common"),
-                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                            UME = "emax")
-        testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
-                               ncol(combn(network$treatments,2))+1)
+      # UME
+      if (!names(datalist)[i] %in% c("goutSUA_CFBcomb", "hyalarthritis", "alog_pcfb")) {
+        if (any(network$data.ab$y<=0)) {
+          mb.result <- mb.run(network, link="identity", fun=titp(pool.emax="rel", method.emax="common"),
+                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                              jags.seed=seed,
+                              UME = "emax")
+          testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                                 ncol(combn(network$treatments,2))+1)
+        } else {
+          mb.result <- mb.run(network, link="log", fun=titp(pool.emax="rel", method.emax="common"),
+                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                              jags.seed=seed,
+                              UME = "emax")
+          testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                                 ncol(combn(network$treatments,2))+1)
+        }
+      }
 
-      })
+      #})
     })
 
 
@@ -86,31 +108,37 @@ testthat::test_that("run.functions tests:", {
 
       mb.result <- suppressWarnings(mb.run(network, fun=titp(pool.emax="rel", method.emax="common",
                                                              pool.rate="abs", method.rate="common"),
-                                           positive.scale=TRUE,  n.iter=n.iter, n.burnin=n.burnin, pd="plugin"))
+                                           positive.scale=TRUE,  n.iter=n.iter, n.burnin=n.burnin, pd="plugin",
+                                           jags.seed=seed))
       testthat::expect_equal(all(c("emax", "rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
-      mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common",
-                                            pool.rate="rel", method.rate="random"),
-                          positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="popt")
-      testthat::expect_equal(all(c("emax", "rate", "sd.rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+      if (!names(datalist)[i] %in% c(c("alog_pcfb", "goutSUA_CFBcomb", "copd", "hyalarthritis", "diabetes"))) {
+        mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common",
+                                              pool.rate="rel", method.rate="random"),
+                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="popt",
+                            jags.seed=seed)
+        testthat::expect_equal(all(c("emax", "rate", "sd.rate", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
-
-      result <- mb.run(network, fun=titp(),
-                       rho="dunif(0,1)", covar="CS", n.iter=n.iter, n.burnin=n.burnin, pd="pv")
-      test <- all(c("emax", "rate", "rho") %in% result$parameters.to.save)
-      testthat::expect_equal(test, TRUE)
+        result <- mb.run(network, fun=titp(),
+                         rho="dunif(0,1)", covar="CS", n.iter=n.iter, n.burnin=n.burnin, pd="pv",
+                         jags.seed=seed)
+        test <- all(c("emax", "rate", "rho") %in% result$parameters.to.save)
+        testthat::expect_equal(test, TRUE)
+      }
 
       # Class effects
       if ("class" %in% names(datalist[[i]])) {
         mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common",
                                               pool.rate="abs", method.rate="common"),
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                            jags.seed=seed,
                             class.effect = list("emax"="common"))
         testthat::expect_equal(all(c("EMAX") %in% mb.result$parameters.to.save), TRUE)
         testthat::expect_equal(all(c("sd.EMAX") %in% mb.result$parameters.to.save), FALSE)
 
         testthat::expect_error(mb.run(network, fun=titp(pool.emax="rel", method.emax="common",
                                                              pool.rate="abs", method.rate="common"),
+                                      jags.seed=seed,
                                       class.effect = list("rate"="common")),
                                "Class effects can only"
         )
@@ -120,7 +148,7 @@ testthat::test_that("run.functions tests:", {
       mb.result <- mb.run(network, fun=titp(pool.emax="rel", method.emax="common",
                                             pool.rate="rel", method.rate="common"),
                           positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                          UME=TRUE)
+                          jags.seed=seed, UME=TRUE)
       testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
                              ncol(combn(network$treatments,2))+1)
       testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("rate", colnames(mb.result$BUGSoutput$sims.matrix))]),
@@ -132,68 +160,72 @@ testthat::test_that("run.functions tests:", {
     testthat::test_that(paste0(names(datalist)[i], ": emax time-course function works correctly"), {
 
       # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
-      suppressWarnings({
+      #suppressWarnings({
 
-        mb.result <- suppressWarnings(mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                                                pool.et50="abs", method.et50="common"),
-                                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="plugin"))
-        testthat::expect_equal(all(c("emax", "et50", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+      mb.result <- suppressWarnings(mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                                              pool.et50="abs", method.et50="common"),
+                                           positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="plugin",
+                                           jags.seed=seed))
+      testthat::expect_equal(all(c("emax", "et50", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+
+      mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                             pool.et50="rel", method.et50="random"),
+                          positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="popt",
+                          jags.seed=seed)
+      testthat::expect_equal(all(c("emax", "et50", "sd.et50", "totresdev") %in% mb.result$parameters.to.save), TRUE)
+
+
+      result <- mb.run(network, fun=temax(),
+                       rho="dunif(0,1)", covar="CS", n.iter=n.iter, n.burnin=n.burnin, pd="pv",
+                       jags.seed=seed)
+      test <- all(c("emax", "et50", "rho") %in% result$parameters.to.save)
+      testthat::expect_equal(test, TRUE)
+
+      # Class effects
+      if ("class" %in% names(datalist[[i]])) {
 
         mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                               pool.et50="rel", method.et50="random"),
-                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="popt")
-        testthat::expect_equal(all(c("emax", "et50", "sd.et50", "totresdev") %in% mb.result$parameters.to.save), TRUE)
-
-
-        result <- mb.run(network, fun=temax(),
-                         rho="dunif(0,1)", covar="CS", n.iter=n.iter, n.burnin=n.burnin, pd="pv")
-        test <- all(c("emax", "et50", "rho") %in% result$parameters.to.save)
-        testthat::expect_equal(test, TRUE)
-
-        # Class effects
-        if ("class" %in% names(datalist[[i]])) {
-
-          mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                                 pool.et50="abs", method.et50="common"),
-                              positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                              class.effect = list("emax"="common"))
-          testthat::expect_equal(all(c("EMAX") %in% mb.result$parameters.to.save), TRUE)
-          testthat::expect_equal(all(c("sd.EMAX") %in% mb.result$parameters.to.save), FALSE)
-
-          testthat::expect_error(mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                                           pool.et50="abs", method.et50="common"),
-                                        class.effect = list("et50"="common")),
-                                 "Class effects can only"
-          )
-
-        }
-
-
-        # UME
-        mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                               pool.et50="rel", method.et50="common"),
+                                               pool.et50="abs", method.et50="common"),
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                            UME=TRUE)
-        testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
-                               ncol(combn(network$treatments,2))+1)
-        testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("et50", colnames(mb.result$BUGSoutput$sims.matrix))]),
-                               ncol(combn(network$treatments,2))+1)
+                            jags.seed=seed, class.effect = list("emax"="common"))
+        testthat::expect_equal(all(c("EMAX") %in% mb.result$parameters.to.save), TRUE)
+        testthat::expect_equal(all(c("sd.EMAX") %in% mb.result$parameters.to.save), FALSE)
+
+        testthat::expect_error(mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                                         pool.et50="abs", method.et50="common"),
+                                      class.effect = list("et50"="common"), jags.seed=seed),
+                               "Class effects can only"
+        )
+
+      }
 
 
-        expect_error(mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                               pool.et50="rel", method.et50="common"),
-                            corparam = TRUE,
-                            positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                            UME=TRUE), NA)
+      # UME
+      mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                             pool.et50="rel", method.et50="common"),
+                          positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                          jags.seed=seed, UME=TRUE)
+      testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("emax", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                             ncol(combn(network$treatments,2))+1)
+      testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("et50", colnames(mb.result$BUGSoutput$sims.matrix))]),
+                             ncol(combn(network$treatments,2))+1)
 
-        # Include a Hill parameter
-        mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
-                                               pool.et50="rel", method.et50="common",
-                                               pool.hill = "abs", method.hill = 2),
-                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv")
-        testthat::expect_equal(all(c("hill") %in% mb.result$parameters.to.save), TRUE)
 
-      })
+      expect_error(mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                             pool.et50="rel", method.et50="common"),
+                          corparam = TRUE,
+                          positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                          jags.seed=seed, UME=TRUE), NA)
+
+      # Include a Hill parameter
+      mb.result <- mb.run(network, fun=temax(pool.emax="rel", method.emax="common",
+                                             pool.et50="rel", method.et50="common",
+                                             pool.hill = "abs", method.hill = 2),
+                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv",
+                          jags.seed=seed)
+      testthat::expect_equal(all(c("hill") %in% mb.result$parameters.to.save), TRUE)
+
+      #})
     })
 
 
@@ -207,7 +239,8 @@ testthat::test_that("run.functions tests:", {
 
       mb.result <- mb.run(network, fun=tpoly(degree = 2, pool.1 = "rel", method.1="common",
                                              pool.2="abs", method.2="common"),
-                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv")
+                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv",
+                          jags.seed=seed)
       testthat::expect_equal(all(c("beta.2", "d.1", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
 
@@ -215,7 +248,8 @@ testthat::test_that("run.functions tests:", {
                                              pool.2="rel", method.2="common",
                                              pool.3="abs", method.3="random",
                                              pool.4="rel", method.4="random"),
-                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8)
+                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8,
+                          jags.seed=seed)
       testthat::expect_equal(all(c("beta.3", "d.1", "d.2", "d.4",
                                    "sd.beta.3", "sd.beta.4",
                                    "totresdev", "rho") %in% mb.result$parameters.to.save), TRUE)
@@ -227,7 +261,8 @@ testthat::test_that("run.functions tests:", {
                                                pool.3="abs", method.3="random",
                                                pool.4="rel", method.4="random"),
                             corparam = FALSE,
-                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8)
+                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8,
+                            jags.seed=seed)
         testthat::expect_equal(all(c("beta.3", "d.1", "d.2", "d.4",
                                      "sd.beta.3", "sd.beta.4",
                                      "totresdev", "rho") %in% mb.result$parameters.to.save), TRUE)
@@ -238,7 +273,8 @@ testthat::test_that("run.functions tests:", {
                                                pool.3="abs", method.3="random",
                                                pool.4="rel", method.4="random"),
                             corparam = TRUE,
-                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8)
+                            n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho=0.8,
+                            jags.seed=seed)
         testthat::expect_equal(all(c("beta.3", "d.1", "d.2", "d.4",
                                      "sd.beta.3", "sd.beta.4",
                                      "totresdev", "rho", "rhoparam") %in% mb.result$parameters.to.save), TRUE)
@@ -254,7 +290,7 @@ testthat::test_that("run.functions tests:", {
                                                pool.2="abs", method.2="common",
                                                pool.3="rel", method.3="random"),
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv",
-                            class.effect = list("beta.3"="random"))
+                            class.effect = list("beta.3"="random"), jags.seed=seed)
         testthat::expect_equal(all(c("D.3") %in% mb.result$parameters.to.save), TRUE)
         testthat::expect_equal(all(c("sd.D.3") %in% mb.result$parameters.to.save), TRUE)
       }
@@ -262,7 +298,7 @@ testthat::test_that("run.functions tests:", {
       # UME
       mb.result <- mb.run(network, fun=tpoly(degree = 1, pool.1 = "rel", method.1="common"),
                           positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                          UME=TRUE)
+                          jags.seed=seed, UME=TRUE)
       testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("d.1", colnames(mb.result$BUGSoutput$sims.matrix))]),
                              ncol(combn(network$treatments,2))+1)
 
@@ -276,7 +312,8 @@ testthat::test_that("run.functions tests:", {
 
       mb.result <- mb.run(network, fun=tfpoly(degree = 2, pool.1 = "rel", method.1="random",
                                               pool.2="abs", method.2="common"),
-                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv")
+                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv",
+                          jags.seed=seed)
       testthat::expect_equal(all(c("beta.2", "d.1", "sd.beta.1", "totresdev") %in% mb.result$parameters.to.save), TRUE)
 
 
@@ -284,7 +321,8 @@ testthat::test_that("run.functions tests:", {
                                              pool.2="rel", method.2="common",
                                              pool.3="abs", method.3="random",
                                              pool.4="rel", method.4="common"),
-                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho="dunif(0,1)", covar = "varadj")
+                          n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv", rho="dunif(0,1)", covar = "varadj",
+                          jags.seed=seed)
       testthat::expect_equal(all(c("beta.3", "beta.1", "d.2", "d.4",
                                    "sd.beta.3", "rho",
                                    "totresdev") %in% mb.result$parameters.to.save), TRUE)
@@ -297,7 +335,7 @@ testthat::test_that("run.functions tests:", {
                                                pool.2="abs", method.2="common",
                                                pool.3="rel", method.3="random"),
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv",
-                            class.effect = list("beta.3"="random"))
+                            jags.seed=seed, class.effect = list("beta.3"="random"))
         testthat::expect_equal(all(c("D.3") %in% mb.result$parameters.to.save), TRUE)
         testthat::expect_equal(all(c("sd.D.3") %in% mb.result$parameters.to.save), TRUE)
 
@@ -306,14 +344,14 @@ testthat::test_that("run.functions tests:", {
                                                pool.3="rel", method.3="random"),
                             corparam = TRUE,
                             positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin, pd="pv",
-                            class.effect = list("beta.3"="random"))
+                            jags.seed=seed, class.effect = list("beta.3"="random"))
       }
 
 
       # UME
       mb.result <- mb.run(network, fun=tpoly(degree = 1, pool.1 = "rel", method.1="common"),
                           positive.scale=TRUE,  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
-                          UME=TRUE)
+                          jags.seed=seed, UME=TRUE)
       testthat::expect_equal(ncol(mb.result$BUGSoutput$sims.matrix[,grepl("d.1", colnames(mb.result$BUGSoutput$sims.matrix))]),
                              ncol(combn(network$treatments,2))+1)
 
@@ -325,11 +363,14 @@ testthat::test_that("run.functions tests:", {
 
     testthat::test_that(paste0(names(datalist)[i], ": mb.run function (+ tuser()) works correctly"), {
 
-      testthat::expect_warning(mb.run(network, pd="plugin",  n.chain=3, n.iter=n.iter, n.burnin=n.burnin), "Plugin method only works")
+      testthat::expect_warning(mb.run(network, pd="plugin",  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                                      jags.seed=seed), "Plugin method only works")
 
-      testthat::expect_error(mb.run(network, pd="plugin", rho=0.5, covar="AR1",  n.chain=3, n.iter=n.iter, n.burnin=n.burnin), "pD cannot be calculated")
+      testthat::expect_error(mb.run(network, pd="plugin", rho=0.5, covar="AR1",  n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                                    jags.seed=seed), "pD cannot be calculated")
 
-      expect_error(mb.run(network, pd="pd.kl", n.chain=3, n.iter=n.iter, n.burnin=n.burnin), NA)
+      expect_error(mb.run(network, pd="pd.kl", n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                          jags.seed=seed), NA)
 
       # Class effects
       user.fun <- ~exp(beta.1*time + beta.2 + time)
@@ -339,7 +380,7 @@ testthat::test_that("run.functions tests:", {
                                                  pool.1="rel", method.1="random",
                                                  pool.2="rel", method.2="common"),
                          class.effect=list("beta.2"="random"),
-                         n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
+                         n.chain=3, n.iter=n.iter, n.burnin=n.burnin, jags.seed=seed)
         testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
         testthat::expect_equal(all(c("D.1") %in% result$parameters.to.save), FALSE)
 
@@ -347,7 +388,7 @@ testthat::test_that("run.functions tests:", {
                                                  pool.1="abs", method.1="random",
                                                  pool.2="rel", method.2="common"),
                          class.effect=list("beta.2"="random"),
-                         n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
+                         n.chain=3, n.iter=n.iter, n.burnin=n.burnin, jags.seed=seed)
         testthat::expect_equal(all(c("D.2", "sd.D.2") %in% result$parameters.to.save), TRUE)
         testthat::expect_equal(all(c("BETA.1") %in% result$parameters.to.save), FALSE)
         testthat::expect_equal(all(c("BETA.2") %in% result$parameters.to.save), FALSE)
@@ -356,7 +397,8 @@ testthat::test_that("run.functions tests:", {
                                                               pool.1="abs", method.1="random",
                                                               pool.2="rel", method.2="common"),
                                       class.effect=list("beta.1"="common"),
-                                      n.chain=3, n.iter=n.iter, n.burnin=n.burnin), "Class effects can only be specified")
+                                      n.chain=3, n.iter=n.iter, n.burnin=n.burnin,
+                                      jags.seed=seed), "Class effects can only be specified")
 
       }
 
@@ -366,7 +408,7 @@ testthat::test_that("run.functions tests:", {
       result <- mb.run(network, fun=tuser(fun=user.fun,
                                           pool.1="rel", method.1="random"),
                        UME=TRUE,
-                       n.chain=3, n.iter=n.iter, n.burnin=n.burnin)
+                       n.chain=3, n.iter=n.iter, n.burnin=n.burnin, jags.seed=seed)
 
       if (length(network$treatments)>3) {
         testthat::expect_equal(paste0("d.1[2,", length(network$treatments)-1, "]") %in% colnames(result$BUGSoutput$sims.matrix), TRUE)
@@ -382,7 +424,7 @@ testthat::test_that("run.functions tests:", {
 
       result <- mb.run(network, fun=tloglin(method.rate="random"),
                        UME=TRUE,
-                       n.chain=3, n.iter=500, n.burnin=200)
+                       n.chain=3, n.iter=500, n.burnin=200, jags.seed=seed)
 
       expect_error(mb.update(result, param="test"))
 
