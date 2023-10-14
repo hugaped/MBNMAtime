@@ -95,13 +95,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com} (\href{https://orcid.org/0000-0002-7813-3749}{ORCID})
 
-Other contributors:
-\itemize{
-  \item Nicky Welton [contributor, reviewer]
-  \item Sofia Dias [contributor, reviewer]
-  \item Meg Bennetts [contributor, reviewer]
-  \item Martin Boucher [contributor, reviewer]
-}
-
 }
 \keyword{internal}
