@@ -153,7 +153,7 @@ However, in addition to this, it's also necessary to specify a value for `rho`, 
 -   Given as string representing a JAGS prior distribution [@jagsmanual], which indicates that the correlation should be estimated from the data. For example, to specify a prior that the correlation between time-points will be between 0 and 1 with equal probability you could set `rho="dunif(0,1)"`.
 -   Given as a single numeric value, which indicates that the correlation should be fixed to that value. For example, this value could be estimated externally from another study using Individual Participant Data. This could also be used to run a deterministic sensitivity analysis using different fixed values of `rho`.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE, results="hide"}
 # Using the COPD dataset
 network.copd <- mb.network(copd)
 
