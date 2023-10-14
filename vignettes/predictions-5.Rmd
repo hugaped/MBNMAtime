@@ -54,6 +54,8 @@ mbnma <- mb.run(network.pain,
 
 ```{r, results="hide", message=FALSE, echo=FALSE}
 # Run an Emax time-course MBNMA using the osteoarthritis dataset
+network.pain <- mb.network(osteopain)
+
 mbnma <- mb.run(network.pain,
                 fun=temax(pool.emax="rel", method.emax="common",
                           pool.et50="abs", method.et50="common"),

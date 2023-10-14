@@ -35,7 +35,7 @@ These results will then be reported on the scale on which the data were modeled 
 
 ```{r, result="hide"}
 # Run a quadratic time-course MBNMA using the alogliptin dataset
-network.along <- mb.network(alog_pcfb)
+network.alog <- mb.network(alog_pcfb)
 
 mbnma <- mb.run(network.alog, 
                 fun=tpoly(degree=2,
