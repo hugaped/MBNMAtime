@@ -290,20 +290,20 @@ summary.mbnma <- function(object, ...) {
   }
 
   # Overall section
-  print.overall.str(object)
+  overall.str(object)
   cat("\n\n")
 
   # Print treatment-level section
-  print.treat.str(object, ...)
+  treat.str(object, ...)
 
   # Class-effect section
-  print.class.str(object, ...)
+  class.str(object, ...)
 
   # Correlation section
-  print.cor.str(object, ...)
+  cor.str(object, ...)
 
   # Model fit statistics section
-  cat(print.modfit.str(object))
+  cat(modfit.str(object))
 
   # Check for rhat < 1.02
   cat("\n")

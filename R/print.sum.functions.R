@@ -106,7 +106,7 @@ get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
 
 
 
-print.treat.str <- function(mbnma, digits=4, ...) {
+treat.str <- function(mbnma, digits=4, ...) {
   fun <- mbnma$model.arg$fun
   treat.df <- mbnma$BUGSoutput$summary
 
@@ -188,7 +188,7 @@ print.treat.str <- function(mbnma, digits=4, ...) {
 
 
 
-print.class.str <- function(mbnma, digits=4, ...) {
+class.str <- function(mbnma, digits=4, ...) {
   if (length(mbnma$model.arg$class.effect)>0) {
     treat.df <- mbnma$BUGSoutput$summary
 
@@ -245,7 +245,7 @@ print.class.str <- function(mbnma, digits=4, ...) {
 
 
 
-print.overall.str <- function(mbnma) {
+overall.str <- function(mbnma) {
 
   # Print title
   title <- crayon::bold("========================================\nTime-course MBNMA\n========================================\n")
@@ -288,7 +288,7 @@ print.overall.str <- function(mbnma) {
 
 
 
-print.cor.str <- function(mbnma, digits=4) {
+cor.str <- function(mbnma, digits=4) {
   if (!is.null(mbnma$model.arg$rho)) {
     cat(paste0("\n", crayon::underline(crayon::bold("Correlation between time points")), "\n"))
     cat(paste("Covariance structure:", mbnma$model.arg$covar, "\n", sep=" "))
@@ -319,7 +319,7 @@ print.cor.str <- function(mbnma, digits=4) {
 
 
 
-print.modfit.str <- function(x) {
+modfit.str <- function(x) {
   totresdev.str <- c()
 
   head <- crayon::bold("#### Model Fit Statistics ####\n")

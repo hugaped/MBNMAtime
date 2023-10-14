@@ -140,19 +140,6 @@ print.mb.rank <- function(x, ...) {
 
   print(knitr::kable(sumtab, col.names = c("Treatment", "Mean", "Median", "2.5%", "97.5%"), digits = 2))
   cat("\n\n")
-
-  # for (param in seq_along(names(x))) {
-  #
-  #   head <- crayon::bold(crayon::underline(paste0(names(x)[param], " ranking")))
-  #
-  #   sumtab <- x[[names(x)[param]]]$summary
-  #   sumtab <- sumtab[,c(1,2,6,4,8)]
-  #
-  #   cat(head)
-  #
-  #   print(knitr::kable(sumtab, col.names = c("Treatment", "Mean", "Median", "2.5%", "97.5%"), digits = 2))
-  #   cat("\n\n")
-  # }
 }
 
 

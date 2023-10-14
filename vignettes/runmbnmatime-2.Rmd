@@ -65,7 +65,7 @@ Additional arguments within the function may also be used to specify the degree 
 
 #### Splines and `knots`
 
-For a more flexible time-course shape, various different splines can be fitted to the data by using `tspline()`. This model is very flexible and can allow for a variety of non-monotonic time-course relationships, though parameters can be difficult to interpret and the resulting time-course shape is often best visualised by calculating and plotting predictions  [Prediction](mbnmatime.html).
+For a more flexible time-course shape, various different splines can be fitted to the data by using `tspline()`. This model is very flexible and can allow for a variety of non-monotonic time-course relationships, though parameters can be difficult to interpret and the resulting time-course shape is often best visualised by calculating and plotting predictions  [Prediction](predictions-5.html).
 
 To fit this model, the number/location of `knots` (the points at which the different spline pieces meet) should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the range of times within the dataset. Alternatively several probabilities can be given that represent the quantiles of the time range at which knots should be located. Note that by default, a boundary knot will be placed at the maximum of the range of time-points to limit the function extrapolating to extreme values.
 
