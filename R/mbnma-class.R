@@ -657,6 +657,16 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
     timecourse <- gsub("\\[i\\,", "[", timecourse)
     spline <- genspline(times, spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots, degree=object$model.arg$fun$degree,
                         boundaries = c(0, max(object$model.arg$jagsdata$time, na.rm=TRUE)))
+
+    # Need to create boundaries for lspline
+    if ("ls" %in% object$model.arg$fun) {
+      maxt <- max(object$model.arg$jagsdata$time, na.rm=TRUE)
+      if (max(times)<maxt) {
+        spline <- genspline(c(times, maxt), spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots, degree=object$model.arg$fun$degree,
+                            boundaries = c(0, max(object$model.arg$jagsdata$time, na.rm=TRUE)))
+        spline <- spline[-nrow(spline),]
+      }
+    }
   }
 
   if ("itp" %in% object$model.arg$fun$name) {
