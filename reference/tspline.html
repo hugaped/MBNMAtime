@@ -73,7 +73,11 @@ piecewise linear splines(Perperoglu et al. 2019)
 <span>  pool.3 <span class="op">=</span> <span class="st">"rel"</span>,</span>
 <span>  method.3 <span class="op">=</span> <span class="st">"common"</span>,</span>
 <span>  pool.4 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  method.4 <span class="op">=</span> <span class="st">"common"</span></span>
+<span>  method.4 <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  pool.5 <span class="op">=</span> <span class="st">"rel"</span>,</span>
+<span>  method.5 <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  pool.6 <span class="op">=</span> <span class="st">"rel"</span>,</span>
+<span>  method.6 <span class="op">=</span> <span class="st">"common"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -124,6 +128,22 @@ be equally spaced across the range of time points). If a numeric vector is given
 <dt>method.4</dt>
 <dd><p>Method for synthesis of the 4th coefficient. Can take <code>"common</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
 
+
+<dt>pool.5</dt>
+<dd><p>Pooling for the 5th coefficient. Can take <code>"rel"</code> or <code>"abs"</code> (see details).</p></dd>
+
+
+<dt>method.5</dt>
+<dd><p>Method for synthesis of the 5th coefficient. Can take <code>"common</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
+
+
+<dt>pool.6</dt>
+<dd><p>Pooling for the 6th coefficient. Can take <code>"rel"</code> or <code>"abs"</code> (see details).</p></dd>
+
+
+<dt>method.6</dt>
+<dd><p>Method for synthesis of the 6th coefficient. Can take <code>"common</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -172,7 +192,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~beta.1 * spline.1 + beta.2 * spline.2 + beta.3 * spline.3 + </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     beta.4 * spline.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x560d4b6399e0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55700c8a3af8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\beta_1 * X[m,1] + \beta_2 * X[m,2] + \beta_3 * X[m,3] + \beta_4 * X[m,4]"</span>
@@ -226,7 +246,7 @@ ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~beta.1 * spline.1 + beta.2 * spline.2 + beta.3 * spline.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x560d4ad17ac0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55700c728248&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $latex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\beta_1 * X[m,1] + \beta_2 * X[m,2] + \beta_3 * X[m,3]"</span>
