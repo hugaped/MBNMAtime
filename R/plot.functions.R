@@ -1304,7 +1304,7 @@ cumrank <- function(x, sucra=TRUE, ...) {
     df.auc <- df %>%
       dplyr::group_by(df$Var2, df$param) %>%
       dplyr::do(data.frame(sucra=calcauc(.))) %>%
-      dplyr::ungroup(df.auc)
+      dplyr::ungroup()
 
     # Normalise SUCRA values to 0,1
     df.auc$sucra <- df.auc$sucra/nrow(df.auc)
