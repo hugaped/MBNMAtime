@@ -1272,9 +1272,6 @@ cumrank <- function(x, sucra=TRUE, ...) {
 
   output <- list()
 
-  # if (is.null(params)) {
-  #   params <- names(x)
-  # }
   params <- x$param
 
   df <- data.frame()
@@ -1286,21 +1283,6 @@ cumrank <- function(x, sucra=TRUE, ...) {
   melt$param <- params
 
   df <- rbind(df, melt)
-
-  # for (param in seq_along(params)) {
-  #   if (!params[param] %in% x$param) {
-  #     stop(paste0(params[param], " is not a ranked parameter in x"))
-  #   }
-  #
-  #   cum.mat <- x[[params[param]]]$cum.matrix
-  #   treats <- colnames(cum.mat)
-  #
-  #   melt <- reshape2::melt(cum.mat)
-  #   melt$param <- params[param]
-  #
-  #   df <- rbind(df, melt)
-  #
-  # }
 
   df$Parameter <- factor(df$param)
 
@@ -1321,9 +1303,11 @@ cumrank <- function(x, sucra=TRUE, ...) {
   if (sucra==TRUE) {
     df.auc <- df %>%
       dplyr::group_by(df$Var2, df$param) %>%
-      dplyr::do(data.frame(sucra=calcauc(.)))
+      dplyr::do(data.frame(sucra=calcauc(.))) %>%
+      dplyr::ungroup(df.auc)
 
-    df.auc <- dplyr::ungroup(df.auc)
+    # Normalise SUCRA values to 0,1
+    df.auc$sucra <- df.auc$sucra/nrow(df.auc)
 
     names(df.auc) <- c("treatment", "parameter", "sucra")
 
