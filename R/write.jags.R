@@ -1383,7 +1383,7 @@ default.priors <- function(fun=tloglin()) {
     rhoparam = "rhoparam ~ dunif(-1,1)"
   )
 
-  for (i in 1:4) {
+  for (i in 1:6) {
     priors[[paste0("mu.",i)]] <- paste0("mu.", i, "[i] ~ dnorm(0,0.0001)")
     priors[[paste0("m.mu.",i)]] <- paste0("mu.", i, " ~ dnorm(0,0.0001)")
     priors[[paste0("d.",i)]] <- paste0("d.", i, "[k] ~ dnorm(0,0.001)")

@@ -904,6 +904,10 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #' @param method.3 Method for synthesis of the 3rd coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.4 Pooling for the 4th coefficient. Can take `"rel"` or `"abs"` (see details).
 #' @param method.4 Method for synthesis of the 4th coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param pool.5 Pooling for the 5th coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.5 Method for synthesis of the 5th coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @param pool.6 Pooling for the 6th coefficient. Can take `"rel"` or `"abs"` (see details).
+#' @param method.6 Method for synthesis of the 6th coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -954,14 +958,15 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #' @export
 tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
-                      pool.4="rel", method.4="common") {
+                      pool.4="rel", method.4="common", pool.5="rel", method.5="common",
+                      pool.6="rel", method.6="common") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(type, choices=c("bs", "ns", "ls"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::assertIntegerish(degree, add=argcheck)
-  for (i in 1:4) {
+  for (i in 1:6) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
     # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
   }
