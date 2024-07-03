@@ -664,7 +664,7 @@ predict.mbnma <- function(object, times=seq(0, max(object$model.arg$jagsdata$tim
       if (max(times)<maxt) {
         spline <- genspline(c(times, maxt), spline=object$model.arg$fun$name, knots=object$model.arg$fun$knots, degree=object$model.arg$fun$degree,
                             boundaries = c(0, max(object$model.arg$jagsdata$time, na.rm=TRUE)))
-        spline <- spline[-nrow(spline),]
+        spline <- spline[-nrow(spline),, drop=FALSE]
       }
     }
   }
