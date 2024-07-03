@@ -176,7 +176,7 @@ test_that("genspline functions correctly", {
 
   expect_error(genspline(x, spline="ls", knots = -1))
   expect_error(genspline(x, spline="ls", knots = c(1,4)), "probs")
-  expect_error(genspline(x, spline="ls", knots = 5), "unlikely to be able to support it")
+  expect_error(genspline(x, spline="ls", knots = 15), "unlikely to be able to support it")
 
   # Natural cubic splines
   ns <- genspline(x, spline="ns", knots = 1, degree=1)
@@ -194,7 +194,7 @@ test_that("genspline functions correctly", {
 
   expect_error(genspline(x, spline="ns", knots = -1))
   expect_error(genspline(x, spline="ns", knots = c(1,4)), "probs")
-  expect_error(genspline(x, spline="ns", knots = 5), "unlikely to be able to support it")
+  expect_error(genspline(x, spline="ns", knots = 15), "unlikely to be able to support it")
 
   # # Restricted cubic splines
   # rcs <- genspline(x, spline="rcs", knots = 3)
