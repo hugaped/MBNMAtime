@@ -15,7 +15,11 @@ tspline(
   pool.3 = "rel",
   method.3 = "common",
   pool.4 = "rel",
-  method.4 = "common"
+  method.4 = "common",
+  pool.5 = "rel",
+  method.5 = "common",
+  pool.6 = "rel",
+  method.6 = "common"
 )
 }
 \arguments{
@@ -42,6 +46,14 @@ be equally spaced across the range of time points). If a numeric vector is given
 \item{pool.4}{Pooling for the 4th coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
 
 \item{method.4}{Method for synthesis of the 4th coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{pool.5}{Pooling for the 5th coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
+
+\item{method.5}{Method for synthesis of the 5th coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{pool.6}{Pooling for the 6th coefficient. Can take \code{"rel"} or \code{"abs"} (see details).}
+
+\item{method.6}{Method for synthesis of the 6th coefficient. Can take \verb{"common}, \code{"random"}, or be assigned a numeric value (see details).}
 }
 \value{
 An object of \code{class("timefun")}
