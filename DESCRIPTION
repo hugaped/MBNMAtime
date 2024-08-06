@@ -57,4 +57,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr, rmarkdown
 RdMacros: Rdpack
-URL: https://hugaped.github.io/MBNMAtime/
+URL: https://hugaped.github.io/MBNMAtime/, https://github.com/hugaped/MBNMAtime
+BugReports: https://github.com/hugaped/MBNMAtime/issues
