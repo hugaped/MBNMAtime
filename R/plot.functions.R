@@ -376,7 +376,7 @@ overlay.nma <- function(pred, timebins, method="common", link="identity", lim="c
       message(paste0("Running overlay.nma for ", str.incl.range))
 
       # Run model (incl write priors)
-      nma <- nma.run(data.ab=nmanet, method=method, link=link,
+      nma <- nma.run(data.ab=nmanet, method=method, link=link, pD=TRUE,
                      ...)
 
       if (method=="common" | "cred" %in% lim) {

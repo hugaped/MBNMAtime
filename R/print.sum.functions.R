@@ -326,16 +326,14 @@ modfit.str <- function(x) {
 
   # pD
   pd.str <- "Effective number of parameters:"
-  if (x$model.arg$pd=="pv") {
+  if (x$model.arg$pD==FALSE) {
     pd <- "pD (pV) calculated using the rule, pD = var(deviance)/2 ="
-  } else if (x$model.arg$pd=="plugin") {
-    pd <- "pD calculated using the plug-in method ="
-  } else if (x$model.arg$pd=="pd.kl") {
+    pd.str <- paste(pd.str, paste(pd, round(x$BUGSoutput$pV,0), sep=" "), sep="\n")
+  } else if (x$model.arg$pD==TRUE) {
     pd <- "pD calculated using the Kullback-Leibler divergence ="
-  } else if (x$model.arg$pd=="popt") {
-    pd <- "pD calculated using an optimism adjustment ="
+    pd.str <- paste(pd.str, paste(pd, round(x$BUGSoutput$pD,0), sep=" "), sep="\n")
   }
-  pd.str <- paste(pd.str, paste(pd, round(x$BUGSoutput$pD,0), sep=" "), sep="\n")
+
 
   # Deviance
   dev <- x$BUGSoutput$summary[

@@ -48,7 +48,7 @@ for (dat in seq_along(alldfs)) {
       skip_on_cran()
 
       n.iter=500
-      pd <- "pv"
+      pd <- FALSE
 
       #set.seed(042189)
       samp <- sample(c(1,2), size=1)
@@ -62,10 +62,10 @@ for (dat in seq_along(alldfs)) {
 
       # Single parameter DR functions
       result <- mb.run(network, fun=tpoly(degree=1, method.1 = "common"),
-                          pd="pd.kl", n.iter=n.iter, sdscale=sdscale)
+                          pD=TRUE, n.iter=n.iter, sdscale=sdscale)
       expect_equal(class(result), c("mbnma", "rjags"))
       expect_equal("d.1" %in% result$parameters.to.save, TRUE)
-      expect_equal(result$model.arg$pd, "pd.kl")
+      expect_equal(result$model.arg$pD, TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result), NA)
       expect_error(predict(result), NA)
@@ -77,7 +77,7 @@ for (dat in seq_along(alldfs)) {
 
 
       result <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="random"),
-                          pd="pd.kl", n.iter=n.iter, sdscale=sdscale)
+                          pD=TRUE, n.iter=n.iter, sdscale=sdscale)
       expect_equal(class(result), c("mbnma", "rjags"))
       expect_equal("sd.rate" %in% result$parameters.to.save, TRUE)
       expect_error(plot(result), NA)
@@ -90,7 +90,7 @@ for (dat in seq_along(alldfs)) {
 
       if ("class" %in% names(dataset)) {
         result <- mb.run(netclass, fun=tloglin(pool.rate="rel", method.rate="common"),
-                            pd="popt", class.effect = list(rate="random"), n.iter=n.iter,
+                            pD=TRUE, class.effect = list(rate="random"), n.iter=n.iter,
                             sdscale=sdscale)
         expect_equal(class(result), c("mbnma", "rjags"))
         expect_equal("RATE" %in% result$parameters.to.save, TRUE)
@@ -108,7 +108,7 @@ for (dat in seq_along(alldfs)) {
 
       # Two parameter DR functions
       result <- mb.run(network, fun=temax(method.emax="common", method.et50 = "common"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal(all(c("emax", "et50") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result, param=c("auc")), NA)
@@ -119,7 +119,7 @@ for (dat in seq_along(alldfs)) {
 
 
       result <- mb.run(network, fun=temax(pool.et50="abs", method.et50="common", method.emax="random"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal("sd.emax" %in% result$parameters.to.save, TRUE)
       expect_equal("et50" %in% rownames(result$BUGSoutput$summary), TRUE)
       expect_error(plot(result), NA)
@@ -133,10 +133,10 @@ for (dat in seq_along(alldfs)) {
                                class.effect=list(fakeparam="common"), sdscale=sdscale), "The following list element names")
 
         expect_error(mb.run(netclass, fun=temax(p.expon=TRUE, method.et50="random"), corparam=TRUE,
-                                 class.effect=list(et50="common"), n.iter=n.iter, pd=pd, sdscale=sdscale), NA)
+                                 class.effect=list(et50="common"), n.iter=n.iter, pD=pd, sdscale=sdscale), NA)
 
         result <- suppressWarnings(mb.run(netclass, fun=temax(method.emax="random"),
-                                             class.effect=list(et50="common"), n.iter=n.iter, pd=pd, sdscale=sdscale))
+                                             class.effect=list(et50="common"), n.iter=n.iter, pD=pd, sdscale=sdscale))
         expect_equal(all(c("emax", "ET50", "et50", "sd.emax") %in% result$parameters.to.save), TRUE)
         expect_error(plot(result), NA)
         expect_error(rank(result), NA)
@@ -147,7 +147,7 @@ for (dat in seq_along(alldfs)) {
 
 
       result <- mb.run(network, fun=temax(pool.et50="abs", method.et50="random"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal(all(c("emax", "et50", "sd.et50") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result), NA)
@@ -159,7 +159,7 @@ for (dat in seq_along(alldfs)) {
       # Three parameter DR function
       result <- tryCatch(mb.run(network, fun=temax(pool.emax="rel", pool.et50="abs", pool.hill="abs",
                                                    method.emax="common", method.et50="random", method.hill="common"),
-                                   n.iter=n.iter, pd=pd, priors = list(hill="dunif(0.1,5)"),
+                                   n.iter=n.iter, pD=pd, priors = list(hill="dunif(0.1,5)"),
                                    sdscale=sdscale), error=function(e){})
 
       if (!is.null(result)) {
@@ -175,7 +175,7 @@ for (dat in seq_along(alldfs)) {
                                             pool.1="rel", pool.2="abs", pool.3="abs",
                                             method.1="common", method.2="random", method.3="common"
                                             ),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal(all(c("d.1", "beta.2", "sd.beta.2", "beta.3") %in% result$parameters.to.save), TRUE)
       expect_equal(any(grepl("spline", result$model.arg$jagscode)), TRUE)
       expect_error(plot(result), NA)
@@ -188,7 +188,7 @@ for (dat in seq_along(alldfs)) {
 
       result <- tryCatch(mb.run(network, fun=temax(method.et50="random", pool.hill="abs", method.hill=1.2),
                                    parameters.to.save = "totresdev", sdscale=sdscale,
-                                   n.iter=n.iter, pd=pd), error=function(e){})
+                                   n.iter=n.iter, pD=pd), error=function(e){})
 
       if (!is.null(result)) {
         expect_equal("totresdev" %in% result$parameters.to.save, TRUE)
@@ -206,7 +206,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tspline(type="bs", nknots=2,
                                             pool.1="abs", pool.2="rel", pool.3="abs",
                                             method.1="common", method.2 = "common", method.3="random"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal(all(c("beta.1", "d.2", "sd.beta.3", "beta.3") %in% result$parameters.to.save), TRUE)
       expect_equal(all(c("sd.d.2") %in% result$parameters.to.save), FALSE)
       expect_error(plot(result), NA)
@@ -223,7 +223,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tspline(type="ns", knots=knots,
                                             pool.1="abs", pool.2="rel", pool.3="abs",
                                             method.1="common", method.2 = "common", method.3="random"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal(all(c("beta.1", "d.2", "sd.beta.3", "beta.3") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result, param="d.2"), NA)
@@ -236,7 +236,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="abs",
                                           method.1="common", method.2 = "random", method.3="random"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       expect_equal(all(c("beta.1", "d.2", "sd.beta.3", "beta.3", "sd.beta.2") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result, param=c("d.2", "auc")[samp]), NA)
@@ -248,7 +248,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="abs",
                                           method.1="common", method.2 = "random", method.3="random"),
-                       n.iter=n.iter, pd=pd, sdscale=sdscale,
+                       n.iter=n.iter, pD=pd, sdscale=sdscale,
                        covar="varadj", rho="dunif(-1,1)")
       expect_false(result$BUGSoutput$median$rho==0)
       expect_error(plot(result), NA)
@@ -258,7 +258,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="abs",
                                           method.1="common", method.2 = "random", method.3="random"),
-                       n.iter=n.iter/2, pd=pd, sdscale=sdscale,
+                       n.iter=n.iter/2, pD=pd, sdscale=sdscale,
                        covar="AR1", rho="dunif(0,1)")
       expect_false(result$BUGSoutput$median$rho==0)
       expect_error(plot(result), NA)
@@ -268,7 +268,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="abs",
                                           method.1="common", method.2 = "random", method.3="random"),
-                       n.iter=n.iter/2, pd=pd, sdscale=sdscale,
+                       n.iter=n.iter/2, pD=pd, sdscale=sdscale,
                        covar="CS", rho="dunif(-1,1)")
       expect_false(result$BUGSoutput$median$rho==0)
       expect_error(plot(result), NA)
@@ -284,7 +284,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="rel", pool.2="rel", pool.3="abs",
                                           method.1="common", method.2 = "random", method.3="random"),
-                       n.iter=n.iter/2, pd=pd, sdscale=sdscale,
+                       n.iter=n.iter/2, pD=pd, sdscale=sdscale,
                        covar="CS", rho="dunif(-1,1)", corparam = TRUE)
       expect_equal("rhoparam" %in% names(result$model.arg$priors), TRUE)
       expect_error(get.relative(result), NA)
@@ -294,7 +294,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="rel",
                                           method.1="common", method.2 = "random", method.3="random"),
-                          n.iter=n.iter, pd=pd, UME=TRUE, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, UME=TRUE, sdscale=sdscale)
       expect_equal(all(c("beta.1", "d.2", "sd.beta.2", "d.3", "sd.beta.3") %in% result$parameters.to.save), TRUE)
       expect_equal(any(grepl("d\\.2\\[1,2\\]", rownames(result$BUGSoutput$summary))), TRUE)
       expect_equal(any(grepl("d\\.3\\[1,2\\]", rownames(result$BUGSoutput$summary))), TRUE)
@@ -312,7 +312,7 @@ for (dat in seq_along(alldfs)) {
       result <- mb.run(network, fun=tpoly(degree=3,
                                           pool.1="abs", pool.2="rel", pool.3="rel",
                                           method.1="common", method.2 = "random", method.3="random"),
-                       n.iter=n.iter, pd=pd, UME="beta.3", sdscale=sdscale)
+                       n.iter=n.iter, pD=pd, UME="beta.3", sdscale=sdscale)
       expect_equal(any(grepl("d\\.2\\[1,2\\]", rownames(result$BUGSoutput$summary))), FALSE)
       expect_equal(any(grepl("d\\.3\\[1,2\\]", rownames(result$BUGSoutput$summary))), TRUE)
       expect_equal(any(grepl("d\\.1\\[1,2\\]", rownames(result$BUGSoutput$summary))), FALSE)
@@ -322,7 +322,7 @@ for (dat in seq_along(alldfs)) {
       if (datanam %in% c("osteopain", "diabetes", "hyalarthritis")) {
 
         if (datanam %in% c("diabetes", "hyalarthritis")) {
-          expect_error(mb.run(network, link="log", n.iter=n.iter, pd=pd),
+          expect_error(mb.run(network, link="log", n.iter=n.iter, pD=pd),
                        "cannot be used with means")
         }
 
@@ -331,7 +331,7 @@ for (dat in seq_along(alldfs)) {
 
         absnet <- mb.network(absdat)
 
-        result <- mb.run(absnet, fun=temax(), link="log", n.iter=n.iter, pd=pd,
+        result <- mb.run(absnet, fun=temax(), link="log", n.iter=n.iter, pD=pd,
                             sdscale=sdscale)
         expect_equal(result$model.arg$link, "log")
 
@@ -347,11 +347,11 @@ for (dat in seq_along(alldfs)) {
 
       # Changing priors
       result <- mb.run(network, fun=temax(method.emax = "random"),
-                          n.iter=n.iter, pd=pd, sdscale=sdscale)
+                          n.iter=n.iter, pD=pd, sdscale=sdscale)
       prior <- list(sd.emax="dunif(0,5)", et50="dlnorm(1,0.001)")
 
       runprior <- mb.run(network, fun=temax(method.emax = "random"),
-                       n.iter=n.iter, pd=pd, sdscale=sdscale, priors=prior)
+                       n.iter=n.iter, pD=pd, sdscale=sdscale, priors=prior)
 
       expect_equal(runprior$model.arg$priors$sd.emax, prior$sd.emax)
       expect_equal(runprior$model.arg$priors$et50, prior$et50)

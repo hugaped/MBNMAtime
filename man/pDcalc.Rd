@@ -63,15 +63,11 @@ plugin method \insertCite{spiegelhalter2002}{MBNMAtime}. Can only be used for mo
 standard errors or covariance matrices (typically univariate).
 }
 \details{
-Method for calculating pD via the plugin method proposed by
-\insertCite{spiegelhalter2002}{MBNMAtime}. Standard errors / covariance matrices must be assumed
-to be known. To obtain values for theta.result and resdev.result these
-parameters must be monitored when running the JAGS model.
-
 For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 can lead to non-sensical results when calculating pD via the plugin method.
-Alternative approaches are to use pV (\code{pv}) as an approximation \insertCite{plummer2008}{MBNMAtime} or
-pD calculated by Kullback–Leibler divergence (\code{pd.kl}) or using an optimism adjustment (\code{popt}) \insertCite{plummer2008}{MBNMAtime}.
+Therefore, alternative approaches are implented here using either pV (\code{pD=FALSE}) as an
+approximation or pD calculated by Kullback–Leibler
+divergence (\code{pD=TRUE}) \insertCite{plummer2008}{MBNMAtime}.
 }
 \examples{
 \donttest{
@@ -86,15 +82,16 @@ emax <- mb.run(network, fun=temax(),
 jagsdat <- getjagsdata(network$data.ab)
 
 # Plugin estimation of pD is problematic with non-linear models as it often leads to
-#negative values, hence use of pV, pd.kl and popt as other measures for the effective
-#number of parameters
+#negative values, hence use of pV of pD calculated via Kullback-Liebler divergence as
+other measures for the effective number of parameters
 pDcalc(obs1=jagsdat$y, obs2=jagsdat$se,
   fups=jagsdat$fups, narm=jagsdat$narm, NS=jagsdat$NS,
   theta.result = emax$BUGSoutput$mean$theta,
   resdev.result = emax$BUGSoutput$mean$resdev
   )
 }
+
 }
 \references{
-TO ADD pV REF
+\insertAllCited
 }

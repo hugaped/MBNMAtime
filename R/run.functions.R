@@ -62,16 +62,9 @@
 #'   model on all or no time-course parameters respectively) or can be a vector
 #'   of parameter name strings to model as UME. For example: `c("beta.1", "beta.2")`.
 #'
-#' @param pd Can take either:
-#'   * `pv` only pV will be reported (as automatically outputted by R2jags).
-#'   * `plugin` calculates pD by the plug-in
-#'   method \insertCite{spiegelhalter2002}{MBNMAtime}. It is faster, but may output negative
-#'   non-sensical values, due to skewed deviances that can arise with non-linear models.
-#'   * `pd.kl` (the default) calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAtime}. This
-#'   will require running the model for additional iterations but
-#'   will always produce a sensical result.
-#'   * `popt` calculates pD using an optimism adjustment which allows for calculation
-#'   of the penalized expected deviance \insertCite{plummer2008}{MBNMAtime}
+#' @param pD logical; if `TRUE` (the default) then adds the computation of pD, using the method
+#' of \insertCite{plummer2008}{MBNMAtime}. If `FALSE` then uses the
+#' approximation of `pD=var(deviance) / 2` (often referred to as pV).
 #' @param parallel A boolean value that indicates whether JAGS should be run in
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
 #'   use is automatically calculated. Functions that involve updating the model (e.g. `devplot()`, `fitplot()`)
@@ -263,10 +256,11 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       rho=0, covar="varadj",
                       omega=NULL, corparam=FALSE,
                       class.effect=list(), UME=FALSE,
-                      pd="pv", parallel=FALSE,
+                      parallel=FALSE,
                       priors=NULL,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
+                      pD=TRUE,
                       model.file=NULL, jagsdata=NULL, ...
 ) {
 
@@ -275,7 +269,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
   checkmate::assertClass(fun, classes = "timefun", add=argcheck)
   checkmate::assertClass(network, "mb.network", add=argcheck)
   checkmate::assertCharacter(model.file, any.missing=FALSE, null.ok=TRUE, add=argcheck)
-  checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(pD, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -353,22 +347,6 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
       gen.parameters.to.save(fun=fun, model=model)
   }
 
-  # Add nodes to monitor to calculate plugin pd
-  if (pd=="plugin") {
-    if (covar!="varadj") {
-      stop("pD cannot be calculated via the plugin method if modelling a multivariate normal likelihood - covar!='varadj'")
-    }
-
-    pluginvars <- c("theta", "resdev")
-    for (param in seq_along(pluginvars)) {
-      if (!(pluginvars[param] %in% parameters.to.save)) {
-        parameters.to.save <- append(parameters.to.save, pluginvars[param])
-      }
-    }
-    message("The following parameters have been monitored to allow pD plugin calculation: ",
-            paste(pluginvars, collapse=", "))
-  }
-
   if (length(class.effect)>0) {
     class <- TRUE
   } else {class <- FALSE}
@@ -383,29 +361,17 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
                        n.burnin=n.burnin, n.thin=n.thin,
+                       pD=pD,
                        ...)
+
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
 
   if (!("error" %in% names(result))) {
-    if (pd == "pd.kl" | pd == "popt") {
-      if (pd=="pd.kl") {
-        temp <- rjags::dic.samples(result$model, n.iter=n.iter/10, type="pD")
-      } else if (pd=="popt") {
-        temp <- rjags::dic.samples(result$model, n.iter=n.iter/10, type="popt")
-      }
-      result$BUGSoutput$pD <- sum(temp$penalty)
-
-    } else if (pd == "plugin") {
-      # plugin method
-      warning("Plugin method only works for normal likelihood")
-      result$BUGSoutput$pD <- pDcalc(obs1=jagsdata[["y"]], obs2=jagsdata[["se"]], fups=jagsdata[["fups"]], narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                                     theta.result=result$BUGSoutput$mean$theta, resdev.result=result$BUGSoutput$mean$resdev,
-                                     type="time")
+    if (pD == TRUE) {
+      # Recalculate DIC so it is adjusted for choice of pD
+      result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
     }
-
-    # Recalculate DIC so it is adjusted for choice of pD
-    result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
   }
 
   # Add variables for other key model characteristics (for predict and plot functions)
@@ -417,7 +383,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
                     "omega"=omega, "corparam"=corparam,
-                    "parallel"=parallel, "pd"=pd,
+                    "parallel"=parallel, "pD"=pD,
                     "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
   result[["network"]] <- network
@@ -638,17 +604,12 @@ gen.parameters.to.save <- function(fun, model) {
 #'
 #' @return A numeric value for the effective number of parameters, pD, calculated via the plugin method
 #'
-#' @details Method for calculating pD via the plugin method proposed by
-#'   \insertCite{spiegelhalter2002}{MBNMAtime}. Standard errors / covariance matrices must be assumed
-#'   to be known. To obtain values for theta.result and resdev.result these
-#'   parameters must be monitored when running the JAGS model.
-#'
-#'   For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
+#' @details For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 #'   can lead to non-sensical results when calculating pD via the plugin method.
-#'   Alternative approaches are to use pV (`pv`) as an approximation \insertCite{plummer2008}{MBNMAtime} or
-#'   pD calculated by Kullback–Leibler divergence (`pd.kl`) or using an optimism adjustment (`popt`) \insertCite{plummer2008}{MBNMAtime}.
+#'   Therefore, alternative approaches are implented here using either pV (`pD=FALSE`) as an
+#'   approximation or pD calculated by Kullback–Leibler
+#'   divergence (`pD=TRUE`) \insertCite{plummer2008}{MBNMAtime}.
 #'
-#' @references TO ADD pV REF
 #' @inherit mb.run references
 #'
 #' @examples
@@ -664,15 +625,15 @@ gen.parameters.to.save <- function(fun, model) {
 #' jagsdat <- getjagsdata(network$data.ab)
 #'
 #' # Plugin estimation of pD is problematic with non-linear models as it often leads to
-#' #negative values, hence use of pV, pd.kl and popt as other measures for the effective
-#' #number of parameters
+#' #negative values, hence use of pV of pD calculated via Kullback-Liebler divergence as
+#' other measures for the effective number of parameters
 #' pDcalc(obs1=jagsdat$y, obs2=jagsdat$se,
 #'   fups=jagsdat$fups, narm=jagsdat$narm, NS=jagsdat$NS,
 #'   theta.result = emax$BUGSoutput$mean$theta,
 #'   resdev.result = emax$BUGSoutput$mean$resdev
 #'   )
 #' }
-#' @export
+#'
 pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
                    likelihood="normal", type="time") {
   # For univariate models only!!

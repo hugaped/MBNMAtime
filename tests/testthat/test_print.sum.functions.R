@@ -45,7 +45,7 @@ testthat::test_that("print.sum tests pass correctly", {
                                                pool.2="rel", method.2="common"),
                      intercept=FALSE,
                      n.chain=3, n.iter=200, n.burnin=100, jags.seed=seed,
-                     rho=0.2, covar="CS", pd="popt",
+                     rho=0.2, covar="CS", pD=TRUE,
                      class.effect = list(beta.2="random"))
 
 

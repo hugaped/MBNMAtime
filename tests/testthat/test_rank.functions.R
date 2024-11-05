@@ -24,20 +24,20 @@ testthat::test_that("rank.functions tests pass correctly", {
                    fun=temax(pool.emax="rel", method.emax="common",
                              pool.et50="rel", method.et50="random",
                              pool.hill="abs", method.hill=2),
-                   pd="pv", n.iter=1000, jags.seed=seed)
+                   pD=FALSE, n.iter=1000, jags.seed=seed)
 
     if ("n" %in% names(network$data.ab) & !any(is.na(network$data.ab[["n"]]))) {
       bs <- mb.run(network,
                    fun=tspline(type = "bs", degree=2, nknots = 2,
-                               pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", link="smd", jags.seed=seed)
+                               pool.2="abs", pool.3 = "abs", method.3="random"), pD=FALSE, link="smd", jags.seed=seed)
     } else {
       bs <- mb.run(network,
                    fun=tspline(type = "bs", degree=2, nknots = 2,
-                               pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", jags.seed=seed)
+                               pool.2="abs", pool.3 = "abs", method.3="random"), pD=FALSE, jags.seed=seed)
     }
 
 
-    resdev <- mb.run(network, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pd="pv", jags.seed=seed)
+    resdev <- mb.run(network, fun=tpoly(degree=1), parameters.to.save = "resdev", n.iter=1000, pD=FALSE, jags.seed=seed)
 
 
     ############# Rank AUC ###########
@@ -153,7 +153,7 @@ testthat::test_that("rank.functions tests pass correctly", {
       # Class effect models
       if ("classes" %in% names(network)) {
         fpoly <- mb.run(network, fun=tfpoly(degree=2),
-                        class.effect = list("beta.2"="random"), pd="pv",
+                        class.effect = list("beta.2"="random"), pD=FALSE,
                         rho="dunif(0,1)", n.iter=1000, jags.seed=seed)
 
         testthat::expect_error(rank(fpoly,

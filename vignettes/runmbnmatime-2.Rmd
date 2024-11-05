@@ -291,13 +291,12 @@ As can be seen from the predicted time-course, using informative priors for Acli
 
 #### pD (effective number of parameters)
 
-The default value for `pd` in `mb.run()` is `pd="pv"`, which uses the rapid approach automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to the effective number of parameters, and may be numerically unstable [@gelman2003]. However, it has been shown to be reliable for model comparison in time-course MBNMA models in a simulation study [@pedder2020].
+The default value for `pD` in `mb.run()` is `pD=FALSE`, which uses the rapid approach automatically calculated in the `R2jags` package as `pD = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to the effective number of parameters, and may be numerically unstable [@gelman2003]. However, it has been shown to be reliable for model comparison in time-course MBNMA models in a simulation study [@pedder2020].
 
-A more reliable method for estimating `pd` is `pd="pd.kl"`, which uses the Kullback-Leibler divergence [@plummer2008]. This is more reliable than the default method used in `R2jags` for calculating the effective number of parameters from non-linear models. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
+A more reliable method for estimating `pD` is `pD=TRUE`, which uses the Kullback-Leibler divergence [@plummer2008]. This is more reliable than the default method used in `R2jags` for calculating the effective number of parameters from non-linear models. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
 
-A commonly-used approach in Bayesian models for calculating pD is the plug-in method (`pd="plugin"`) [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models.
+A commonly-used approach in Bayesian models for calculating pD is the plug-in method  [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models. As such, this is no longer implemented within the package.
 
-Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`) which allows for calculation of the penalized expected deviance [@plummer2008]. This adjustment allows for the fact that data used to estimate the model is the same as that used to assess its parsimony. As for `pd="pd.kl"`, it also requires running additional MCMC iterations.
 
 #### Correlation between time-course parameters
 
