@@ -68,7 +68,9 @@ rankauc <- function(mbnma, lower_better=FALSE, treats=NULL, level="treatments",
 
     seg <- seq(from=int.range[1], to=int.range[2], length.out=subdivisions)
     spline <- genspline(seg,
-                        spline=mbnma$model.arg$fun$name, knots=mbnma$model.arg$fun$knots, degree=mbnma$model.arg$fun$degree)
+                        spline=mbnma$model.arg$fun$name,
+                        knots=mbnma$model.arg$fun$knots, nknots=mbnma$model.arg$fun$nknots,
+                        degree=mbnma$model.arg$fun$degree)
   }
 
   # Replace mu with 0

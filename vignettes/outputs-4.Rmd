@@ -146,12 +146,9 @@ In addition, it is possible to rank the Area Under the Curve (AUC) for a particu
 # Using the osteoarthritis dataset
 network.pain <- mb.network(osteopain, reference = "Pl_0")
 
-# Identify quantile for knot at 1 week
-timequant <- 1/max(network.pain$data.ab$time)
-
 # Run a piecewise linear time-course MBNMA with a knot at 1 week
 mbnma <- mb.run(network.pain,
-                fun=tspline(type="ls", knots = timequant,
+                fun=tspline(type="ls", knots = 1,
                             pool.1 = "rel", method.1="common",
                             pool.2 = "rel", method.2="common"))
 

@@ -889,12 +889,12 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #' Spline time-course functions
 #'
 #' Used to fit B-splines, natural cubic splines, and
-#' piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}.
+#' piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}. Note that
+#' B-splines with `degree=1` and linear splines are equivalent in fit, but are
+#' parameterised differently which can allow different informative prior specification.
 #'
 #' @param type The type of spline. Can take `"bs"` (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
 #'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}) or `"ls"` (piecewise linear spline)
-#' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
-#'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
 #' @param degree The degree of the piecewise B-spline polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
 #' @param pool.1 Pooling for the 1st coefficient. Can take `"rel"` or `"abs"` (see details).
 #' @param method.1 Method for synthesis of the 1st coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
@@ -908,6 +908,7 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #' @param method.5 Method for synthesis of the 5th coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
 #' @param pool.6 Pooling for the 6th coefficient. Can take `"rel"` or `"abs"` (see details).
 #' @param method.6 Method for synthesis of the 6th coefficient. Can take `"common`, `"random"`, or be assigned a numeric value (see details).
+#' @inheritParams genspline
 #'
 #' @return An object of `class("timefun")`
 #'
@@ -943,20 +944,21 @@ tfpoly <- function(degree=1, pool.1="rel", method.1="common", pool.2="rel", meth
 #'   \insertAllCited
 #'
 #' @examples
-#' # Second order B spline with 2 knots and random effects on the 2nd coefficient
-#' tspline(type="bs", knots=2, degree=2,
+#' # Second order B spline with 2 equally spaced knots and random effects on
+#' #the 2nd coefficient
+#' tspline(type="bs", nknots=2, degree=2,
 #'   pool.1="rel", method.1="common",
 #'   pool.2="rel", method.2="random")
 #'
-#' # Piecewise linear spline with knots at 0.1 and 0.5 quantiles
+#' # Piecewise linear spline with knots at times of 5 and 10
 #' # Single parameter independent of treatment estimated for 1st coefficient
 #' #with random effects
-#' tspline(type="ls", knots=c(0.1,0.5),
+#' tspline(type="ls", knots=c(5,10),
 #'   pool.1="abs", method.1="random",
 #'   pool.2="rel", method.2="common")
 #'
 #' @export
-tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common",
+tspline <- function(type="bs", knots=NULL, nknots=1, degree=1, pool.1="rel", method.1="common",
                       pool.2="rel", method.2="common", pool.3="rel", method.3="common",
                       pool.4="rel", method.4="common", pool.5="rel", method.5="common",
                       pool.6="rel", method.6="common") {
@@ -964,8 +966,10 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(type, choices=c("bs", "ns", "ls"), add=argcheck)
-  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(nknots, null.ok=FALSE, len=1, lower=1, add=argcheck)
+  checkmate::assertNumeric(knots, null.ok=TRUE, lower=0, add=argcheck)
   checkmate::assertIntegerish(degree, add=argcheck)
+
   for (i in 1:6) {
     checkmate::assertChoice(get(paste0("pool.", i)), choices=c("rel", "abs"), add=argcheck)
     # checkmate::assertChoice(get(paste0("method.", i)), choices=c("common", "random"), add=argcheck)
@@ -989,7 +993,8 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
 
   # Check knots and degrees
   x <- c(0:100)
-  x <- genspline(x, spline=type, knots = knots, degree=degree)
+  if (!is.null(knots)) {nknots <- length(knots)}
+  x <- genspline(x, spline=type, knots = knots, nknots=nknots, degree=degree)
 
   nparam <- ncol(x)
 
@@ -1042,7 +1047,7 @@ tspline <- function(type="bs", knots=1, degree=1, pool.1="rel", method.1="common
   names(bmethod) <- paramnames
 
   out <- list(name=type, fun=fun, latex=latex, params=paramnames,
-              nparam=nparam, knots=knots, degree=degree, jags=jags,
+              nparam=nparam, knots=knots, nknots=nknots, degree=degree, jags=jags,
               apool=apool, amethod=amethod, bname=bname,
               bpool=bpool, bmethod=bmethod)
   class(out) <- "timefun"

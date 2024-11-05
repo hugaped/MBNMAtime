@@ -171,7 +171,7 @@ for (dat in seq_along(alldfs)) {
         expect_error(get.relative(result), NA)
       }
 
-      result <- mb.run(network, fun=tspline(type="ns", knots=2,
+      result <- mb.run(network, fun=tspline(type="ns", nknots=2,
                                             pool.1="rel", pool.2="abs", pool.3="abs",
                                             method.1="common", method.2="random", method.3="common"
                                             ),
@@ -203,7 +203,7 @@ for (dat in seq_along(alldfs)) {
 
 
       # Splines and polynomials
-      result <- mb.run(network, fun=tspline(type="bs", knots=2,
+      result <- mb.run(network, fun=tspline(type="bs", nknots=2,
                                             pool.1="abs", pool.2="rel", pool.3="abs",
                                             method.1="common", method.2 = "common", method.3="random"),
                           n.iter=n.iter, pd=pd, sdscale=sdscale)
@@ -217,7 +217,10 @@ for (dat in seq_along(alldfs)) {
 
 
 
-      result <- mb.run(network, fun=tspline(type="ns", knots=c(0.2,0.5),
+      maxtime <- max(network$data.ab$time, na.rm=TRUE)
+      knots <- stats::quantile(0:maxtime, probs = c(0.2,0.5))
+      names(knots) <- NULL
+      result <- mb.run(network, fun=tspline(type="ns", knots=knots,
                                             pool.1="abs", pool.2="rel", pool.3="abs",
                                             method.1="common", method.2 = "common", method.3="random"),
                           n.iter=n.iter, pd=pd, sdscale=sdscale)

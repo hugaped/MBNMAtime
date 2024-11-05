@@ -167,16 +167,16 @@ testthat::test_that("Node-split tests pass correctly", {
       net2 <- mb.network(datalist[[i]], reference=network$treatments[2])
       comp <- mb.nodesplit.comparisons(net2)[1:2,]
 
-      # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
-      suppressWarnings(
+      maxtime <- max(net2$data.ab$time, na.rm=TRUE)
+      knots <- stats::quantile(0:maxtime, probs = c(0.1))
+      names(knots) <- NULL
       nodesplit <- mb.nodesplit(net2, comparisons=comp,
                                 nodesplit.parameters="all",
-                                fun=tspline(type="ls", knots = 0.1),
+                                fun=tspline(type="ls", knots = knots),
                                 positive.scale=TRUE, intercept=TRUE,
                                 class.effect=list(),
                                 parallel=TRUE,
                                 n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
-      )
 
       testthat::expect_equal(nrow(comp), length(nodesplit))
       checkmate::expect_list(nodesplit[[2]], len=2)
@@ -193,17 +193,14 @@ testthat::test_that("Node-split tests pass correctly", {
       net2 <- mb.network(datalist[[i]])
       comp <- mb.nodesplit.comparisons(net2)[1:2,]
 
-      # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
-      suppressWarnings(
       nodesplit <- mb.nodesplit(net2, comparisons=comp,
                                 nodesplit.parameters="all",
-                                fun=tspline(type="bs", knots=2,
+                                fun=tspline(type="bs", nknots=2,
                                             pool.2="abs", method.2="random"),
                                 positive.scale=TRUE, intercept=TRUE, corparam=TRUE,
                                 class.effect=list(), omega=matrix(c(10,0,0,10), nrow=2),
                                 parallel=TRUE,
                                 n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
-      )
 
       testthat::expect_equal(nrow(comp), length(nodesplit))
       testthat::expect_equal(any(sapply(net2$treatments, function(x) {grepl(x, names(nodesplit))})),

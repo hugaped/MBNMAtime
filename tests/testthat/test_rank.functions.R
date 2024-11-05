@@ -28,11 +28,11 @@ testthat::test_that("rank.functions tests pass correctly", {
 
     if ("n" %in% names(network$data.ab) & !any(is.na(network$data.ab[["n"]]))) {
       bs <- mb.run(network,
-                   fun=tspline(type = "bs", degree=2, knots = 2,
+                   fun=tspline(type = "bs", degree=2, nknots = 2,
                                pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", link="smd", jags.seed=seed)
     } else {
       bs <- mb.run(network,
-                   fun=tspline(type = "bs", degree=2, knots = 2,
+                   fun=tspline(type = "bs", degree=2, nknots = 2,
                                pool.2="abs", pool.3 = "abs", method.3="random"), pd="pv", jags.seed=seed)
     }
 

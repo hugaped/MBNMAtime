@@ -485,7 +485,8 @@ getjagsdata <- function(data.ab, fun=NULL, class=FALSE,
       times <- unique(sort(times))
 
       # Generate spline basis matrix
-      spline <- genspline(times, spline=fun$name, knots=fun$knots, degree=fun$degree)
+      spline <- genspline(times, spline=fun$name, knots=fun$knots, nknots=fun$nknots,
+                          degree=fun$degree)
       timespline <- data.frame("time"=times, "spline"=spline)
 
       df <- suppressMessages(dplyr::left_join(df, timespline))
@@ -1260,10 +1261,11 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.time A number indicating the maximum time between which to calculate the spline function.
-#' @param knots The number/location of knots. If a single integer is given it indicates the number of knots (they will
-#'   be equally spaced across the range of time-points). If a numeric vector is given it indicates the quantiles of the knots as
-#'   a proportion of the maximum study follow-up in the dataset. For example, if the maximum follow-up time in the dataset
-#'   is 10 months, `knots=c(0.1,0.5)` would indicate knots should be fitted at 1 and 5 months follow-up.
+#' @param nknots The number of spline internal knots. If `knots` is not specified then these will by
+#' default be evenly spaced between 0 and the maximum follow-up time in the dataset (`max.time`).
+#' @param knots A numeric vector indicating the location of spline internal knots
+#'   (*specified on the same scale as `time` in the dataset*). Specifying `knots` overrides
+#'   `nknots`.
 #' @param boundaries A positive numeric vector of length 2 that represents the time-points at which to anchor the B-spline or natural
 #' cubic spline basis matrix. This allows data to extend beyond the boundary knots, or for the basis parameters to not depend on `x`.
 #' The default (`boundaries=NULL`)is the range of `x`.
@@ -1277,21 +1279,23 @@ mb.validate.data <- function(data.ab, single.arm=FALSE, CFB=TRUE) {
 #' genspline(x)
 #'
 #' # Generate a quadratic B-spline with 1 equally spaced internal knot
-#' genspline(x, spline="bs", knots=2, degree=2)
+#' genspline(x, spline="bs", nknots=1, degree=2)
 #'
-#' # Generate a natural spline with 2 knots at selected quantiles
-#' genspline(x, spline="ns", knots=c(0.1, 0.5))
+#' # Generate a natural spline with 2 knots at times of 10 and 50
+#' genspline(x, spline="ns", knots=c(10, 50))
 #'
-#' # Generate a piecewise linear spline with 3 equally spaced knots
-#' genspline(x, spline="ls", knots=3)
+#' # Generate a piecewise linear spline with a knot at time=30
+#' genspline(x, spline="ls", knots=30)
 #'
 #' @export
-genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x), boundaries=NULL){
+genspline <- function(x, spline="bs", knots=NULL, nknots=1, degree=1, max.time=max(x),
+                      boundaries=NULL){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertNumeric(knots, add=argcheck)
-  checkmate::assertIntegerish(degree, add=argcheck)
+  checkmate::assertNumeric(nknots, null.ok=FALSE, len=1, lower=1, add=argcheck)
+  checkmate::assertNumeric(knots, null.ok=TRUE, lower=0, add=argcheck)
+  checkmate::assertIntegerish(degree, lower=1, add=argcheck)
   checkmate::assertNumeric(max.time, null.ok = FALSE, add=argcheck)
   checkmate::assertNumeric(boundaries, null.ok = TRUE, len = 2, lower = 0, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -1307,69 +1311,54 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.time=max(x), bounda
   #   }
   # }
 
-  # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
-  if (x[1]==0 & length(unique(x))==1) {
-
-    if (length(knots)==1 & knots[1]>=1) {
-      return(matrix(rep(0,knots-1), nrow=1))
-    } else if (length(knots)>1 | knots[1]<1) {
-      return(matrix(rep(0,length(knots)-1), nrow=1))
-    }
-
-  } else {
-
-    x0 <- x
-    if (!0 %in% x0) {
-      x0 <- c(0,x0)
-    }
-
-    # Calculate quantiles for knots
-    if (length(knots)==1 & knots[1]>=1) {
-      p <- seq(0,1,1/(knots+1))
-      p <- p[-c(1,length(p))]
-      knots <- stats::quantile(0:max.time, probs = p)
-      names(knots) <- NULL
-    } else if (length(knots)>1 | knots[1]<1) {
-      knots <- stats::quantile(0:max.time, probs = knots)
-    }
-
-    if (is.null(boundaries)) {
-      boundaries <- range(x0)
-    }
-
-    # Generate spline basis matrix
-    if (spline=="bs") {
-      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
-    } else if (spline=="ns") {
-      splinedesign <- splines::ns(x=x0, knots=knots, Boundary.knots = boundaries)
-
-      # splinedesign <- splines::ns(x0, knots=knots)
-      # splinedesign <- cbind(x0, splinedesign)
-    } else if (spline=="ls") {
-      splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
-    }
-    rownames(splinedesign) <- x0
-
-    # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
-    splinedesign <- splinedesign[rownames(splinedesign) %in% x,]
-    # if (length(x0)>1) {
-    #   splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
-    # } else {
-    #   splinedesign <- matrix(0, ncol=length(splinedesign))
-    # }
-
-    if (!is.matrix(splinedesign)) {
-      splinedesign <- matrix(splinedesign, nrow=1)
-    }
-
-    if (ncol(splinedesign)>6) {
-      stop("splines of this complexity cannot currently be modelled using 'tspline()'...\nand your data is unlikely to be able to support it!")
-    }
-
-
-    return(splinedesign)
-
+  # Calculate quantiles for knots
+  if (is.null(knots)) {
+    p <- seq(0,1,1/(nknots+1))
+    p <- p[-c(1,length(p))]
+    knots <- stats::quantile(x, probs = p)
+    names(knots) <- NULL
   }
+
+  x0 <- x
+  if (!0 %in% x0) {
+    x0 <- c(0,x0)
+  }
+
+  if (is.null(boundaries)) {
+    boundaries <- range(x0)
+  }
+
+  # Generate spline basis matrix
+  if (spline=="bs") {
+    splinedesign <- splines::bs(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
+  } else if (spline=="ns") {
+    splinedesign <- splines::ns(x=x0, knots=knots, Boundary.knots = boundaries)
+
+    # splinedesign <- splines::ns(x0, knots=knots)
+    # splinedesign <- cbind(x0, splinedesign)
+  } else if (spline=="ls") {
+    splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
+  }
+  rownames(splinedesign) <- x0
+
+  # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
+  splinedesign <- splinedesign[rownames(splinedesign) %in% x,]
+  # if (length(x0)>1) {
+  #   splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
+  # } else {
+  #   splinedesign <- matrix(0, ncol=length(splinedesign))
+  # }
+
+  if (!is.matrix(splinedesign)) {
+    splinedesign <- matrix(splinedesign, nrow=1)
+  }
+
+  if (ncol(splinedesign)>6) {
+    stop("splines of this complexity cannot currently be modelled using 'tspline()'...\nand your data is unlikely to be able to support it!")
+  }
+
+
+  return(splinedesign)
 }
 
 

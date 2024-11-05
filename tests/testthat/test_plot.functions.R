@@ -23,13 +23,11 @@ testthat::test_that("plot function tests pass correctly", {
 
     network <- mb.network(datalist[[dat]])
 
-    # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
-    suppressWarnings({
     emax <- mb.run(network, fun=temax(pool.emax="rel", method.emax="random",
                                       pool.et50="rel", method.et50="common"),
                    n.chain=3, n.iter=1200, n.burnin=800, jags.seed=seed)
 
-    bs <- mb.run(network, fun=tspline(type="bs", knots=2,
+    bs <- mb.run(network, fun=tspline(type="bs", nknots=2,
                                       pool.1="abs", method.1="random",
                                       pool.2="rel", method.2="common",
                                       pool.3="rel", method.3="common"
@@ -52,8 +50,6 @@ testthat::test_that("plot function tests pass correctly", {
         )
       )
     }
-
-    })
 
 
     testthat::test_that(paste0("plot(mb.predict) functions correctly for ", names(datalist)[dat]), {

@@ -36,17 +36,17 @@ testthat::test_that("print.sum tests pass correctly", {
 
     network.gout <- mb.network(goutSUA_CFBcomb)
 
-    # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
-    suppressWarnings(
+    maxtime <- max(network.gout$data.ab$time, na.rm=TRUE)
+    knots <- stats::quantile(0:maxtime, probs = c(0.6))
+    names(knots) <- NULL
     piece1 <- mb.run(network.gout, fun=tspline(type="ls",
-                                               knots=0.6,
+                                               knots=knots,
                                                pool.1="abs", method.1="random",
                                                pool.2="rel", method.2="common"),
                      intercept=FALSE,
                      n.chain=3, n.iter=200, n.burnin=100, jags.seed=seed,
                      rho=0.2, covar="CS", pd="popt",
                      class.effect = list(beta.2="random"))
-    )
 
 
     ##############################################

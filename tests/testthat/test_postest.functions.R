@@ -25,22 +25,22 @@ testthat::test_that("post-estimation tests pass correctly", {
       loglin <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="common"), jags.seed=seed)
 
 
-      # SUPPRESSES WARNINGS FOR VERSION 0.2.2 - REMOVE AFTER THIS AND TEST WITHOUT TO ENSURE WARNINGS IDENTIFIED
-      suppressWarnings({
 
-        emax <- mb.run(network, fun=temax(pool.emax="rel", method.emax="random",
-                                          pool.et50="abs", method.et50="common"), pd="pv", jags.seed=seed)
-
-      })
+      emax <- mb.run(network, fun=temax(pool.emax="rel", method.emax="random",
+                                        pool.et50="abs", method.et50="common"), pd="pv", jags.seed=seed)
 
 
-      bs <- mb.run(network, fun=tspline(type="bs", degree=1, knots=3,
+
+      bs <- mb.run(network, fun=tspline(type="bs", degree=1, nknots=3,
                                         pool.1="rel", method.1="common",
                                         pool.2="abs", method.2="random",
                                         pool.3 = "rel", method.3="random"), pd="pv", jags.seed=seed)
 
 
-      ls <- mb.run(network, fun=tspline(type="ls", knots = 25/250),
+      maxtime <- max(network$data.ab$time, na.rm=TRUE)
+      knots <- stats::quantile(0:maxtime, probs = c(0.1))
+      names(knots) <- NULL
+      ls <- mb.run(network, fun=tspline(type="ls", knots = knots),
                    rho="dunif(0,1)", covar="varadj", pd="pv", jags.seed=seed)
 
       loglin.ar1 <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="common"), covar="AR1",

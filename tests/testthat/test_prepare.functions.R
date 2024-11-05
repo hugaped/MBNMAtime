@@ -146,55 +146,59 @@ test_that("genspline functions correctly", {
   x <- c(0:100)
 
   # B-splines
-  bs <- genspline(x, spline="bs", knots = 1, degree=1)
+  bs <- genspline(x, spline="bs", nknots = 1, degree=1)
   expect_equal(c("matrix", "array"), class(bs))
   expect_equal(ncol(bs), 2)
 
   bs <- genspline(x, spline="bs", knots = 1, degree=2)
   expect_equal(ncol(bs), 3)
 
-  bs <- genspline(x, spline="bs", knots = 2, degree=2)
+  bs <- genspline(x, spline="bs", nknots = 2, degree=2)
   expect_equal(ncol(bs), 4)
 
-  bs <- genspline(x, spline="bs", knots = c(0.1,0.8), degree=2)
+  bs <- genspline(x, spline="bs", knots = c(25,50), degree=2)
+  expect_equal(ncol(bs), 4)
+
+  bs <- genspline(x, spline="bs", knots = c(10,80), degree=2)
   expect_equal(ncol(bs), 4)
 
   expect_error(genspline(x, spline="bs", knots = -1, degree=2))
-  expect_error(genspline(x, spline="bs", knots = c(1,4)), "probs")
   expect_error(genspline(x, spline="bs", knots = 1, degree=-2))
 
   # Piecewise linear splines
-  ls <- genspline(x, spline="ls", knots = 1)
+  ls <- genspline(x, spline="ls", nknots = 1)
   expect_equal(c("matrix", "array"), class(ls))
   expect_equal(ncol(ls), 2)
 
-  ls <- genspline(x, spline="ls", knots = 3)
+  ls <- genspline(x, spline="ls", knots = 80)
+  expect_equal(c("matrix", "array"), class(ls))
+  expect_equal(ncol(ls), 2)
+
+  ls <- genspline(x, spline="ls", nknots = 3)
   expect_equal(ncol(ls), 4)
 
-  ls <- genspline(x, spline="ls", knots = c(0.1,0.8))
+  ls <- genspline(x, spline="ls", knots = c(10,80))
   expect_equal(ncol(ls), 3)
 
-  expect_error(genspline(x, spline="ls", knots = -1))
-  expect_error(genspline(x, spline="ls", knots = c(1,4)), "probs")
-  expect_error(genspline(x, spline="ls", knots = 15), "unlikely to be able to support it")
+  expect_error(genspline(x, spline="ls", nknots = -1))
+  expect_error(genspline(x, spline="ls", nknots = 15), "unlikely to be able to support it")
 
   # Natural cubic splines
-  ns <- genspline(x, spline="ns", knots = 1, degree=1)
+  ns <- genspline(x, spline="ns", nknots = 1, degree=1)
   expect_equal(c("matrix", "array"), class(ns))
   expect_equal(ncol(ns), 2)
 
-  ns <- genspline(x, spline="ns", knots = 1, degree=2)
+  ns <- genspline(x, spline="ns", nknots = 1, degree=2)
   expect_equal(ncol(ns), 2) # degree doesn't matter for ns
 
-  ns <- genspline(x, spline="ns", knots = 3)
+  ns <- genspline(x, spline="ns", nknots = 3)
   expect_equal(ncol(ns), 4)
 
-  ns <- genspline(x, spline="ns", knots = c(0.1,0.8))
+  ns <- genspline(x, spline="ns", knots = c(10,80))
   expect_equal(ncol(ns), 3)
 
-  expect_error(genspline(x, spline="ns", knots = -1))
-  expect_error(genspline(x, spline="ns", knots = c(1,4)), "probs")
-  expect_error(genspline(x, spline="ns", knots = 15), "unlikely to be able to support it")
+  expect_error(genspline(x, spline="ns", nknots = -1))
+  expect_error(genspline(x, spline="ns", nknots = 15), "unlikely to be able to support it")
 
   # # Restricted cubic splines
   # rcs <- genspline(x, spline="rcs", knots = 3)

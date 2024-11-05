@@ -140,7 +140,7 @@ testthat::test_that("write functions pass correctly:", {
 
 
     # Class effects
-    jags <- mb.write(fun=tspline(type="ns", knots=3, pool.1 = "rel", method.1="common",
+    jags <- mb.write(fun=tspline(type="ns", nknots=3, pool.1 = "rel", method.1="common",
                                  pool.2="rel", method.2="random", pool.3="abs", method.3="common", pool.4="abs", method.4="random"),
                      class.effect=list(beta.1="common", beta.2="random"), rho="dunif(0,1)", covar="varadj")
     testthat::expect_equal(length(grep("D\\.1", jags))>0, TRUE)
@@ -155,7 +155,7 @@ testthat::test_that("write functions pass correctly:", {
 
 
     # UME
-    jags <- mb.write(fun=tspline(type="bs", degree=3, knots=1, pool.1 = "rel", method.1="common",
+    jags <- mb.write(fun=tspline(type="bs", degree=3, nknots=1, pool.1 = "rel", method.1="common",
                                  pool.2="abs", method.2="random", pool.3="rel", method.3="common", pool.4="rel", method.4="random"),
                      UME=c("beta.1", "beta.4"))
     testthat::expect_equal(length(grep("d\\.1\\[1\\,", jags))>0, TRUE)
@@ -167,7 +167,7 @@ testthat::test_that("write functions pass correctly:", {
     testthat::expect_equal(length(grep("sd.beta\\.3", jags))>0, FALSE)
     testthat::expect_equal(length(grep("sd\\.beta\\.4", jags))>0, TRUE)
 
-    testthat::expect_error(mb.write(fun=tspline(type="bs", degree=3, knots=1, pool.1 = "rel", method.1="common",
+    testthat::expect_error(mb.write(fun=tspline(type="bs", degree=3, nknots=1, pool.1 = "rel", method.1="common",
                                                 pool.2="abs", method.2="random", pool.3="rel", method.3="common", pool.4="rel", method.4="random"),
                                     UME=c("beta.1", "beta.2", "beta.3")), "can only be specified for time-course")
 
