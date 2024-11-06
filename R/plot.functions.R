@@ -600,12 +600,12 @@ timeplot <- function(network, level="treatment",
 
     if (link=="identity") {
       diffs <- diffs %>%
-        dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+        dplyr::inner_join(diffs, by=c("studyID", "time"), relationship="many-to-many") %>%
         dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
         dplyr::mutate(pairDiff = .data$y.y - .data$y.x)
     } else if (link=="log") {
       diffs <- diffs %>%
-        dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+        dplyr::inner_join(diffs, by=c("studyID", "time"), relationship="many-to-many") %>%
         dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
         dplyr::mutate(pairDiff = log(.data$y.y/.data$y.x))
     } else if (link=="smd") {
@@ -614,7 +614,7 @@ timeplot <- function(network, level="treatment",
       }
 
       diffs <- diffs %>%
-        dplyr::inner_join(diffs, by=c("studyID", "time")) %>%
+        dplyr::inner_join(diffs, by=c("studyID", "time"), relationship="many-to-many") %>%
         dplyr::filter(.data$treatment.x < .data$treatment.y) %>%
         dplyr::mutate(
           var.y = (.data$se.y * (.data$n.y)^0.5)^2,
