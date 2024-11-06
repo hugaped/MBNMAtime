@@ -42,13 +42,6 @@
 #'   * `"AR1"` - a multivariate normal likelihood with an
 #'     \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 #'
-#' @param omega DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
-#' rather than a Wishart prior).
-#' A scale matrix for the inverse-Wishart prior for the covariance matrix used
-#' to model the correlation between time-course parameters (see Details for time-course functions). `omega` must
-#' be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
-#' relative effects (`pool="rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
-#' is used.
 #' @param corparam A boolean object that indicates whether correlation should be modeled
 #' between relative effect time-course parameters. Default is `FALSE` and this is automatically set to `FALSE` if class effects are modeled.
 #' Setting it to `TRUE` models correlation between time-course parameters. This can help identify parameters
@@ -254,7 +247,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       link="identity", sdscale=FALSE,
                       parameters.to.save=NULL,
                       rho=0, covar="varadj",
-                      omega=NULL, corparam=FALSE,
+                      corparam=FALSE,
                       class.effect=list(), UME=FALSE,
                       parallel=FALSE,
                       priors=NULL,
@@ -310,7 +303,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                       positive.scale=positive.scale, intercept=intercept,
                       rho=rho, covar=covar,
                       class.effect=class.effect, UME=UME,
-                      omega=omega, corparam=corparam
+                      corparam=corparam
     )
 
     if (!is.null(priors)) {
@@ -356,7 +349,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 
   data.ab <- network[["data.ab"]]
   result.jags <- mb.jags(data.ab, model, fun=fun, link=link, cfb=network$cfb,
-                       class=class, rho=rho, covar=covar, omega=omega,
+                       class=class, rho=rho, covar=covar,
                        jagsdata=jagsdata, sdscale=sdscale,
                        parameters.to.save=parameters.to.save,
                        n.iter=n.iter, n.chains=n.chains,
@@ -382,7 +375,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
                     "positive.scale"=positive.scale, "intercept"=intercept,
                     "rho"=rho, "covar"=covar,
                     "class.effect"=class.effect, "UME"=UME,
-                    "omega"=omega, "corparam"=corparam,
+                    "corparam"=corparam,
                     "parallel"=parallel, "pD"=pD,
                     "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
@@ -401,7 +394,7 @@ mb.run <- function(network, fun=tpoly(degree = 1), positive.scale=FALSE, interce
 mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                        class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
-                       cfb=NULL, omega=NULL, sdscale=FALSE,
+                       cfb=NULL, sdscale=FALSE,
                        jagsdata=NULL,
                        warn.rhat=FALSE, ...) {
 
@@ -425,11 +418,6 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
                             rho=rho, covstruct=covar,
                             fun=fun, link=link, sdscale=sdscale,
                             cfb=cfb) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
-
-    if (!is.null(omega)) {
-      jagsdata[["omega"]] <- omega
-    }
-
 
     # Add variable for maxtime to jagsdata if required
     if (any(grepl("maxtime", model))) {

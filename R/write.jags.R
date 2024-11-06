@@ -42,7 +42,7 @@
 #'
 #' @export
 mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE, intercept=NULL,
-                     rho=0, covar="varadj", omega=NULL, corparam=TRUE, sdscale=FALSE,
+                     rho=0, covar="varadj", corparam=TRUE, sdscale=FALSE,
                      class.effect=list(), UME=FALSE) {
 
 
@@ -72,7 +72,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
   }
 
   write.check(fun=fun, positive.scale=positive.scale, intercept=intercept, link=link,
-              rho=rho, covar=covar, omega=omega, sdscale=sdscale,
+              rho=rho, covar=covar, sdscale=sdscale,
               class.effect=class.effect, UME=UME)
 
   model <- write.model()
@@ -90,7 +90,7 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 
 
   if (corparam==TRUE) {
-    model <- write.cor(model=model, fun=fun, omega=omega, class.effect = class.effect)
+    model <- write.cor(model=model, fun=fun, class.effect = class.effect)
   }
 
   model <- add.funparams(model=model, fun=fun)
@@ -118,14 +118,13 @@ mb.write <- function(fun=tpoly(degree = 1), link="identity", positive.scale=TRUE
 #'   correlation between time points if it passes.
 #'
 write.check <- function(fun=tpoly(degree=1), positive.scale=TRUE, intercept=NULL, rho=0, covar=NULL,
-                        omega=NULL, link="identity", sdscale=FALSE,
+                        link="identity", sdscale=FALSE,
                         class.effect=list(), UME=c()) {
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(link, choices=c("identity", "log", "smd"), null.ok=FALSE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
-  checkmate::assertMatrix(omega, null.ok = TRUE, add=argcheck)
   checkmate::assertClass(fun, "timefun", add = argcheck)
   checkmate::assertLogical(sdscale, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -166,25 +165,6 @@ write.check <- function(fun=tpoly(degree=1), positive.scale=TRUE, intercept=NULL
 
   if (any(fun$apool[which(fun$params %in% names(class.effect))] == "abs")) {
     stop("Class effects can only be specified for time-course parameters in 'fun' that have been modelled as pool='rel'")
-  }
-
-  # Check omega is symmetric positive definite matrix with correct dimensions
-  if (!is.null(omega)) {
-    err <- FALSE
-
-    nrel <- sum(fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect))
-    if (!all(dim(omega)==nrel)) {
-      err <- TRUE
-    }
-    if (!isSymmetric(omega)) {
-      err <- TRUE
-    }
-    if (any(eigen(omega)$values <= 0)) {
-      err <- TRUE
-    }
-    if (err==TRUE) {
-      stop("omega must be a symmetric positive definite matrix with dimensions equal to the number of\ntime-course parameters modelled as pool='rel'")
-    }
   }
 
 }
@@ -649,7 +629,7 @@ write.beta <- function(model, timecourse, fun, UME, class.effect) {
 #'
 #' @inheritParams mb.run
 #' @inheritParams write.beta
-write.cor <- function(model, fun, omega=NULL, class.effect=list()) {
+write.cor <- function(model, fun, class.effect=list()) {
 
   if (length(class.effect)>0) {
     message("Class effects cannot be modelled with correlation between time-course relative effect parameters - correlation will be ignored")
@@ -662,7 +642,7 @@ write.cor <- function(model, fun, omega=NULL, class.effect=list()) {
     if (mat.size>=2) {
       model <- write.cov.mat(model, sufparams=sufparams,
                              cor="estimate", cor.prior="rho",
-                             omega=omega, fun=fun)
+                             fun=fun)
     }
   }
   return(model)
@@ -1379,7 +1359,7 @@ default.priors <- function(fun=tloglin()) {
   priors <- list(
     rho = "rho ~ dunif(0,1)",
     alpha = "alpha[i] ~ dnorm(0,0.0001)",
-    inv.R = "inv.R ~ dwish(omega[,], mat.size)",
+    #inv.R = "inv.R ~ dwish(omega[,], mat.size)",
     rhoparam = "rhoparam ~ dunif(-1,1)"
   )
 
