@@ -455,10 +455,10 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   close(tmps)
 
   out <- tryCatch({
-    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+    result <- suppressWarnings(R2jags::jags(data=jagsvars, model.file=tmpf,
                            parameters.to.save=parameters.to.save,
                            ...
-    )
+    ))
   },
   error=function(cond) {
     message(cond)
