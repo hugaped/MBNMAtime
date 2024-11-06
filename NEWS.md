@@ -12,6 +12,8 @@ to calculate pV (an approximation of pD).
 - Allowed spline functions with up to 6 dose-response parameters
 
 ## Bug fixes
+- This version incorporates a fix in `R2jags` that was ignoring the warmup stage and effectively
+saving all the simulations performed for Monte-Carlo estimation.
 - When used with linear spline time-course functions (`fun=tspline(type="ls")`), `predict()` and `get.relative()` now ensure that the basis matrices comprise the entire duration of the available data in the model, rather than just the times specified in the `times` argument in `predict()`
 
 
