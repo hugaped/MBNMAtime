@@ -87,13 +87,19 @@ jobs:
           token: ${{ secrets.RHUB_TOKEN }}
       - name: Install JAGS
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
+          if [ "$RUNNER_OS" == "Linux" ]; then
             sudo apt-get update && sudo apt-get install -y jags
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          elif [ "$RUNNER_OS" == "macOS" ]; then
             brew install jags
-          elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            choco install jags -y
           fi
+        shell: bash
+
+      - name: Install JAGS (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install jags -y
+        shell: cmd
+
       - uses: r-hub/actions/platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}

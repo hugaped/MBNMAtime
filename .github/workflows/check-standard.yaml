@@ -31,34 +31,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Install JAGS for Windows
-      - name: Install JAGS for Windows
+      - name: Install JAGS
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get update && sudo apt-get install -y jags
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install jags
+          fi
+        shell: bash
+
+      - name: Install JAGS (Windows)
         if: runner.os == 'Windows'
         run: |
-          curl.exe -L -o wjags.exe --url https://sourceforge.net/projects/mcmc-jags/files/latest/download
-          .\wjags.exe /S
-          del wjags.exe
-          echo "Checking JAGS installation..."
-          jags --version || echo "JAGS installation failed!"
+          choco install jags -y
         shell: cmd
-
-      # Install JAGS for macOS
-      - name: Install JAGS for macOS
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          brew update
-          brew install jags
-          echo "Checking JAGS installation..."
-          jags --version || echo "JAGS installation failed!"
-
-      # Install JAGS for Ubuntu
-      - name: Install JAGS for Ubuntu
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jags
-          echo "Checking JAGS installation..."
-          jags --version || echo "JAGS installation failed!"
 
       - uses: r-lib/actions/setup-pandoc@v2
 

@@ -83,7 +83,7 @@ jagsdat <- getjagsdata(network$data.ab)
 
 # Plugin estimation of pD is problematic with non-linear models as it often leads to
 #negative values, hence use of pV of pD calculated via Kullback-Liebler divergence as
-other measures for the effective number of parameters
+#other measures for the effective number of parameters
 pDcalc(obs1=jagsdat$y, obs2=jagsdat$se,
   fups=jagsdat$fups, narm=jagsdat$narm, NS=jagsdat$NS,
   theta.result = emax$BUGSoutput$mean$theta,
