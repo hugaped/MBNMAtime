@@ -31,7 +31,7 @@ testthat::test_that("plot function tests pass correctly", {
                                       pool.1="abs", method.1="random",
                                       pool.2="rel", method.2="common",
                                       pool.3="rel", method.3="common"
-    ), omega=matrix(c(10,0,0,10), nrow=2),
+    ),
     n.chain=3, n.iter=1200, n.burnin=800, intercept = FALSE, jags.seed=seed)
 
     loglin <- mb.run(network, fun=tloglin(pool.rate="rel", method.rate="random"),

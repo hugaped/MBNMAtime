@@ -50,7 +50,7 @@ testthat::test_that("Node-split tests pass correctly", {
         expect_identical(loop$path, unique(loop$path))
       }
 
-      expect_error(inconsistency.loops(last.data), NA)
+      testthat::expect_error(inconsistency.loops(last.data), NA)
 
     })
 
@@ -140,7 +140,7 @@ testthat::test_that("Node-split tests pass correctly", {
       comp <- mb.nodesplit.comparisons(net2)[1:2,]
 
       # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
-      suppressWarnings(
+      #suppressWarnings(
       nodesplit <- mb.nodesplit(net2, comparisons=comp,
                                 nodesplit.parameters="all",
                                 fun=temax(pool.emax="rel", method.emax="common",
@@ -149,7 +149,7 @@ testthat::test_that("Node-split tests pass correctly", {
                                 class.effect=list(),
                                 parallel=TRUE,
                                 n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
-      )
+      #)
 
       testthat::expect_equal(nrow(comp), length(nodesplit))
       testthat::expect_equal(any(sapply(net2$treatments, function(x) {grepl(x, names(nodesplit))})),
@@ -198,7 +198,7 @@ testthat::test_that("Node-split tests pass correctly", {
                                 fun=tspline(type="bs", nknots=2,
                                             pool.2="abs", method.2="random"),
                                 positive.scale=TRUE, intercept=TRUE, corparam=TRUE,
-                                class.effect=list(), omega=matrix(c(10,0,0,10), nrow=2),
+                                class.effect=list(),
                                 parallel=TRUE,
                                 n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
 
@@ -228,7 +228,7 @@ testthat::test_that("Node-split tests pass correctly", {
         }
 
         # REMOVE SUPPRESSWARNINGS FROM VERSION 0.2.3 ONWARNS
-        suppressWarnings(
+        #suppressWarnings(
           nodesplit <- mb.nodesplit(network, comparisons=comp,
                                     nodesplit.parameters="all",
                                     fun=titp(),
@@ -236,7 +236,7 @@ testthat::test_that("Node-split tests pass correctly", {
                                     class.effect=list(),
                                     parallel=TRUE,
                                     n.iter=n.iter, n.burnin=n.burnin, n.thin=n.thin, jags.seed=seed)
-        )
+        #)
 
 
         testthat::expect_equal(nrow(comp), length(nodesplit))

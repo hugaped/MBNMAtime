@@ -218,7 +218,7 @@ for (dat in seq_along(alldfs)) {
 
 
       maxtime <- max(network$data.ab$time, na.rm=TRUE)
-      knots <- stats::quantile(0:maxtime, probs = c(0.2,0.5))
+      knots <- stats::quantile(0:maxtime, probs = c(0.2,0.4))
       names(knots) <- NULL
       result <- mb.run(network, fun=tspline(type="ns", knots=knots,
                                             pool.1="abs", pool.2="rel", pool.3="abs",
@@ -291,10 +291,13 @@ for (dat in seq_along(alldfs)) {
 
 
       # Test UME
-      result <- mb.run(network, fun=tpoly(degree=3,
-                                          pool.1="abs", pool.2="rel", pool.3="rel",
-                                          method.1="common", method.2 = "random", method.3="random"),
-                          n.iter=n.iter, pD=pd, UME=TRUE, sdscale=sdscale)
+      result <-
+        suppressWarnings(
+          mb.run(network, fun=tpoly(degree=3,
+                                            pool.1="abs", pool.2="rel", pool.3="rel",
+                                            method.1="common", method.2 = "random", method.3="random"),
+                            n.iter=n.iter, pD=pd, UME=TRUE, sdscale=sdscale)
+        )
       expect_equal(all(c("beta.1", "d.2", "sd.beta.2", "d.3", "sd.beta.3") %in% result$parameters.to.save), TRUE)
       expect_equal(any(grepl("d\\.2\\[1,2\\]", rownames(result$BUGSoutput$summary))), TRUE)
       expect_equal(any(grepl("d\\.3\\[1,2\\]", rownames(result$BUGSoutput$summary))), TRUE)
@@ -309,10 +312,13 @@ for (dat in seq_along(alldfs)) {
       expect_error(suppressWarnings(summary(result)), NA)
 
 
-      result <- mb.run(network, fun=tpoly(degree=3,
-                                          pool.1="abs", pool.2="rel", pool.3="rel",
-                                          method.1="common", method.2 = "random", method.3="random"),
-                       n.iter=n.iter, pD=pd, UME="beta.3", sdscale=sdscale)
+      result <-
+        suppressWarnings(
+          mb.run(network, fun=tpoly(degree=3,
+                                            pool.1="abs", pool.2="rel", pool.3="rel",
+                                            method.1="common", method.2 = "random", method.3="random"),
+                         n.iter=n.iter, pD=pd, UME="beta.3", sdscale=sdscale)
+        )
       expect_equal(any(grepl("d\\.2\\[1,2\\]", rownames(result$BUGSoutput$summary))), FALSE)
       expect_equal(any(grepl("d\\.3\\[1,2\\]", rownames(result$BUGSoutput$summary))), TRUE)
       expect_equal(any(grepl("d\\.1\\[1,2\\]", rownames(result$BUGSoutput$summary))), FALSE)
