@@ -1,9 +1,9 @@
 Package: MBNMAtime
 Type: Package
 Title: Run Time-Course Model-Based Network Meta-Analysis (MBNMA) Models
-Version: 0.2.5.9000
+Version: 0.2.6
 Language: en-GB
-Date: 2024-06-06
+Date: 2025-01-21
 Authors@R: c(person("Hugo", "Pedder", 
     email = "hugopedder@gmail.com", 
     role = c("aut", "cre"),

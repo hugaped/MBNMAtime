@@ -56,6 +56,10 @@ jobs:
         with:
           token: ${{ secrets.RHUB_TOKEN }}
           job-config: ${{ matrix.config.job-config }}
+      - name: Install JAGS on Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jags
       - uses: r-hub/actions/setup-deps@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -81,6 +85,15 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
+      - name: Install JAGS
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update && sudo apt-get install -y jags
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install jags
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            choco install jags -y
+          fi
       - uses: r-hub/actions/platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
