@@ -70,7 +70,7 @@ approximation or pD calculated by Kullback–Leibler
 divergence (\code{pD=TRUE}) \insertCite{plummer2008}{MBNMAtime}.
 }
 \examples{
-\donttest{
+\dontrun{
 # Using the alogliptin dataset
 network <- mb.network(alog_pcfb)
 
