@@ -5,62 +5,52 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="MBNMAtime">
 <title>Perform a time-course Model-Based Network Meta-Analysis (MBNMA) • MBNMAtime</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Perform a time-course Model-Based Network Meta-Analysis (MBNMA)">
-<meta property="og:description" content="MBNMAtime">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Perform a time-course Model-Based Network Meta-Analysis (MBNMA)">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5.9000</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
-    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
-    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
-    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
-    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
-    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a></li>
+    <li><a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a></li>
+    <li><a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a></li>
+    <li><a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a></li>
+    <li><a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav"></ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+      </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -69,13 +59,14 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</h1>
+
+      <h1>Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</h1>
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2024-07-03</h4>
+            <h4 data-toc-skip class="date">2025-01-21</h4>
       
-      
+
       <div class="d-none name"><code>runmbnmatime-2.Rmd</code></div>
     </div>
 
@@ -179,19 +170,19 @@ very flexible and can allow for a variety of non-monotonic time-course
 relationships, though parameters can be difficult to interpret and the
 resulting time-course shape is often best visualised by calculating and
 plotting predictions <a href="predictions-5.html">Prediction</a>.</p>
-<p>To fit this model, the number/location of <code>knots</code> (the
-points at which the different spline pieces meet) should be specified.
-If a single number is given, it represents the the number of knots to be
-equally spaced across the range of times within the dataset.
-Alternatively several probabilities can be given that represent the
-quantiles of the time range at which knots should be located. Note that
-by default, a boundary knot will be placed at the maximum of the range
-of time-points to limit the function extrapolating to extreme
-values.</p>
+<p>To fit this model, the number/location of knots (the points at which
+the different spline pieces meet) should be specified. These can be
+specified either as a number of equally spaced knots, using
+<code>nknots</code>, or by specifying the specific knot locations on the
+time scale in the dataset, using <code>knots</code>. Note that by
+default, a boundary knot will be placed at the maximum of the range of
+time-points to limit the function extrapolating to extreme values.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co"># ...is equivalent to </span></span>
-<span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># 3 equally spaced knots</span></span>
+<span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, nknots<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span> </span>
+<span><span class="co"># knots at times of 2, 5 and 8</span></span>
+<span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">5</span>,<span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="choosing-a-time-course-function">Choosing a time-course function<a class="anchor" aria-label="anchor" href="#choosing-a-time-course-function"></a>
@@ -287,13 +278,12 @@ performed as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Prepare data using the alogliptin dataset</span></span>
 <span><span class="va">network.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span>, reference <span class="op">=</span> <span class="st">"placebo"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span>
+<span></span>
 <span><span class="co"># Run a linear time-course MBNMA</span></span>
 <span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.alog</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/tpoly.html">tpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">1</span>, pool.1<span class="op">=</span><span class="st">"rel"</span>, method.1<span class="op">=</span><span class="st">"common"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; Time-course MBNMA</span></span></span>
@@ -310,10 +300,10 @@ performed as follows:</p>
 <span><span class="co">#&gt; |:---------|:---------|-------:|-------:|-------:|</span></span>
 <span><span class="co">#&gt; |placebo   |d.1[1]    |  0.0000|  0.0000|  0.0000|</span></span>
 <span><span class="co">#&gt; |alog_6.25 |d.1[2]    | -0.0347| -0.0375| -0.0318|</span></span>
-<span><span class="co">#&gt; |alog_12.5 |d.1[3]    | -0.0422| -0.0439| -0.0404|</span></span>
-<span><span class="co">#&gt; |alog_25   |d.1[4]    | -0.0449| -0.0467| -0.0431|</span></span>
-<span><span class="co">#&gt; |alog_50   |d.1[5]    | -0.0511| -0.0539| -0.0483|</span></span>
-<span><span class="co">#&gt; |alog_100  |d.1[6]    | -0.0485| -0.0662| -0.0303|</span></span>
+<span><span class="co">#&gt; |alog_12.5 |d.1[3]    | -0.0422| -0.0440| -0.0404|</span></span>
+<span><span class="co">#&gt; |alog_25   |d.1[4]    | -0.0449| -0.0466| -0.0431|</span></span>
+<span><span class="co">#&gt; |alog_50   |d.1[5]    | -0.0511| -0.0540| -0.0484|</span></span>
+<span><span class="co">#&gt; |alog_100  |d.1[6]    | -0.0484| -0.0659| -0.0296|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -324,7 +314,7 @@ performed as follows:</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 19</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 19</span></span>
 <span><span class="co">#&gt; Deviance = 4502</span></span>
 <span><span class="co">#&gt; Residual deviance = 5449</span></span>
 <span><span class="co">#&gt; Deviance Information Criterion (DIC) = 4521</span></span></code></pre></div>
@@ -341,7 +331,7 @@ data might require that we make an assumption that one of the parameters
 does not vary by treatment. We can specify this by setting
 <code>pool</code> to be equal to <code>"abs"</code> for any parameters
 we choose.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run an Emax time-course MBNMA with two parameters</span></span>
 <span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.alog</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/temax.html">temax</a></span><span class="op">(</span></span>
 <span>  pool.emax <span class="op">=</span> <span class="st">"rel"</span>, method.emax<span class="op">=</span><span class="st">"common"</span>,</span>
@@ -349,7 +339,7 @@ we choose.</p>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 'et50' parameters must take positive values.</span></span>
 <span><span class="co">#&gt;  Default half-normal prior restricts posterior to positive values.</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; Time-course MBNMA</span></span></span>
@@ -365,25 +355,25 @@ we choose.</p>
 <span><span class="co">#&gt; |Treatment |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|-------:|-------:|-------:|</span></span>
 <span><span class="co">#&gt; |placebo   |emax[1]   |  0.0000|  0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |alog_6.25 |emax[2]   | -0.5882| -0.6539| -0.5220|</span></span>
-<span><span class="co">#&gt; |alog_12.5 |emax[3]   | -0.7768| -0.8181| -0.7363|</span></span>
-<span><span class="co">#&gt; |alog_25   |emax[4]   | -0.8460| -0.8881| -0.8044|</span></span>
-<span><span class="co">#&gt; |alog_50   |emax[5]   | -0.9669| -1.0368| -0.8983|</span></span>
-<span><span class="co">#&gt; |alog_100  |emax[6]   | -0.8309| -1.1018| -0.5709|</span></span>
+<span><span class="co">#&gt; |alog_6.25 |emax[2]   | -0.5870| -0.6550| -0.5227|</span></span>
+<span><span class="co">#&gt; |alog_12.5 |emax[3]   | -0.7766| -0.8193| -0.7366|</span></span>
+<span><span class="co">#&gt; |alog_25   |emax[4]   | -0.8457| -0.8878| -0.8055|</span></span>
+<span><span class="co">#&gt; |alog_50   |emax[5]   | -0.9673| -1.0371| -0.9008|</span></span>
+<span><span class="co">#&gt; |alog_100  |emax[6]   | -0.8285| -1.1049| -0.5686|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">et50 parameter</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: absolute effects</span></span>
 <span><span class="co">#&gt; Method: common treatment effects</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |Treatment |Parameter | Median|   2.5%|  97.5%|</span></span>
-<span><span class="co">#&gt; |:---------|:---------|------:|------:|------:|</span></span>
-<span><span class="co">#&gt; |placebo   |et50      | 5.1921| 4.8037| 5.5972|</span></span>
-<span><span class="co">#&gt; |alog_6.25 |et50      | 5.1921| 4.8037| 5.5972|</span></span>
-<span><span class="co">#&gt; |alog_12.5 |et50      | 5.1921| 4.8037| 5.5972|</span></span>
-<span><span class="co">#&gt; |alog_25   |et50      | 5.1921| 4.8037| 5.5972|</span></span>
-<span><span class="co">#&gt; |alog_50   |et50      | 5.1921| 4.8037| 5.5972|</span></span>
-<span><span class="co">#&gt; |alog_100  |et50      | 5.1921| 4.8037| 5.5972|</span></span>
+<span><span class="co">#&gt; |Treatment |Parameter | Median|  2.5%|  97.5%|</span></span>
+<span><span class="co">#&gt; |:---------|:---------|------:|-----:|------:|</span></span>
+<span><span class="co">#&gt; |placebo   |et50      | 5.1969| 4.811| 5.6241|</span></span>
+<span><span class="co">#&gt; |alog_6.25 |et50      | 5.1969| 4.811| 5.6241|</span></span>
+<span><span class="co">#&gt; |alog_12.5 |et50      | 5.1969| 4.811| 5.6241|</span></span>
+<span><span class="co">#&gt; |alog_25   |et50      | 5.1969| 4.811| 5.6241|</span></span>
+<span><span class="co">#&gt; |alog_50   |et50      | 5.1969| 4.811| 5.6241|</span></span>
+<span><span class="co">#&gt; |alog_100  |et50      | 5.1969| 4.811| 5.6241|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -394,10 +384,10 @@ we choose.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 20</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 20</span></span>
 <span><span class="co">#&gt; Deviance = 87</span></span>
 <span><span class="co">#&gt; Residual deviance = 1034</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 108</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 107</span></span></code></pre></div>
 <p>In this case, the parameters are named following the Emax function
 specification. <code>emax</code> corresponds to the maximum effect for
 each treatment versus <code>placebo</code> (interpretable as a mean
@@ -450,13 +440,12 @@ be estimated externally from another study using Individual Participant
 Data. This could also be used to run a deterministic sensitivity
 analysis using different fixed values of <code>rho</code>.</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using the COPD dataset</span></span>
 <span><span class="va">network.copd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">copd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reference treatment is `Placebo`</span></span>
-<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span>
+<span></span>
 <span><span class="co"># Run an log-linear time-course MBNMA </span></span>
 <span><span class="co"># that accounts for correlation between time points using variance adjustment</span></span>
 <span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.copd</span>, </span>
@@ -550,24 +539,24 @@ within the same class are constrained to a common class effect, or
 <code>"random"</code>, in which the effects for each treatment within
 the same class are assumed to be randomly distributed around a shared
 class mean.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create network object of gout dataset</span></span>
 <span><span class="va">network.gout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">goutSUA_CFBcomb</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Run a B-spline time-course MBNMA with a knot at 0.2 times the max follow-up</span></span>
+<span><span class="co"># Run a B-spline time-course MBNMA with a knot at 8 weeks follow-up</span></span>
 <span><span class="co"># Common class effect on beta.2, the 2nd spline coefficient</span></span>
 <span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.gout</span>, </span>
-<span>                fun<span class="op">=</span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>                fun<span class="op">=</span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">8</span>,</span>
 <span>                            pool.1 <span class="op">=</span> <span class="st">"rel"</span>, method.1<span class="op">=</span><span class="st">"common"</span>,</span>
 <span>                            pool.2<span class="op">=</span><span class="st">"rel"</span>, method.2<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>,</span>
 <span>                class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta.2<span class="op">=</span><span class="st">"common"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; Time-course MBNMA</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; ========================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Time-course function: B-spline (knots = 0.2; degree = 1)</span></span>
+<span><span class="co">#&gt; Time-course function: B-spline (knots = 8; degree = 1)</span></span>
 <span><span class="co">#&gt; Data modelled without intercept (change from baseline data assumed)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.1 parameter</span></span></span>
@@ -577,24 +566,24 @@ class mean.</p>
 <span><span class="co">#&gt; |Treatment |Parameter |   Median|     2.5%|    97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|--------:|--------:|--------:|</span></span>
 <span><span class="co">#&gt; |Plac      |d.1[1]    |   0.0000|   0.0000|   0.0000|</span></span>
-<span><span class="co">#&gt; |Allo_100  |d.1[2]    |  -1.4862|  -2.9390|  -0.0670|</span></span>
-<span><span class="co">#&gt; |Allo_200  |d.1[3]    |  -3.0037|  -3.2467|  -2.7552|</span></span>
-<span><span class="co">#&gt; |Allo_289  |d.1[4]    |  -4.9120|  -5.0820|  -4.7307|</span></span>
-<span><span class="co">#&gt; |Allo_400  |d.1[5]    | -12.7725| -14.4222| -11.2713|</span></span>
-<span><span class="co">#&gt; |Arha_NA   |d.1[6]    |  -6.8426|  -7.5384|  -6.1308|</span></span>
-<span><span class="co">#&gt; |BCX4_140  |d.1[7]    |  -4.5738|  -4.9696|  -4.2146|</span></span>
-<span><span class="co">#&gt; |BCX4_18.5 |d.1[8]    |  -2.4378|  -2.8757|  -1.9975|</span></span>
-<span><span class="co">#&gt; |BCX4_240  |d.1[9]    |  -5.8945|  -6.3468|  -5.4315|</span></span>
-<span><span class="co">#&gt; |BCX4_80   |d.1[10]   |  -3.5995|  -4.0563|  -3.1462|</span></span>
-<span><span class="co">#&gt; |Benz_NA   |d.1[11]   | -15.5703| -16.7993| -14.4042|</span></span>
-<span><span class="co">#&gt; |Febu_140  |d.1[12]   |  -7.2847|  -7.4591|  -7.1031|</span></span>
-<span><span class="co">#&gt; |Febu_210  |d.1[13]   |  -8.8146|  -8.9151|  -8.7128|</span></span>
-<span><span class="co">#&gt; |Febu_25   |d.1[14]   |  -3.8396|  -4.0061|  -3.6699|</span></span>
-<span><span class="co">#&gt; |Febu_72.5 |d.1[15]   |  -6.1725|  -6.3450|  -5.9904|</span></span>
-<span><span class="co">#&gt; |RDEA_100  |d.1[16]   |  -2.3502|  -2.8683|  -1.8177|</span></span>
-<span><span class="co">#&gt; |RDEA_200  |d.1[17]   |  -4.1186|  -4.4634|  -3.7738|</span></span>
-<span><span class="co">#&gt; |RDEA_400  |d.1[18]   |  -5.2381|  -5.5847|  -4.8916|</span></span>
-<span><span class="co">#&gt; |RDEA_600  |d.1[19]   |  -8.0729|  -8.5062|  -7.6434|</span></span>
+<span><span class="co">#&gt; |Allo_100  |d.1[2]    |  -1.1374|  -2.2286|  -0.0533|</span></span>
+<span><span class="co">#&gt; |Allo_200  |d.1[3]    |  -3.1067|  -3.3355|  -2.8931|</span></span>
+<span><span class="co">#&gt; |Allo_289  |d.1[4]    |  -4.4351|  -4.6076|  -4.2680|</span></span>
+<span><span class="co">#&gt; |Allo_400  |d.1[5]    | -10.4654| -11.6806|  -9.3036|</span></span>
+<span><span class="co">#&gt; |Arha_NA   |d.1[6]    |  -5.2543|  -5.8110|  -4.6699|</span></span>
+<span><span class="co">#&gt; |BCX4_140  |d.1[7]    |  -3.9461|  -4.2653|  -3.5960|</span></span>
+<span><span class="co">#&gt; |BCX4_18.5 |d.1[8]    |  -2.2210|  -2.6144|  -1.8271|</span></span>
+<span><span class="co">#&gt; |BCX4_240  |d.1[9]    |  -5.1119|  -5.5081|  -4.6867|</span></span>
+<span><span class="co">#&gt; |BCX4_80   |d.1[10]   |  -3.0744|  -3.4582|  -2.6725|</span></span>
+<span><span class="co">#&gt; |Benz_NA   |d.1[11]   | -12.6023| -13.5200| -11.7245|</span></span>
+<span><span class="co">#&gt; |Febu_140  |d.1[12]   |  -6.7124|  -6.8936|  -6.5430|</span></span>
+<span><span class="co">#&gt; |Febu_210  |d.1[13]   |  -8.1331|  -8.2271|  -8.0407|</span></span>
+<span><span class="co">#&gt; |Febu_25   |d.1[14]   |  -3.7474|  -3.9195|  -3.5846|</span></span>
+<span><span class="co">#&gt; |Febu_72.5 |d.1[15]   |  -5.7342|  -5.9109|  -5.5615|</span></span>
+<span><span class="co">#&gt; |RDEA_100  |d.1[16]   |  -1.7358|  -2.2387|  -1.2364|</span></span>
+<span><span class="co">#&gt; |RDEA_200  |d.1[17]   |  -3.3718|  -3.6663|  -3.0734|</span></span>
+<span><span class="co">#&gt; |RDEA_400  |d.1[18]   |  -4.3148|  -4.5879|  -4.0388|</span></span>
+<span><span class="co">#&gt; |RDEA_600  |d.1[19]   |  -6.3951|  -6.7189|  -6.0596|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 parameter</span></span></span>
@@ -605,30 +594,30 @@ class mean.</p>
 <span><span class="co">#&gt; |Treatment |Parameter |  Median|     2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|:---------|-------:|--------:|-------:|</span></span>
 <span><span class="co">#&gt; |Plac      |d.2[1]    |  0.0000|   0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |Allo_100  |d.2[2]    | 17.1885|   3.2175| 30.3613|</span></span>
-<span><span class="co">#&gt; |Allo_200  |d.2[3]    | 17.1885|   3.2175| 30.3613|</span></span>
-<span><span class="co">#&gt; |Allo_289  |d.2[4]    | 17.1885|   3.2175| 30.3613|</span></span>
-<span><span class="co">#&gt; |Allo_400  |d.2[5]    | 17.1885|   3.2175| 30.3613|</span></span>
-<span><span class="co">#&gt; |Arha_NA   |d.2[6]    | -0.7854| -65.4524| 58.2792|</span></span>
-<span><span class="co">#&gt; |BCX4_140  |d.2[7]    | 10.0314|  -2.1830| 22.6014|</span></span>
-<span><span class="co">#&gt; |BCX4_18.5 |d.2[8]    | 10.0314|  -2.1830| 22.6014|</span></span>
-<span><span class="co">#&gt; |BCX4_240  |d.2[9]    | 10.0314|  -2.1830| 22.6014|</span></span>
-<span><span class="co">#&gt; |BCX4_80   |d.2[10]   | 10.0314|  -2.1830| 22.6014|</span></span>
-<span><span class="co">#&gt; |Benz_NA   |d.2[11]   | 18.6927|  -7.3801| 43.6131|</span></span>
-<span><span class="co">#&gt; |Febu_140  |d.2[12]   | 16.1832|   5.4365| 26.2328|</span></span>
-<span><span class="co">#&gt; |Febu_210  |d.2[13]   | 16.1832|   5.4365| 26.2328|</span></span>
-<span><span class="co">#&gt; |Febu_25   |d.2[14]   | 16.1832|   5.4365| 26.2328|</span></span>
-<span><span class="co">#&gt; |Febu_72.5 |d.2[15]   | 16.1832|   5.4365| 26.2328|</span></span>
-<span><span class="co">#&gt; |RDEA_100  |d.2[16]   | 20.5800|   4.2516| 36.5586|</span></span>
-<span><span class="co">#&gt; |RDEA_200  |d.2[17]   | 20.5800|   4.2516| 36.5586|</span></span>
-<span><span class="co">#&gt; |RDEA_400  |d.2[18]   | 20.5800|   4.2516| 36.5586|</span></span>
-<span><span class="co">#&gt; |RDEA_600  |d.2[19]   | 20.5800|   4.2516| 36.5586|</span></span>
+<span><span class="co">#&gt; |Allo_100  |d.2[2]    | 12.9356|   6.3990| 20.1121|</span></span>
+<span><span class="co">#&gt; |Allo_200  |d.2[3]    | 12.9356|   6.3990| 20.1121|</span></span>
+<span><span class="co">#&gt; |Allo_289  |d.2[4]    | 12.9356|   6.3990| 20.1121|</span></span>
+<span><span class="co">#&gt; |Allo_400  |d.2[5]    | 12.9356|   6.3990| 20.1121|</span></span>
+<span><span class="co">#&gt; |Arha_NA   |d.2[6]    | -1.1289| -60.1078| 61.8720|</span></span>
+<span><span class="co">#&gt; |BCX4_140  |d.2[7]    |  2.5259|  -4.4038|  9.6657|</span></span>
+<span><span class="co">#&gt; |BCX4_18.5 |d.2[8]    |  2.5259|  -4.4038|  9.6657|</span></span>
+<span><span class="co">#&gt; |BCX4_240  |d.2[9]    |  2.5259|  -4.4038|  9.6657|</span></span>
+<span><span class="co">#&gt; |BCX4_80   |d.2[10]   |  2.5259|  -4.4038|  9.6657|</span></span>
+<span><span class="co">#&gt; |Benz_NA   |d.2[11]   | 14.1128|  -0.1840| 28.9701|</span></span>
+<span><span class="co">#&gt; |Febu_140  |d.2[12]   | 10.1680|   4.3775| 16.0311|</span></span>
+<span><span class="co">#&gt; |Febu_210  |d.2[13]   | 10.1680|   4.3775| 16.0311|</span></span>
+<span><span class="co">#&gt; |Febu_25   |d.2[14]   | 10.1680|   4.3775| 16.0311|</span></span>
+<span><span class="co">#&gt; |Febu_72.5 |d.2[15]   | 10.1680|   4.3775| 16.0311|</span></span>
+<span><span class="co">#&gt; |RDEA_100  |d.2[16]   |  9.9559|   0.5262| 19.6081|</span></span>
+<span><span class="co">#&gt; |RDEA_200  |d.2[17]   |  9.9559|   0.5262| 19.6081|</span></span>
+<span><span class="co">#&gt; |RDEA_400  |d.2[18]   |  9.9559|   0.5262| 19.6081|</span></span>
+<span><span class="co">#&gt; |RDEA_600  |d.2[19]   |  9.9559|   0.5262| 19.6081|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Between-study SD modelled for this parameter:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |Parameter |  Median|   2.5%|   97.5%|</span></span>
-<span><span class="co">#&gt; |:---------|-------:|------:|-------:|</span></span>
-<span><span class="co">#&gt; |sd.beta.2 | 11.7943| 9.1576| 15.2698|</span></span>
+<span><span class="co">#&gt; |Parameter | Median|   2.5%|  97.5%|</span></span>
+<span><span class="co">#&gt; |:---------|------:|------:|------:|</span></span>
+<span><span class="co">#&gt; |sd.beta.2 | 6.6051| 4.9739| 9.0304|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Class Effects</span></span></span>
@@ -639,12 +628,12 @@ class mean.</p>
 <span><span class="co">#&gt; |Class |Parameter |  Median|     2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:-----|:---------|-------:|--------:|-------:|</span></span>
 <span><span class="co">#&gt; |Plac  |D.2[1]    |  0.0000|   0.0000|  0.0000|</span></span>
-<span><span class="co">#&gt; |Allo  |D.2[2]    | 17.1885|   3.2175| 30.3613|</span></span>
-<span><span class="co">#&gt; |Arha  |D.2[3]    | -0.7854| -65.4524| 58.2792|</span></span>
-<span><span class="co">#&gt; |BCX4  |D.2[4]    | 10.0314|  -2.1830| 22.6014|</span></span>
-<span><span class="co">#&gt; |Benz  |D.2[5]    | 18.6927|  -7.3801| 43.6131|</span></span>
-<span><span class="co">#&gt; |Febu  |D.2[6]    | 16.1832|   5.4365| 26.2328|</span></span>
-<span><span class="co">#&gt; |RDEA  |D.2[7]    | 20.5800|   4.2516| 36.5586|</span></span>
+<span><span class="co">#&gt; |Allo  |D.2[2]    | 12.9356|   6.3990| 20.1121|</span></span>
+<span><span class="co">#&gt; |Arha  |D.2[3]    | -1.1289| -60.1078| 61.8720|</span></span>
+<span><span class="co">#&gt; |BCX4  |D.2[4]    |  2.5259|  -4.4038|  9.6657|</span></span>
+<span><span class="co">#&gt; |Benz  |D.2[5]    | 14.1128|  -0.1840| 28.9701|</span></span>
+<span><span class="co">#&gt; |Febu  |D.2[6]    | 10.1680|   4.3775| 16.0311|</span></span>
+<span><span class="co">#&gt; |RDEA  |D.2[7]    |  9.9559|   0.5262| 19.6081|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Correlation between time points</span></span></span>
@@ -654,10 +643,10 @@ class mean.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">#### Model Fit Statistics ####</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD (pV) calculated using the rule, pD = var(deviance)/2 = 83</span></span>
-<span><span class="co">#&gt; Deviance = 149881</span></span>
-<span><span class="co">#&gt; Residual deviance = 150575</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 149964</span></span></code></pre></div>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 82</span></span>
+<span><span class="co">#&gt; Deviance = 119221</span></span>
+<span><span class="co">#&gt; Residual deviance = 119915</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 119303</span></span></code></pre></div>
 <p>Mean class effects are given in the output as <code>D.2</code>
 parameters. These can be interpreted as the relative effect of each
 class versus the <code>Plac</code> (Placebo), for the 2nd spline
@@ -675,50 +664,60 @@ that require further explanation.</p>
 <h4 id="priors">Priors<a class="anchor" aria-label="anchor" href="#priors"></a>
 </h4>
 <p>Default vague priors for the model are as follows:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>α</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐝</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>b</mi><mi>e</mi><mi>t</mi><msub><mi>a</mi><mi>ϕ</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>D</mi><mrow><mi>ϕ</mi><mo>,</mo><mi>c</mi></mrow></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>τ</mi><mi>ϕ</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msubsup><mi>τ</mi><mi>ϕ</mi><mi>D</mi></msubsup><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
   &amp;\alpha_{i} \sim N(0,10000)\\
   &amp;\boldsymbol{\mu}_{i} \sim N(0,10000)\\
   &amp;\boldsymbol{d}_{t} \sim N(0,10000)\\
   &amp;beta_{\phi} \sim N(0,10000)\\
   &amp;D_{\phi,c} \sim N(0,1000)\\
-  &amp;\tau_{\phi} \sim N(0,400) \text{  limited to  } x \in
-[0,\infty]\\
-  &amp;\tau^D_{\phi} \sim N(0,400) \text{ limited to } x \in
-[0,\infty]\\
+  &amp;\tau_{\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &amp;\tau^D_{\phi} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
 \end{aligned}
-\]</span></p>
+</annotation></semantics></math></p>
 <ul>
 <li>
-<span class="math inline">\(\alpha_i\)</span> is the response at
-time=0 in study <span class="math inline">\(i\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\alpha_i</annotation></semantics></math>
+is the response at time=0 in study
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 </li>
 <li>
-<span class="math inline">\(\mu_i\)</span> is a vector of study
-reference effects for each time-course parameter in study <span class="math inline">\(i\)</span>. Where only a single time-course
-parameter is modelled using relative effects the prior is defined as
-<span class="math inline">\(\mu_{i} \sim N(0,10000)\)</span>.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mu_i</annotation></semantics></math>
+is a vector of study reference effects for each time-course parameter in
+study
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
+Where only a single time-course parameter is modelled using relative
+effects the prior is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mu_{i} \sim N(0,10000)</annotation></semantics></math>.</li>
 <li>
-<span class="math inline">\(\boldsymbol{d}_{t}\)</span> is a vector
-of pooled relative effects for treatment <span class="math inline">\(t\)</span> whose length is the number of
-time-course parameters in the model. Where only a single time-course
-parameter is modelled using relative effects the prior is defined as
-<span class="math inline">\(d_{t} \sim N(0,10000)\)</span>.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐝</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol{d}_{t}</annotation></semantics></math>
+is a vector of pooled relative effects for treatment
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+whose length is the number of time-course parameters in the model. Where
+only a single time-course parameter is modelled using relative effects
+the prior is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">d_{t} \sim N(0,10000)</annotation></semantics></math>.</li>
 <li>
-<span class="math inline">\(\beta_{\phi}\)</span> is the absolute
-effect for time-course parameter <span class="math inline">\(\phi\)</span> modelled independently of
-treatment</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mi>ϕ</mi></msub><annotation encoding="application/x-tex">\beta_{\phi}</annotation></semantics></math>
+is the absolute effect for time-course parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
+modelled independently of treatment</li>
 <li>
-<span class="math inline">\(D_{\phi,c}\)</span> is the class
-relative effect for time-course parameter <span class="math inline">\(\phi\)</span> in class <span class="math inline">\(c\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mrow><mi>ϕ</mi><mo>,</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">D_{\phi,c}</annotation></semantics></math>
+is the class relative effect for time-course parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
+in class
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
 </li>
 <li>
-<span class="math inline">\(\tau_{\phi}\)</span> is the
-between-study SD for time-course parameter <span class="math inline">\(\phi\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>ϕ</mi></msub><annotation encoding="application/x-tex">\tau_{\phi}</annotation></semantics></math>
+is the between-study SD for time-course parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
 </li>
 <li>
-<span class="math inline">\(\tau^D_{\phi}\)</span> is the
-within-class SD for time-course parameter <span class="math inline">\(\phi\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>τ</mi><mi>ϕ</mi><mi>D</mi></msubsup><annotation encoding="application/x-tex">\tau^D_{\phi}</annotation></semantics></math>
+is the within-class SD for time-course parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
 </li>
 </ul>
 <p>Users may wish to change these, perhaps in order to use more/less
@@ -754,7 +753,7 @@ default values. Note that in JAGS, normal distributions are specified
 using precision (1/variance) rather than SD.</p>
 <p>For example, we may wish to specify a tighter prior for the
 between-study SD:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.copd</span>, </span>
 <span>                fun<span class="op">=</span><span class="fu"><a href="../reference/tloglin.html">tloglin</a></span><span class="op">(</span>pool.rate<span class="op">=</span><span class="st">"rel"</span>, method.rate<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>,</span>
 <span>                priors<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate<span class="op">=</span><span class="st">"dnorm(0,2) T(0,)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -775,7 +774,7 @@ on Aclidinium.</p>
 of Aclidinium returns towards baseline at longer follow-up. We could
 model this using a B-spline and providing informative priors only to the
 parameters controlling the spline for Aclidinium at later follow-up:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define informative priors for spline parameters</span></span>
 <span><span class="va">spline.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  d.3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -788,15 +787,14 @@ parameters controlling the spline for Aclidinium at later follow-up:</p>
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Using the COPD dataset with a B-spline MBNMA</span></span>
-<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.copd</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network.copd</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/tspline.html">tspline</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">26</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                priors<span class="op">=</span><span class="va">spline.priors</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Predict and plot time-course relative effect</span></span>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Priors required for: mu.1, mu.2, mu.3, mu.4</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00; font-weight: bold;">Success: Elements in prior match consistency time-course treatment effect parameters</span></span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00; font-weight: bold;">Success: Elements in prior match consistency time-course treatment effect parameters</span></span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reference treatment in plots is Placebo</span></span></code></pre></div>
 <p><img src="runmbnmatime-2_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 <p>As can be seen from the predicted time-course, using informative
@@ -806,33 +804,26 @@ longer-term follow-up than the data alone can inform.</p>
 <div class="section level4">
 <h4 id="pd-effective-number-of-parameters">pD (effective number of parameters)<a class="anchor" aria-label="anchor" href="#pd-effective-number-of-parameters"></a>
 </h4>
-<p>The default value for <code>pd</code> in <code><a href="../reference/mb.run.html">mb.run()</a></code> is
-<code>pd="pv"</code>, which uses the rapid approach automatically
+<p>The default value for <code>pD</code> in <code><a href="../reference/mb.run.html">mb.run()</a></code> is
+<code>pD=FALSE</code>, which uses the rapid approach automatically
 calculated in the <code>R2jags</code> package as
-<code>pv = var(deviance)/2</code>. Whilst this is easy to calculate, it
+<code>pD = var(deviance)/2</code>. Whilst this is easy to calculate, it
 is only an approximation to the effective number of parameters, and may
 be numerically unstable <span class="citation">(Gelman et al.
 2003)</span>. However, it has been shown to be reliable for model
 comparison in time-course MBNMA models in a simulation study <span class="citation">(Pedder et al. 2020)</span>.</p>
-<p>A more reliable method for estimating <code>pd</code> is
-<code>pd="pd.kl"</code>, which uses the Kullback-Leibler divergence
-<span class="citation">(Plummer 2008)</span>. This is more reliable than
-the default method used in <code>R2jags</code> for calculating the
-effective number of parameters from non-linear models. The disadvantage
-of this approach is that it requires running additional MCMC iterations,
-so can be slightly slower to calculate.</p>
+<p>A more reliable method for estimating <code>pD</code> is
+<code>pD=TRUE</code>, which uses the Kullback-Leibler divergence <span class="citation">(Plummer 2008)</span>. This is more reliable than the
+default method used in <code>R2jags</code> for calculating the effective
+number of parameters from non-linear models. The disadvantage of this
+approach is that it requires running additional MCMC iterations, so can
+be slightly slower to calculate.</p>
 <p>A commonly-used approach in Bayesian models for calculating pD is the
-plug-in method (<code>pd="plugin"</code>) <span class="citation">(Spiegelhalter et al. 2002)</span>. However, this can
-sometimes result in negative non-sensical values due to skewed posterior
-distributions for deviance contributions that can arise when fitting
-non-linear models.</p>
-<p>Finally, pD can also be calculated using an optimism adjustment
-(<code>pd="popt"</code>) which allows for calculation of the penalized
-expected deviance <span class="citation">(Plummer 2008)</span>. This
-adjustment allows for the fact that data used to estimate the model is
-the same as that used to assess its parsimony. As for
-<code>pd="pd.kl"</code>, it also requires running additional MCMC
-iterations.</p>
+plug-in method <span class="citation">(Spiegelhalter et al.
+2002)</span>. However, this can sometimes result in negative
+non-sensical values due to skewed posterior distributions for deviance
+contributions that can arise when fitting non-linear models. As such,
+this is no longer implemented within the package.</p>
 </div>
 <div class="section level4">
 <h4 id="correlation-between-time-course-parameters">Correlation between time-course parameters<a class="anchor" aria-label="anchor" href="#correlation-between-time-course-parameters"></a>
@@ -844,8 +835,9 @@ using relative effects.</p>
 Time-course parameters are typically correlated and this allows
 information on each parameter to help inform the other(s). The
 correlation is modeled using a multivariate normal distribution whose
-covariance matrix <span class="math inline">\(\Sigma_t\)</span> is
-modelled using a correlation defined by the parameter
+covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Σ</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\Sigma_t</annotation></semantics></math>
+is modelled using a correlation defined by the parameter
 <code>rhoparam</code>. In previous versions, an inverse Wishart prior
 was used, though this has since been considered to overly constrain the
 model.</p>
@@ -1029,7 +1021,7 @@ Journal Article. <em>J R Statistic Soc B</em> 64 (4): 583–639.
 </div>
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -1040,15 +1032,15 @@ Journal Article. <em>J R Statistic Soc B</em> 64 (4): 583–639.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>

@@ -5,62 +5,52 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="MBNMAtime">
 <title>Exploring the data • MBNMAtime</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Exploring the data">
-<meta property="og:description" content="MBNMAtime">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Exploring the data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">MBNMAtime</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5.9000</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a>
-    <a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a>
-    <a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a>
-    <a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a>
-    <a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a>
-    <a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/consistencychecking-3.html">Checking for consistency</a></li>
+    <li><a class="dropdown-item" href="../articles/dataexploration-1.html">Exploring the data</a></li>
+    <li><a class="dropdown-item" href="../articles/mbnmatime-overview.html">MBNMAtime: Package Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/outputs-4.html">Outputs: Relative effects, forest plots and rankings</a></li>
+    <li><a class="dropdown-item" href="../articles/predictions-5.html">Calculating model predictions</a></li>
+    <li><a class="dropdown-item" href="../articles/runmbnmatime-2.html">Perform a time-course Model-Based Network Meta-Analysis (MBNMA)</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav"></ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+      </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -69,13 +59,14 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Exploring the data</h1>
+
+      <h1>Exploring the data</h1>
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2024-07-03</h4>
+            <h4 data-toc-skip class="date">2025-01-21</h4>
       
-      
+
       <div class="d-none name"><code>dataexploration-1.Rmd</code></div>
     </div>
 
@@ -94,9 +85,8 @@ one will automatically be specified if not given.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using the pain dataset</span></span>
 <span><span class="va">network.pain</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">osteopain</span>, reference <span class="op">=</span> <span class="st">"Pl_0"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">network.pain</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">network.pain</span><span class="op">)</span></span>
 <span><span class="co">#&gt; description :</span></span>
 <span><span class="co">#&gt; [1] "Network"</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -215,19 +205,18 @@ The generated plots are objects of <code>class("igraph")</code> meaning
 that, in addition to the options specified in <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>,
 various <code>igraph</code> functions can be used to make more detailed
 edits to them.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Prepare data using the alogliptin dataset</span></span>
 <span><span class="va">network.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span>, reference <span class="op">=</span> <span class="st">"placebo"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span>
+<span></span>
 <span><span class="co"># Plot network</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.alog</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-1-1.png" width="672"></p>
 <p>Within these network plots, treatments are automatically aligned in a
 circle (as the default) and can be tidied by shifting the label distance
 away from the nodes.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Draw network plot in a star layout using the gout dataset</span></span>
 <span><span class="va">network.gout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">goutSUA_CFB</span>, reference <span class="op">=</span> <span class="st">"Plac"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.gout</span>, layout<span class="op">=</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/layout_as_star.html" class="external-link">as_star</a></span><span class="op">(</span><span class="op">)</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
@@ -244,12 +233,12 @@ more detail later, but one approach is to assume a shared effect among
 treatments within the same class/agent. We can generate a network plot
 at the class level to examine this more closely, and can see that the
 network is connected at the class level.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.gout</span>, level <span class="op">=</span> <span class="st">"class"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <p>It is also possible to plot a network at the treatment level but to
 colour the treatments by the class that they belong to.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.gout</span>, level <span class="op">=</span> <span class="st">"treatment"</span>, v.color <span class="op">=</span> <span class="st">"class"</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 </div>
@@ -261,12 +250,11 @@ modelling the time-course relationship, it is important to look at the
 responses in each arm plotted over time. This can easily be done using
 the <code><a href="../reference/timeplot.html">timeplot()</a></code> function on an object of
 <code>class("mb.network")</code></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Prepare data using the pain dataset</span></span>
 <span><span class="va">network.pain</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">osteopain</span>, reference<span class="op">=</span><span class="st">"Pl_0"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; Studies reporting change from baseline automatically identified from the data</span></span>
+<span></span>
 <span><span class="co"># Draw plot of raw study responses over time</span></span>
 <span><span class="fu"><a href="../reference/timeplot.html">timeplot</a></span><span class="op">(</span><span class="va">network.pain</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/pain.time-1.png" width="672"></p>
@@ -282,7 +270,7 @@ plotted instead of the absolute treatment responses. Since the MBNMA
 framework models the time-course on relative effects <span class="citation">(Pedder et al. 2019)</span> this can in fact make
 interpretation of the plots easier with regards to identifying a
 best-fitting time-course function.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Draw plot of within-study relative effects over time grouped by class</span></span>
 <span><span class="va">network.gout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">goutSUA_CFBcomb</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/timeplot.html">timeplot</a></span><span class="op">(</span><span class="va">network.gout</span>, level<span class="op">=</span><span class="st">"class"</span>, plotby<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span></span></code></pre></div>
@@ -305,7 +293,7 @@ study to avoid double counting). <code>"fixed"</code> or
 the wider the time bin boundaries specified by the user, the larger the
 potential range of included follow-up times and this can introduce
 heterogeneity or inconsistency.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot results for NMAs performed between 0-5, 5-10, 10-15 and 15-26 weeks</span></span>
 <span><span class="fu"><a href="../reference/binplot.html">binplot</a></span><span class="op">(</span><span class="va">network.pain</span>, overlay.nma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>,<span class="fl">15</span>,<span class="fl">26</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running overlay.nma for time=0 and time=5</span></span>
@@ -351,7 +339,7 @@ Outcomes.”</span> Journal Article. <em>Res Synth Methods</em> 10 (2):
 </div>
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -362,15 +350,15 @@ Outcomes.”</span> Journal Article. <em>Res Synth Methods</em> 10 (2):
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>
