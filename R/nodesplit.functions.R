@@ -67,7 +67,7 @@ inconsistency.loops <- function(data)
     g <- g + edges
 
     # Check whether there is still an indirect connection once direct evidence studies are removed
-    if (as.logical(is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+    if (as.logical(is.finite(igraph::distances(igraph::as.undirected(g),
                                                     comparisons[i,1], comparisons[i,2]))) == TRUE) {
 
       # Identify the path made by the indirect evidence
