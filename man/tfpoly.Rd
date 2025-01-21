@@ -77,9 +77,6 @@ and can take any of the following values:\tabular{ll}{
 
 When relative effects are modelled on more than one time-course parameter,
 correlation between them is automatically estimated using a vague inverse-Wishart prior.
-This prior can be made slightly more informative by specifying the scale matrix \code{omega}
-and by changing the degrees of freedom of the inverse-Wishart prior
-using the \code{priors} argument in \code{mb.run()}.
 }
 
 \examples{

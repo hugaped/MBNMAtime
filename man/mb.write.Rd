@@ -11,7 +11,6 @@ mb.write(
   intercept = NULL,
   rho = 0,
   covar = "varadj",
-  omega = NULL,
   corparam = TRUE,
   sdscale = FALSE,
   class.effect = list(),
@@ -50,14 +49,6 @@ time points \insertCite{jansen2015}{MBNMAtime}. This is the default.
 \item \code{"AR1"} - a multivariate normal likelihood with an
 \href{https://support.sas.com/resources/papers/proceedings/proceedings/sugi30/198-30.pdf}{autoregressive AR1} structure
 }}
-
-\item{omega}{DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
-rather than a Wishart prior).
-A scale matrix for the inverse-Wishart prior for the covariance matrix used
-to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
-be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
-relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
-is used.}
 
 \item{corparam}{A boolean object that indicates whether correlation should be modeled
 between relative effect time-course parameters. Default is \code{FALSE} and this is automatically set to \code{FALSE} if class effects are modeled.

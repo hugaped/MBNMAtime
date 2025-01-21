@@ -4,21 +4,13 @@
 \alias{write.cor}
 \title{Adds correlation between time-course relative effects}
 \usage{
-write.cor(model, fun, omega = NULL, class.effect = list())
+write.cor(model, fun, class.effect = list())
 }
 \arguments{
 \item{model}{A character object of JAGS MBNMA model code}
 
 \item{fun}{An object of class \code{"timefun"} generated (see Details) using any of
 \code{tloglin()}, \code{tpoly()}, \code{titp()}, \code{temax()}, \code{tfpoly()}, \code{tspline()} or \code{tuser()}}
-
-\item{omega}{DEPRECATED IN VERSION 0.2.3 ONWARDS (~uniform(-1,1) now used for correlation between parameters
-rather than a Wishart prior).
-A scale matrix for the inverse-Wishart prior for the covariance matrix used
-to model the correlation between time-course parameters (see Details for time-course functions). \code{omega} must
-be a symmetric positive definite matrix with dimensions equal to the number of time-course parameters modelled using
-relative effects (\code{pool="rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
-is used.}
 
 \item{class.effect}{A list of named strings that determines which time-course
 parameters to model with a class effect and what that effect should be
