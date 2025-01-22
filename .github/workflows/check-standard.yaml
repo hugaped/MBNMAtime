@@ -35,11 +35,17 @@ jobs:
       - name: Install JAGS for Windows
         if: runner.os == 'Windows'
         run: |
+          # Download and install JAGS
           curl.exe -L -o wjags.exe https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download
           .\wjags.exe /S
           del wjags.exe
+
+          # Add JAGS to the PATH
+          set "PATH=%PATH%;C:\Program Files\JAGS\JAGS-4.3.1\bin"
+
+          # Verify JAGS installation
           echo "Checking JAGS installation..."
-          jags --version || echo "JAGS installation failed!"
+          jags --version || (echo "JAGS installation failed!" && exit 1)
         shell: cmd
 
       - name: Install JAGS for macOS
