@@ -42,36 +42,31 @@ jobs:
           jags --version || echo "JAGS installation failed!"
         shell: cmd
 
-      # Install JAGS for macOS
       - name: Install JAGS for macOS
         if: matrix.config.os == 'macos-latest'
         run: |
           set -e
           if [[ "$(uname -m)" == "arm64" ]]; then
-            echo "Building JAGS from source for macOS-arm64."
-            brew install gcc
-            curl -L -o jags-4.3.1.tar.gz https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/JAGS-4.3.1.tar.gz/download
-            tar -xzf jags-4.3.1.tar.gz
-            cd JAGS-4.3.1
-            ./configure --build=aarch64-apple-darwin
-            make
-            sudo make install
-            cd ..
+            echo "Detected macOS-arm64 (Apple Silicon). Installing JAGS using .pkg file."
+
+            # Download the .pkg file
+            curl -L -o JAGS-4.3.2.pkg https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download
+
+            # Install the package
+            sudo installer -pkg JAGS-4.3.2.pkg -target /
+
+            # Verify the installation
+            echo "Checking JAGS installation..."
+            jags --version || (echo "JAGS installation failed!" && exit 1)
           else
+            echo "Using Homebrew for JAGS installation on macOS Intel."
             brew update
             brew install jags
-          fi
-          echo "Checking JAGS installation..."
-          jags --version || (echo "JAGS installation failed!" && exit 1)
 
-      # Install JAGS for Ubuntu
-      - name: Install JAGS for Ubuntu
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jags
-          echo "Checking JAGS installation..."
-          jags --version || echo "JAGS installation failed!"
+            # Verify the installation
+            echo "Checking JAGS installation..."
+            jags --version || (echo "JAGS installation failed!" && exit 1)
+          fi
 
       - uses: r-lib/actions/setup-pandoc@v2
 
