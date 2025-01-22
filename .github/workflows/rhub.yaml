@@ -102,14 +102,8 @@ jobs:
         if: matrix.config.os == 'macos-latest'
         run: |
           set -e
-          ARCH=$(uname -m)
-          echo "Detected macOS architecture: $ARCH"
-
-          if [[ "$ARCH" == "arm64" ]]; then
-            echo "Detected macOS-arm64 (Apple Silicon). Installing JAGS using .pkg file with Rosetta."
-
-            # Install Rosetta if not already installed
-            softwareupdate --install-rosetta --agree-to-license || true
+          if [[ "$(uname -m)" == "arm64" ]]; then
+            echo "Detected macOS-arm64 (Apple Silicon). Installing JAGS using .pkg file."
 
             # Download the .pkg file
             curl -L -o JAGS-4.3.2.pkg https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download
@@ -118,9 +112,7 @@ jobs:
             sudo installer -pkg JAGS-4.3.2.pkg -target /
 
           else
-            echo "Detected macOS-x86_64 (Intel). Installing JAGS using Homebrew."
-
-            # Use Homebrew to install JAGS
+            echo "Using Homebrew for JAGS installation on macOS Intel."
             brew update
             brew install jags
           fi
