@@ -455,16 +455,20 @@ mb.jags <- function(data.ab, model, fun=NULL, link=NULL,
   close(tmps)
 
   out <- tryCatch({
-    result <- suppressWarnings(R2jags::jags(data=jagsvars, model.file=tmpf,
-                           parameters.to.save=parameters.to.save,
-                           ...
-    ))
+    withCallingHandlers({
+      result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+                             parameters.to.save=parameters.to.save,
+                             ...)
+    }, warning = function(w) {
+      if (grepl("missing in parameter", conditionMessage(w))) {
+        invokeRestart("muffleWarning")
+      }
+    })
   },
-  error=function(cond) {
+  error = function(cond) {
     message(cond)
-    return(list("error"=cond))
-  }
-  )
+    return(list(error = cond))
+  })
 
   # Gives warning if any rhat values > 1.02
   if (warn.rhat==TRUE) {
@@ -828,16 +832,20 @@ nma.run <- function(data.ab, treatments=NULL, method="common", link="identity", 
   close(tmps)
 
   out <- tryCatch({
-    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
-                           parameters.to.save=parameters.to.save,
-                           ...
-    )
+    withCallingHandlers({
+      result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+                             parameters.to.save=parameters.to.save,
+                             ...)
+    }, warning = function(w) {
+      if (grepl("specific warning text", conditionMessage(w))) {
+        invokeRestart("muffleWarning")
+      }
+    })
   },
-  error=function(cond) {
+  error = function(cond) {
     message(cond)
-    return(list("error"=cond))
-  }
-  )
+    return(list(error = cond))
+  })
 
   if (!is.null(treatments)) {
     out[["treatments"]] <- treatments
