@@ -41,8 +41,6 @@ jobs:
 
           set "PATH=%PATH%;C:\Program Files\JAGS\JAGS-4.3.1\bin"
 
-          echo "Checking JAGS installation..."
-          jags --version || (echo "JAGS installation failed!" && exit 1)
         shell: cmd
 
       - name: Install JAGS for macOS
