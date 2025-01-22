@@ -141,27 +141,13 @@ divergence (<code>pD=TRUE</code>) plummer2008MBNMAtime.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Using the alogliptin dataset</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mb.network.html">mb.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reference treatment is `placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Studies reporting change from baseline automatically identified from the data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run Emax model saving predicted means and residual deviance contributions</span></span></span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mb.run.html">mb.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="temax.html">temax</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  parameters.to.save<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"theta"</span>, <span class="st">"resdev"</span><span class="op">)</span>, intercept<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'et50' parameters must take positive values.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Default half-normal prior restricts posterior to positive values.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 233</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 38</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get matrices of observed data</span></span></span>
 <span class="r-in"><span><span class="va">jagsdat</span> <span class="op">&lt;-</span> <span class="fu"><a href="getjagsdata.html">getjagsdata</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">)</span></span></span>
@@ -174,8 +160,7 @@ divergence (<code>pD=TRUE</code>) plummer2008MBNMAtime.</p>
 <span class="r-in"><span>  theta.result <span class="op">=</span> <span class="va">emax</span><span class="op">$</span><span class="va">BUGSoutput</span><span class="op">$</span><span class="va">mean</span><span class="op">$</span><span class="va">theta</span>,</span></span>
 <span class="r-in"><span>  resdev.result <span class="op">=</span> <span class="va">emax</span><span class="op">$</span><span class="va">BUGSoutput</span><span class="op">$</span><span class="va">mean</span><span class="op">$</span><span class="va">resdev</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pDcalc(obs1 = jagsdat$y, obs2 = jagsdat$se, fups = jagsdat$fups,     narm = jagsdat$narm, NS = jagsdat$NS, theta.result = emax$BUGSoutput$mean$theta,     resdev.result = emax$BUGSoutput$mean$resdev):</span> could not find function "pDcalc"</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
