@@ -1,4 +1,4 @@
-This is a new submission after the package was removed from CRAN in Autumn 2024. 
+This is a new submission after the package was removed from CRAN in November 2024. 
 
 The following ERRORs have been addressed:
 
