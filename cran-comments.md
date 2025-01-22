@@ -1,7 +1,14 @@
-This is a re-submission after the package was removed from CRAN in Autumn 2024. 
+This is a new submission after the package was removed from CRAN in Autumn 2024. 
 
-There are no ERRORs or NOTEs
+The following ERRORs have been addressed:
 
+* Error in loadNamespace(x) : there is no package called ‘lspline’
+* Error in loadNamespace(x) : there is no package called ‘igraph’
+* Error in loadNamespace(x) : there is no package called ‘crayon’
+
+There is one NOTE:
+
+* NOTE New submission - Package was archived on CRAN
 
 ## Test environments
 
