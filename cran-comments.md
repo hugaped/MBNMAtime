@@ -1,25 +1,17 @@
-This is a re-submission. 
+This is a re-submission after the package was removed from CRAN in Autumn 2024. 
 
-The following ERROR has been addressed:
-
-* Error: processing vignette 'outputs-4.Rmd' failed with diagnostics:
-  object 'network.pain' not found
-  
-The following NOTEs have been addressed:
-
-* NOTE Mismatches for apparent methods not registered
-* NOTE Found the following (possibly) invalid file URI
+There are no ERRORs or NOTEs
 
 
 ## Test environments
 
-* Ubuntu 22.04 GitHub Actions (release, dev, oldrel-1)
+* Ubuntu 22.04 GitHub Actions (release)
 * Windows Server 2022 GitHub Actions (release)
-* macOS 12 GitHub Actions (release)
-* Local Windows, R 4.1.0 (devel and release)
-* Windows Server 2008 R2 SP1, R-devel, 32/64 bit (rhub)
-* Fedora Linux, R-devel, clang, gfortran (rhub)
-
+* macOS 13 GitHub Actions (release)
+* Local Windows, R 4.3.3 (devel and release)
+* ubuntu-latest on GitHub (rhub)
+* macos-latest on GitHub (rub)
+* windows-latest on GitHub (rhub)
 
 ## R CMD check results
 
