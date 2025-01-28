@@ -24,6 +24,7 @@ library(MBNMAtime)
 library(rmarkdown)
 library(knitr)
 library(dplyr)
+library(ggplot2)
 #load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 

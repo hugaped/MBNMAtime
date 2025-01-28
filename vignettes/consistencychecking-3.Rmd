@@ -24,6 +24,8 @@ library(MBNMAtime)
 library(rmarkdown)
 library(knitr)
 library(dplyr)
+library(scales)
+library(RColorBrewer)
 #load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
