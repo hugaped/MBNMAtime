@@ -3,7 +3,7 @@ Type: Package
 Title: Run Time-Course Model-Based Network Meta-Analysis (MBNMA) Models
 Version: 0.2.6
 Language: en-GB
-Date: 2025-01-21
+Date: 2025-01-28
 Authors@R: c(person("Hugo", "Pedder", 
     email = "hugopedder@gmail.com", 
     role = c("aut", "cre"),
