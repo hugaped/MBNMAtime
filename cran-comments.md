@@ -3,7 +3,6 @@ This is a new submission after the package was removed from CRAN in November 202
 The following ERRORs have been addressed:
 
 * Error(s) in re-building vignettes - There is no package ...
-* Error in loadNamespace(x) : there is no package called ‘scales’
 
 There is one NOTE:
 
