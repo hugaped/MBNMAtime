@@ -26,6 +26,7 @@ library(knitr)
 library(dplyr)
 library(scales)
 library(RColorBrewer)
+library(ggplot2)
 #load(system.file("extdata", "vignettedata.rda", package="MBNMAtime", mustWork = TRUE))
 ```
 
