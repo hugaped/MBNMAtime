@@ -2,13 +2,14 @@ This is a new submission after the package was removed from CRAN in November 202
 
 The following ERRORs have been addressed:
 
-* Error in loadNamespace(x) : there is no package called ‘lspline’
-* Error in loadNamespace(x) : there is no package called ‘igraph’
-* Error in loadNamespace(x) : there is no package called ‘crayon’
+* Error(s) in re-building vignettes - There is no package ...
+* Error in loadNamespace(x) : there is no package called ‘scales’
 
 There is one NOTE:
 
-* NOTE New submission - Package was archived on CRAN
+* NOTE
+  - New submission - Package was archived on CRAN
+  - Possibly misspelled words in DESCRIPTION - I confirm that these words are not mispelled
 
 ## Test environments
 
